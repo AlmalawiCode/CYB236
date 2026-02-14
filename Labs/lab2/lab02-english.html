@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 02: Introduction to Web Application Reconnaissance</title>
+    <style>
+        :root {
+            --primary-color: #2b5797;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --light-bg: #f7fafc;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+            --kali-blue: #367bf0;
+            --kali-dark: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">🔍</text></svg>');
+            background-size: 150px;
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .header .chapter-ref {
+            display: inline-block;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Lab Info Box */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 25px 40px;
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #5b8def 100%);
+            color: white;
+        }
+
+        .lab-info-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+        }
+
+        .lab-info-item strong {
+            display: block;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .lab-info-item span {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* Content */
+        .content { padding: 40px; }
+
+        /* Table of Contents */
+        .toc {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-bottom: 40px;
+            border-left: 5px solid var(--kali-blue);
+        }
+
+        .toc h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border: none;
+        }
+
+        .toc ol {
+            columns: 2;
+            column-gap: 30px;
+            padding-left: 20px;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+            break-inside: avoid;
+        }
+
+        .toc a {
+            color: var(--kali-blue);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        section { margin-bottom: 40px; }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--kali-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            color: var(--dark-text);
+            font-size: 1.15em;
+            margin: 20px 0 10px 0;
+        }
+
+        p { margin-bottom: 15px; }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li { margin-bottom: 6px; }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .alert-icon { font-size: 1.5em; flex-shrink: 0; }
+
+        .alert-info {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-left: 5px solid var(--info-color);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fffff0 0%, #fefcbf 100%);
+            border-left: 5px solid var(--warning-color);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-left: 5px solid var(--danger-color);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .alert h4 { margin: 0 0 8px 0; color: inherit; }
+        .alert p { margin: 0; }
+        .alert ul { margin-top: 8px; margin-bottom: 0; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: #edf2f7; }
+
+        /* Code blocks */
+        code {
+            background: #1a202c;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        pre code { background: none; color: #68d391; padding: 0; }
+
+        .command-label {
+            display: block;
+            color: #a0aec0;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 50px;
+            position: relative;
+            min-height: 40px;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0; top: 0;
+            width: 35px; height: 35px;
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #5b8def 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(54, 123, 240, 0.3);
+        }
+
+        /* Checklist */
+        .checklist { list-style: none; padding: 0; }
+
+        .checklist li {
+            padding: 10px 0 10px 35px;
+            position: relative;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+            color: var(--kali-blue);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card h4 { color: var(--kali-blue); margin-top: 0; }
+
+        /* Expected Output */
+        .expected-output {
+            background: #f7fafc;
+            border: 2px dashed var(--kali-blue);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .expected-output h4 {
+            color: var(--kali-blue);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        /* Deliverable Box */
+        .deliverable {
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+            border-left: 5px solid #805ad5;
+            border-radius: 0 12px 12px 0;
+            padding: 20px 25px;
+            margin: 20px 0;
+        }
+
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* Troubleshooting */
+        .troubleshoot-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .troubleshoot-header {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--danger-color);
+        }
+
+        .troubleshoot-solution {
+            padding: 20px;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 30px 20px; }
+            .header h1 { font-size: 1.8em; }
+            .content { padding: 25px; }
+            .toc ol { columns: 1; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1>Lab 02: Introduction to Web Application Reconnaissance</h1>
+        <p class="subtitle">CYB236 - Web Application Security</p>
+        <div class="chapter-ref">Covers: Chapter 2 (Reconnaissance) &amp; Chapter 3 (Modern Web Architecture)</div>
+    </header>
+
+    <!-- Lab Info -->
+    <div class="lab-info">
+        <div class="lab-info-item">
+            <strong>Lab Number</strong>
+            <span>02</span>
+        </div>
+        <div class="lab-info-item">
+            <strong>Difficulty</strong>
+            <span>Beginner</span>
+        </div>
+        <div class="lab-info-item">
+            <strong>Duration</strong>
+            <span>45-50 min</span>
+        </div>
+        <div class="lab-info-item">
+            <strong>Prerequisites</strong>
+            <span>Lab 01 (Kali VM)</span>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Table of Contents -->
+        <nav class="toc">
+            <h2>Table of Contents</h2>
+            <ol>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#objectives">Learning Objectives</a></li>
+                <li><a href="#setup">Part 1: Setting Up Juice Shop</a></li>
+                <li><a href="#task1">Task 1: Identify the Technology Stack</a></li>
+                <li><a href="#task2">Task 2: Explore REST APIs in the Browser</a></li>
+                <li><a href="#task3">Task 3: Read JSON Payloads</a></li>
+                <li><a href="#task4">Task 4: Inspect Client-Side Storage</a></li>
+                <li><a href="#task5">Task 5: Write Your Recon Summary</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#submission">Submission &amp; Grading</a></li>
+            </ol>
+        </nav>
+
+        <!-- Introduction -->
+        <section id="introduction">
+            <h2>Introduction</h2>
+
+            <p>In this lab you will take your first steps into <strong>web application reconnaissance</strong> &mdash; the information-gathering phase that happens <em>before</em> any security testing. You will explore a target web application using only your <strong>web browser</strong> and a few simple <strong>terminal commands</strong>.</p>
+
+            <p>The target application is <strong>OWASP Juice Shop</strong>, a deliberately vulnerable online juice store. It is built with the modern technologies you studied in Chapter 3.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>What is OWASP Juice Shop?</h4>
+                    <p>Juice Shop is a modern web application intentionally built for security education. It uses:</p>
+                    <ul>
+                        <li><strong>Angular</strong> &mdash; a Single-Page Application (SPA) framework</li>
+                        <li><strong>Node.js / Express</strong> &mdash; a JavaScript web server</li>
+                        <li><strong>REST API</strong> with <strong>JSON</strong> data format</li>
+                        <li><strong>SQLite</strong> database</li>
+                    </ul>
+                    <p>All of these technologies were covered in <strong>Chapter 3</strong> of your textbook.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Important Legal Reminder</h4>
+                    <p>Reconnaissance should <strong>ONLY</strong> be performed against applications you own or have written permission to test. In this lab, Juice Shop runs <strong>locally on your own machine</strong>, so you are fully authorized.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Objectives -->
+        <section id="objectives">
+            <h2>Learning Objectives</h2>
+            <p>By the end of this lab, you will be able to:</p>
+            <ul class="checklist">
+                <li>Set up and run OWASP Juice Shop using Docker on Kali Linux</li>
+                <li>Identify the technology stack of a web application using simple tools</li>
+                <li>Use browser Developer Tools to observe REST API requests</li>
+                <li>Read and understand JSON data sent between client and server</li>
+                <li>Inspect client-side storage (cookies, localStorage, sessionStorage)</li>
+                <li>Write a short recon summary documenting your findings</li>
+            </ul>
+
+            <h3>Tools Used in This Lab</h3>
+            <table>
+                <tr>
+                    <th>Tool</th>
+                    <th>What We Use It For</th>
+                </tr>
+                <tr>
+                    <td><code>Docker</code></td>
+                    <td>Run the Juice Shop application locally</td>
+                </tr>
+                <tr>
+                    <td><code>Firefox</code> + Developer Tools (F12)</td>
+                    <td>Inspect network requests, JSON data, and storage</td>
+                </tr>
+                <tr>
+                    <td><code>whatweb</code></td>
+                    <td>Automatically detect web technologies</td>
+                </tr>
+                <tr>
+                    <td><code>curl</code></td>
+                    <td>Send HTTP requests from the terminal</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Part 1: Setup -->
+        <section id="setup">
+            <h2>Part 1: Setting Up OWASP Juice Shop</h2>
+
+            <p>We will run Juice Shop using <strong>Docker</strong> inside your Kali VM.</p>
+
+            <h3>Step 1: Install Docker</h3>
+            <p>Open a terminal in your Kali VM and run these commands one by one:</p>
+
+<pre><code><span class="command-label"># Update packages and install Docker</span>
+sudo apt update
+sudo apt install -y docker.io
+
+<span class="command-label"># Start Docker</span>
+sudo systemctl start docker
+sudo systemctl enable docker
+
+<span class="command-label"># Verify Docker is working</span>
+sudo docker --version</code></pre>
+
+            <div class="expected-output">
+                <h4>Expected Output:</h4>
+                <p>You should see: <code>Docker version 24.x.x, build xxxxxxx</code></p>
+            </div>
+
+            <h3>Step 2: Download and Run Juice Shop</h3>
+
+<pre><code><span class="command-label"># Download Juice Shop (this may take a few minutes)</span>
+sudo docker pull bkimminich/juice-shop
+
+<span class="command-label"># Start Juice Shop on port 3000</span>
+sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></pre>
+
+            <h3>Step 3: Open It in Firefox</h3>
+
+            <ol class="steps">
+                <li>Open <strong>Firefox</strong> in your Kali VM</li>
+                <li>Go to <code>http://localhost:3000</code></li>
+                <li>You should see the Juice Shop homepage &mdash; an online store selling fruit juices</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Checkpoint</h4>
+                    <p>If you can see the Juice Shop homepage with product images and a navigation bar, you are ready! Do <strong>NOT</strong> create an account yet &mdash; we will do that in Task 2.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task 1: Technology Stack -->
+        <section id="task1">
+            <h2>Task 1: Identify the Technology Stack</h2>
+
+            <p>Your first job is to figure out <strong>what technologies</strong> this application is built with. As you learned in Chapter 3, modern web apps use a combination of web servers, frameworks, and databases.</p>
+
+            <h3>1A: Use <code>whatweb</code> from the Terminal</h3>
+
+            <p>Open a <strong>new terminal tab</strong> (keep Firefox open) and run:</p>
+
+<pre><code>whatweb http://localhost:3000</code></pre>
+
+            <div class="expected-output">
+                <h4>What to Look For:</h4>
+                <p>The output will list technologies it detected, such as the web server name, scripting language, or framework. Write down everything you see.</p>
+            </div>
+
+            <h3>1B: Check Response Headers in Firefox</h3>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Important: F12, Not F11!</h4>
+                    <p>Press <strong>F12</strong> to open Developer Tools. Do <strong>NOT</strong> press F11 &mdash; that makes Firefox go full-screen, which is not what we want.</p>
+                </div>
+            </div>
+
+            <ol class="steps">
+                <li>In Firefox, make sure you are on <code>http://localhost:3000</code></li>
+                <li>Press <strong>F12</strong> on your keyboard &mdash; a panel will appear at the bottom of the browser window. This is <strong>Developer Tools</strong>.</li>
+                <li>At the top of that panel, you will see a row of tabs: <em>Inspector, Console, Debugger, <strong>Network</strong>, Style Editor, ...</em> &mdash; Click on <strong>Network</strong></li>
+                <li>The Network tab will be <strong>empty</strong> at first &mdash; this is normal! It only records requests that happen <em>after</em> you open it. Press <strong>Ctrl + R</strong> to reload the page. You should now see a list of requests appear.</li>
+                <li>Look at the list of requests. The <strong>first row</strong> should show a request to the URL <code>localhost:3000</code> (it may show as <code>/</code> or <code>GET localhost</code> or <code>GET /</code>). Click on that first row.</li>
+                <li>A details panel appears on the right side. At the top of this panel, you will see sub-tabs: <strong>Headers</strong>, Cookies, Request, Response, Timings. Click on <strong>Headers</strong> if it is not already selected.</li>
+                <li>Inside the Headers panel, scroll down. You will see two sections: <strong>Request Headers</strong> (what your browser sent) and <strong>Response Headers</strong> (what the server sent back). Look at the <strong>Response Headers</strong> section.</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>Key Headers to Look For in Response Headers</h4>
+                    <p>Scroll through the Response Headers and look for these specific header names:</p>
+                    <ul>
+                        <li><code>X-Powered-By</code> &mdash; tells you the server-side framework (you should see <strong>Express</strong>)</li>
+                        <li><code>Content-Type</code> &mdash; tells you the data format (you should see <strong>text/html</strong>)</li>
+                    </ul>
+                    <p>If you see <code>X-Powered-By: Express</code>, you have found it! Write this down.</p>
+                </div>
+            </div>
+
+            <h3>1C: Check the Page Source for the Client Framework</h3>
+
+            <ol class="steps">
+                <li>Close Developer Tools for now (press <strong>F12</strong> again to toggle it off)</li>
+                <li>Right-click anywhere on the Juice Shop page</li>
+                <li>Select <strong>View Page Source</strong> from the menu (or press <strong>Ctrl + U</strong>) &mdash; a new tab will open showing the raw HTML code</li>
+                <li>Scroll all the way to the bottom of the page source</li>
+                <li>Near the bottom, look at the <code>&lt;script&gt;</code> tags. You should see file names that start with <code>runtime</code>, <code>polyfills</code>, and <code>main</code> (they may have extra characters like <code>runtime.abc123def.js</code> &mdash; the random characters in the middle are normal)</li>
+                <li>Also scroll back up and look for a tag called <code>&lt;app-root&gt;</code> in the <code>&lt;body&gt;</code> section</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>Hint</h4>
+                    <p>Files whose names start with <code>runtime</code>, <code>polyfills</code>, and <code>main</code> are strong indicators of <strong>Angular</strong> (an SPA framework from Chapter 3). The extra characters in the file name (like <code>main.a1b2c3d4.js</code>) are normal &mdash; Angular adds a random hash to file names for caching. The <code>&lt;app-root&gt;</code> tag is also Angular-specific.</p>
+                </div>
+            </div>
+
+            <div class="deliverable">
+                <h4>Deliverable for Task 1:</h4>
+                <p>Write down: (1) the web server software, (2) the server-side framework, (3) the client-side SPA framework you identified.</p>
+            </div>
+        </section>
+
+        <!-- Task 2: REST APIs in Browser -->
+        <section id="task2">
+            <h2>Task 2: Explore REST API Requests in the Browser</h2>
+
+            <p>As you learned in Chapter 3, modern web applications communicate through <strong>REST APIs</strong>. The browser sends HTTP requests (GET, POST, etc.) and the server responds with data. Let's watch this happen in real time.</p>
+
+            <h3>2A: Open the Network Tab</h3>
+
+            <ol class="steps">
+                <li>In Firefox, press <strong>F12</strong> to open Developer Tools (the panel at the bottom)</li>
+                <li>Click the <strong>Network</strong> tab at the top of the Developer Tools panel</li>
+                <li>You will see a row of small filter buttons below the tab bar: <em>All, HTML, CSS, JS, XHR, Fonts, Images, Media, WS</em>. Click the <strong>XHR</strong> button &mdash; this filters the list to show only API calls (XHR stands for XMLHttpRequest, which is how the browser makes API calls in the background)</li>
+                <li>Press <strong>Ctrl + R</strong> to reload the page so the Network tab starts recording fresh requests</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Network Tab Looks Empty?</h4>
+                    <p>If you see no requests in the list, make sure you pressed <strong>Ctrl + R</strong> to reload the page <em>after</em> opening the Network tab. The Network tab only captures requests that happen while it is open.</p>
+                </div>
+            </div>
+
+            <h3>2B: Browse the Application and Watch the Requests</h3>
+
+            <p>Now perform these actions <strong>one at a time</strong>. After each action, look at the Network tab to see what API requests appeared:</p>
+
+            <ol class="steps">
+                <li><strong>Browse products</strong> on the homepage &mdash; look for a request containing <code>/rest/products</code></li>
+                <li><strong>Click on any product</strong> to see its details &mdash; look for a request like <code>/api/Products/1</code></li>
+                <li><strong>Use the search bar</strong> and search for "apple" &mdash; look for <code>/rest/products/search?q=apple</code></li>
+                <li><strong>Register a new account</strong>: click Account &rarr; Login &rarr; "Not yet a customer?" &mdash; use email <code>test@test.com</code> and password <code>Test1234!</code> &mdash; look for <code>/api/Users</code></li>
+                <li><strong>Log in</strong> with your new account &mdash; look for <code>/rest/user/login</code></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>How to Inspect Each Request</h4>
+                    <p>When new requests appear in the Network tab list, you can read three things directly from the list columns:</p>
+                    <ul>
+                        <li><strong>Method</strong> column &mdash; shows GET, POST, PUT, or DELETE</li>
+                        <li><strong>URL / File</strong> column &mdash; shows the API endpoint path (like <code>/rest/products/search?q=apple</code>)</li>
+                        <li><strong>Status</strong> column &mdash; shows a number: <strong>200</strong> = success, <strong>201</strong> = created, <strong>401</strong> = unauthorized</li>
+                    </ul>
+                    <p>To see more details, <strong>click on any request row</strong>. A details panel opens on the right where you can see Headers, Request body, and Response body.</p>
+                    <p>This is exactly how REST APIs work as described in Chapter 3!</p>
+                </div>
+            </div>
+
+            <div class="deliverable">
+                <h4>Deliverable for Task 2:</h4>
+                <p>Fill in this table with at least <strong>5 API endpoints</strong> you observed:</p>
+            </div>
+
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>HTTP Method</th>
+                    <th>URL Path</th>
+                    <th>What It Does</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td><em>Example:</em> GET</td>
+                    <td><em>/rest/products/search?q=</em></td>
+                    <td><em>Searches for products</em></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Task 3: JSON Payloads -->
+        <section id="task3">
+            <h2>Task 3: Read JSON Data</h2>
+
+            <p>As you learned in Chapter 3, REST APIs use <strong>JSON</strong> to send and receive data. Let's look at actual JSON payloads.</p>
+
+            <h3>3A: View JSON in the Browser</h3>
+
+            <ol class="steps">
+                <li>Make sure Developer Tools is still open (<strong>F12</strong>) and you are on the <strong>Network</strong> tab with the <strong>XHR</strong> filter selected</li>
+                <li>Scroll through the list of requests and find the one that shows <code>login</code> in the URL column (this is the <code>POST /rest/user/login</code> request from when you logged in). If you do not see it, log in again while the Network tab is open.</li>
+                <li><strong>Click on that login request row.</strong> A details panel will open on the right side.</li>
+                <li>In the details panel, you will see sub-tabs at the top: <em>Headers, Cookies, <strong>Request</strong>, <strong>Response</strong>, Timings</em></li>
+                <li>Click the <strong>Request</strong> sub-tab &mdash; this shows the JSON data your browser <em>sent</em> to the server (the email and password)</li>
+                <li>Click the <strong>Response</strong> sub-tab &mdash; this shows the JSON data the server <em>sent back</em> (including a token)</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>What the Login Request JSON Looks Like:</h4>
+<pre><code>{
+  "email": "test@test.com",
+  "password": "Test1234!"
+}</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Security Question</h4>
+                    <p>Look at the login request above. Is the password being sent in <strong>plain text</strong>? Is the connection HTTP or HTTPS? Write down your observation &mdash; this is a real-world security concern!</p>
+                </div>
+            </div>
+
+            <h3>3B: Use <code>curl</code> to Get JSON from the Terminal</h3>
+
+            <p>You can also request JSON data directly from the terminal:</p>
+
+<pre><code><span class="command-label"># Search for all products (returns JSON)</span>
+curl "http://localhost:3000/rest/products/search?q=" | python3 -m json.tool
+
+<span class="command-label"># Get details for product #1</span>
+curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>What does <code>python3 -m json.tool</code> do?</h4>
+                    <p>It formats the raw JSON into a readable, indented structure. Without it, the JSON would appear as one long, hard-to-read line. This is the kind of practical skill mentioned in Chapter 3.</p>
+                </div>
+            </div>
+
+            <div class="deliverable">
+                <h4>Deliverable for Task 3:</h4>
+                <p>(1) Copy and paste the JSON response from <code>curl http://localhost:3000/api/Products/1</code>. (2) Answer: Is the login password sent in plain text? Is this a security concern? Why?</p>
+            </div>
+        </section>
+
+        <!-- Task 4: Client-Side Storage -->
+        <section id="task4">
+            <h2>Task 4: Inspect Client-Side Storage</h2>
+
+            <p>Chapter 3 taught you that browsers can store data locally using cookies, localStorage, and sessionStorage. Let's see what Juice Shop stores on your browser.</p>
+
+            <h3>4A: Open the Storage Inspector</h3>
+
+            <ol class="steps">
+                <li>Make sure you are <strong>logged in</strong> to Juice Shop (if you are not logged in, the storage will have very little data to see)</li>
+                <li>Press <strong>F12</strong> to open Developer Tools (the panel at the bottom of the browser)</li>
+                <li>Look at the tab bar at the top of the Developer Tools panel. You will see tabs like: <em>Inspector, Console, Debugger, Network, ...</em> Look for a tab called <strong>Storage</strong>. <br><br><strong>Cannot find the Storage tab?</strong> It is often hidden because there are too many tabs to fit on screen. Look for a <strong>double arrow icon (&raquo;)</strong> at the far right end of the tab bar. Click on it &mdash; a dropdown menu will appear listing the hidden tabs. Click <strong>Storage</strong> from that menu.</li>
+                <li>Once you are on the Storage tab, you will see a <strong>left sidebar</strong> with a tree structure. It lists three storage types:
+                    <ul>
+                        <li><strong>Cookies</strong></li>
+                        <li><strong>Local Storage</strong></li>
+                        <li><strong>Session Storage</strong></li>
+                    </ul>
+                </li>
+                <li>Click the small triangle (&#9654;) next to <strong>Cookies</strong> to expand it, then click on <code>http://localhost:3000</code> underneath. The right panel will show a table of all cookies stored by Juice Shop.</li>
+                <li>Do the same for <strong>Local Storage</strong> &rarr; <code>http://localhost:3000</code></li>
+                <li>Do the same for <strong>Session Storage</strong> &rarr; <code>http://localhost:3000</code></li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Storage Looks Empty?</h4>
+                    <p>If you see very few items (or nothing) under Cookies or Local Storage, make sure you are <strong>logged in</strong> to Juice Shop first. Juice Shop stores a session token only after you log in. Go back to the Juice Shop tab, log in, then return to the Storage tab and click the <strong>refresh</strong> button (circular arrow icon at the top of the Storage panel).</p>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>What to Record</h4>
+                    <p>For each storage type, write down:</p>
+                    <ul>
+                        <li>The <strong>key names</strong> (left column)</li>
+                        <li>The <strong>values</strong> (right column) &mdash; do any look like tokens or sensitive data?</li>
+                        <li>For cookies: does it have the <strong>HttpOnly</strong> flag? (check the columns)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="deliverable">
+                <h4>Deliverable for Task 4:</h4>
+                <p>Fill in this table with what you found:</p>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Storage Type</th>
+                    <th>Key Name</th>
+                    <th>Value (first 30 characters...)</th>
+                    <th>Looks Sensitive?</th>
+                </tr>
+                <tr>
+                    <td>Cookie</td>
+                    <td><em>(fill in)</em></td>
+                    <td><em>(fill in)</em></td>
+                    <td><em>Yes / No</em></td>
+                </tr>
+                <tr>
+                    <td>Local Storage</td>
+                    <td><em>(fill in)</em></td>
+                    <td><em>(fill in)</em></td>
+                    <td><em>Yes / No</em></td>
+                </tr>
+                <tr>
+                    <td>Session Storage</td>
+                    <td><em>(fill in)</em></td>
+                    <td><em>(fill in)</em></td>
+                    <td><em>Yes / No</em></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Task 5: Recon Summary -->
+        <section id="task5">
+            <h2>Task 5: Write Your Recon Summary</h2>
+
+            <p>As you learned in Chapter 2, a good recon specialist always <strong>documents their findings</strong>. Now compile everything you learned into a short summary.</p>
+
+            <p>Open a text editor (Mousepad or any editor) and answer these questions:</p>
+
+            <ol>
+                <li><strong>Technology Stack:</strong> What web server, server framework, client framework, and database does Juice Shop use?</li>
+                <li><strong>API Endpoints:</strong> List all the REST API endpoints you found (from Task 2). Include the HTTP method and URL for each.</li>
+                <li><strong>Data Format:</strong> What data format does the API use? (Hint: JSON or XML?)</li>
+                <li><strong>Client Storage:</strong> What data is stored in the browser? Is any of it sensitive?</li>
+                <li><strong>Security Observations:</strong> List at least <strong>2 security concerns</strong> you noticed (for example: password in plain text, token stored insecurely, etc.)</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#127891;</span>
+                <div>
+                    <h4>Chapter 2 Connection</h4>
+                    <p>Remember: the format of your notes matters less than the content. What matters is that your findings are <strong>organized</strong> and <strong>easy to read</strong>. In the next lab (Lab 3), you will learn to build a more advanced JSON-formatted recon map.</p>
+                </div>
+            </div>
+
+            <div class="deliverable">
+                <h4>Deliverable for Task 5:</h4>
+                <p>Your completed recon summary answering all 5 questions above.</p>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting">
+            <h2>Troubleshooting</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Docker command not found</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Run <code>sudo apt update && sudo apt install -y docker.io</code> then <code>sudo systemctl start docker</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; "Cannot connect to the Docker daemon"</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Run <code>sudo systemctl start docker</code>. If still failing, try <code>sudo dockerd &</code> and wait a few seconds.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Juice Shop page doesn't load</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Check if the container is running: <code>sudo docker ps</code>. If not listed, start it: <code>sudo docker start juice-shop</code>. Make sure the URL is <code>http://localhost:3000</code> (not https).</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Port 3000 is already in use</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Run <code>sudo docker stop juice-shop && sudo docker rm juice-shop</code>, then re-run the docker run command from Part 1.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Submission -->
+        <section id="submission">
+            <h2>Submission &amp; Grading</h2>
+
+            <table>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Points</th>
+                </tr>
+                <tr>
+                    <td><strong>Task 1</strong></td>
+                    <td>Technology stack identified (web server, frameworks)</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td><strong>Task 2</strong></td>
+                    <td>At least 5 REST API endpoints listed with methods</td>
+                    <td>25</td>
+                </tr>
+                <tr>
+                    <td><strong>Task 3</strong></td>
+                    <td>JSON payload copied + security observation about password</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td><strong>Task 4</strong></td>
+                    <td>Client-side storage table completed</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td><strong>Task 5</strong></td>
+                    <td>Recon summary with all 5 questions answered</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: right; font-weight: bold;">Total</td>
+                    <td><strong>100</strong></td>
+                </tr>
+            </table>
+
+            <h3>Cleanup When Done</h3>
+<pre><code><span class="command-label"># Stop Juice Shop (keep it for Lab 3!)</span>
+sudo docker stop juice-shop</code></pre>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>Keep Docker Installed!</h4>
+                    <p>Do <strong>NOT</strong> remove the Juice Shop container. You will use it again in <strong>Lab 3</strong>, where you will learn to use Burp Suite for advanced reconnaissance.</p>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- end content -->
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; Web Application Security</p>
+        <p>Lab 02: Introduction to Web Application Reconnaissance</p>
+    </div>
+
+</div><!-- end container -->
+
+</body>
+</html>

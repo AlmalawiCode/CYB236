@@ -1059,11 +1059,15 @@
                     </tr>
                     <tr>
                         <td><strong>Format</strong></td>
-                        <td><code>.ova</code> (Open Virtual Appliance)</td>
+                        <td><code>.7z</code> (7-Zip compressed archive)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contains</strong></td>
+                        <td>A <code>.vbox</code> file + <code>.vmdk</code> virtual disk</td>
                     </tr>
                     <tr>
                         <td><strong>Size</strong></td>
-                        <td>~3-4 GB</td>
+                        <td>~3-4 GB (compressed)</td>
                     </tr>
                     <tr>
                         <td><strong>Architecture</strong></td>
@@ -1086,17 +1090,38 @@
                         <h4>Security Best Practice</h4>
                         <p>Always verify downloaded files to ensure they haven't been tampered with. Compare the SHA256 checksum shown on the download page with your file:</p>
                         <p><strong>Windows (PowerShell):</strong></p>
-                        <pre><code>Get-FileHash .\kali-linux-*-virtualbox-amd64.ova -Algorithm SHA256</code></pre>
+                        <pre><code>Get-FileHash .\kali-linux-*-virtualbox-amd64.7z -Algorithm SHA256</code></pre>
                         <p><strong>macOS (Terminal):</strong></p>
-                        <pre><code>shasum -a 256 ~/Downloads/kali-linux-*-virtualbox-amd64.ova</code></pre>
+                        <pre><code>shasum -a 256 ~/Downloads/kali-linux-*-virtualbox-amd64.7z</code></pre>
+                    </div>
+                </div>
+
+                <h3>Step 4: Extract the Archive</h3>
+                <p>The downloaded file is a <code>.7z</code> compressed archive. You need to extract it before importing into VirtualBox.</p>
+                <ol class="steps">
+                    <li>If you don't have 7-Zip installed:
+                        <ul>
+                            <li><strong>Windows:</strong> Download from <a href="https://www.7-zip.org/" target="_blank">7-zip.org</a> and install it</li>
+                            <li><strong>macOS:</strong> Install <a href="https://www.keka.io/" target="_blank">Keka</a> or use: <code>brew install p7zip</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>Right-click</strong> the downloaded <code>.7z</code> file</li>
+                    <li>Select <strong>7-Zip</strong> &rarr; <strong>Extract Here</strong> (or <strong>Extract to "kali-linux-..."</strong>)</li>
+                    <li>Wait for extraction to complete &mdash; this will create a folder containing the VM files</li>
+                </ol>
+                <div class="alert alert-info">
+                    <span class="alert-icon">📂</span>
+                    <div>
+                        <h4>After Extraction</h4>
+                        <p>You will find a folder containing a <code>.vbox</code> file and a <code>.vmdk</code> file. The <code>.vbox</code> file is the VirtualBox configuration, and the <code>.vmdk</code> is the virtual hard disk.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Part 3: Importing Kali Linux -->
+            <!-- Part 3: Adding Kali Linux -->
             <section id="part3">
-                <h2>📦 Part 3: Importing Kali Linux into VirtualBox</h2>
-                <p>Now we will import the downloaded Kali Linux image as a virtual machine in VirtualBox.</p>
+                <h2>📦 Part 3: Adding Kali Linux to VirtualBox</h2>
+                <p>Now we will add the extracted Kali Linux image as a virtual machine in VirtualBox.</p>
 
                 <h3>Step 1: Open VirtualBox</h3>
                 <ol class="steps">
@@ -1108,16 +1133,14 @@
                     </li>
                 </ol>
 
-                <h3>Step 2: Import the Kali Linux Image</h3>
+                <h3>Step 2: Add the Kali Linux VM</h3>
                 <ol class="steps">
-                    <li>In VirtualBox, go to <strong>File</strong> → <strong>Import Appliance</strong>
-                        <br><em>Or use keyboard shortcut: <code>Ctrl + I</code> (Windows) / <code>Cmd + I</code> (macOS)</em>
+                    <li>In VirtualBox, go to <strong>Machine</strong> &rarr; <strong>Add</strong>
+                        <br><em>Or use keyboard shortcut: <code>Ctrl + A</code> (Windows) / <code>Cmd + A</code> (macOS)</em>
                     </li>
-                    <li>Click the <strong>folder icon</strong> to browse for the downloaded file</li>
-                    <li>Navigate to your <strong>Downloads</strong> folder</li>
-                    <li>Select the Kali Linux <code>.ova</code> file</li>
+                    <li>Navigate to the <strong>extracted folder</strong> from the previous step</li>
+                    <li>Select the <code>.vbox</code> file (e.g., <code>kali-linux-*-virtualbox-amd64.vbox</code>)</li>
                     <li>Click <strong>Open</strong></li>
-                    <li>Click <strong>Next</strong></li>
                 </ol>
 
                 <h3>Step 3: Review Virtual Machine Settings</h3>
@@ -1159,18 +1182,17 @@
                     </div>
                 </div>
 
-                <h3>Step 4: Import the Virtual Machine</h3>
+                <h3>Step 4: Verify the VM is Added</h3>
                 <ol class="steps">
-                    <li>Click <strong>Import</strong></li>
-                    <li><strong>Wait</strong> for the import process to complete (5-10 minutes)</li>
-                    <li>Once complete, <strong>"Kali Linux"</strong> will appear in your VirtualBox Manager</li>
+                    <li><strong>"Kali Linux"</strong> should now appear in your VirtualBox Manager</li>
+                    <li>The VM is ready &mdash; no import wait time needed since the files are already extracted</li>
                 </ol>
 
                 <div class="alert alert-success">
                     <span class="alert-icon">✅</span>
                     <div>
                         <h4>Success!</h4>
-                        <p>Kali Linux virtual machine has been imported successfully!</p>
+                        <p>Kali Linux virtual machine has been added successfully!</p>
                     </div>
                 </div>
             </section>
@@ -1346,16 +1368,17 @@
 
                 <div class="troubleshoot-item">
                     <div class="troubleshoot-header">
-                        ❌ Import Failed
+                        ❌ Add/Extract Failed
                     </div>
                     <div class="troubleshoot-solution">
-                        <p><strong>Problem:</strong> Corrupted download or insufficient disk space.</p>
+                        <p><strong>Problem:</strong> Corrupted download, failed extraction, or insufficient disk space.</p>
                         <p><strong>Solution:</strong></p>
                         <ol>
-                            <li>Delete the downloaded <code>.ova</code> file</li>
+                            <li>Delete the downloaded <code>.7z</code> file and extracted folder</li>
                             <li>Re-download from <a href="https://www.kali.org/get-kali/" target="_blank">the official Kali website</a></li>
                             <li>Verify the SHA256 checksum</li>
                             <li>Ensure you have at least 50 GB free disk space</li>
+                            <li>Make sure 7-Zip is installed correctly for extraction</li>
                         </ol>
                     </div>
                 </div>
@@ -1428,9 +1451,11 @@
         <footer class="footer">
             <p><strong>End of Lab 01</strong></p>
             <p>For questions or issues, contact your instructor.</p>
-            <p><strong>CYB236 - Cybersecurity Fundamentals</strong></p>
+            <p><strong>CYB236 - Web Application Security</strong></p>
             <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
-                <em>Prepared by Dr. Almalawi | د. المعلوي</em>
+                King Abdulaziz University &mdash; Faculty of Computing and Information Technology (FCIT)<br>
+                General Intermediate Diploma in Cybersecurity<br>
+                <em>Prepared by Dr. Abdulmohsen Almalawi</em>
             </p>
         </footer>
     </div>

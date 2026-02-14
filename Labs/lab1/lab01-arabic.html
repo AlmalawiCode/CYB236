@@ -1157,11 +1157,15 @@
                     </tr>
                     <tr>
                         <td><strong>الصيغة (Format)</strong></td>
-                        <td><code>.ova</code> (Open Virtual Appliance)</td>
+                        <td><code>.7z</code> (أرشيف مضغوط 7-Zip)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>يحتوي على (Contains)</strong></td>
+                        <td>ملف <code>.vbox</code> + قرص افتراضي <code>.vmdk</code></td>
                     </tr>
                     <tr>
                         <td><strong>الحجم (Size)</strong></td>
-                        <td>~3-4 جيجابايت (GB)</td>
+                        <td>~3-4 جيجابايت (مضغوط)</td>
                     </tr>
                     <tr>
                         <td><strong>المعمارية (Architecture)</strong></td>
@@ -1184,38 +1188,57 @@
                         <h4>أفضل ممارسات الأمان (Security Best Practice)</h4>
                         <p>تحقق دائماً من الملفات المحملة للتأكد من عدم التلاعب بها. قارن رمز <span class="term">SHA256 Checksum</span> المعروض في صفحة التحميل مع ملفك:</p>
                         <p><strong>Windows (PowerShell):</strong></p>
-                        <pre><code>Get-FileHash .\kali-linux-*-virtualbox-amd64.ova -Algorithm SHA256</code></pre>
+                        <pre><code>Get-FileHash .\kali-linux-*-virtualbox-amd64.7z -Algorithm SHA256</code></pre>
                         <p><strong>macOS (Terminal):</strong></p>
-                        <pre><code>shasum -a 256 ~/Downloads/kali-linux-*-virtualbox-amd64.ova</code></pre>
+                        <pre><code>shasum -a 256 ~/Downloads/kali-linux-*-virtualbox-amd64.7z</code></pre>
+                    </div>
+                </div>
+
+                <h3>الخطوة 4: فك ضغط الأرشيف (Step 4: Extract the Archive)</h3>
+                <p>الملف المحمّل هو أرشيف مضغوط بصيغة <code>.7z</code>. يجب فك ضغطه قبل إضافته إلى VirtualBox.</p>
+                <ol class="steps">
+                    <li>إذا لم يكن لديك برنامج 7-Zip:
+                        <ul>
+                            <li><strong>Windows:</strong> حمّله من <a href="https://www.7-zip.org/" target="_blank">7-zip.org</a> وثبّته</li>
+                            <li><strong>macOS:</strong> ثبّت <a href="https://www.keka.io/" target="_blank">Keka</a> أو استخدم: <code>brew install p7zip</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>انقر بزر الماوس الأيمن</strong> على ملف <code>.7z</code> المحمّل</li>
+                    <li>اختر <strong>7-Zip</strong> &rarr; <strong>Extract Here</strong> (فك الضغط هنا)</li>
+                    <li>انتظر حتى يكتمل فك الضغط &mdash; سيُنشئ مجلدًا يحتوي على ملفات الجهاز الافتراضي</li>
+                </ol>
+                <div class="alert alert-info">
+                    <span class="alert-icon">📂</span>
+                    <div>
+                        <h4>بعد فك الضغط (After Extraction)</h4>
+                        <p>ستجد مجلدًا يحتوي على ملف <code>.vbox</code> وملف <code>.vmdk</code>. ملف <code>.vbox</code> هو إعدادات VirtualBox، وملف <code>.vmdk</code> هو القرص الصلب الافتراضي.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Part 3: Importing Kali Linux -->
+            <!-- Part 3: Adding Kali Linux -->
             <section id="part3">
-                <h2>📦 الجزء الثالث: استيراد كالي لينكس (Part 3: Importing Kali Linux)</h2>
-                <p>الآن سنقوم بـ <span class="term">استيراد <span class="term-en">(Import)</span></span> صورة كالي لينكس المحملة كـ <span class="term">جهاز افتراضي <span class="term-en">(Virtual Machine)</span></span> في VirtualBox.</p>
+                <h2>📦 الجزء الثالث: إضافة كالي لينكس إلى VirtualBox (Part 3: Adding Kali Linux)</h2>
+                <p>الآن سنقوم بإضافة صورة كالي لينكس المستخرجة كـ <span class="term">جهاز افتراضي <span class="term-en">(Virtual Machine)</span></span> في VirtualBox.</p>
 
                 <h3>الخطوة 1: فتح VirtualBox (Step 1: Open VirtualBox)</h3>
                 <ol class="steps">
                     <li>قم بتشغيل <strong>Oracle VM VirtualBox</strong> من:
                         <ul>
-                            <li><strong>Windows:</strong> قائمة ابدأ (Start Menu) ← VirtualBox</li>
-                            <li><strong>macOS:</strong> التطبيقات (Applications) ← VirtualBox</li>
+                            <li><strong>Windows:</strong> قائمة ابدأ (Start Menu) &rarr; VirtualBox</li>
+                            <li><strong>macOS:</strong> التطبيقات (Applications) &rarr; VirtualBox</li>
                         </ul>
                     </li>
                 </ol>
 
-                <h3>الخطوة 2: استيراد صورة كالي لينكس (Step 2: Import Kali Linux Image)</h3>
+                <h3>الخطوة 2: إضافة جهاز كالي لينكس (Step 2: Add Kali Linux VM)</h3>
                 <ol class="steps">
-                    <li>في VirtualBox، انتقل إلى <strong>File</strong> (ملف) ← <strong>Import Appliance</strong> (استيراد جهاز)
-                        <br><em>أو استخدم اختصار لوحة المفاتيح: <code>Ctrl + I</code> (Windows) / <code>Cmd + I</code> (macOS)</em>
+                    <li>في VirtualBox، انتقل إلى <strong>Machine</strong> (جهاز) &rarr; <strong>Add</strong> (إضافة)
+                        <br><em>أو استخدم اختصار لوحة المفاتيح: <code>Ctrl + A</code> (Windows) / <code>Cmd + A</code> (macOS)</em>
                     </li>
-                    <li>انقر على <strong>أيقونة المجلد</strong> <span class="term-en">(Folder Icon)</span> للتصفح للملف المحمل</li>
-                    <li>انتقل إلى مجلد <strong>التنزيلات</strong> <span class="term-en">(Downloads)</span></li>
-                    <li>اختر ملف كالي لينكس <code>.ova</code></li>
+                    <li>انتقل إلى <strong>المجلد المستخرج</strong> من الخطوة السابقة</li>
+                    <li>اختر ملف <code>.vbox</code> (مثال: <code>kali-linux-*-virtualbox-amd64.vbox</code>)</li>
                     <li>انقر <strong>Open</strong> (فتح)</li>
-                    <li>انقر <strong>Next</strong> (التالي)</li>
                 </ol>
 
                 <h3>الخطوة 3: مراجعة إعدادات الجهاز الافتراضي (Step 3: Review VM Settings)</h3>
@@ -1257,18 +1280,17 @@
                     </div>
                 </div>
 
-                <h3>الخطوة 4: استيراد الجهاز الافتراضي (Step 4: Import the VM)</h3>
+                <h3>الخطوة 4: التحقق من إضافة الجهاز (Step 4: Verify the VM is Added)</h3>
                 <ol class="steps">
-                    <li>انقر <strong>Import</strong> (استيراد)</li>
-                    <li><strong>انتظر</strong> حتى تكتمل عملية الاستيراد (5-10 دقائق)</li>
-                    <li>بمجرد الانتهاء، سيظهر <strong>"Kali Linux"</strong> في <strong>VirtualBox Manager</strong></li>
+                    <li>يجب أن يظهر <strong>"Kali Linux"</strong> الآن في <strong>VirtualBox Manager</strong></li>
+                    <li>الجهاز الافتراضي جاهز &mdash; لا حاجة لانتظار الاستيراد لأن الملفات مستخرجة مسبقًا</li>
                 </ol>
 
                 <div class="alert alert-success">
                     <span class="alert-icon">✅</span>
                     <div>
                         <h4>تم بنجاح! (Success!)</h4>
-                        <p>تم استيراد الجهاز الافتراضي لكالي لينكس بنجاح!</p>
+                        <p>تمت إضافة الجهاز الافتراضي لكالي لينكس بنجاح!</p>
                     </div>
                 </div>
             </section>
@@ -1447,13 +1469,14 @@
                         ❌ فشل الاستيراد (Import Failed)
                     </div>
                     <div class="troubleshoot-solution">
-                        <p><strong>المشكلة (Problem):</strong> تحميل تالف <span class="term-en">(Corrupted Download)</span> أو مساحة قرص غير كافية.</p>
+                        <p><strong>المشكلة (Problem):</strong> تحميل تالف <span class="term-en">(Corrupted Download)</span> أو فشل فك الضغط أو مساحة قرص غير كافية.</p>
                         <p><strong>الحل (Solution):</strong></p>
                         <ol>
-                            <li>احذف <span class="term-en">(Delete)</span> ملف <code>.ova</code> المحمل</li>
+                            <li>احذف <span class="term-en">(Delete)</span> ملف <code>.7z</code> المحمل والمجلد المستخرج</li>
                             <li>أعد التحميل من <a href="https://www.kali.org/get-kali/" target="_blank">موقع كالي الرسمي (Official Kali Website)</a></li>
                             <li>تحقق من رمز <span class="term-en">SHA256 Checksum</span></li>
                             <li>تأكد من وجود 50 جيجابايت على الأقل من المساحة الفارغة <span class="term-en">(Free Space)</span></li>
+                            <li>تأكد من تثبيت برنامج 7-Zip بشكل صحيح لفك الضغط</li>
                         </ol>
                     </div>
                 </div>
@@ -1526,9 +1549,11 @@
         <footer class="footer">
             <p><strong>نهاية المختبر 01 (End of Lab 01)</strong></p>
             <p>للأسئلة أو المشاكل، تواصل مع المدرس (For questions, contact your instructor)</p>
-            <p><strong>CYB236 - أساسيات الأمن السيبراني (Cybersecurity Fundamentals)</strong></p>
+            <p><strong>CYB236 - أمن تطبيقات الويب</strong></p>
             <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
-                <em>إعداد: د. المعلوي | Prepared by Dr. Almalawi</em>
+                جامعة الملك عبدالعزيز &mdash; كلية الحاسبات وتقنية المعلومات<br>
+                الدبلوم المتوسط العام في الأمن السيبراني<br>
+                <em>إعداد: د. عبدالمحسن المعلوي</em>
             </p>
         </footer>
     </div>
