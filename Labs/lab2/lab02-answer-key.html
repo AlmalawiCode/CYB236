@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 02 - Instructor Answer Key</title>
+    <style>
+        :root {
+            --primary: #2b5797;
+            --accent: #e53e3e;
+            --green: #38a169;
+            --dark: #1f2937;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #2d3748;
+            background: linear-gradient(135deg, #e53e3e 0%, #9b2c2c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #9b2c2c 0%, #c53030 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; }
+
+        .confidential {
+            display: inline-block;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1em;
+            letter-spacing: 2px;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .content { padding: 40px; }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        h3 {
+            color: var(--dark);
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        p { margin-bottom: 12px; }
+
+        .answer-box {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-left: 5px solid var(--green);
+            border-radius: 0 12px 12px 0;
+            padding: 20px 25px;
+            margin: 15px 0;
+        }
+
+        .answer-box h4 {
+            color: var(--green);
+            margin: 0 0 10px 0;
+            font-size: 1.05em;
+        }
+
+        .points {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .rubric {
+            background: #fffff0;
+            border-left: 5px solid #d69e2e;
+            border-radius: 0 12px 12px 0;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+
+        .rubric h4 { color: #b7791f; margin: 0 0 8px 0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: var(--dark);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) { background: #f8fafc; }
+
+        code {
+            background: #1a202c;
+            color: #68d391;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        pre code { background: none; color: #68d391; padding: 0; }
+
+        ul, ol { margin-left: 25px; margin-bottom: 12px; }
+        li { margin-bottom: 5px; }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            @page { margin: 1.5cm; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header">
+        <h1>Lab 02: Answer Key</h1>
+        <p class="subtitle">CYB236 - Web Application Security</p>
+        <div class="confidential">INSTRUCTOR ONLY - CONFIDENTIAL</div>
+    </header>
+
+    <div class="content">
+
+        <p>This answer key is based on the actual network traffic captured from OWASP Juice Shop v19.1.1 running on <code>localhost:3000</code>. All answers below reflect the exact data observed in the HAR capture (ground truth).</p>
+
+        <!-- ======================== TASK 1 ======================== -->
+        <h2>Task 1: Identify the Technology Stack <span class="points">20 pts</span></h2>
+
+        <h3>1A: whatweb Output</h3>
+        <div class="answer-box">
+            <h4>Expected Answer</h4>
+            <p>Running <code>whatweb http://localhost:3000</code> should detect:</p>
+            <ul>
+                <li><strong>Express</strong> (the Node.js web framework)</li>
+                <li><strong>HTML5</strong></li>
+                <li><strong>Script</strong> references</li>
+            </ul>
+            <p>Students may see slightly different output depending on their whatweb version, but the key finding is <strong>Express</strong>.</p>
+        </div>
+
+        <h3>1B: Response Headers</h3>
+        <div class="answer-box">
+            <h4>Expected Answer &mdash; Exact Response Headers from HAR</h4>
+            <table>
+                <tr><th>Header</th><th>Exact Value</th></tr>
+                <tr><td><code>Access-Control-Allow-Origin</code></td><td><code>*</code></td></tr>
+                <tr><td><code>X-Content-Type-Options</code></td><td><code>nosniff</code></td></tr>
+                <tr><td><code>X-Frame-Options</code></td><td><code>SAMEORIGIN</code></td></tr>
+                <tr><td><code>Feature-Policy</code></td><td><code>payment 'self'</code></td></tr>
+                <tr><td><code>X-Recruiting</code></td><td><code>/#/jobs</code></td></tr>
+                <tr><td><code>Accept-Ranges</code></td><td><code>bytes</code></td></tr>
+                <tr><td><code>Cache-Control</code></td><td><code>public, max-age=0</code></td></tr>
+                <tr><td><code>Content-Type</code></td><td><code>text/html; charset=UTF-8</code></td></tr>
+                <tr><td><code>Content-Encoding</code></td><td><code>br</code> (Brotli compression)</td></tr>
+                <tr><td><code>Connection</code></td><td><code>keep-alive</code></td></tr>
+                <tr><td><code>Keep-Alive</code></td><td><code>timeout=5</code></td></tr>
+                <tr><td><code>Transfer-Encoding</code></td><td><code>chunked</code></td></tr>
+            </table>
+            <p><strong>Note:</strong> There is <strong>no</strong> <code>X-Powered-By</code> header. Juice Shop removes it (good security practice).</p>
+        </div>
+
+        <h3>1C: Client Framework from Page Source</h3>
+        <div class="answer-box">
+            <h4>Expected Answer</h4>
+            <p>Students should find these script files (with <strong>no hash</strong> in the filenames):</p>
+            <ul>
+                <li><code>runtime.js</code></li>
+                <li><code>polyfills.js</code></li>
+                <li><code>vendor.js</code></li>
+                <li><code>main.js</code></li>
+            </ul>
+            <p>They should also find the <code>&lt;app-root&gt;</code> tag. Both confirm the framework is <strong>Angular</strong>.</p>
+        </div>
+
+        <div class="rubric">
+            <h4>Grading Rubric &mdash; Task 1 (20 pts)</h4>
+            <ul>
+                <li><strong>5 pts</strong> &mdash; Identified Express/Node.js as the server framework</li>
+                <li><strong>5 pts</strong> &mdash; Identified Angular as the client framework (from script files and/or app-root)</li>
+                <li><strong>5 pts</strong> &mdash; Listed at least 3 response headers with correct values</li>
+                <li><strong>5 pts</strong> &mdash; Explained what the headers do (security purpose)</li>
+            </ul>
+        </div>
+
+        <!-- ======================== TASK 2 ======================== -->
+        <h2>Task 2: Explore REST API Endpoints <span class="points">25 pts</span></h2>
+
+        <div class="answer-box">
+            <h4>Expected Answer &mdash; Exact API Endpoints from HAR (Homepage Load)</h4>
+            <table>
+                <tr><th>#</th><th>Method</th><th>URL</th><th>Response</th></tr>
+                <tr>
+                    <td>1</td><td>GET</td>
+                    <td><code>/rest/admin/application-version</code></td>
+                    <td><code>{"version":"19.1.1"}</code></td>
+                </tr>
+                <tr>
+                    <td>2</td><td>GET</td>
+                    <td><code>/rest/admin/application-configuration</code></td>
+                    <td>Full app config JSON (theme, features, chatbot, etc.)</td>
+                </tr>
+                <tr>
+                    <td>3</td><td>GET</td>
+                    <td><code>/api/Challenges/?name=Score%20Board</code></td>
+                    <td>Score Board challenge info (id:74, difficulty:1, solved:false)</td>
+                </tr>
+                <tr>
+                    <td>4</td><td>GET</td>
+                    <td><code>/rest/languages</code></td>
+                    <td>List of 40 supported languages with translation percentages</td>
+                </tr>
+                <tr>
+                    <td>5</td><td>GET</td>
+                    <td><code>/api/Quantitys/</code></td>
+                    <td>Inventory data for 46 products with limitPerUser fields</td>
+                </tr>
+                <tr>
+                    <td>6</td><td>GET</td>
+                    <td><code>/rest/products/search?q=</code></td>
+                    <td>All 36 products with name, price, description, image</td>
+                </tr>
+                <tr>
+                    <td>7</td><td>GET</td>
+                    <td><code>/rest/user/whoami</code></td>
+                    <td><code>{"user":{}}</code> (not logged in)</td>
+                </tr>
+            </table>
+
+            <h4 style="margin-top: 15px;">Product Review Endpoints (from clicking products)</h4>
+            <table>
+                <tr><th>Method</th><th>URL</th><th>Status</th><th>Response</th></tr>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/rest/products/30/reviews</code></td>
+                    <td>200</td>
+                    <td>Review by <code>uvogin@juice-sh.op</code>: "0 st4rs f0r 7h3 h0rr1bl3 s3cur17y"</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/rest/products/3/reviews</code></td>
+                    <td>304</td>
+                    <td>Review by <code>admin@juice-sh.op</code>: "I bought it, would buy again. 5/7"</td>
+                </tr>
+            </table>
+
+            <p><strong>Also in the HAR (not API, but notable):</strong></p>
+            <ul>
+                <li><code>GET /assets/i18n/en.json</code> &mdash; English translation strings (33KB)</li>
+                <li><code>socket.io</code> polling + WebSocket upgrade (status 101)</li>
+            </ul>
+        </div>
+
+        <div class="rubric">
+            <h4>Grading Rubric &mdash; Task 2 (25 pts)</h4>
+            <ul>
+                <li><strong>15 pts</strong> &mdash; All 7 homepage API endpoints listed with correct method and URL</li>
+                <li><strong>5 pts</strong> &mdash; Product review endpoint(s) identified from clicking products</li>
+                <li><strong>5 pts</strong> &mdash; Status codes noted (200, 304)</li>
+            </ul>
+        </div>
+
+        <!-- ======================== TASK 3 ======================== -->
+        <h2>Task 3: Read JSON Data <span class="points">20 pts</span></h2>
+
+        <h3>3A: Application Version JSON</h3>
+        <div class="answer-box">
+            <h4>Expected Answer</h4>
+<pre><code>{"version":"19.1.1"}</code></pre>
+        </div>
+
+        <h3>3B: Product Search JSON (First Product Object)</h3>
+        <div class="answer-box">
+            <h4>Expected Answer</h4>
+<pre><code>{
+  "id": 1,
+  "name": "Apple Juice (1000ml)",
+  "description": "The all-time classic.",
+  "price": 1.99,
+  "deluxePrice": 0.99,
+  "image": "apple_juice.jpg",
+  "createdAt": "2026-02-17 11:33:04.274 +00:00",
+  "updatedAt": "2026-02-17 11:33:04.274 +00:00",
+  "deletedAt": null
+}</code></pre>
+            <p><strong>Note:</strong> The <code>createdAt</code>/<code>updatedAt</code> dates will vary depending on when the student started the Docker container. The structure and field names should match exactly.</p>
+        </div>
+
+        <h3>3C: whoami JSON</h3>
+        <div class="answer-box">
+            <h4>Expected Answer</h4>
+<pre><code>{"user":{}}</code></pre>
+        </div>
+
+        <h3>Security Concerns about the API</h3>
+        <div class="answer-box">
+            <h4>Expected Answer (any 2 of these)</h4>
+            <ul>
+                <li><strong>Admin endpoints unauthenticated:</strong> <code>/rest/admin/application-version</code> and <code>/rest/admin/application-configuration</code> are accessible without any login. Anyone can see the server version and full app configuration.</li>
+                <li><strong>Plain HTTP:</strong> All traffic goes over <code>http://</code> (not HTTPS), so data is unencrypted on the network.</li>
+                <li><strong>API naming exposes internals:</strong> <code>/api/Quantitys/</code> reveals the ORM model name (note the incorrect pluralization, exposing Sequelize conventions).</li>
+                <li><strong>Version disclosure:</strong> Knowing the exact version (19.1.1) lets attackers search for known CVEs.</li>
+                <li><strong>User emails in reviews:</strong> <code>/rest/products/{id}/reviews</code> leaks user email addresses (<code>admin@juice-sh.op</code>, <code>uvogin@juice-sh.op</code>).</li>
+            </ul>
+        </div>
+
+        <div class="rubric">
+            <h4>Grading Rubric &mdash; Task 3 (20 pts)</h4>
+            <ul>
+                <li><strong>5 pts</strong> &mdash; Application version JSON copied correctly</li>
+                <li><strong>5 pts</strong> &mdash; First product object JSON copied correctly</li>
+                <li><strong>10 pts</strong> &mdash; Two valid security concerns identified with explanations (5 pts each)</li>
+            </ul>
+        </div>
+
+        <!-- ======================== TASK 4 ======================== -->
+        <h2>Task 4: Client-Side Storage <span class="points">15 pts</span></h2>
+
+        <div class="answer-box">
+            <h4>Expected Answer &mdash; Exact Cookies from HAR</h4>
+            <table>
+                <tr><th>Storage Type</th><th>Key</th><th>Value</th><th>HttpOnly</th><th>Secure</th></tr>
+                <tr>
+                    <td>Cookie</td>
+                    <td><code>language</code></td>
+                    <td><code>en</code></td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td>Cookie</td>
+                    <td><code>welcomebanner_status</code></td>
+                    <td><code>dismiss</code></td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td>Cookie</td>
+                    <td><code>cookieconsent_status</code></td>
+                    <td><code>dismiss</code></td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td>Local Storage</td>
+                    <td colspan="4">May have UI state entries (e.g., <code>language</code>) or may be empty. No authentication token since user is not logged in.</td>
+                </tr>
+                <tr>
+                    <td>Session Storage</td>
+                    <td colspan="4">Empty or minimal UI state.</td>
+                </tr>
+            </table>
+            <p><strong>Key observations students should note:</strong></p>
+            <ul>
+                <li>All 3 cookies have <strong>HttpOnly = No</strong> &mdash; JavaScript can read/modify them</li>
+                <li>All 3 cookies have <strong>Secure = No</strong> &mdash; they are sent over unencrypted HTTP</li>
+                <li>The cookies store <strong>user preferences</strong>, not authentication data</li>
+            </ul>
+        </div>
+
+        <div class="rubric">
+            <h4>Grading Rubric &mdash; Task 4 (15 pts)</h4>
+            <ul>
+                <li><strong>6 pts</strong> &mdash; All 3 cookies listed with correct names and values (2 pts each)</li>
+                <li><strong>4 pts</strong> &mdash; HttpOnly flag correctly identified as No for all cookies</li>
+                <li><strong>4 pts</strong> &mdash; Secure flag correctly identified as No for all cookies</li>
+                <li><strong>1 pt</strong> &mdash; Local/Session Storage checked and noted</li>
+            </ul>
+        </div>
+
+        <!-- ======================== TASK 5 ======================== -->
+        <h2>Task 5: Recon Summary <span class="points">20 pts</span></h2>
+
+        <div class="answer-box">
+            <h4>Model Answer &mdash; Question 1: Technology Stack</h4>
+            <ul>
+                <li><strong>Web Server:</strong> Node.js (Express framework). No <code>X-Powered-By</code> header is present because Juice Shop disables it as a security practice.</li>
+                <li><strong>Server Framework:</strong> Express.js (confirmed via <code>whatweb</code>)</li>
+                <li><strong>Client Framework:</strong> Angular (identified by <code>runtime.js</code>, <code>polyfills.js</code>, <code>vendor.js</code>, <code>main.js</code> and the <code>&lt;app-root&gt;</code> tag)</li>
+                <li><strong>Database:</strong> SQLite with Sequelize ORM (known from Juice Shop documentation; the API naming convention <code>/api/Quantitys/</code> reveals Sequelize patterns)</li>
+            </ul>
+        </div>
+
+        <div class="answer-box">
+            <h4>Model Answer &mdash; Question 2: API Endpoints</h4>
+            <p>Homepage load (all GET):</p>
+            <ol>
+                <li><code>GET /rest/admin/application-version</code></li>
+                <li><code>GET /rest/admin/application-configuration</code></li>
+                <li><code>GET /api/Challenges/?name=Score%20Board</code></li>
+                <li><code>GET /rest/languages</code></li>
+                <li><code>GET /api/Quantitys/</code></li>
+                <li><code>GET /rest/products/search?q=</code></li>
+                <li><code>GET /rest/user/whoami</code></li>
+            </ol>
+            <p>Product clicks:</p>
+            <ul>
+                <li><code>GET /rest/products/30/reviews</code></li>
+                <li><code>GET /rest/products/3/reviews</code></li>
+            </ul>
+        </div>
+
+        <div class="answer-box">
+            <h4>Model Answer &mdash; Question 3: Data Format</h4>
+            <p>The API uses <strong>JSON</strong> (JavaScript Object Notation). The <code>Content-Type</code> response header on API endpoints shows <code>application/json; charset=utf-8</code>.</p>
+        </div>
+
+        <div class="answer-box">
+            <h4>Model Answer &mdash; Question 4: Client Storage</h4>
+            <p>Three cookies stored:</p>
+            <ol>
+                <li><code>language</code> = <code>en</code> (language preference)</li>
+                <li><code>welcomebanner_status</code> = <code>dismiss</code> (welcome banner dismissed)</li>
+                <li><code>cookieconsent_status</code> = <code>dismiss</code> (cookie consent accepted)</li>
+            </ol>
+            <p>None have HttpOnly or Secure flags set. Local Storage and Session Storage are empty or have minimal UI state (no authentication tokens since the user is not logged in).</p>
+        </div>
+
+        <div class="answer-box">
+            <h4>Model Answer &mdash; Question 5: Security Observations (any 3)</h4>
+            <ol>
+                <li><strong>Unauthenticated admin endpoints:</strong> <code>/rest/admin/application-version</code> and <code>/rest/admin/application-configuration</code> expose the server version (19.1.1) and full application configuration to anyone without requiring login. This helps attackers fingerprint the application and find known vulnerabilities.</li>
+                <li><strong>User email exposure in reviews:</strong> The <code>/rest/products/{id}/reviews</code> endpoint returns full email addresses of reviewers (<code>admin@juice-sh.op</code>, <code>uvogin@juice-sh.op</code>). This is a sensitive data exposure issue &mdash; attackers can harvest email addresses for phishing or account enumeration.</li>
+                <li><strong>Plain HTTP (no HTTPS):</strong> The application runs on <code>http://localhost:3000</code> without TLS encryption. All data, including API responses and cookies, travels in plain text and could be intercepted on the network.</li>
+                <li><strong>Wildcard CORS:</strong> The <code>Access-Control-Allow-Origin: *</code> header allows any website to make cross-origin requests to this server. A malicious website could make API calls to Juice Shop on behalf of a logged-in user.</li>
+                <li><strong>Cookies missing security flags:</strong> All cookies lack both <code>HttpOnly</code> (JavaScript can read/steal them via XSS) and <code>Secure</code> (sent over unencrypted HTTP connections).</li>
+                <li><strong>Internal model names exposed:</strong> The endpoint <code>/api/Quantitys/</code> reveals the internal Sequelize ORM model name (with the misspelled plural), giving attackers clues about the backend architecture.</li>
+            </ol>
+        </div>
+
+        <div class="rubric">
+            <h4>Grading Rubric &mdash; Task 5 (20 pts)</h4>
+            <ul>
+                <li><strong>4 pts</strong> &mdash; Technology stack correct (web server, server framework, client framework, database)</li>
+                <li><strong>4 pts</strong> &mdash; API endpoints listed accurately with HTTP methods</li>
+                <li><strong>2 pts</strong> &mdash; Data format correctly identified as JSON</li>
+                <li><strong>4 pts</strong> &mdash; Client storage cookies listed with flag observations</li>
+                <li><strong>6 pts</strong> &mdash; At least 3 security concerns with valid explanations (2 pts each)</li>
+            </ul>
+        </div>
+
+        <!-- ======================== TOTAL ======================== -->
+        <h2>Total Grading Summary</h2>
+        <table>
+            <tr><th>Task</th><th>Description</th><th>Points</th></tr>
+            <tr><td><strong>Task 1</strong></td><td>Technology stack identified (web server, frameworks, headers)</td><td>20</td></tr>
+            <tr><td><strong>Task 2</strong></td><td>7 homepage API endpoints verified + product review endpoints</td><td>25</td></tr>
+            <tr><td><strong>Task 3</strong></td><td>JSON payloads copied (version + product) + 2 API security concerns</td><td>20</td></tr>
+            <tr><td><strong>Task 4</strong></td><td>Cookie table completed with HttpOnly/Secure flag observations</td><td>15</td></tr>
+            <tr><td><strong>Task 5</strong></td><td>Recon summary with all 5 questions answered</td><td>20</td></tr>
+            <tr><td colspan="2" style="text-align: right; font-weight: bold;">Total</td><td><strong>100</strong></td></tr>
+        </table>
+
+    </div>
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; Web Application Security | Lab 02 Answer Key | CONFIDENTIAL</p>
+        <p>Based on HAR ground truth from OWASP Juice Shop v19.1.1</p>
+    </div>
+</div>
+
+</body>
+</html>

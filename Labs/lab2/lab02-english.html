@@ -581,14 +581,15 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
             <ol class="steps">
                 <li>Open <strong>Firefox</strong> in your Kali VM</li>
                 <li>Go to <code>http://localhost:3000</code></li>
-                <li>You should see the Juice Shop homepage &mdash; an online store selling fruit juices</li>
+                <li>You should see the Juice Shop homepage &mdash; an online store selling fruit juices. A <strong>welcome banner</strong> will appear &mdash; click <strong>Dismiss</strong> to close it. You may also see a <strong>cookie consent</strong> banner at the bottom &mdash; click to dismiss that as well.</li>
+                <li>The homepage displays a grid of product cards with images and prices. You should see products such as <strong>Apple Juice</strong>, <strong>Apple Pomace</strong>, <strong>Banana Juice</strong>, <strong>Carrot Juice</strong>, <strong>Eggfruit Juice</strong>, <strong>Green Smoothie</strong>, <strong>Lemon Juice</strong>, and others. The Juice Shop logo appears in the top navigation bar.</li>
             </ol>
 
             <div class="alert alert-success">
                 <span class="alert-icon">&#9989;</span>
                 <div>
                     <h4>Checkpoint</h4>
-                    <p>If you can see the Juice Shop homepage with product images and a navigation bar, you are ready! Do <strong>NOT</strong> create an account yet &mdash; we will do that in Task 2.</p>
+                    <p>If you can see the Juice Shop homepage with product images (like Apple Juice, Banana Juice, etc.) and a navigation bar with the Juice Shop logo, you are ready! Make sure you <strong>dismiss</strong> the welcome banner and cookie consent banner before continuing.</p>
                 </div>
             </div>
         </section>
@@ -636,10 +637,14 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
                     <h4>Key Headers to Look For in Response Headers</h4>
                     <p>Scroll through the Response Headers and look for these specific header names:</p>
                     <ul>
-                        <li><code>X-Powered-By</code> &mdash; tells you the server-side framework (you should see <strong>Express</strong>)</li>
-                        <li><code>Content-Type</code> &mdash; tells you the data format (you should see <strong>text/html</strong>)</li>
+                        <li><code>Content-Type</code> &mdash; tells you the data format (you should see <strong>text/html; charset=UTF-8</strong> for the main page)</li>
+                        <li><code>X-Content-Type-Options</code> &mdash; you should see <strong>nosniff</strong> (a security header that prevents MIME-type sniffing)</li>
+                        <li><code>X-Frame-Options</code> &mdash; you should see <strong>SAMEORIGIN</strong> (a security header that prevents clickjacking)</li>
+                        <li><code>Feature-Policy</code> &mdash; you should see <strong>payment 'self'</strong> (restricts which features the page can use)</li>
+                        <li><code>Access-Control-Allow-Origin</code> &mdash; you should see <strong>*</strong> (allows any website to make requests to this server &mdash; a potential security concern!)</li>
+                        <li><code>X-Recruiting</code> &mdash; you should see <strong>/#/jobs</strong> (this is a Juice Shop easter egg &mdash; a hidden path in the application!)</li>
                     </ul>
-                    <p>If you see <code>X-Powered-By: Express</code>, you have found it! Write this down.</p>
+                    <p><strong>Note:</strong> You might expect to see <code>X-Powered-By: Express</code> (which would reveal the server framework), but Juice Shop disables this header. This is actually a <strong>good security practice</strong> &mdash; hiding the server technology makes it harder for attackers to find known vulnerabilities. We will confirm the framework is Express using other methods (like <code>whatweb</code> from Step 1A).</p>
                 </div>
             </div>
 
@@ -650,7 +655,7 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
                 <li>Right-click anywhere on the Juice Shop page</li>
                 <li>Select <strong>View Page Source</strong> from the menu (or press <strong>Ctrl + U</strong>) &mdash; a new tab will open showing the raw HTML code</li>
                 <li>Scroll all the way to the bottom of the page source</li>
-                <li>Near the bottom, look at the <code>&lt;script&gt;</code> tags. You should see file names that start with <code>runtime</code>, <code>polyfills</code>, and <code>main</code> (they may have extra characters like <code>runtime.abc123def.js</code> &mdash; the random characters in the middle are normal)</li>
+                <li>Near the bottom, look at the <code>&lt;script&gt;</code> tags. You should see exactly these four JavaScript files: <code>runtime.js</code>, <code>polyfills.js</code>, <code>vendor.js</code>, and <code>main.js</code></li>
                 <li>Also scroll back up and look for a tag called <code>&lt;app-root&gt;</code> in the <code>&lt;body&gt;</code> section</li>
             </ol>
 
@@ -658,13 +663,13 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
                 <span class="alert-icon">💡</span>
                 <div>
                     <h4>Hint</h4>
-                    <p>Files whose names start with <code>runtime</code>, <code>polyfills</code>, and <code>main</code> are strong indicators of <strong>Angular</strong> (an SPA framework from Chapter 3). The extra characters in the file name (like <code>main.a1b2c3d4.js</code>) are normal &mdash; Angular adds a random hash to file names for caching. The <code>&lt;app-root&gt;</code> tag is also Angular-specific.</p>
+                    <p>The files <code>runtime.js</code>, <code>polyfills.js</code>, <code>vendor.js</code>, and <code>main.js</code> are the signature build output of <strong>Angular</strong> (an SPA framework from Chapter 3). The <code>&lt;app-root&gt;</code> tag is also Angular-specific &mdash; it is the root component where Angular renders the entire application.</p>
                 </div>
             </div>
 
             <div class="deliverable">
                 <h4>Deliverable for Task 1:</h4>
-                <p>Write down: (1) the web server software, (2) the server-side framework, (3) the client-side SPA framework you identified.</p>
+                <p>Write down: (1) the web server software, (2) the server-side framework (confirmed via <code>whatweb</code>), (3) the client-side SPA framework you identified, and (4) list at least 3 interesting response headers you found and explain what each one does.</p>
             </div>
         </section>
 
@@ -672,7 +677,7 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
         <section id="task2">
             <h2>Task 2: Explore REST API Requests in the Browser</h2>
 
-            <p>As you learned in Chapter 3, modern web applications communicate through <strong>REST APIs</strong>. The browser sends HTTP requests (GET, POST, etc.) and the server responds with data. Let's watch this happen in real time.</p>
+            <p>As you learned in Chapter 3, modern web applications communicate through <strong>REST APIs</strong>. The browser sends HTTP requests (GET, POST, etc.) and the server responds with data. Let's watch this happen in real time &mdash; you will be surprised how much API traffic happens <em>just from loading the homepage</em>.</p>
 
             <h3>2A: Open the Network Tab</h3>
 
@@ -691,37 +696,9 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
                 </div>
             </div>
 
-            <h3>2B: Browse the Application and Watch the Requests</h3>
+            <h3>2B: Observe the API Calls That Happen Automatically</h3>
 
-            <p>Now perform these actions <strong>one at a time</strong>. After each action, look at the Network tab to see what API requests appeared:</p>
-
-            <ol class="steps">
-                <li><strong>Browse products</strong> on the homepage &mdash; look for a request containing <code>/rest/products</code></li>
-                <li><strong>Click on any product</strong> to see its details &mdash; look for a request like <code>/api/Products/1</code></li>
-                <li><strong>Use the search bar</strong> and search for "apple" &mdash; look for <code>/rest/products/search?q=apple</code></li>
-                <li><strong>Register a new account</strong>: click Account &rarr; Login &rarr; "Not yet a customer?" &mdash; use email <code>test@test.com</code> and password <code>Test1234!</code> &mdash; look for <code>/api/Users</code></li>
-                <li><strong>Log in</strong> with your new account &mdash; look for <code>/rest/user/login</code></li>
-            </ol>
-
-            <div class="alert alert-info">
-                <span class="alert-icon">💡</span>
-                <div>
-                    <h4>How to Inspect Each Request</h4>
-                    <p>When new requests appear in the Network tab list, you can read three things directly from the list columns:</p>
-                    <ul>
-                        <li><strong>Method</strong> column &mdash; shows GET, POST, PUT, or DELETE</li>
-                        <li><strong>URL / File</strong> column &mdash; shows the API endpoint path (like <code>/rest/products/search?q=apple</code>)</li>
-                        <li><strong>Status</strong> column &mdash; shows a number: <strong>200</strong> = success, <strong>201</strong> = created, <strong>401</strong> = unauthorized</li>
-                    </ul>
-                    <p>To see more details, <strong>click on any request row</strong>. A details panel opens on the right where you can see Headers, Request body, and Response body.</p>
-                    <p>This is exactly how REST APIs work as described in Chapter 3!</p>
-                </div>
-            </div>
-
-            <div class="deliverable">
-                <h4>Deliverable for Task 2:</h4>
-                <p>Fill in this table with at least <strong>5 API endpoints</strong> you observed:</p>
-            </div>
+            <p>Without clicking anything &mdash; just by loading the homepage &mdash; you should already see a burst of API requests in the Network tab. The Angular frontend automatically calls several REST endpoints to build the page. Look at the XHR filter results and you should see requests to these endpoints:</p>
 
             <table>
                 <tr>
@@ -732,79 +709,179 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
                 </tr>
                 <tr>
                     <td>1</td>
-                    <td><em>Example:</em> GET</td>
-                    <td><em>/rest/products/search?q=</em></td>
-                    <td><em>Searches for products</em></td>
+                    <td>GET</td>
+                    <td><code>/rest/admin/application-version</code></td>
+                    <td>Gets the Juice Shop version (returns <code>{"version":"19.1.1"}</code>)</td>
                 </tr>
                 <tr>
                     <td>2</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>GET</td>
+                    <td><code>/rest/admin/application-configuration</code></td>
+                    <td>Gets the full application configuration (theme, features, settings)</td>
                 </tr>
                 <tr>
                     <td>3</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>GET</td>
+                    <td><code>/api/Challenges/?name=Score%20Board</code></td>
+                    <td>Checks if the Score Board challenge exists</td>
                 </tr>
                 <tr>
                     <td>4</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>GET</td>
+                    <td><code>/rest/languages</code></td>
+                    <td>Gets the list of supported languages (40 languages)</td>
                 </tr>
                 <tr>
                     <td>5</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>GET</td>
+                    <td><code>/api/Quantitys/</code></td>
+                    <td>Gets product inventory/stock quantities</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>GET</td>
+                    <td><code>/rest/products/search?q=</code></td>
+                    <td>Searches all products (empty query = return all 36 products)</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>GET</td>
+                    <td><code>/rest/user/whoami</code></td>
+                    <td>Checks if a user is logged in (returns <code>{"user":{}}</code> when nobody is logged in)</td>
                 </tr>
             </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>How to Inspect Each Request</h4>
+                    <p>When new requests appear in the Network tab list, you can read three things directly from the list columns:</p>
+                    <ul>
+                        <li><strong>Method</strong> column &mdash; shows GET, POST, PUT, or DELETE</li>
+                        <li><strong>URL / File</strong> column &mdash; shows the API endpoint path (like <code>/rest/products/search?q=</code>)</li>
+                        <li><strong>Status</strong> column &mdash; shows a number: <strong>200</strong> = success, <strong>304</strong> = not modified (cached)</li>
+                    </ul>
+                    <p>To see more details, <strong>click on any request row</strong>. A details panel opens on the right where you can see Headers, Request body, and Response body.</p>
+                    <p>This is exactly how REST APIs work as described in Chapter 3!</p>
+                </div>
+            </div>
+
+            <h3>2C: Click on a Product and Watch for More Requests</h3>
+
+            <p>Now click on any product card on the homepage. Watch the Network tab &mdash; you should see new requests appear:</p>
+
+            <ol class="steps">
+                <li>Click on any product (for example, a juice product). A product detail popup will appear.</li>
+                <li>In the Network tab, you should see new requests to <code>/rest/products/{id}/reviews</code> where <code>{id}</code> is the product number. For example, if you click product 30 you will see <code>/rest/products/30/reviews</code>.</li>
+                <li>Click on one of these review requests. In the <strong>Response</strong> sub-tab, you should see JSON data like this:</li>
+            </ol>
+
+<pre><code>{
+  "status": "success",
+  "data": [
+    {
+      "message": "I bought it, would buy again. 5/7",
+      "author": "admin@juice-sh.op",
+      "product": 3,
+      "likesCount": 0,
+      "likedBy": [],
+      "_id": "b7N67f6mBnPBL2xhc"
+    }
+  ]
+}</code></pre>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Security Observation</h4>
+                    <p>Notice the review endpoints: <code>/rest/products/30/reviews</code> and <code>/rest/products/3/reviews</code>. The reviews contain <strong>email addresses</strong> of users (like <code>admin@juice-sh.op</code> and <code>uvogin@juice-sh.op</code>). This is <strong>sensitive data exposure</strong> &mdash; user email addresses are being leaked to anyone who views product reviews!</p>
+                </div>
+            </div>
+
+            <div class="deliverable">
+                <h4>Deliverable for Task 2:</h4>
+                <p>Verify that you can see the 7 API endpoints listed in the table above in your Network tab. For each one, click on it and note the <strong>Status</strong> code. Also record any additional <code>/rest/</code> or <code>/api/</code> endpoints you see when clicking on products.</p>
+            </div>
         </section>
 
         <!-- Task 3: JSON Payloads -->
         <section id="task3">
             <h2>Task 3: Read JSON Data</h2>
 
-            <p>As you learned in Chapter 3, REST APIs use <strong>JSON</strong> to send and receive data. Let's look at actual JSON payloads.</p>
+            <p>As you learned in Chapter 3, REST APIs use <strong>JSON</strong> to send and receive data. Let's examine the actual JSON payloads the Juice Shop sends back.</p>
 
-            <h3>3A: View JSON in the Browser</h3>
+            <h3>3A: View the Application Version JSON</h3>
 
             <ol class="steps">
-                <li>Make sure Developer Tools is still open (<strong>F12</strong>) and you are on the <strong>Network</strong> tab with the <strong>XHR</strong> filter selected</li>
-                <li>Scroll through the list of requests and find the one that shows <code>login</code> in the URL column (this is the <code>POST /rest/user/login</code> request from when you logged in). If you do not see it, log in again while the Network tab is open.</li>
-                <li><strong>Click on that login request row.</strong> A details panel will open on the right side.</li>
-                <li>In the details panel, you will see sub-tabs at the top: <em>Headers, Cookies, <strong>Request</strong>, <strong>Response</strong>, Timings</em></li>
-                <li>Click the <strong>Request</strong> sub-tab &mdash; this shows the JSON data your browser <em>sent</em> to the server (the email and password)</li>
-                <li>Click the <strong>Response</strong> sub-tab &mdash; this shows the JSON data the server <em>sent back</em> (including a token)</li>
+                <li>Make sure Developer Tools is still open (<strong>F12</strong>) and you are on the <strong>Network</strong> tab with the <strong>XHR</strong> filter selected. If the list is empty, press <strong>Ctrl + R</strong> to reload.</li>
+                <li>In the list of requests, find the one that shows <code>application-version</code> in the URL column.</li>
+                <li><strong>Click on that request row.</strong> A details panel will open on the right side.</li>
+                <li>In the details panel, you will see sub-tabs at the top: <em>Headers, Cookies, Request, <strong>Response</strong>, Timings</em></li>
+                <li>Click the <strong>Response</strong> sub-tab &mdash; this shows the JSON data the server sent back.</li>
             </ol>
 
             <div class="expected-output">
-                <h4>What the Login Request JSON Looks Like:</h4>
+                <h4>Expected JSON Response:</h4>
+<pre><code>{"version":"19.1.1"}</code></pre>
+                <p>This tells us the exact version of Juice Shop running on the server. An attacker could use this to look up known vulnerabilities for this specific version.</p>
+            </div>
+
+            <h3>3B: View the Product Search JSON</h3>
+
+            <ol class="steps">
+                <li>In the Network tab, find the request to <code>/rest/products/search?q=</code> and click on it.</li>
+                <li>Click the <strong>Response</strong> sub-tab. You will see a large JSON response containing all 36 products in the shop.</li>
+                <li>Look at the structure of the first product in the JSON:</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>What a Single Product Object Looks Like:</h4>
 <pre><code>{
-  "email": "test@test.com",
-  "password": "Test1234!"
+  "id": 1,
+  "name": "Apple Juice (1000ml)",
+  "description": "The all-time classic.",
+  "price": 1.99,
+  "deluxePrice": 0.99,
+  "image": "apple_juice.jpg",
+  "createdAt": "2026-02-17 11:33:04.274 +00:00",
+  "updatedAt": "2026-02-17 11:33:04.274 +00:00",
+  "deletedAt": null
 }</code></pre>
             </div>
 
-            <div class="alert alert-warning">
-                <span class="alert-icon">&#9888;&#65039;</span>
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
                 <div>
-                    <h4>Security Question</h4>
-                    <p>Look at the login request above. Is the password being sent in <strong>plain text</strong>? Is the connection HTTP or HTTPS? Write down your observation &mdash; this is a real-world security concern!</p>
+                    <h4>Understanding the JSON Structure</h4>
+                    <p>Notice the JSON fields: <code>id</code>, <code>name</code>, <code>description</code>, <code>price</code>, <code>deluxePrice</code>, <code>image</code>. These are the data fields stored in the database for each product. Also notice the <code>deletedAt: null</code> field &mdash; this suggests the database uses <strong>soft deletes</strong> (marking items as deleted rather than removing them), which means deleted products might still be accessible through the API.</p>
                 </div>
             </div>
 
-            <h3>3B: Use <code>curl</code> to Get JSON from the Terminal</h3>
+            <h3>3C: View the whoami JSON</h3>
 
-            <p>You can also request JSON data directly from the terminal:</p>
+            <ol class="steps">
+                <li>Find the request to <code>/rest/user/whoami</code> and click on it.</li>
+                <li>Click the <strong>Response</strong> sub-tab. You should see:</li>
+            </ol>
 
-<pre><code><span class="command-label"># Search for all products (returns JSON)</span>
+            <div class="expected-output">
+                <h4>Expected JSON Response:</h4>
+<pre><code>{"user":{}}</code></pre>
+                <p>The empty <code>user</code> object means nobody is logged in. This endpoint lets the Angular frontend check the login status. After logging in, this response would contain user details.</p>
+            </div>
+
+            <h3>3D: Use <code>curl</code> to Get JSON from the Terminal</h3>
+
+            <p>You can also request the same JSON data directly from the terminal. Open a terminal and try these commands:</p>
+
+<pre><code><span class="command-label"># Get the application version</span>
+curl "http://localhost:3000/rest/admin/application-version" | python3 -m json.tool
+
+<span class="command-label"># Search for all products (returns all 36 products)</span>
 curl "http://localhost:3000/rest/products/search?q=" | python3 -m json.tool
 
-<span class="command-label"># Get details for product #1</span>
-curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
+<span class="command-label"># Check who is logged in (nobody, since curl has no session)</span>
+curl "http://localhost:3000/rest/user/whoami" | python3 -m json.tool</code></pre>
 
             <div class="alert alert-info">
                 <span class="alert-icon">💡</span>
@@ -814,9 +891,22 @@ curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
                 </div>
             </div>
 
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Security Observations</h4>
+                    <p>Think about what you just discovered:</p>
+                    <ul>
+                        <li>The <strong>admin endpoints</strong> (<code>/rest/admin/application-version</code> and <code>/rest/admin/application-configuration</code>) are accessible <strong>without any authentication</strong>. Anyone can see the server version and full configuration!</li>
+                        <li>The connection uses <strong>HTTP</strong> (not HTTPS), meaning all data travels in <strong>plain text</strong> over the network.</li>
+                        <li>The API naming convention <code>/api/Quantitys/</code> exposes <strong>internal database model names</strong> (notice the incorrect pluralization &mdash; this reveals the ORM layer).</li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="deliverable">
                 <h4>Deliverable for Task 3:</h4>
-                <p>(1) Copy and paste the JSON response from <code>curl http://localhost:3000/api/Products/1</code>. (2) Answer: Is the login password sent in plain text? Is this a security concern? Why?</p>
+                <p>(1) Copy and paste the JSON response from <code>curl http://localhost:3000/rest/admin/application-version</code>. (2) Copy and paste the first product object from the product search response. (3) List 2 security concerns you observed about the API endpoints.</p>
             </div>
         </section>
 
@@ -824,12 +914,12 @@ curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
         <section id="task4">
             <h2>Task 4: Inspect Client-Side Storage</h2>
 
-            <p>Chapter 3 taught you that browsers can store data locally using cookies, localStorage, and sessionStorage. Let's see what Juice Shop stores on your browser.</p>
+            <p>Chapter 3 taught you that browsers can store data locally using cookies, localStorage, and sessionStorage. Let's see what Juice Shop stores on your browser just from visiting the homepage.</p>
 
             <h3>4A: Open the Storage Inspector</h3>
 
             <ol class="steps">
-                <li>Make sure you are <strong>logged in</strong> to Juice Shop (if you are not logged in, the storage will have very little data to see)</li>
+                <li>Make sure you are on the Juice Shop homepage (<code>http://localhost:3000</code>) and have dismissed the welcome banner and cookie consent banner</li>
                 <li>Press <strong>F12</strong> to open Developer Tools (the panel at the bottom of the browser)</li>
                 <li>Look at the tab bar at the top of the Developer Tools panel. You will see tabs like: <em>Inspector, Console, Debugger, Network, ...</em> Look for a tab called <strong>Storage</strong>. <br><br><strong>Cannot find the Storage tab?</strong> It is often hidden because there are too many tabs to fit on screen. Look for a <strong>double arrow icon (&raquo;)</strong> at the far right end of the tab bar. Click on it &mdash; a dropdown menu will appear listing the hidden tabs. Click <strong>Storage</strong> from that menu.</li>
                 <li>Once you are on the Storage tab, you will see a <strong>left sidebar</strong> with a tree structure. It lists three storage types:
@@ -844,23 +934,30 @@ curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
                 <li>Do the same for <strong>Session Storage</strong> &rarr; <code>http://localhost:3000</code></li>
             </ol>
 
-            <div class="alert alert-warning">
-                <span class="alert-icon">&#9888;&#65039;</span>
-                <div>
-                    <h4>Storage Looks Empty?</h4>
-                    <p>If you see very few items (or nothing) under Cookies or Local Storage, make sure you are <strong>logged in</strong> to Juice Shop first. Juice Shop stores a session token only after you log in. Go back to the Juice Shop tab, log in, then return to the Storage tab and click the <strong>refresh</strong> button (circular arrow icon at the top of the Storage panel).</p>
-                </div>
-            </div>
-
             <div class="alert alert-info">
                 <span class="alert-icon">💡</span>
                 <div>
-                    <h4>What to Record</h4>
-                    <p>For each storage type, write down:</p>
+                    <h4>What You Should See</h4>
+                    <p><strong>Under Cookies</strong>, you should see exactly these 3 entries:</p>
                     <ul>
-                        <li>The <strong>key names</strong> (left column)</li>
-                        <li>The <strong>values</strong> (right column) &mdash; do any look like tokens or sensitive data?</li>
-                        <li>For cookies: does it have the <strong>HttpOnly</strong> flag? (check the columns)</li>
+                        <li><code>language</code> &mdash; value: <strong>en</strong> (your language preference)</li>
+                        <li><code>welcomebanner_status</code> &mdash; value: <strong>dismiss</strong> (remembers you closed the welcome popup)</li>
+                        <li><code>cookieconsent_status</code> &mdash; value: <strong>dismiss</strong> (remembers you accepted the cookie consent)</li>
+                    </ul>
+                    <p>Notice that these cookies store <strong>user preferences</strong>, not authentication data. Check the columns in the cookie table &mdash; do any of these cookies have the <strong>HttpOnly</strong> flag set? Do any have the <strong>Secure</strong> flag?</p>
+                    <p><strong>Under Local Storage and Session Storage</strong>, check if there are any entries. Since you are not logged in, you should see either no entries or only non-sensitive data like UI state.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Security Observations About the Cookies</h4>
+                    <p>Look carefully at the cookie properties:</p>
+                    <ul>
+                        <li>None of the cookies have the <strong>Secure</strong> flag &mdash; this means they will be sent over unencrypted HTTP connections</li>
+                        <li>The cookies are set <strong>without HttpOnly</strong> &mdash; this means JavaScript code running on the page can read and modify them</li>
+                        <li>The <code>language</code> cookie tells an attacker what language the user speaks &mdash; useful for crafting targeted phishing attacks</li>
                     </ul>
                 </div>
             </div>
@@ -874,26 +971,44 @@ curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
                 <tr>
                     <th>Storage Type</th>
                     <th>Key Name</th>
-                    <th>Value (first 30 characters...)</th>
-                    <th>Looks Sensitive?</th>
+                    <th>Value</th>
+                    <th>HttpOnly?</th>
+                    <th>Secure?</th>
                 </tr>
                 <tr>
                     <td>Cookie</td>
+                    <td><code>language</code></td>
                     <td><em>(fill in)</em></td>
+                    <td><em>Yes / No</em></td>
+                    <td><em>Yes / No</em></td>
+                </tr>
+                <tr>
+                    <td>Cookie</td>
+                    <td><code>welcomebanner_status</code></td>
                     <td><em>(fill in)</em></td>
+                    <td><em>Yes / No</em></td>
+                    <td><em>Yes / No</em></td>
+                </tr>
+                <tr>
+                    <td>Cookie</td>
+                    <td><code>cookieconsent_status</code></td>
+                    <td><em>(fill in)</em></td>
+                    <td><em>Yes / No</em></td>
                     <td><em>Yes / No</em></td>
                 </tr>
                 <tr>
                     <td>Local Storage</td>
+                    <td><em>(fill in &mdash; any entries?)</em></td>
                     <td><em>(fill in)</em></td>
-                    <td><em>(fill in)</em></td>
-                    <td><em>Yes / No</em></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
                 </tr>
                 <tr>
                     <td>Session Storage</td>
+                    <td><em>(fill in &mdash; any entries?)</em></td>
                     <td><em>(fill in)</em></td>
-                    <td><em>(fill in)</em></td>
-                    <td><em>Yes / No</em></td>
+                    <td>N/A</td>
+                    <td>N/A</td>
                 </tr>
             </table>
         </section>
@@ -902,29 +1017,73 @@ curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
         <section id="task5">
             <h2>Task 5: Write Your Recon Summary</h2>
 
-            <p>As you learned in Chapter 2, a good recon specialist always <strong>documents their findings</strong>. Now compile everything you learned into a short summary.</p>
+            <p>As you learned in Chapter 2, a good recon specialist always <strong>documents their findings</strong>. Fill in the form below with your answers from Tasks 1&ndash;4. When you are done, click the <strong>Print / Save as PDF</strong> button to print it or save it as a PDF file, then upload it to Blackboard.</p>
 
-            <p>Open a text editor (Mousepad or any editor) and answer these questions:</p>
-
-            <ol>
-                <li><strong>Technology Stack:</strong> What web server, server framework, client framework, and database does Juice Shop use?</li>
-                <li><strong>API Endpoints:</strong> List all the REST API endpoints you found (from Task 2). Include the HTTP method and URL for each.</li>
-                <li><strong>Data Format:</strong> What data format does the API use? (Hint: JSON or XML?)</li>
-                <li><strong>Client Storage:</strong> What data is stored in the browser? Is any of it sensitive?</li>
-                <li><strong>Security Observations:</strong> List at least <strong>2 security concerns</strong> you noticed (for example: password in plain text, token stored insecurely, etc.)</li>
-            </ol>
-
-            <div class="alert alert-success">
-                <span class="alert-icon">&#127891;</span>
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
                 <div>
-                    <h4>Chapter 2 Connection</h4>
-                    <p>Remember: the format of your notes matters less than the content. What matters is that your findings are <strong>organized</strong> and <strong>easy to read</strong>. In the next lab (Lab 3), you will learn to build a more advanced JSON-formatted recon map.</p>
+                    <h4>How to Save as PDF</h4>
+                    <p>Click the <strong>Print / Save as PDF</strong> button below. In the print dialog, change the <strong>Destination</strong> to <strong>"Save to PDF"</strong> (or "Microsoft Print to PDF"). Then click <strong>Save</strong>. Upload the saved PDF to Blackboard.</p>
                 </div>
             </div>
 
-            <div class="deliverable">
-                <h4>Deliverable for Task 5:</h4>
-                <p>Your completed recon summary answering all 5 questions above.</p>
+            <!-- Printable Form -->
+            <div id="recon-form" style="border: 2px solid var(--kali-blue); border-radius: 15px; padding: 30px; margin: 20px 0; background: #fafbfc;">
+                <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--kali-blue);">
+                    <h3 style="color: var(--secondary-color); margin: 0;">CYB236 &mdash; Lab 02: Recon Summary Report</h3>
+                    <p style="color: #718096; margin: 5px 0 0 0;">Web Application Reconnaissance &mdash; OWASP Juice Shop</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color);">Student Name:</label>
+                        <input type="text" id="student-name" placeholder="Enter your full name" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color);">Student ID:</label>
+                        <input type="text" id="student-id" placeholder="Enter your student ID" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em;">
+                    </div>
+                </div>
+
+                <!-- Question 1 -->
+                <div style="margin-bottom: 25px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px; color: var(--secondary-color);">Question 1: Technology Stack</label>
+                    <p style="font-size: 0.9em; color: #718096; margin-bottom: 8px;">What web server, server framework, client framework, and database does Juice Shop use? (Hint: you identified the client framework from <code>runtime.js</code>, <code>polyfills.js</code>, <code>vendor.js</code>, <code>main.js</code> and the <code>&lt;app-root&gt;</code> tag)</p>
+                    <textarea id="answer-q1" rows="5" placeholder="Web Server: ...&#10;Server Framework: ...&#10;Client Framework: ...&#10;Database: ..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95em; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Question 2 -->
+                <div style="margin-bottom: 25px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px; color: var(--secondary-color);">Question 2: API Endpoints</label>
+                    <p style="font-size: 0.9em; color: #718096; margin-bottom: 8px;">List all the REST API endpoints you found (from Task 2). Include the HTTP method and URL for each. You should have at least 7 endpoints from the homepage, plus the product review endpoints.</p>
+                    <textarea id="answer-q2" rows="10" placeholder="1. GET /rest/admin/application-version&#10;2. GET /rest/admin/application-configuration&#10;3. ...&#10;4. ...&#10;5. ...&#10;6. ...&#10;7. ...&#10;Product reviews:&#10;- ..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95em; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Question 3 -->
+                <div style="margin-bottom: 25px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px; color: var(--secondary-color);">Question 3: Data Format</label>
+                    <p style="font-size: 0.9em; color: #718096; margin-bottom: 8px;">What data format does the API use? (Hint: look at the <code>Content-Type</code> header on the API responses)</p>
+                    <textarea id="answer-q3" rows="3" placeholder="The API uses ..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95em; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Question 4 -->
+                <div style="margin-bottom: 25px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px; color: var(--secondary-color);">Question 4: Client Storage</label>
+                    <p style="font-size: 0.9em; color: #718096; margin-bottom: 8px;">What 3 cookies did Juice Shop store in your browser? What are their values? Are the HttpOnly and Secure flags set?</p>
+                    <textarea id="answer-q4" rows="6" placeholder="Cookie 1: language = ...&#10;Cookie 2: welcomebanner_status = ...&#10;Cookie 3: cookieconsent_status = ...&#10;HttpOnly flag: ...&#10;Secure flag: ..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95em; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Question 5 -->
+                <div style="margin-bottom: 25px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px; color: var(--secondary-color);">Question 5: Security Observations</label>
+                    <p style="font-size: 0.9em; color: #718096; margin-bottom: 8px;">List at least 3 security concerns you noticed during this lab. For each one, explain <em>why</em> it is a security risk.</p>
+                    <textarea id="answer-q5" rows="8" placeholder="1. ...&#10;&#10;2. ...&#10;&#10;3. ..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95em; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Print Button -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <button onclick="printForm()" style="background: linear-gradient(135deg, var(--kali-blue) 0%, #5b8def 100%); color: white; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(54, 123, 240, 0.4); transition: transform 0.2s ease;">Print / Save as PDF</button>
+                </div>
             </div>
         </section>
 
@@ -978,17 +1137,17 @@ curl "http://localhost:3000/api/Products/1" | python3 -m json.tool</code></pre>
                 </tr>
                 <tr>
                     <td><strong>Task 2</strong></td>
-                    <td>At least 5 REST API endpoints listed with methods</td>
+                    <td>7 homepage API endpoints verified + product review endpoints observed</td>
                     <td>25</td>
                 </tr>
                 <tr>
                     <td><strong>Task 3</strong></td>
-                    <td>JSON payload copied + security observation about password</td>
+                    <td>JSON payloads copied (version + product) + 2 security concerns about API</td>
                     <td>20</td>
                 </tr>
                 <tr>
                     <td><strong>Task 4</strong></td>
-                    <td>Client-side storage table completed</td>
+                    <td>Cookie table completed with HttpOnly/Secure flag observations</td>
                     <td>15</td>
                 </tr>
                 <tr>
@@ -1024,6 +1183,68 @@ sudo docker stop juice-shop</code></pre>
     </div>
 
 </div><!-- end container -->
+
+<script>
+function printForm() {
+    // Validate that name and ID are filled
+    var name = document.getElementById('student-name').value.trim();
+    var sid = document.getElementById('student-id').value.trim();
+    if (!name || !sid) {
+        alert('Please enter your Student Name and Student ID before printing.');
+        return;
+    }
+    window.print();
+}
+</script>
+
+<style>
+@media print {
+    /* Hide everything except the form */
+    body { background: white !important; padding: 0 !important; }
+    .container { box-shadow: none !important; border-radius: 0 !important; }
+    .header, .lab-info, .toc,
+    #introduction, #objectives, #setup, #task1, #task2, #task3, #task4,
+    #troubleshooting, #submission, .footer { display: none !important; }
+
+    /* Show only Task 5 */
+    #task5 { display: block !important; }
+    #task5 > h2 { display: none !important; }
+    #task5 > p, #task5 > .alert { display: none !important; }
+
+    /* Style the form for print */
+    #recon-form {
+        border: 2px solid #333 !important;
+        padding: 25px !important;
+        margin: 0 !important;
+        background: white !important;
+        page-break-inside: avoid;
+    }
+
+    /* Replace inputs with their values */
+    input[type="text"], textarea {
+        border: none !important;
+        background: white !important;
+        padding: 5px 0 !important;
+        font-size: 0.95em !important;
+        resize: none !important;
+        overflow: visible !important;
+        min-height: auto !important;
+    }
+
+    textarea {
+        height: auto !important;
+    }
+
+    /* Hide the print button */
+    button { display: none !important; }
+
+    /* Ensure text wraps and content is visible */
+    * { overflow: visible !important; }
+
+    /* Page margins */
+    @page { margin: 1.5cm; }
+}
+</style>
 
 </body>
 </html>
