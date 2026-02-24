@@ -3,71 +3,2171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 3: Advanced Recon Techniques | CYB236</title>
+    <title>CYB236 Handout - Chapters 4, 5, 6 &amp; 7</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #ecfdf5;
+            --primary-600: #059669;
+            --primary-700: #047857;
+            --primary-800: #065f46;
+            --primary-900: #064e3b;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Colors ── */
+            --ch4: #d97706;
+            --ch4-light: #fef3c7;
+            --ch4-mid: #fde68a;
+
+            --ch5: #0891b2;
+            --ch5-light: #cffafe;
+            --ch5-mid: #67e8f9;
+
+            --ch6: #059669;
+            --ch6-light: #d1fae5;
+            --ch6-mid: #6ee7b7;
+
+            --ch7: #dc2626;
+            --ch7-light: #fee2e2;
+            --ch7-mid: #fca5a5;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --orange: #ea580c;
+            --orange-light: #fff7ed;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+            --get: #22c55e;
+            --post: #3b82f6;
+            --put: #f59e0b;
+            --delete: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #0f3460, #0f3460dd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #d97706, #dc2626);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .week-badge {
-            background: #0f3460;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #0f3460;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #0f3460;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-left: 16px;
+        }
+
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fde68a;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot {
+            width: 8px; height: 8px;
+            background: #fbbf24;
+            border-radius: 50%;
+        }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub {
+            font-size: 20px;
+            color: #d4d4d4;
+            margin-bottom: 30px;
+        }
+
+        .cover-chips {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .cover-chip.ch4 { background: rgba(217,119,6,0.3); }
+        .cover-chip.ch5 { background: rgba(8,145,178,0.3); }
+        .cover-chip.ch6 { background: rgba(5,150,105,0.3); }
+        .cover-chip.ch7 { background: rgba(220,38,38,0.3); }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .sidebar-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-ch-label {
+            padding: 8px 12px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--neutral-400);
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--primary-600); color: white; }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .chapter-num.ch4 { background: var(--ch4-light); color: var(--ch4); }
+        .chapter-num.ch5 { background: var(--ch5-light); color: var(--ch5); }
+        .chapter-num.ch6 { background: var(--ch6-light); color: var(--ch6); }
+        .chapter-num.ch7 { background: var(--ch7-light); color: var(--ch7); }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider { height: 4px; border-radius: 2px; margin: 10px auto 0; width: 80px; }
+        .chapter-divider.ch4 { background: var(--ch4); }
+        .chapter-divider.ch5 { background: var(--ch5); }
+        .chapter-divider.ch6 { background: var(--ch6); }
+        .chapter-divider.ch7 { background: var(--ch7); }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .topic-icon.ch4 { background: var(--ch4-light); }
+        .topic-icon.ch5 { background: var(--ch5-light); }
+        .topic-icon.ch6 { background: var(--ch6-light); }
+        .topic-icon.ch7 { background: var(--ch7-light); }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--neutral-800);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-number.ch4 { background: var(--ch4); }
+        .objective-number.ch5 { background: var(--ch5); }
+        .objective-number.ch6 { background: var(--ch6); }
+        .objective-number.ch7 { background: var(--ch7); }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--neutral-50);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+            border-left: 5px solid;
+        }
+
+        .story.ch4 { border-color: var(--ch4); }
+        .story.ch5 { border-color: var(--ch5); }
+        .story.ch6 { border-color: var(--ch6); }
+        .story.ch7 { border-color: var(--ch7); }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+        }
+
+        .story-label.ch4 { background: var(--ch4-light); color: var(--ch4); }
+        .story-label.ch5 { background: var(--ch5-light); color: var(--ch5); }
+        .story-label.ch6 { background: var(--ch6-light); color: var(--ch6); }
+        .story-label.ch7 { background: var(--ch7-light); color: var(--ch7); }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-left: 3px solid var(--border);
+        }
+
+        .character { font-weight: 700; font-style: normal; }
+        .character.ahmed { color: var(--ch4); }
+        .character.sara { color: var(--ch5); }
+        .character.system { color: var(--ch6); }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+        }
+
+        .clean-list.ch4 li::before { background: var(--ch4-light); }
+        .clean-list.ch5 li::before { background: var(--ch5-light); }
+        .clean-list.ch6 li::before { background: var(--ch6-light); }
+        .clean-list.ch7 li::before { background: var(--ch7-light); }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List (numbered visual) ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-num.ch4 { background: var(--ch4); }
+        .step-num.ch5 { background: var(--ch5); }
+        .step-num.ch6 { background: var(--ch6); }
+        .step-num.ch7 { background: var(--ch7); }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .t { color: #f9a8d4; }
+
+        /* ───── HTTP Verb Table ───── */
+        .verb-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .verb-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .verb-table td {
+            padding: 14px 16px;
+            background: white;
+            font-size: 0.98em;
+        }
+
+        .verb-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .verb-table tr td:last-child { border-radius: 0 10px 10px 0; }
+        .verb-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: white;
+        }
+
+        .badge.get { background: var(--get); }
+        .badge.post { background: var(--post); }
+        .badge.put { background: var(--put); }
+        .badge.delete { background: var(--delete); }
+        .badge.patch { background: #8b5cf6; }
+
+        /* ───── Framework Cards ───── */
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .framework-card {
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid;
+            transition: transform 0.2s;
+        }
+
+        .framework-card:hover { transform: translateY(-4px); }
+        .framework-card .fw-icon { font-size: 2.5em; margin-bottom: 10px; }
+        .framework-card .fw-name { font-weight: 800; font-size: 1.1em; margin-bottom: 4px; }
+        .framework-card .fw-company { font-size: 0.82em; color: var(--gray); margin-bottom: 8px; }
+        .framework-card .fw-detect { font-size: 0.82em; font-family: 'JetBrains Mono', monospace; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.06); }
+
+        .framework-card.react { border-color: #61dafb; background: #f0f9ff; }
+        .framework-card.react .fw-name { color: #0284c7; }
+        .framework-card.angular { border-color: #dd0031; background: #fff0f0; }
+        .framework-card.angular .fw-name { color: #dd0031; }
+        .framework-card.vue { border-color: #42b883; background: #f0fdf4; }
+        .framework-card.vue .fw-name { color: #16a34a; }
+        .framework-card.ember { border-color: #e04e39; background: #fff7ed; }
+        .framework-card.ember .fw-name { color: #ea580c; }
+
+        /* ───── Layer Stack Visual ───── */
+        .layer-stack { margin: 24px 0; }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .layer-icon { font-size: 1.6em; }
+
+        .layer-item.l1 { background: linear-gradient(90deg, #7c3aed, #8b5cf6); }
+        .layer-item.l2 { background: linear-gradient(90deg, #0891b2, #06b6d4); }
+        .layer-item.l3 { background: linear-gradient(90deg, #059669, #10b981); }
+        .layer-item.l4 { background: linear-gradient(90deg, #d97706, #f59e0b); }
+        .layer-item.l5 { background: linear-gradient(90deg, #dc2626, #ef4444); }
+
+        .layer-label strong { display: block; font-size: 1em; }
+        .layer-label span { font-size: 0.82em; opacity: 0.9; }
+
+        /* ───── Auth Comparison ───── */
+        .auth-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin: 20px 0; }
+
+        .auth-table th {
+            background: var(--neutral-800);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.85em;
+        }
+
+        .auth-table th:first-child { border-radius: 10px 0 0 10px; }
+        .auth-table th:last-child { border-radius: 0 10px 10px 0; }
+
+        .auth-table td {
+            background: white;
+            padding: 14px 16px;
+            font-size: 0.95em;
+            vertical-align: top;
+        }
+
+        .auth-table tr td:first-child { border-radius: 10px 0 0 10px; font-weight: 700; }
+        .auth-table tr td:last-child { border-radius: 0 10px 10px 0; }
+        .auth-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── Secure vs Insecure Visual ───── */
+        .secure-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .secure-side {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .secure-side-header {
+            padding: 14px 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .secure-side-header.bad { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .secure-side-header.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .secure-side-body { padding: 20px; background: white; }
+
+        .secure-side-body ul { list-style: none; padding: 0; }
+        .secure-side-body li { padding: 8px 0 8px 28px; position: relative; font-size: 0.95em; }
+        .secure-side-body.bad li::before { content: '✗'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+        .secure-side-body.good li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner.ch4 { background: linear-gradient(135deg, #92400e, #d97706); }
+        .summary-banner.ch5 { background: linear-gradient(135deg, #0e7490, #0891b2); }
+        .summary-banner.ch6 { background: linear-gradient(135deg, #065f46, #059669); }
+        .summary-banner.ch7 { background: linear-gradient(135deg, #991b1b, #dc2626); }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        /* ───── Page Break ───── */
+        .page-break {
+            height: 6px;
+            background: linear-gradient(90deg, var(--ch4), var(--ch5), var(--ch6), var(--ch7));
+            margin: 60px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Subdomain Visual ───── */
+        .subdomain-visual {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--neutral-200);
+            text-align: center;
+        }
+
+        .domain-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .domain-root {
+            background: linear-gradient(135deg, #1c1917, #292524);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1em;
+            font-family: monospace;
+        }
+
+        .domain-connector { width: 2px; height: 24px; background: var(--border); }
+
+        .domain-branches {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+        }
+
+        .domain-branches::before {
+            content: '';
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 60px);
+            height: 2px;
+            background: var(--border);
+        }
+
+        .domain-sub {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 0.9em;
+            position: relative;
+        }
+
+        .domain-sub::before {
+            content: '';
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 24px;
+            background: var(--border);
+        }
+
+        .domain-sub.www { background: #dbeafe; color: #1e40af; }
+        .domain-sub.mail { background: #fef3c7; color: #92400e; }
+        .domain-sub.admin { background: #fee2e2; color: #991b1b; }
+        .domain-sub.dev { background: #d1fae5; color: #065f46; }
+        .domain-sub.api { background: #ede9fe; color: #5b21b6; }
+        .domain-sub.ftp { background: #fce7f3; color: #9d174d; }
+
+        /* ───── Zone Transfer Demo ───── */
+        .zone-demo {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+        }
+
+        .zone-demo .cmd { color: #86efac; }
+        .zone-demo .out { color: #93c5fd; }
+        .zone-demo .comment { color: #64748b; font-style: italic; }
+        .zone-demo .found { color: #fbbf24; font-weight: bold; }
+
+        /* ───── Method Steps Animation ───── */
+        .method-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .method-step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 18px 20px;
+            background: var(--neutral-50);
+            border-radius: 14px;
+            border: 1px solid var(--neutral-200);
+            transition: transform 0.2s;
+        }
+
+        .method-step:hover { transform: translateX(6px); }
+
+        .method-step-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            flex-shrink: 0;
+        }
+
+        .method-step-icon.ch4 { background: var(--ch4-light); }
+        .method-step-icon.ch5 { background: var(--ch5-light); }
+
+        .method-step-body strong { display: block; margin-bottom: 4px; color: var(--dark); }
+        .method-step-body span { font-size: 0.92em; color: var(--gray); }
+
+        /* ───── Footer ───── */
+        .footer {
+            background: var(--neutral-900);
+            color: white;
+            padding: 48px 40px;
+            margin-top: 20px;
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .secure-compare { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="week-badge">Week 3 - Recon</span>
-        <h1>Advanced Recon Techniques</h1>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="index-ar.html" class="lang-switch">العربية</a>
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week2/index.html" class="nav-link">Week 2</a>
+            <a href="index.html" class="nav-link active">Week 3</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>/</span>
+            <span>Week 3 — Chapters 4–7</span>
+        </div>
+        <div class="cover-badge">
+            <span class="cover-badge-dot"></span>
+            Advanced Reconnaissance Techniques
+        </div>
+        <h1>Finding Subdomains, APIs,<br>Dependencies &amp; Weak Points</h1>
+        <p class="sub">How a Security Tester Builds a Complete Picture of a Target Application</p>
+        <div class="cover-chips">
+            <div class="cover-chip ch4">Ch.4 Subdomains</div>
+            <div class="cover-chip ch5">Ch.5 API Analysis</div>
+            <div class="cover-chip ch6">Ch.6 Dependencies</div>
+            <div class="cover-chip ch7">Ch.7 Weak Points</div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-ch-label" style="color:var(--ch4);">&#9632; Chapter 4</div>
+            <a href="#chapter-4" class="sidebar-link active"><span class="sidebar-link-number">1</span>Ch.4 Overview</a>
+            <a href="#ch4-why" class="sidebar-link"><span class="sidebar-link-number">2</span>Why Find Subdomains?</a>
+            <a href="#ch4-devtools" class="sidebar-link"><span class="sidebar-link-number">3</span>Browser Dev Tools</a>
+            <a href="#ch4-google" class="sidebar-link"><span class="sidebar-link-number">4</span>Google Dorking</a>
+            <a href="#ch4-archive" class="sidebar-link"><span class="sidebar-link-number">5</span>Archive.org</a>
+            <a href="#ch4-dns" class="sidebar-link"><span class="sidebar-link-number">6</span>Zone Transfer Attack</a>
+            <a href="#ch4-brute" class="sidebar-link"><span class="sidebar-link-number">7</span>Brute Force & Dictionary</a>
+            <a href="#ch4-summary" class="sidebar-link"><span class="sidebar-link-number">8</span>Ch.4 Summary</a>
+
+            <div class="sidebar-ch-label" style="color:var(--ch5);">&#9632; Chapter 5</div>
+            <a href="#chapter-5" class="sidebar-link"><span class="sidebar-link-number">9</span>Ch.5 Overview</a>
+            <a href="#ch5-endpoints" class="sidebar-link"><span class="sidebar-link-number">10</span>Endpoint Discovery</a>
+            <a href="#ch5-verbs" class="sidebar-link"><span class="sidebar-link-number">11</span>HTTP Verbs</a>
+            <a href="#ch5-auth" class="sidebar-link"><span class="sidebar-link-number">12</span>Authentication Schemes</a>
+            <a href="#ch5-shapes" class="sidebar-link"><span class="sidebar-link-number">13</span>Endpoint Shapes</a>
+            <a href="#ch5-summary" class="sidebar-link"><span class="sidebar-link-number">14</span>Ch.5 Summary</a>
+
+            <div class="sidebar-ch-label" style="color:var(--ch6);">&#9632; Chapter 6</div>
+            <a href="#chapter-6" class="sidebar-link"><span class="sidebar-link-number">15</span>Ch.6 Overview</a>
+            <a href="#ch6-spa" class="sidebar-link"><span class="sidebar-link-number">16</span>Detecting SPA Frameworks</a>
+            <a href="#ch6-libs" class="sidebar-link"><span class="sidebar-link-number">17</span>JS & CSS Libraries</a>
+            <a href="#ch6-server" class="sidebar-link"><span class="sidebar-link-number">18</span>Server-Side Detection</a>
+            <a href="#ch6-db" class="sidebar-link"><span class="sidebar-link-number">19</span>Database Detection</a>
+            <a href="#ch6-summary" class="sidebar-link"><span class="sidebar-link-number">20</span>Ch.6 Summary</a>
+
+            <div class="sidebar-ch-label" style="color:var(--ch7);">&#9632; Chapter 7</div>
+            <a href="#chapter-7" class="sidebar-link"><span class="sidebar-link-number">21</span>Ch.7 Overview</a>
+            <a href="#ch7-notes" class="sidebar-link"><span class="sidebar-link-number">22</span>Your Recon Notes</a>
+            <a href="#ch7-arch" class="sidebar-link"><span class="sidebar-link-number">23</span>Secure vs Insecure</a>
+            <a href="#ch7-layers" class="sidebar-link"><span class="sidebar-link-number">24</span>Multiple Layers</a>
+            <a href="#ch7-reinvent" class="sidebar-link"><span class="sidebar-link-number">25</span>Never Roll Your Own</a>
+            <a href="#ch7-summary" class="sidebar-link"><span class="sidebar-link-number">26</span>Ch.7 Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 4 — Finding Subdomains
+     ════════════════════════════════════════════════ -->
+<div id="chapter-4" class="chapter-header">
+    <div class="chapter-num ch4">Chapter 4</div>
+    <div class="chapter-title">Finding Subdomains</div>
+    <div class="chapter-divider ch4"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch4">1</div>
+            <div class="objective-text"><strong>Explain</strong> why finding subdomains is the first step in web application reconnaissance.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">2</div>
+            <div class="objective-text"><strong>Use</strong> browser dev tools to discover hidden servers talking to a website.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">3</div>
+            <div class="objective-text"><strong>Apply</strong> Google search operators and archive tools to find hidden subdomains.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">4</div>
+            <div class="objective-text"><strong>Describe</strong> a DNS zone transfer attack and why it works against misconfigured servers.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">5</div>
+            <div class="objective-text"><strong>Distinguish</strong> between brute force and dictionary attacks for subdomain discovery.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Why Find Subdomains -->
+<div id="ch4-why" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#127758;</div>
+        <h2>Why Find Subdomains? (The JeddahBank Story)</h2>
+    </div>
+
+    <p>A company's website is rarely just <em>one</em> server. Big companies run many servers, each serving a different purpose — and each could have its own security holes. A <strong>subdomain</strong> is an extra prefix on a domain name, like <code>mail.jeddahbank.com</code> or <code>admin.jeddahbank.com</code>.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; Story — Ahmed Tests JeddahBank</div>
+        <p><strong>Ahmed</strong> is hired as a penetration tester for JeddahBank. His job: find security weaknesses.</p>
+        <p>He visits <code>www.jeddahbank.com</code> — the main website. It has been tested many times and most bugs are already fixed. Ahmed thinks smarter. He asks himself: <em>"What other servers does JeddahBank run that nobody is looking at?"</em></p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The main door has a guard. But what about the back door, the staff entrance, or the old server in the basement? Those might be wide open!"
+        </div>
+        <p>This is why we find subdomains — to discover <strong>servers that are less watched, less tested, and more likely to have vulnerabilities</strong>.</p>
+    </div>
+
+    <!-- Subdomain Tree Visual -->
+    <div class="subdomain-visual">
+        <p style="font-weight:700; color:var(--dark); margin-bottom:20px; font-size:1.05em;">JeddahBank's Subdomain Map</p>
+        <div class="domain-tree">
+            <div class="domain-root">jeddahbank.com</div>
+            <div class="domain-connector"></div>
+            <div class="domain-branches">
+                <div class="domain-sub www">www</div>
+                <div class="domain-sub mail">mail</div>
+                <div class="domain-sub admin">admin ⚠️</div>
+                <div class="domain-sub dev">dev ⚠️</div>
+                <div class="domain-sub api">api</div>
+                <div class="domain-sub ftp">ftp ⚠️</div>
+            </div>
+        </div>
+        <p style="margin-top:20px; color:var(--gray); font-size:0.85em;">⚠️ These are often forgotten and less secured than the main site</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Core Idea</h4>
+        <p>Consumer-facing websites (<code>www</code>) get the most attention and bug fixes. Hidden servers like <code>admin</code>, <code>dev</code>, and <code>ftp</code> often have bugs nobody fixed because nobody was looking.</p>
+    </div>
+</div>
+
+<!-- Browser Dev Tools -->
+<div id="ch4-devtools" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128269;</div>
+        <h2>Method 1 — Browser Dev Tools (Network Tab)</h2>
+    </div>
+
+    <p>The easiest first step: <strong>watch what your browser talks to</strong>. When you use any website, your browser makes dozens of hidden requests to different servers. You can see all of these in the browser's built-in <strong>Developer Tools</strong>.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; Story — Ahmed Watches the Network</div>
+        <p>Ahmed opens Chrome and presses <strong>F12</strong> to open Developer Tools. He clicks the <strong>Network</strong> tab. Then he logs in to JeddahBank and clicks around the website.</p>
+        <p>Instantly, he sees a list of network requests appearing. He clicks the <strong>XHR</strong> filter to show only API requests. He spots something interesting:</p>
+        <div class="code-box">
+            <span class="t">GET</span> <span class="s">api.jeddahbank.com/users/1234</span><br>
+            <span class="t">GET</span> <span class="s">cdn.jeddahbank.com/assets/logo.png</span><br>
+            <span class="t">POST</span> <span class="s">analytics.jeddahbank.com/track</span><br>
+            <span class="t">GET</span> <span class="s">notifications.jeddahbank.com/alerts</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "Without doing anything special, I already found 4 subdomains just by clicking around! I now know the app uses api, cdn, analytics, and notifications servers."
+        </div>
+    </div>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num ch4">1</div>
+            <div><strong>Open Dev Tools</strong> — press F12 or right-click → "Inspect" in Chrome/Firefox/Edge</div>
+        </li>
+        <li>
+            <div class="step-num ch4">2</div>
+            <div><strong>Click Network Tab</strong> — watch all HTTP requests appear in real time</div>
+        </li>
+        <li>
+            <div class="step-num ch4">3</div>
+            <div><strong>Filter by XHR</strong> — removes images and fonts, shows only API calls</div>
+        </li>
+        <li>
+            <div class="step-num ch4">4</div>
+            <div><strong>Check each Request URL</strong> — look under Headers → General → Request URL</div>
+        </li>
+        <li>
+            <div class="step-num ch4">5</div>
+            <div><strong>Write down every different domain</strong> — add them to your recon map</div>
+        </li>
+    </ol>
+</div>
+
+<!-- Google Dorking -->
+<div id="ch4-google" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128270;</div>
+        <h2>Method 2 — Google Dorking & Public Records</h2>
+    </div>
+
+    <p>Google has indexed almost the entire internet. We can use <strong>special search operators</strong> ("dorks") to make Google reveal subdomains it has seen — even ones not linked from the main website.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; Story — Ahmed Talks to Google</div>
+        <p>Ahmed types a smart query into Google to find all JeddahBank pages it knows about, but skip the obvious <code>www</code> subdomain:</p>
+        <div class="code-box">
+            <span class="c"># Show all jeddahbank.com pages, but skip www</span><br>
+            <span class="cmd">site:jeddahbank.com -inurl:www</span><br><br>
+            <span class="c"># Also skip the mobile version</span><br>
+            <span class="cmd">site:jeddahbank.com -inurl:www -inurl:mobile</span>
+        </div>
+        <p>Google returns results from <code>admin.jeddahbank.com</code> and <code>status.jeddahbank.com</code> — subdomains that were indexed but never advertised to users!</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "Google already knows about these servers because it crawled old links. I just need to ask the right question."
+        </div>
+    </div>
+
+    <h3>Other Public Sources</h3>
+    <ul class="clean-list ch4">
+        <li><strong>Search Engines (Google, Bing)</strong> — use site: and -inurl: operators to narrow results</li>
+        <li><strong>Social Media</strong> — companies post subdomain links in marketing campaigns and job listings</li>
+        <li><strong>GitHub</strong> — developers sometimes accidentally commit configuration files with internal URLs</li>
+        <li><strong>Job postings</strong> — a job ad saying "we use api.company.com" reveals internal infrastructure</li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Ethical Reminder</h4>
+        <p>Only use these techniques against systems you <strong>own or have written permission</strong> to test. Using Google dorks against a target without authorization is still reconnaissance against a system you don't own — which may be illegal in your jurisdiction.</p>
+    </div>
+</div>
+
+<!-- Archive.org -->
+<div id="ch4-archive" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128190;</div>
+        <h2>Method 3 — Archive.org (Historical Snapshots)</h2>
+    </div>
+
+    <p><strong>Archive.org</strong> saves old snapshots of websites — sometimes going back 20 years. This is extremely valuable because a subdomain that was accidentally exposed in 2018 and then removed might still be stored in the archive. <em>The internet never forgets.</em></p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; Story — Ahmed Travels Back in Time</div>
+        <p>Ahmed visits archive.org and searches for <code>jeddahbank.com</code>. He finds snapshots from 2019 — before a big website redesign. He right-clicks on the old page and views its source code.</p>
+        <p>In the HTML source from 2019, he finds links like:</p>
+        <div class="code-box">
+            <span class="c">&lt;!-- old navigation links in the 2019 snapshot --&gt;</span><br>
+            &lt;a href="<span class="found">https://beta.jeddahbank.com</span>/new-features"&gt;...&lt;/a&gt;<br>
+            &lt;script src="<span class="found">https://legacy-api.jeddahbank.com</span>/v1/app.js"&gt;&lt;/script&gt;
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The company removed these links from their current site, but the old server might still be running! Old systems get forgotten and rarely updated."
+        </div>
+        <p>Ahmed tries visiting <code>beta.jeddahbank.com</code> — it still resolves! It's running old software with known vulnerabilities.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Why This Works</h4>
+        <p>Companies redesign their websites but often leave old servers running "just in case." These forgotten servers run outdated software and rarely receive security updates — making them easy targets.</p>
+    </div>
+</div>
+
+<!-- Zone Transfer Attack -->
+<div id="ch4-dns" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#127760;</div>
+        <h2>Method 4 — DNS Zone Transfer Attack</h2>
+    </div>
+
+    <p>This is a clever technique that exploits <strong>misconfigured DNS servers</strong>. DNS (Domain Name System) is like the internet's phone book — it translates names like <code>jeddahbank.com</code> into IP addresses like <code>195.250.100.195</code>.</p>
+
+    <p>DNS servers need to synchronize their records with each other using something called a <strong>zone transfer</strong>. If a DNS server is not properly secured, it will share its <em>entire list of subdomains</em> with anyone who asks — not just other DNS servers.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; Story — Ahmed Pretends to be a DNS Server</div>
+        <p>Ahmed opens his terminal. He first finds JeddahBank's nameservers, then asks one of them for a full zone transfer — pretending to be another DNS server that needs to sync:</p>
+
+        <div class="zone-demo">
+            <span class="comment"># Step 1: Find the nameservers</span><br>
+            <span class="cmd">$ host -t ns jeddahbank.com</span><br>
+            <span class="out">jeddahbank.com name server ns1.bankhost.com</span><br>
+            <span class="out">jeddahbank.com name server ns2.bankhost.com</span><br><br>
+            <span class="comment"># Step 2: Request a zone transfer from one nameserver</span><br>
+            <span class="cmd">$ host -l jeddahbank.com ns1.bankhost.com</span><br><br>
+            <span class="comment"># If the server is misconfigured, you get the full list!</span><br>
+            <span class="found">mail.jeddahbank.com    has address 82.31.105.140</span><br>
+            <span class="found">admin.jeddahbank.com   has address 32.45.105.144</span><br>
+            <span class="found">internal.jeddahbank.com has address 25.44.105.144</span>
+        </div>
+
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "In two simple commands, I got a complete list of all their servers — including an 'internal' server that should definitely not be public!"
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--red);">
+            <h4>&#128308; Vulnerable DNS Server</h4>
+            <p>Accepts zone transfer requests from <strong>anyone</strong>. Returns the full list of subdomains and IP addresses. Very common on older or poorly configured servers.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--green);">
+            <h4>&#128994; Secure DNS Server</h4>
+            <p>Only accepts zone transfer requests from <strong>authorized DNS servers</strong>. Returns: <code>Transfer Failed.</code> — No useful information revealed.</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; Quick Tip</h4>
+        <p>Zone transfer attacks take only seconds and cost nothing. Always try it first — if it works, you save hours of work. If it fails, simply move to the next method.</p>
+    </div>
+</div>
+
+<!-- Brute Force & Dictionary -->
+<div id="ch4-brute" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128736;</div>
+        <h2>Method 5 — Brute Force &amp; Dictionary Attacks</h2>
+    </div>
+
+    <p>When all other methods fail, we can <strong>guess subdomains systematically</strong>. There are two approaches:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch4);">
+            <h4>&#127922; Brute Force</h4>
+            <p>Try <strong>every possible combination</strong> of letters: aa, ab, ac... ba, bb... This is extremely slow for long subdomains but misses nothing.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch5);">
+            <h4>&#128218; Dictionary Attack</h4>
+            <p>Use a <strong>list of common subdomain names</strong> like mail, admin, dev, ftp, api. Much faster and finds most real subdomains because developers follow naming conventions.</p>
+        </div>
+    </div>
+
+    <h3>The Top 10 Most Common Subdomains</h3>
+    <p>Research on millions of DNS records shows these are the most likely subdomains any company has:</p>
+    <div class="code-box">
+        <span class="c"># The most commonly found subdomains (from dnscan research)</span><br>
+        <span class="n">1.</span> <span class="s">www</span> &nbsp;&nbsp;<span class="n">2.</span> <span class="s">mail</span> &nbsp;&nbsp;<span class="n">3.</span> <span class="s">ftp</span> &nbsp;&nbsp;<span class="n">4.</span> <span class="s">admin</span> &nbsp;&nbsp;<span class="n">5.</span> <span class="s">api</span><br>
+        <span class="n">6.</span> <span class="s">dev</span> &nbsp;&nbsp;<span class="n">7.</span> <span class="s">test</span> &nbsp;&nbsp;<span class="n">8.</span> <span class="s">smtp</span> &nbsp;&nbsp;<span class="n">9.</span> <span class="s">blog</span> &nbsp;&nbsp;<span class="n">10.</span> <span class="s">webmail</span>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Important Limitation</h4>
+        <p>Brute force and dictionary attacks <strong>generate a lot of network traffic</strong> that is easy to log and detect. Servers may ban your IP address. These should always be your <strong>last resort</strong>, used only after exhausting quieter methods.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Recommended Order</h4>
+        <p>1. Browser Dev Tools → 2. Google Dorking → 3. Archive.org → 4. Zone Transfer → 5. Dictionary Attack → 6. Brute Force (last resort)</p>
+    </div>
+</div>
+
+<!-- Chapter 4 Summary -->
+<div id="ch4-summary" class="summary-banner ch4">
+    <h3>&#10003; Chapter 4 Summary — Finding Subdomains</h3>
+    <ul>
+        <li>Subdomains are separate servers that often receive <strong>less security attention</strong> than the main site</li>
+        <li><strong>Browser Dev Tools</strong> (Network tab) reveal subdomains just by browsing the website</li>
+        <li><strong>Google dorks</strong> like <code>site:domain.com -inurl:www</code> find indexed subdomains</li>
+        <li><strong>Archive.org</strong> reveals old subdomains that were removed from the live site but still running</li>
+        <li><strong>Zone Transfer attacks</strong> exploit misconfigured DNS to get the full subdomain list in seconds</li>
+        <li><strong>Dictionary attacks</strong> use common names (mail, admin, dev) — much faster than brute force</li>
+        <li>Document every subdomain you find — they form the foundation of your recon map</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 5 — API Analysis
+     ════════════════════════════════════════════════ -->
+<div id="chapter-5" class="chapter-header">
+    <div class="chapter-num ch5">Chapter 5</div>
+    <div class="chapter-title">API Analysis</div>
+    <div class="chapter-divider ch5"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch5">1</div>
+            <div class="objective-text"><strong>Identify</strong> REST API patterns by looking at URL structure and HTTP headers.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch5">2</div>
+            <div class="objective-text"><strong>Map</strong> the HTTP verbs (GET, POST, PUT, DELETE) available on any given API endpoint.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch5">3</div>
+            <div class="objective-text"><strong>Recognize</strong> common authentication schemes — Basic Auth, Digest, and OAuth — and their weaknesses.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch5">4</div>
+            <div class="objective-text"><strong>Discover</strong> the shape (required fields) of an API endpoint through observation and logical deduction.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Endpoint Discovery -->
+<div id="ch5-endpoints" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128279;</div>
+        <h2>What is an API Endpoint? (The "Hidden Menu")</h2>
+    </div>
+
+    <p>After finding subdomains, the next question is: <strong>what does each server actually do?</strong> Servers expose <em>endpoints</em> — specific URLs that accept requests and return data. Finding and mapping these endpoints is called <strong>API Analysis</strong>.</p>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; Story — Ahmed Reads the Secret Menu</div>
+        <p>Think of an API like a restaurant. A customer (the browser) can only see the public menu. But the kitchen has a <strong>secret internal menu</strong> — orders for chefs, storage room requests, manager reports.</p>
+        <p><strong>Ahmed</strong> knows that JeddahBank has an <code>api.jeddahbank.com</code> subdomain. While browsing the bank website with Dev Tools open, he sees these requests:</p>
+        <div class="code-box">
+            <span class="t">GET</span>  <span class="s">api.jeddahbank.com/users/1234</span><br>
+            <span class="t">GET</span>  <span class="s">api.jeddahbank.com/users/1234/payments</span><br>
+            <span class="t">POST</span> <span class="s">api.jeddahbank.com/users/1234/payments</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "This is clearly a REST API. The URL describes a <em>resource</em> (user 1234's payments), not an action. This tells me a lot about how the system is structured."
+        </div>
+    </div>
+
+    <h3>How to Recognize a REST API</h3>
+    <ul class="clean-list ch5">
+        <li><strong>URLs represent resources</strong>, not actions — <code>/users/1234</code> not <code>/getUser?id=1234</code></li>
+        <li><strong>Resources are nested</strong> hierarchically — <code>/users/1234/payments</code> means "payments belonging to user 1234"</li>
+        <li><strong>A token is sent with every request</strong> — REST is "stateless", the server doesn't remember you between requests</li>
+        <li><strong>Uses standard HTTP verbs</strong> — GET, POST, PUT, DELETE to perform different actions</li>
+    </ul>
+</div>
+
+<!-- HTTP Verbs -->
+<div id="ch5-verbs" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128295;</div>
+        <h2>The HTTP Verbs — "What Can I Do Here?"</h2>
+    </div>
+
+    <p>Every REST API endpoint supports one or more <strong>HTTP verbs</strong>. Each verb means a different action. As a security tester, you want to know <em>which verbs each endpoint accepts</em> — because an endpoint that shouldn't accept DELETE might still do so.</p>
+
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>Verb</th>
+                <th>Action</th>
+                <th>Real-World Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge get">GET</span></td>
+                <td><strong>Read</strong> data</td>
+                <td>View your bank balance</td>
+            </tr>
+            <tr>
+                <td><span class="badge post">POST</span></td>
+                <td><strong>Create</strong> new data</td>
+                <td>Submit a payment</td>
+            </tr>
+            <tr>
+                <td><span class="badge put">PUT</span></td>
+                <td><strong>Replace</strong> existing data</td>
+                <td>Update your profile completely</td>
+            </tr>
+            <tr>
+                <td><span class="badge patch">PATCH</span></td>
+                <td><strong>Modify</strong> part of data</td>
+                <td>Change only your phone number</td>
+            </tr>
+            <tr>
+                <td><span class="badge delete">DELETE</span></td>
+                <td><strong>Delete</strong> data</td>
+                <td>Close your account</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; Story — Testing the Verbs</div>
+        <p>Ahmed found the endpoint <code>GET api.jeddahbank.com/users/1234</code>. He knows GET works — but what about DELETE?</p>
+        <p>He sends: <code>DELETE api.jeddahbank.com/users/1234</code></p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed thinks:</span> "If this returns a 200 OK instead of 405 Method Not Allowed, the server might let anyone delete any user account. That would be a critical vulnerability!"
+        </div>
+        <p>There is also a special verb called <strong>OPTIONS</strong> — some APIs will tell you exactly which verbs they support if you ask:</p>
+        <div class="code-box">
+            <span class="c"># Ask the server: "what verbs do you support?"</span><br>
+            <span class="cmd">curl -X OPTIONS https://api.jeddahbank.com/users/1234</span><br><br>
+            <span class="c"># A helpful response would say:</span><br>
+            <span class="out">Allow: HEAD, GET, PUT, OPTIONS</span>
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Warning</h4>
+        <p>Testing verbs like DELETE or PUT <strong>can modify or destroy real data</strong>. Always have <strong>explicit written permission</strong> from the system owner before testing any verb beyond GET.</p>
+    </div>
+</div>
+
+<!-- Authentication Schemes -->
+<div id="ch5-auth" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128274;</div>
+        <h2>Authentication Schemes — "Who Are You?"</h2>
+    </div>
+
+    <p>Most API endpoints require you to prove your identity before they give you data. Understanding <strong>how authentication works</strong> is critical — because if you understand it, you can also try to bypass it.</p>
+
+    <table class="auth-table">
+        <thead>
+            <tr>
+                <th>Scheme</th>
+                <th>How It Works</th>
+                <th>Strength</th>
+                <th>Weakness</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Basic Auth</td>
+                <td>Username + password encoded in Base64, sent on <em>every</em> request</td>
+                <td>Simple, universally supported</td>
+                <td>Easy to decode if intercepted; credentials never expire</td>
+            </tr>
+            <tr>
+                <td>Digest Auth</td>
+                <td>A hashed version of credentials — harder to intercept than Basic</td>
+                <td>Harder to steal mid-air</td>
+                <td>Security depends on the hashing algorithm used</td>
+            </tr>
+            <tr>
+                <td>OAuth 2.0</td>
+                <td>A "Bearer token" is issued after login; sent with every request</td>
+                <td>Tokens can expire; can log in with Google/Apple</td>
+                <td>If the token is stolen, attackers get full access until it expires</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; Story — Ahmed Reads the Token</div>
+        <p>Ahmed logs in to JeddahBank and watches the network traffic. In the response header he sees:</p>
+        <div class="code-box">
+            <span class="t">Authorization: Basic</span> <span class="s">am9lOjEyMzQ=</span>
+        </div>
+        <p>He recognizes this as <strong>HTTP Basic Auth</strong>. The string <code>am9lOjEyMzQ=</code> is just a Base64-encoded username and password. He decodes it in the browser console:</p>
+        <div class="code-box">
+            <span class="c">// Decode the Base64 string in browser console</span><br>
+            <span class="k">atob</span>(<span class="s">'am9lOjEyMzQ='</span>);<br>
+            <span class="c">// Result: "joe:1234" — username is joe, password is 1234!</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "Basic Auth is like writing your password in a language anyone can read. It's only safe if the connection is encrypted with HTTPS. If someone intercepts an HTTP Basic Auth request, they get the password instantly."
+        </div>
+    </div>
+</div>
+
+<!-- Endpoint Shapes -->
+<div id="ch5-shapes" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128221;</div>
+        <h2>Endpoint Shapes — "What Does This Endpoint Expect?"</h2>
+    </div>
+
+    <p>Knowing an endpoint exists is one thing. Understanding <em>what data it accepts</em> — its <strong>shape</strong> — is the next level. This lets you send meaningful requests and discover how the application works internally.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch5);">
+            <h4>&#128214; Common Shapes (Easy)</h4>
+            <p>Standard protocols like <strong>OAuth 2.0</strong> have publicly documented shapes. You can look them up and immediately know what fields to send.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch4);">
+            <h4>&#128260; App-Specific Shapes (Hard)</h4>
+            <p>Custom internal APIs have custom shapes. You must discover them by <strong>analyzing existing requests</strong> in the browser, reading error messages, or careful trial and error.</p>
+        </div>
+    </div>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; Story — Error Messages as Hints</div>
+        <p>Ahmed sends a POST to <code>api.jeddahbank.com/users/config</code> with incomplete data. The server, not properly secured, responds with:</p>
+        <div class="code-box">
+            <span class="out">400 Bad Request</span><br>
+            <span class="s">"error": "auth_token not supplied"</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The error message just told me this endpoint expects an <code>auth_token</code> field. That's information I didn't have before — and a sign that this API gives away too much detail in its errors."
+        </div>
+        <p>A secure API would just say <strong>"400 Bad Request"</strong> with no extra details. Information in error messages is a common security flaw.</p>
+    </div>
+</div>
+
+<!-- Chapter 5 Summary -->
+<div id="ch5-summary" class="summary-banner ch5">
+    <h3>&#10003; Chapter 5 Summary — API Analysis</h3>
+    <ul>
+        <li>After finding subdomains, the next step is discovering their <strong>API endpoints</strong></li>
+        <li><strong>REST APIs</strong> use resource-based URLs and standard HTTP verbs (GET, POST, PUT, DELETE)</li>
+        <li>Test every <strong>HTTP verb</strong> on every endpoint — an endpoint might accept verbs it shouldn't</li>
+        <li><strong>OPTIONS</strong> is a special verb that lists all supported verbs for an endpoint</li>
+        <li><strong>Authentication tokens</strong> reveal what scheme is used — Basic Auth is the weakest</li>
+        <li><strong>Error messages</strong> from poorly secured apps often reveal the expected data shape (a security flaw)</li>
+        <li>Document endpoints, verbs, and shapes in your recon map — this is your attack blueprint</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 6 — Identifying Third-Party Dependencies
+     ════════════════════════════════════════════════ -->
+<div id="chapter-6" class="chapter-header">
+    <div class="chapter-num ch6">Chapter 6</div>
+    <div class="chapter-title">Identifying Third-Party Dependencies</div>
+    <div class="chapter-divider ch6"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch6">1</div>
+            <div class="objective-text"><strong>Explain</strong> why third-party libraries are a significant security risk.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">2</div>
+            <div class="objective-text"><strong>Detect</strong> major front-end frameworks (React, Angular, Vue, Ember) and determine their version.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">3</div>
+            <div class="objective-text"><strong>Find</strong> all JavaScript and CSS libraries loaded by a webpage using the browser console.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">4</div>
+            <div class="objective-text"><strong>Identify</strong> server-side technology through HTTP headers, error pages, and fingerprinting.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">5</div>
+            <div class="objective-text"><strong>Recognize</strong> database types by analyzing primary key patterns in API responses.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Why Dependencies Are Risky -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#9888;&#65039;</div>
+        <h2>Why Third-Party Code is a Security Risk</h2>
+    </div>
+
+    <p>No developer builds everything from scratch. Modern web apps are <strong>80–95% third-party code</strong>: frameworks, libraries, databases, payment processors. Each one is code you <em>didn't write</em> and can't fully control.</p>
+
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; Story — One Old Library, Many Victims</div>
+        <p>In 2017, a major data breach at a US credit bureau exposed the personal data of 147 million people. The cause? An <strong>outdated version of Apache Struts</strong> — a web framework — that had a known vulnerability. A patch was available for 2 months, but nobody updated it.</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "As a security tester, if I can find which libraries an app uses and which version, I can look them up in the <strong>CVE database</strong> (Common Vulnerabilities and Exposures) and potentially find a known exploit — already written and ready to use."
+        </div>
+    </div>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128203;</div>
+            <div class="mc-title">Find the Library</div>
+            <div class="mc-desc">Detect what framework or package the site uses</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128269;</div>
+            <div class="mc-title">Find the Version</div>
+            <div class="mc-desc">Old versions have known, published vulnerabilities</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128451;</div>
+            <div class="mc-title">Search the CVE DB</div>
+            <div class="mc-desc">Look up known exploits for that version</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#127919;</div>
+            <div class="mc-title">Prioritize & Attack</div>
+            <div class="mc-desc">Known vulnerabilities = ready-made attack tools</div>
+        </div>
+    </div>
+</div>
+
+<!-- Detecting SPA Frameworks -->
+<div id="ch6-spa" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128187;</div>
+        <h2>Detecting Front-End Frameworks (SPA Detection)</h2>
+    </div>
+
+    <p>SPA (Single Page Application) frameworks like React, Angular, Vue, and Ember each leave <strong>fingerprints</strong> in the browser. You can detect them — and their exact version — using the browser console.</p>
+
+    <div class="framework-grid">
+        <div class="framework-card react">
+            <div class="fw-icon">&#9889;</div>
+            <div class="fw-name">React</div>
+            <div class="fw-company">by Facebook / Meta</div>
+            <div class="fw-detect">React.version</div>
+        </div>
+        <div class="framework-card angular">
+            <div class="fw-icon">&#9651;</div>
+            <div class="fw-name">AngularJS</div>
+            <div class="fw-company">by Google</div>
+            <div class="fw-detect">ng-version attr</div>
+        </div>
+        <div class="framework-card vue">
+            <div class="fw-icon">&#128001;</div>
+            <div class="fw-name">Vue.js</div>
+            <div class="fw-company">Adobe, GitLab</div>
+            <div class="fw-detect">Vue.version</div>
+        </div>
+        <div class="framework-card ember">
+            <div class="fw-icon">&#128293;</div>
+            <div class="fw-name">EmberJS</div>
+            <div class="fw-company">LinkedIn, Netflix</div>
+            <div class="fw-detect">Ember.VERSION</div>
+        </div>
+    </div>
+
+    <h3>How to Detect in the Browser Console</h3>
+    <div class="code-box">
+        <span class="c">// Open browser console (F12 → Console) and type these:</span><br><br>
+        <span class="c">// React</span><br>
+        <span class="k">console.log</span>(<span class="s">React.version</span>); <span class="c">// → "18.2.0"</span><br><br>
+        <span class="c">// Vue</span><br>
+        <span class="k">console.log</span>(<span class="s">Vue.version</span>);   <span class="c">// → "3.3.4"</span><br><br>
+        <span class="c">// Ember</span><br>
+        <span class="k">console.log</span>(<span class="s">Ember.VERSION</span>); <span class="c">// → "4.12.0"</span><br><br>
+        <span class="c">// Angular 4+ — check the DOM element attributes</span><br>
+        <span class="k">document.querySelector</span>(<span class="s">'[ng-version]'</span>).<span class="k">getAttribute</span>(<span class="s">'ng-version'</span>);
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Why the Version Matters</h4>
+        <p>If the site is running React 16.x, you can search online for "React 16 CVE" and find published vulnerabilities. Old, unpatched versions are goldmines for attackers.</p>
+    </div>
+</div>
+
+<!-- JS & CSS Libraries -->
+<div id="ch6-libs" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128196;</div>
+        <h2>Detecting JavaScript &amp; CSS Libraries</h2>
+    </div>
+
+    <p>Beyond frameworks, websites load dozens of smaller <strong>JavaScript libraries</strong> (jQuery, Lodash, D3, Stripe) and <strong>CSS frameworks</strong> (Bootstrap, Tailwind). You can list all of them with a simple browser console snippet.</p>
+
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; Story — Ahmed Checks the Ingredients</div>
+        <p>Ahmed pastes this code into the browser console on JeddahBank's website:</p>
+        <div class="code-box">
+            <span class="c">// List all external JavaScript files loaded by this page</span><br>
+            <span class="k">document.querySelectorAll</span>(<span class="s">'script'</span>).<span class="k">forEach</span>(s =&gt; {<br>
+            &nbsp;&nbsp;<span class="k">if</span> (s.src) <span class="k">console.log</span>(s.src);<br>
+            });
+        </div>
+        <p>The output reveals:</p>
+        <div class="code-box">
+            <span class="found">https://js.stripe.com/v3/</span>                          <span class="c">← payment processor</span><br>
+            <span class="found">https://code.jquery.com/jquery-3.4.1.min.js</span>         <span class="c">← jQuery 3.4.1</span><br>
+            <span class="found">https://www.google-analytics.com/analytics.js</span>       <span class="c">← analytics tracker</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "jQuery 3.4.1 — let me check the CVE database. Found it: CVE-2020-11022, an XSS vulnerability in versions before 3.5.0. This site might be exploitable!"
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch6);">
+            <h4>&#128196; Detect JavaScript Libraries</h4>
+            <p>Run <code>document.querySelectorAll('script')</code> in the console. Look at each <code>src</code> URL — the filename often includes the library name and version number.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch5);">
+            <h4>&#127912; Detect CSS Libraries</h4>
+            <p>Run <code>document.querySelectorAll('link[rel=stylesheet]')</code>. A result like <code>bootstrap.css</code> or <code>tailwind.min.css</code> immediately tells you the CSS framework.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Server-Side Detection -->
+<div id="ch6-server" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128451;</div>
+        <h2>Detecting Server-Side Frameworks</h2>
+    </div>
+
+    <p>The server is hidden from the browser — but it often <strong>leaves clues in HTTP response headers and error pages</strong>.</p>
+
+    <h3>&#128203; Method 1: HTTP Headers</h3>
+    <p>Some misconfigured servers broadcast exactly what software they use in their response headers. Ahmed opens Dev Tools → Network → click any request → Headers:</p>
+    <div class="code-box">
+        <span class="c"># A server giving away too much information:</span><br>
+        <span class="found">X-Powered-By: ASP.NET</span><br>
+        <span class="found">Server: Microsoft-IIS/4.5</span><br>
+        <span class="found">X-AspNet-Version: 4.0.25</span><br><br>
+        <span class="c"># A properly configured server reveals nothing:</span><br>
+        <span class="out">Server: nginx</span>   <span class="c">← just enough to say "we use nginx", no version</span>
+    </div>
+
+    <h3>&#128214; Method 2: Default Error Pages (404 Fingerprinting)</h3>
+    <p>Web frameworks ship with default error pages that have distinctive HTML. Even if a company replaces the main content, the structure of the HTML can reveal the framework version through changes made in specific releases.</p>
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; Story — The 404 Page Talks Too Much</div>
+        <p>Ahmed visits a non-existent URL on a client's website and gets a 404 page. He recognizes the layout — it matches the default <strong>Ruby on Rails</strong> 404 page. He checks the HTML source for specific CSS class names that were added in version 4.2.</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The presence of <code>.rails-default-errorpage</code> CSS class tells me this is Rails version 4.2 or newer. The absence of the HTML5 <code>type</code> attribute on script tags tells me it's post-2012. Cross-referencing these clues gives me a version range — and Rails 3.x to 4.2.7 has a known XSS vulnerability (CVE-2016-6316)."
+        </div>
+    </div>
+</div>
+
+<!-- Database Detection -->
+<div id="ch6-db" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128202;</div>
+        <h2>Database Detection — Reading the ID Patterns</h2>
+    </div>
+
+    <p>Databases generate unique IDs for every record. Different databases use different ID formats. By looking at the IDs in API responses, you can often identify which database the app uses.</p>
+
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; Story — Ahmed Reads Between the Lines</div>
+        <p>Ahmed sends a GET request to <code>api.jeddahbank.com/users/1234</code> and examines the JSON response:</p>
+        <div class="code-box">
+            {<br>
+            &nbsp;&nbsp;<span class="k">"_id"</span>: <span class="s">"507f1f77bcf86cd799439011"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"username"</span>: <span class="s">"joe123"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"email"</span>: <span class="s">"joe@jeddahbank.com"</span><br>
+            }
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The field is called <code>_id</code>, and the value is a 24-character hexadecimal string. This is a <strong>MongoDB ObjectId</strong>! I know exactly how MongoDB generates these — the first 8 characters are a Unix timestamp, so I can even tell when this user account was created."
+        </div>
+    </div>
+
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>Database</th>
+                <th>Default ID Pattern</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>MongoDB</strong></td>
+                <td>24-char hex, field named <code>_id</code></td>
+                <td><code>507f1f77bcf86cd799439011</code></td>
+            </tr>
+            <tr>
+                <td><strong>MySQL / PostgreSQL</strong></td>
+                <td>Sequential integers</td>
+                <td><code>1, 2, 3, 4 ...</code></td>
+            </tr>
+            <tr>
+                <td><strong>UUID-based</strong></td>
+                <td>Hyphenated 36-char string</td>
+                <td><code>550e8400-e29b-41d4-a716-446655440000</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128161; Bonus — Insecure Direct Object Reference (IDOR)</h4>
+        <p>When IDs are <strong>sequential integers</strong> (1, 2, 3...), an attacker can guess them. If <code>/users/1234</code> returns your data, try <code>/users/1235</code> — that might return someone else's data! This is a critical vulnerability called <strong>IDOR</strong>.</p>
+    </div>
+</div>
+
+<!-- Chapter 6 Summary -->
+<div id="ch6-summary" class="summary-banner ch6">
+    <h3>&#10003; Chapter 6 Summary — Third-Party Dependencies</h3>
+    <ul>
+        <li>Modern apps are mostly <strong>third-party code</strong> — libraries, frameworks, and databases you didn't write</li>
+        <li>Old, unpatched libraries have <strong>published CVE vulnerabilities</strong> ready to exploit</li>
+        <li>Detect front-end frameworks (React, Vue, Angular, Ember) via <strong>browser console globals</strong></li>
+        <li>Detect JS libraries and CSS frameworks by listing <strong>&lt;script&gt; and &lt;link&gt; tags</strong></li>
+        <li>Server-side tech leaks through <strong>HTTP headers</strong> (X-Powered-By) and <strong>default error pages</strong></li>
+        <li>Database type can be inferred from the <strong>shape and format of ID fields</strong> in API responses</li>
+        <li>Sequential integer IDs are a sign of potential <strong>IDOR vulnerabilities</strong></li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 7 — Identifying Weak Points in Architecture
+     ════════════════════════════════════════════════ -->
+<div id="chapter-7" class="chapter-header">
+    <div class="chapter-num ch7">Chapter 7</div>
+    <div class="chapter-title">Identifying Weak Points in Application Architecture</div>
+    <div class="chapter-divider ch7"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch7">1</div>
+            <div class="objective-text"><strong>Compile</strong> a complete recon documentation list covering technology, endpoints, auth, and domains.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch7">2</div>
+            <div class="objective-text"><strong>Distinguish</strong> secure from insecure application architecture by examining design patterns.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch7">3</div>
+            <div class="objective-text"><strong>Explain</strong> why security mechanisms must exist at multiple layers, not just one.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch7">4</div>
+            <div class="objective-text"><strong>Identify</strong> features that are risky to reinvent, especially cryptographic functions.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Your Recon Notes -->
+<div id="ch7-notes" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#128221;</div>
+        <h2>Your Recon Notes — What to Document</h2>
+    </div>
+
+    <p>Chapters 4, 5, and 6 gave you the tools to gather information. But raw information is useless unless it is <strong>organized</strong>. Before you start looking for vulnerabilities, you need a clear map of everything you found.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; Story — Ahmed's Final Map</div>
+        <p>After days of reconnaissance on JeddahBank, Ahmed organizes everything into a structured document. This becomes his attack blueprint:</p>
+        <div class="code-box">
+            <span class="c">// Ahmed's Complete Recon Notes — JeddahBank</span><br><br>
+            <span class="k">"technology"</span>: {<br>
+            &nbsp;&nbsp;<span class="k">"frontend"</span>: <span class="s">"React 16.8 (CVE-2018-6341 check!)"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"backend"</span>: <span class="s">"Node.js + Express"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"database"</span>: <span class="s">"MongoDB (detected from _id format)"</span><br>
+            },<br>
+            <span class="k">"domains"</span>: [<span class="s">"www"</span>, <span class="s">"api"</span>, <span class="s">"admin"</span>, <span class="s">"legacy-api (old!)"</span>],<br>
+            <span class="k">"api_endpoints"</span>: [<span class="s">"/users/:id"</span>, <span class="s">"/payments"</span>, <span class="s">"/admin/reports"</span>],<br>
+            <span class="k">"auth"</span>: <span class="s">"OAuth 2.0 Bearer tokens (expire in 1 hour)"</span>,<br>
+            <span class="k">"weak_spots"</span>: [<br>
+            &nbsp;&nbsp;<span class="s">"legacy-api server running outdated software"</span>,<br>
+            &nbsp;&nbsp;<span class="s">"admin panel exposed on public internet"</span>,<br>
+            &nbsp;&nbsp;<span class="s">"React version has known XSS vulnerability"</span><br>
+            ]
+        </div>
+    </div>
+
+    <h3>What Your Notes Should Always Include</h3>
+    <ul class="clean-list ch7">
+        <li><strong>Technology stack</strong> — framework, language, database, libraries + versions</li>
+        <li><strong>All subdomains and servers</strong> — especially forgotten or internal ones</li>
+        <li><strong>API endpoints</strong> — organized by HTTP verb and subdomain</li>
+        <li><strong>Authentication system</strong> — Basic Auth? OAuth? JWT? Session cookies?</li>
+        <li><strong>Features found</strong> — login, payments, uploads, messages, admin panel</li>
+        <li><strong>Security configurations found</strong> — CSP headers, CORS settings</li>
+        <li><strong>Potential weak spots</strong> — old libraries, exposed admin panels, verbose errors</li>
+    </ul>
+</div>
+
+<!-- Secure vs Insecure Architecture -->
+<div id="ch7-arch" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#127959;</div>
+        <h2>Secure vs Insecure Architecture — The Messaging App Story</h2>
+    </div>
+
+    <p>Most security bugs are <strong>not accidents in one function</strong> — they are the result of the entire application being designed insecurely from the start. An app with bad architecture will have bugs everywhere, not just in one place.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; Story — Two Banks, Same Feature</div>
+        <p>JeddahBank and SecureBank both build an instant messaging feature for their employees. The feature is simple: employees can send internal messages to each other.</p>
+        <p><strong>JeddahBank's approach</strong> (insecure): Developers write the message feature quickly. They don't think about security. Each developer handles security differently — one sanitizes input, another doesn't.</p>
+        <p><strong>SecureBank's approach</strong> (secure): Before any feature is built, the architecture team creates a shared <code>appendToDOM()</code> utility that <strong>automatically sanitizes all text</strong> before showing it on screen. Every developer must use this utility.</p>
+    </div>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#128308; Insecure Architecture (JeddahBank)</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>Each developer implements security separately</li>
+                    <li>Easy to forget sanitization in one place</li>
+                    <li>One developer skips it → XSS vulnerability</li>
+                    <li>Security is added after the feature is built</li>
+                    <li>New features don't inherit security from old ones</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#128994; Secure Architecture (SecureBank)</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>Security utilities are built into the shared codebase</li>
+                    <li>Every developer automatically uses safe functions</li>
+                    <li>Sanitization happens in one place — fix once, fixed everywhere</li>
+                    <li>Security is designed in before development starts</li>
+                    <li>New features inherit security from the architecture</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Key Insight for Security Testers</h4>
+        <p>When you find one XSS bug in a feature, it's probably a code mistake. When you find XSS bugs in <strong>multiple features</strong>, it's a sign of <strong>weak architecture</strong>. Focus your testing there — more bugs are nearby.</p>
+    </div>
+</div>
+
+<!-- Multiple Layers of Security -->
+<div id="ch7-layers" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#127959;</div>
+        <h2>Multiple Layers of Security — "Defence in Depth"</h2>
+    </div>
+
+    <p>A secure application does not rely on a single security check. It applies protection at <strong>every layer</strong> of the data flow. This is called <strong>Defence in Depth</strong> — like a bank vault with multiple locked doors, not just one.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; Story — The New Bulk Message Endpoint</div>
+        <p>SecureBank built their single-message endpoint with XSS protection at the API layer. Then, 6 months later, a developer added a <strong>bulk message API</strong> — to send many messages at once for marketing campaigns.</p>
+        <p>The developer forgot to add XSS sanitization to the new endpoint. An attacker discovered this and started uploading malicious scripts through the bulk endpoint, bypassing the original protection.</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "If the database layer had also sanitized every message on write, or if the front-end had sanitized every message on read, the bulk endpoint attack would have been blocked too. One layer failing doesn't open the vault."
+        </div>
+    </div>
+
+    <!-- Layer Stack Visual -->
+    <div class="layer-stack">
+        <div class="layer-item l1">
+            <div class="layer-icon">&#128421;</div>
+            <div class="layer-label">
+                <strong>Layer 1: Client (Browser)</strong>
+                <span>Input validation in the UI before the request is even sent</span>
+            </div>
+        </div>
+        <div class="layer-item l2">
+            <div class="layer-icon">&#128279;</div>
+            <div class="layer-label">
+                <strong>Layer 2: API Endpoint</strong>
+                <span>Sanitize and validate all incoming data before processing</span>
+            </div>
+        </div>
+        <div class="layer-item l3">
+            <div class="layer-icon">&#128451;</div>
+            <div class="layer-label">
+                <strong>Layer 3: Business Logic</strong>
+                <span>Apply security rules when processing and transforming data</span>
+            </div>
+        </div>
+        <div class="layer-item l4">
+            <div class="layer-icon">&#128202;</div>
+            <div class="layer-label">
+                <strong>Layer 4: Database</strong>
+                <span>Schema constraints reject invalid or malicious data</span>
+            </div>
+        </div>
+        <div class="layer-item l5">
+            <div class="layer-icon">&#128241;</div>
+            <div class="layer-label">
+                <strong>Layer 5: Output (DOM)</strong>
+                <span>Sanitize all data before displaying it — the last line of defence</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Tester's Strategy</h4>
+        <p>Look for features that have <strong>many layers but few security checks</strong> — these are statistically the most likely to have exploitable gaps. A payment flow with 5 steps but security only at step 1 is a prime target.</p>
+    </div>
+</div>
+
+<!-- Never Roll Your Own -->
+<div id="ch7-reinvent" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#128273;</div>
+        <h2>Never Roll Your Own Cryptography</h2>
+    </div>
+
+    <p>Some features should <strong>never be reinvented</strong> by a development team — no matter how talented they are. The most dangerous examples involve <strong>cryptography</strong>.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; Story — The Expensive Shortcut</div>
+        <p>A developer at JeddahBank thought the standard SHA-256 hashing algorithm was "boring" and decided to write a custom hashing algorithm for storing passwords. They thought it was clever and unique.</p>
+        <p>A security researcher spent 3 days analyzing the custom algorithm and found a pattern. Within a week, they had a script that could reverse the hash for common passwords — completely defeating the purpose of hashing.</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "SHA-256 was developed over years by hundreds of the world's best mathematicians, tested by the US National Institute of Standards and Technology. One developer cannot compete with that — and they shouldn't try."
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--green);">
+            <h4>&#128994; Safe to Reinvent</h4>
+            <p>UI components, data schemas, notification systems, comment storage, search filters — these are <strong>functional features</strong> where mistakes are catchable and fixable.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--red);">
+            <h4>&#128308; Never Reinvent</h4>
+            <p>Cryptography (hashing, encryption), authentication protocols, database engines, memory management, process isolation — these require <strong>deep mathematical expertise</strong> and years of testing by specialists.</p>
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Attacker's Delight</h4>
+        <p>Applications built with <strong>custom cryptography</strong> or custom authentication systems are among the easiest to break. When Ahmed sees a custom-built login system or password hasher, he smiles — these almost always have critical vulnerabilities.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; The Rule of Thumb</h4>
+        <p>If a technology requires expertise in <strong>mathematics, operating systems, or hardware</strong> to implement correctly — adopt an established, tested solution. Don't reinvent it.</p>
+    </div>
+</div>
+
+<!-- Chapter 7 Summary -->
+<div id="ch7-summary" class="summary-banner ch7">
+    <h3>&#10003; Chapter 7 Summary — Weak Points in Architecture</h3>
+    <ul>
+        <li>Before testing, compile a <strong>complete recon map</strong>: tech, subdomains, APIs, auth, and observations</li>
+        <li>Most bugs don't come from one bad line of code — they come from <strong>bad architecture design</strong></li>
+        <li>Secure apps build security into the <strong>shared architecture</strong>, not on a feature-by-feature basis</li>
+        <li>An app is only as secure as its <strong>weakest layer</strong> — defence in depth means protecting every layer</li>
+        <li>A new endpoint added later can bypass all the security on the original — always check new code paths</li>
+        <li><strong>Never build custom cryptography</strong> — it will almost always have critical vulnerabilities</li>
+        <li>Features with <strong>many layers but few security checks</strong> = your top testing priority</li>
+    </ul>
+</div>
+
+</main>
+</div>
+</div>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 — Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week2/index.html">Week 2</a>
+            <a href="index.html">Week 3</a>
+        </div>
+        <div style="color: var(--neutral-500); font-size: 13px;">Chapters 4, 5, 6 &amp; 7 — Reconnaissance Techniques</div>
+    </div>
+</footer>
+
+<script>
+    // Active sidebar link on scroll
+    const sections = document.querySelectorAll('[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                sidebarLinks.forEach(link => link.classList.remove('active'));
+                const active = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+</script>
+
 </body>
 </html>

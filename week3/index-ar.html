@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مذكرة الفصول 4 و 5 و 6 و 7 | CYB 236</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-50: #ecfdf5;
+            --primary-600: #059669;
+            --primary-700: #047857;
+            --primary-800: #065f46;
+            --primary-900: #064e3b;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+            /* ── ألوان الفصول ── */
+            --ch4: #d97706;
+            --ch4-light: #fef3c7;
+            --ch4-mid: #fde68a;
+
+            --ch5: #0891b2;
+            --ch5-light: #cffafe;
+            --ch5-mid: #67e8f9;
+
+            --ch6: #059669;
+            --ch6-light: #d1fae5;
+            --ch6-mid: #6ee7b7;
+
+            --ch7: #dc2626;
+            --ch7-light: #fee2e2;
+            --ch7-mid: #fca5a5;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+            --get: #22c55e;
+            --post: #3b82f6;
+            --put: #f59e0b;
+            --delete: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.9;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+            direction: rtl;
+        }
+
+        /* المصطلحات التقنية باللغة الإنجليزية */
+        .term {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+            display: inline-block;
+            background: var(--primary-50);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary-700);
+        }
+
+        /* ───── شريط التنقل ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #d97706, #dc2626);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-right: 16px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── الغلاف ───── */
+        .cover {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fde68a;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: #fbbf24; border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .cover .sub { font-size: 19px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .cover-chip.ch4 { background: rgba(217,119,6,0.3); }
+        .cover-chip.ch5 { background: rgba(8,145,178,0.3); }
+        .cover-chip.ch6 { background: rgba(5,150,105,0.3); }
+        .cover-chip.ch7 { background: rgba(220,38,38,0.3); }
+
+        /* ───── الحاوية ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── الشريط الجانبي ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--neutral-200); }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.4;
+        }
+
+        .sidebar-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .sidebar-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .sidebar-ch-label {
+            padding: 8px 12px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--neutral-400);
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--primary-600); color: white; }
+
+        /* ───── المحتوى ───── */
+        .content { min-width: 0; }
+
+        /* ───── رأس الفصل ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .chapter-num.ch4 { background: var(--ch4-light); color: var(--ch4); }
+        .chapter-num.ch5 { background: var(--ch5-light); color: var(--ch5); }
+        .chapter-num.ch6 { background: var(--ch6-light); color: var(--ch6); }
+        .chapter-num.ch7 { background: var(--ch7-light); color: var(--ch7); }
+
+        .chapter-title { font-size: 2.1em; font-weight: 800; color: var(--dark); line-height: 1.3; }
+
+        .chapter-divider { height: 4px; border-radius: 2px; margin: 10px auto 0; width: 80px; }
+        .chapter-divider.ch4 { background: var(--ch4); }
+        .chapter-divider.ch5 { background: var(--ch5); }
+        .chapter-divider.ch6 { background: var(--ch6); }
+        .chapter-divider.ch7 { background: var(--ch7); }
+
+        /* ───── قسم الموضوع ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .topic-icon.ch4 { background: var(--ch4-light); }
+        .topic-icon.ch5 { background: var(--ch5-light); }
+        .topic-icon.ch6 { background: var(--ch6-light); }
+        .topic-icon.ch7 { background: var(--ch7-light); }
+
+        h2 { font-size: 1.5em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.15em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── أهداف التعلم ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--neutral-800);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .objective-number.ch4 { background: var(--ch4); }
+        .objective-number.ch5 { background: var(--ch5); }
+        .objective-number.ch6 { background: var(--ch6); }
+        .objective-number.ch7 { background: var(--ch7); }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.7; }
+
+        /* ───── صندوق القصة ───── */
+        .story {
+            background: var(--neutral-50);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+            border-right: 5px solid;
+        }
+
+        .story.ch4 { border-color: var(--ch4); }
+        .story.ch5 { border-color: var(--ch5); }
+        .story.ch6 { border-color: var(--ch6); }
+        .story.ch7 { border-color: var(--ch7); }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+        }
+
+        .story-label.ch4 { background: var(--ch4-light); color: var(--ch4); }
+        .story-label.ch5 { background: var(--ch5-light); color: var(--ch5); }
+        .story-label.ch6 { background: var(--ch6-light); color: var(--ch6); }
+        .story-label.ch7 { background: var(--ch7-light); color: var(--ch7); }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-right: 3px solid var(--border);
+        }
+
+        .character { font-weight: 700; font-style: normal; }
+        .character.ahmed { color: var(--ch4); }
+        .character.sara { color: var(--ch5); }
+
+        /* ───── نقطة مهمة ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-right: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── تحذير ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-right: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق معلومات ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-right: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── قائمة نظيفة ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 36px 10px 0;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+        }
+
+        .clean-list.ch4 li::before { background: var(--ch4-light); }
+        .clean-list.ch5 li::before { background: var(--ch5-light); }
+        .clean-list.ch6 li::before { background: var(--ch6-light); }
+        .clean-list.ch7 li::before { background: var(--ch7-light); }
+
+        /* ───── شبكة مقارنة ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── شبكة الأيقونات ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── قائمة الخطوات ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .step-num.ch4 { background: var(--ch4); }
+        .step-num.ch5 { background: var(--ch5); }
+        .step-num.ch6 { background: var(--ch6); }
+        .step-num.ch7 { background: var(--ch7); }
+
+        /* ───── صندوق الكود ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .t { color: #f9a8d4; }
+
+        /* ───── جدول أفعال HTTP ───── */
+        .verb-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .verb-table th {
+            text-align: right;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .verb-table td {
+            padding: 14px 16px;
+            background: white;
+            font-size: 0.98em;
+        }
+
+        .verb-table tr td:last-child { border-radius: 10px 0 0 10px; }
+        .verb-table tr td:first-child { border-radius: 0 10px 10px 0; }
+        .verb-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .badge.get { background: var(--get); }
+        .badge.post { background: var(--post); }
+        .badge.put { background: var(--put); }
+        .badge.delete { background: var(--delete); }
+        .badge.patch { background: #8b5cf6; }
+
+        /* ───── بطاقات الأطر ───── */
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .framework-card {
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid;
+            transition: transform 0.2s;
+        }
+
+        .framework-card:hover { transform: translateY(-4px); }
+        .framework-card .fw-icon { font-size: 2.5em; margin-bottom: 10px; }
+        .framework-card .fw-name { font-weight: 800; font-size: 1.1em; margin-bottom: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .framework-card .fw-company { font-size: 0.82em; color: var(--gray); margin-bottom: 8px; }
+        .framework-card .fw-detect { font-size: 0.82em; font-family: 'JetBrains Mono', monospace; padding: 4px 10px; border-radius: 6px; background: rgba(0,0,0,0.06); direction: ltr; display: inline-block; }
+
+        .framework-card.react { border-color: #61dafb; background: #f0f9ff; }
+        .framework-card.react .fw-name { color: #0284c7; }
+        .framework-card.angular { border-color: #dd0031; background: #fff0f0; }
+        .framework-card.angular .fw-name { color: #dd0031; }
+        .framework-card.vue { border-color: #42b883; background: #f0fdf4; }
+        .framework-card.vue .fw-name { color: #16a34a; }
+        .framework-card.ember { border-color: #e04e39; background: #fff7ed; }
+        .framework-card.ember .fw-name { color: #ea580c; }
+
+        /* ───── مكدّس الطبقات ───── */
+        .layer-stack { margin: 24px 0; }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .layer-icon { font-size: 1.6em; }
+
+        .layer-item.l1 { background: linear-gradient(270deg, #7c3aed, #8b5cf6); }
+        .layer-item.l2 { background: linear-gradient(270deg, #0891b2, #06b6d4); }
+        .layer-item.l3 { background: linear-gradient(270deg, #059669, #10b981); }
+        .layer-item.l4 { background: linear-gradient(270deg, #d97706, #f59e0b); }
+        .layer-item.l5 { background: linear-gradient(270deg, #dc2626, #ef4444); }
+
+        .layer-label strong { display: block; font-size: 1em; }
+        .layer-label span { font-size: 0.82em; opacity: 0.9; }
+
+        /* ───── جدول المصادقة ───── */
+        .auth-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin: 20px 0; }
+
+        .auth-table th {
+            background: var(--neutral-800);
+            color: white;
+            padding: 12px 16px;
+            text-align: right;
+            font-size: 0.85em;
+        }
+
+        .auth-table th:last-child { border-radius: 10px 0 0 10px; }
+        .auth-table th:first-child { border-radius: 0 10px 10px 0; }
+
+        .auth-table td {
+            background: white;
+            padding: 14px 16px;
+            font-size: 0.92em;
+            vertical-align: top;
+        }
+
+        .auth-table tr td:last-child { border-radius: 10px 0 0 10px; font-weight: 700; }
+        .auth-table tr td:first-child { border-radius: 0 10px 10px 0; }
+        .auth-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── مقارنة آمن / غير آمن ───── */
+        .secure-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .secure-side {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .secure-side-header {
+            padding: 14px 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .secure-side-header.bad { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .secure-side-header.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .secure-side-body { padding: 20px; background: white; }
+        .secure-side-body ul { list-style: none; padding: 0; }
+        .secure-side-body li { padding: 8px 28px 8px 0; position: relative; font-size: 0.95em; }
+        .secure-side-body.bad li::before { content: '✗'; position: absolute; right: 0; color: var(--red); font-weight: 700; }
+        .secure-side-body.good li::before { content: '✓'; position: absolute; right: 0; color: var(--green); font-weight: 700; }
+
+        /* ───── شريط المخطط الفرعي ───── */
+        .subdomain-visual {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--neutral-200);
+            text-align: center;
+        }
+
+        .domain-tree { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+        .domain-root {
+            background: linear-gradient(135deg, #1c1917, #292524);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1em;
+            font-family: 'JetBrains Mono', monospace;
+            direction: ltr;
+        }
+
+        .domain-connector { width: 2px; height: 24px; background: var(--border); }
+
+        .domain-branches {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+        }
+
+        .domain-branches::before {
+            content: '';
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 60px);
+            height: 2px;
+            background: var(--border);
+        }
+
+        .domain-sub {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            position: relative;
+            direction: ltr;
+        }
+
+        .domain-sub::before {
+            content: '';
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 24px;
+            background: var(--border);
+        }
+
+        .domain-sub.www { background: #dbeafe; color: #1e40af; }
+        .domain-sub.mail { background: #fef3c7; color: #92400e; }
+        .domain-sub.admin { background: #fee2e2; color: #991b1b; }
+        .domain-sub.dev { background: #d1fae5; color: #065f46; }
+        .domain-sub.api { background: #ede9fe; color: #5b21b6; }
+        .domain-sub.ftp { background: #fce7f3; color: #9d174d; }
+
+        /* ───── واجهة منطقة DNS ───── */
+        .zone-demo {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .zone-demo .cmd { color: #86efac; }
+        .zone-demo .out { color: #93c5fd; }
+        .zone-demo .comment { color: #64748b; font-style: italic; }
+        .zone-demo .found { color: #fbbf24; font-weight: bold; }
+
+        /* ───── ملخص الفصل ───── */
+        .summary-banner {
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner.ch4 { background: linear-gradient(135deg, #92400e, #d97706); }
+        .summary-banner.ch5 { background: linear-gradient(135deg, #0e7490, #0891b2); }
+        .summary-banner.ch6 { background: linear-gradient(135deg, #065f46, #059669); }
+        .summary-banner.ch7 { background: linear-gradient(135deg, #991b1b, #dc2626); }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 28px 8px 0;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before {
+            content: '\2713';
+            position: absolute;
+            right: 0;
+            font-weight: 700;
+        }
+
+        /* ───── فاصل الصفحة ───── */
+        .page-break {
+            height: 6px;
+            background: linear-gradient(270deg, var(--ch4), var(--ch5), var(--ch6), var(--ch7));
+            margin: 60px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── التذييل ───── */
+        .footer {
+            background: var(--neutral-900);
+            color: white;
+            padding: 48px 40px;
+            margin-top: 20px;
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .secure-compare { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- شريط التنقل العلوي -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: أمن تطبيقات الويب</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="lang-switch">English</a>
+            <a href="../index.html" class="nav-link">الصفحة الرئيسية</a>
+            <a href="../week2/index-ar.html" class="nav-link">الأسبوع 2</a>
+            <a href="index-ar.html" class="nav-link active">الأسبوع 3</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════ الغلاف ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>/</span>
+            <span>الأسبوع 3 — الفصول 4 إلى 7</span>
+        </div>
+        <div class="cover-badge">
+            <span class="cover-badge-dot"></span>
+            تقنيات الاستطلاع المتقدمة
+        </div>
+        <h1>إيجاد النطاقات الفرعية والـ APIs<br>والمكتبات الخارجية ونقاط الضعف</h1>
+        <p class="sub">كيف يبني مختبر الأمن صورة كاملة عن التطبيق المستهدف</p>
+        <div class="cover-chips">
+            <div class="cover-chip ch4">ف.4 النطاقات الفرعية</div>
+            <div class="cover-chip ch5">ف.5 تحليل الـ API</div>
+            <div class="cover-chip ch6">ف.6 التبعيات الخارجية</div>
+            <div class="cover-chip ch7">ف.7 نقاط الضعف</div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ الشريط الجانبي ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">المحتويات</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-ch-label" style="color:var(--ch4);">&#9632; الفصل 4</div>
+            <a href="#chapter-4" class="sidebar-link active"><span class="sidebar-link-number">1</span>نظرة عامة على الفصل 4</a>
+            <a href="#ch4-why" class="sidebar-link"><span class="sidebar-link-number">2</span>لماذا نبحث عن النطاقات؟</a>
+            <a href="#ch4-devtools" class="sidebar-link"><span class="sidebar-link-number">3</span>أدوات مطوّر المتصفح</a>
+            <a href="#ch4-google" class="sidebar-link"><span class="sidebar-link-number">4</span>البحث المتقدم في Google</a>
+            <a href="#ch4-archive" class="sidebar-link"><span class="sidebar-link-number">5</span>أرشيف الإنترنت</a>
+            <a href="#ch4-dns" class="sidebar-link"><span class="sidebar-link-number">6</span>هجوم نقل منطقة DNS</a>
+            <a href="#ch4-brute" class="sidebar-link"><span class="sidebar-link-number">7</span>الهجوم بالقوة والقاموس</a>
+            <a href="#ch4-summary" class="sidebar-link"><span class="sidebar-link-number">8</span>ملخص الفصل 4</a>
+
+            <div class="sidebar-ch-label" style="color:var(--ch5);">&#9632; الفصل 5</div>
+            <a href="#chapter-5" class="sidebar-link"><span class="sidebar-link-number">9</span>نظرة عامة على الفصل 5</a>
+            <a href="#ch5-endpoints" class="sidebar-link"><span class="sidebar-link-number">10</span>اكتشاف نقاط الوصول</a>
+            <a href="#ch5-verbs" class="sidebar-link"><span class="sidebar-link-number">11</span>أفعال HTTP</a>
+            <a href="#ch5-auth" class="sidebar-link"><span class="sidebar-link-number">12</span>مخططات المصادقة</a>
+            <a href="#ch5-shapes" class="sidebar-link"><span class="sidebar-link-number">13</span>أشكال نقاط الوصول</a>
+            <a href="#ch5-summary" class="sidebar-link"><span class="sidebar-link-number">14</span>ملخص الفصل 5</a>
+
+            <div class="sidebar-ch-label" style="color:var(--ch6);">&#9632; الفصل 6</div>
+            <a href="#chapter-6" class="sidebar-link"><span class="sidebar-link-number">15</span>نظرة عامة على الفصل 6</a>
+            <a href="#ch6-spa" class="sidebar-link"><span class="sidebar-link-number">16</span>اكتشاف أطر الواجهة الأمامية</a>
+            <a href="#ch6-libs" class="sidebar-link"><span class="sidebar-link-number">17</span>مكتبات JS وCSS</a>
+            <a href="#ch6-server" class="sidebar-link"><span class="sidebar-link-number">18</span>اكتشاف تقنيات الخادم</a>
+            <a href="#ch6-db" class="sidebar-link"><span class="sidebar-link-number">19</span>اكتشاف قاعدة البيانات</a>
+            <a href="#ch6-summary" class="sidebar-link"><span class="sidebar-link-number">20</span>ملخص الفصل 6</a>
+
+            <div class="sidebar-ch-label" style="color:var(--ch7);">&#9632; الفصل 7</div>
+            <a href="#chapter-7" class="sidebar-link"><span class="sidebar-link-number">21</span>نظرة عامة على الفصل 7</a>
+            <a href="#ch7-notes" class="sidebar-link"><span class="sidebar-link-number">22</span>ملاحظات الاستطلاع</a>
+            <a href="#ch7-arch" class="sidebar-link"><span class="sidebar-link-number">23</span>آمن مقابل غير آمن</a>
+            <a href="#ch7-layers" class="sidebar-link"><span class="sidebar-link-number">24</span>طبقات متعددة من الأمان</a>
+            <a href="#ch7-reinvent" class="sidebar-link"><span class="sidebar-link-number">25</span>لا تبنِ تشفيرك الخاص</a>
+            <a href="#ch7-summary" class="sidebar-link"><span class="sidebar-link-number">26</span>ملخص الفصل 7</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ المحتوى الرئيسي ═══════════ -->
+<main class="content">
+
+<!-- ════════════════════════════════════════════════
+     الفصل 4 — إيجاد النطاقات الفرعية
+     ════════════════════════════════════════════════ -->
+<div id="chapter-4" class="chapter-header">
+    <div class="chapter-num ch4">الفصل 4</div>
+    <div class="chapter-title">إيجاد النطاقات الفرعية</div>
+    <div class="chapter-divider ch4"></div>
+</div>
+
+<!-- أهداف التعلم -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch4">1</div>
+            <div class="objective-text"><strong>شرح</strong> سبب كون إيجاد النطاقات الفرعية هو الخطوة الأولى في استطلاع تطبيقات الويب.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">2</div>
+            <div class="objective-text"><strong>استخدام</strong> أدوات المطوّر في المتصفح لاكتشاف الخوادم الخفية التي يتصل بها الموقع.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">3</div>
+            <div class="objective-text"><strong>تطبيق</strong> عمليات البحث المتقدم في <span class="term">Google</span> وأدوات الأرشفة لاكتشاف النطاقات الفرعية المخفية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">4</div>
+            <div class="objective-text"><strong>وصف</strong> هجوم نقل منطقة <span class="term">DNS</span> ولماذا ينجح ضد الخوادم المُهيَّأة بشكل خاطئ.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch4">5</div>
+            <div class="objective-text"><strong>التمييز</strong> بين هجوم القوة الغاشمة وهجوم القاموس عند اكتشاف النطاقات الفرعية.</div>
+        </div>
+    </div>
+</div>
+
+<!-- لماذا نبحث عن النطاقات الفرعية؟ -->
+<div id="ch4-why" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#127758;</div>
+        <h2>لماذا نبحث عن النطاقات الفرعية؟ (قصة JeddahBank)</h2>
+    </div>
+
+    <p>موقع الشركة على الإنترنت نادرًا ما يكون خادمًا <em>واحدًا</em> فقط. الشركات الكبيرة تشغّل عدة خوادم، كل منها يخدم غرضًا مختلفًا — وكل منها قد يحتوي على ثغرات أمنية خاصة به. <strong>النطاق الفرعي</strong> هو بادئة إضافية تُضاف إلى اسم النطاق الرئيسي، مثل <span class="term">mail.jeddahbank.com</span> أو <span class="term">admin.jeddahbank.com</span>.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; وقت القصة — أحمد يختبر JeddahBank</div>
+        <p><strong>أحمد</strong> مختبر اختراق تعاقد معه JeddahBank. مهمته: إيجاد الثغرات الأمنية.</p>
+        <p>يزور <span class="term">www.jeddahbank.com</span> — الموقع الرئيسي. لقد اختُبر كثيرًا وأُصلحت معظم أخطائه. يفكر أحمد بذكاء ويسأل نفسه: <em>"ما الخوادم الأخرى التي يشغّلها JeddahBank ولا يراقبها أحد؟"</em></p>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "الباب الرئيسي عليه حارس. لكن ماذا عن الباب الخلفي، ومدخل الموظفين، والخادم القديم في القبو؟ ربما تلك الأبواب مفتوحة على مصراعيها!"
+        </div>
+        <p>لهذا نبحث عن النطاقات الفرعية — لاكتشاف <strong>الخوادم الأقل مراقبةً، والأقل اختبارًا، والأكثر احتمالاً لوجود ثغرات</strong>.</p>
+    </div>
+
+    <!-- مخطط النطاقات الفرعية -->
+    <div class="subdomain-visual">
+        <p style="font-weight:700; color:var(--dark); margin-bottom:20px; font-size:1.05em;">خريطة النطاقات الفرعية لJeddahBank</p>
+        <div class="domain-tree">
+            <div class="domain-root">jeddahbank.com</div>
+            <div class="domain-connector"></div>
+            <div class="domain-branches">
+                <div class="domain-sub www">www</div>
+                <div class="domain-sub mail">mail</div>
+                <div class="domain-sub admin">admin ⚠️</div>
+                <div class="domain-sub dev">dev ⚠️</div>
+                <div class="domain-sub api">api</div>
+                <div class="domain-sub ftp">ftp ⚠️</div>
+            </div>
+        </div>
+        <p style="margin-top:20px; color:var(--gray); font-size:0.85em;">⚠️ هذه الخوادم غالبًا ما تُنسى وتحظى بأمان أضعف من الموقع الرئيسي</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; الفكرة الأساسية</h4>
+        <p>المواقع التي تواجه المستخدمين (<span class="term">www</span>) تحصل على أكبر قدر من الاهتمام والإصلاحات. أما الخوادم المخفية مثل <span class="term">admin</span> و<span class="term">dev</span> و<span class="term">ftp</span> فكثيرًا ما تحتوي على ثغرات لم يُصلحها أحد لأن أحدًا لم ينتبه إليها.</p>
+    </div>
+</div>
+
+<!-- أدوات مطوّر المتصفح -->
+<div id="ch4-devtools" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128269;</div>
+        <h2>الطريقة الأولى — أدوات مطوّر المتصفح (تبويب الشبكة)</h2>
+    </div>
+
+    <p>أسهل خطوة أولى: <strong>راقب ما يتصل به متصفحك</strong>. عندما تستخدم أي موقع ويب، يرسل متصفحك عشرات الطلبات المخفية إلى خوادم مختلفة. يمكنك رؤية كل هذا في <strong>أدوات المطوّر</strong> المدمجة في المتصفح.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; وقت القصة — أحمد يراقب الشبكة</div>
+        <p><strong>أحمد</strong> يفتح <span class="term">Chrome</span> ويضغط <span class="term">F12</span> لفتح أدوات المطوّر. ينقر على تبويب <strong>الشبكة</strong>. ثم يسجّل الدخول إلى موقع JeddahBank وينتقل بين صفحاته.</p>
+        <p>على الفور، تظهر قائمة بطلبات الشبكة. ينقر على فلتر <span class="term">XHR</span> لعرض طلبات <span class="term">API</span> فقط. ويلاحظ شيئًا مثيرًا للاهتمام:</p>
+        <div class="code-box">
+            <span class="t">GET</span>  <span class="s">api.jeddahbank.com/users/1234</span><br>
+            <span class="t">GET</span>  <span class="s">cdn.jeddahbank.com/assets/logo.png</span><br>
+            <span class="t">POST</span> <span class="s">analytics.jeddahbank.com/track</span><br>
+            <span class="t">GET</span>  <span class="s">notifications.jeddahbank.com/alerts</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "دون أي جهد خاص، اكتشفت بالفعل 4 نطاقات فرعية مجرد تصفح الموقع! أعرف الآن أن التطبيق يستخدم خوادم <span class="term">api</span> و<span class="term">cdn</span> و<span class="term">analytics</span> و<span class="term">notifications</span>."
+        </div>
+    </div>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num ch4">1</div>
+            <div><strong>افتح أدوات المطوّر</strong> — اضغط <span class="term">F12</span> أو انقر بزر الماوس الأيمن ← "فحص" في <span class="term">Chrome/Firefox/Edge</span></div>
+        </li>
+        <li>
+            <div class="step-num ch4">2</div>
+            <div><strong>انقر على تبويب الشبكة</strong> — شاهد جميع طلبات <span class="term">HTTP</span> تظهر في الوقت الفعلي</div>
+        </li>
+        <li>
+            <div class="step-num ch4">3</div>
+            <div><strong>صفِّ بـ <span class="term">XHR</span></strong> — يُخفي الصور والخطوط ويعرض فقط نداءات <span class="term">API</span></div>
+        </li>
+        <li>
+            <div class="step-num ch4">4</div>
+            <div><strong>تحقق من رابط كل طلب</strong> — ابحث تحت الرؤوس ← عام ← رابط الطلب</div>
+        </li>
+        <li>
+            <div class="step-num ch4">5</div>
+            <div><strong>سجّل كل نطاق مختلف</strong> — أضفه إلى خريطة الاستطلاع الخاصة بك</div>
+        </li>
+    </ol>
+</div>
+
+<!-- البحث المتقدم في Google -->
+<div id="ch4-google" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128270;</div>
+        <h2>الطريقة الثانية — البحث المتقدم في Google (Google Dorking)</h2>
+    </div>
+
+    <p>قام <span class="term">Google</span> بفهرسة شبه الإنترنت بأكمله. يمكننا استخدام <strong>مشغّلات البحث الخاصة</strong> (تسمى <span class="term">Dorks</span>) لجعل <span class="term">Google</span> يكشف لنا النطاقات الفرعية التي رآها — حتى تلك غير المرتبطة من الموقع الرئيسي.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; وقت القصة — أحمد يتحدث إلى Google</div>
+        <p>يكتب أحمد استعلامًا ذكيًا في <span class="term">Google</span> للعثور على جميع صفحات JeddahBank التي يعرفها، مع تجاهل النطاق الفرعي الواضح <span class="term">www</span>:</p>
+        <div class="code-box">
+            <span class="c"># أظهر جميع صفحات jeddahbank.com لكن تجاهل www</span><br>
+            site:jeddahbank.com -inurl:www<br><br>
+            <span class="c"># تجاهل أيضًا النسخة المحمولة</span><br>
+            site:jeddahbank.com -inurl:www -inurl:mobile
+        </div>
+        <p>تُعيد <span class="term">Google</span> نتائج من <span class="term">admin.jeddahbank.com</span> و<span class="term">status.jeddahbank.com</span> — نطاقات فرعية تم فهرستها ولم تُعلَن للمستخدمين!</p>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "يعرف <span class="term">Google</span> بالفعل هذه الخوادم لأنه زحف على روابطها القديمة. أحتاج فقط إلى طرح السؤال الصحيح."
+        </div>
+    </div>
+
+    <h3>مصادر عامة أخرى مفيدة</h3>
+    <ul class="clean-list ch4">
+        <li><strong>محركات البحث (<span class="term">Google, Bing</span>)</strong> — استخدم <span class="term">site:</span> و<span class="term">-inurl:</span> لتضييق النتائج</li>
+        <li><strong>وسائل التواصل الاجتماعي</strong> — تنشر الشركات روابط نطاقاتها الفرعية في حملاتها التسويقية وإعلانات التوظيف</li>
+        <li><strong><span class="term">GitHub</span></strong> — يضع المطورون أحيانًا ملفات إعداد تحتوي على روابط داخلية بشكل غير مقصود</li>
+        <li><strong>إعلانات التوظيف</strong> — إعلان يذكر "نستخدم <span class="term">api.company.com</span>" يكشف عن البنية الداخلية</li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; تذكير أخلاقي</h4>
+        <p>استخدم هذه التقنيات فقط على الأنظمة التي <strong>تملكها أو لديك إذن كتابي</strong> لاختبارها. استخدام <span class="term">Google Dorks</span> ضد هدف دون تفويض هو استطلاع على نظام لا تملكه — وقد يكون مخالفًا للقانون.</p>
+    </div>
+</div>
+
+<!-- أرشيف الإنترنت -->
+<div id="ch4-archive" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128190;</div>
+        <h2>الطريقة الثالثة — أرشيف الإنترنت (اللقطات التاريخية)</h2>
+    </div>
+
+    <p>يحفظ موقع <span class="term">Archive.org</span> لقطات قديمة من المواقع — أحيانًا تعود إلى 20 عامًا مضت. هذا مفيد للغاية لأن نطاقًا فرعيًا ظهر عن طريق الخطأ في 2018 ثم أُزيل قد يكون مخزّنًا في الأرشيف. <em>الإنترنت لا ينسى أبدًا.</em></p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; وقت القصة — أحمد يسافر عبر الزمن</div>
+        <p>يزور أحمد <span class="term">archive.org</span> ويبحث عن <span class="term">jeddahbank.com</span>. يجد لقطات من عام 2019 — قبل إعادة تصميم الموقع. ينقر بزر الأيمن على الصفحة القديمة ويعرض مصدرها.</p>
+        <p>في كود <span class="term">HTML</span> المصدر من 2019، يجد روابط مثل:</p>
+        <div class="code-box">
+            <span class="c">&lt;!-- روابط تنقل قديمة في لقطة 2019 --&gt;</span><br>
+            &lt;a href="<span class="found">https://beta.jeddahbank.com</span>/new-features"&gt;...&lt;/a&gt;<br>
+            &lt;script src="<span class="found">https://legacy-api.jeddahbank.com</span>/v1/app.js"&gt;&lt;/script&gt;
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "أزالت الشركة هذه الروابط من موقعها الحالي، لكن الخادم القديم ربما لا يزال يعمل! الأنظمة القديمة تُنسى وتُحدَّث نادرًا."
+        </div>
+        <p>يحاول أحمد زيارة <span class="term">beta.jeddahbank.com</span> — الخادم لا يزال يستجيب! ويشغّل برمجيات قديمة بها ثغرات معروفة.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; لماذا يعمل هذا؟</h4>
+        <p>تُعيد الشركات تصميم مواقعها لكنها كثيرًا ما تترك الخوادم القديمة تعمل "احتياطًا". هذه الخوادم المنسية تشغّل برمجيات متقادمة ونادرًا ما تتلقى تحديثات أمنية — مما يجعلها أهدافًا سهلة.</p>
+    </div>
+</div>
+
+<!-- هجوم نقل منطقة DNS -->
+<div id="ch4-dns" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#127760;</div>
+        <h2>الطريقة الرابعة — هجوم نقل منطقة DNS</h2>
+    </div>
+
+    <p>هذه تقنية ذكية تستغلّ <strong>خوادم DNS المُهيَّأة بشكل خاطئ</strong>. نظام أسماء النطاقات (<span class="term">DNS</span>) هو دليل هاتف الإنترنت — يترجم الأسماء مثل <span class="term">jeddahbank.com</span> إلى عناوين <span class="term">IP</span> مثل <span class="term">195.250.100.195</span>.</p>
+
+    <p>تحتاج خوادم <span class="term">DNS</span> إلى مزامنة سجلاتها مع بعضها عبر ما يُسمى <strong>نقل المنطقة</strong>. إذا لم يكن خادم <span class="term">DNS</span> مؤمَّنًا بشكل صحيح، فإنه يشارك <em>قائمة كاملة بنطاقاته الفرعية</em> مع أي شخص يطلبها — ليس فقط مع خوادم <span class="term">DNS</span> الأخرى.</p>
+
+    <div class="story ch4">
+        <div class="story-label ch4">&#128214; وقت القصة — أحمد يتظاهر بأنه خادم DNS</div>
+        <p>يفتح أحمد طرفيّته. يجد أولاً خوادم أسماء JeddahBank، ثم يطلب من إحداها نقل المنطقة كاملة — متظاهرًا بأنه خادم <span class="term">DNS</span> آخر يحتاج إلى مزامنة:</p>
+        <div class="zone-demo">
+            <span class="comment"># الخطوة 1: ابحث عن خوادم الأسماء</span><br>
+            <span class="cmd">$ host -t ns jeddahbank.com</span><br>
+            <span class="out">jeddahbank.com name server ns1.bankhost.com</span><br>
+            <span class="out">jeddahbank.com name server ns2.bankhost.com</span><br><br>
+            <span class="comment"># الخطوة 2: اطلب نقل المنطقة من خادم الأسماء</span><br>
+            <span class="cmd">$ host -l jeddahbank.com ns1.bankhost.com</span><br><br>
+            <span class="comment"># إذا كان الخادم مُهيَّأ بشكل خاطئ، ستحصل على القائمة كاملة!</span><br>
+            <span class="found">mail.jeddahbank.com     has address 82.31.105.140</span><br>
+            <span class="found">admin.jeddahbank.com    has address 32.45.105.144</span><br>
+            <span class="found">internal.jeddahbank.com has address 25.44.105.144</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "بأمرَين بسيطَين، حصلت على قائمة كاملة بجميع خوادمهم — بما فيها خادم 'داخلي' يُفترض ألّا يكون متاحًا للعموم!"
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--red);">
+            <h4>&#128308; خادم DNS مُهيَّأ بشكل خاطئ</h4>
+            <p>يقبل طلبات نقل المنطقة من <strong>أي شخص</strong>. يُعيد القائمة الكاملة للنطاقات الفرعية وعناوين <span class="term">IP</span>. شائع جدًا في الخوادم القديمة أو سيئة التهيئة.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--green);">
+            <h4>&#128994; خادم DNS مؤمَّن</h4>
+            <p>لا يقبل طلبات نقل المنطقة إلا من <strong>خوادم <span class="term">DNS</span> مخوَّلة</strong>. يُعيد: <span class="term">Transfer Failed.</span> — لا معلومات مفيدة تُكشف.</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; نصيحة سريعة</h4>
+        <p>يستغرق هجوم نقل المنطقة ثوانٍ معدودة ولا يكلّف شيئًا. جرّبه دائمًا أولاً — إذا نجح، وفّرت ساعات من العمل. وإذا فشل، انتقل ببساطة إلى الطريقة التالية.</p>
+    </div>
+</div>
+
+<!-- الهجوم بالقوة الغاشمة والقاموس -->
+<div id="ch4-brute" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch4">&#128736;</div>
+        <h2>الطريقة الخامسة — القوة الغاشمة والقاموس</h2>
+    </div>
+
+    <p>عندما تفشل كل الطرق الأخرى، يمكننا <strong>تخمين النطاقات الفرعية بشكل منهجي</strong>. هناك مقاربتان:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch4);">
+            <h4>&#127922; القوة الغاشمة (<span class="term">Brute Force</span>)</h4>
+            <p>تجربة <strong>كل تركيبة ممكنة</strong> من الحروف: <span class="term">aa, ab, ac... ba, bb...</span> بطيء للغاية مع النطاقات الطويلة لكنه لا يفوّت شيئًا.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch5);">
+            <h4>&#128218; هجوم القاموس (<span class="term">Dictionary Attack</span>)</h4>
+            <p>استخدام <strong>قائمة بأسماء النطاقات الشائعة</strong> مثل <span class="term">mail, admin, dev, ftp, api</span>. أسرع بكثير ويجد معظم النطاقات الحقيقية.</p>
+        </div>
+    </div>
+
+    <h3>أكثر 10 نطاقات فرعية شيوعًا</h3>
+    <p>تُظهر الأبحاث على ملايين سجلات <span class="term">DNS</span> أن هذه هي أكثر النطاقات الفرعية احتمالاً لدى أي شركة:</p>
+    <div class="code-box">
+        <span class="c"># أكثر النطاقات الفرعية شيوعًا (من بحث dnscan)</span><br>
+        <span class="n">1.</span> <span class="s">www</span> &nbsp;&nbsp;<span class="n">2.</span> <span class="s">mail</span> &nbsp;&nbsp;<span class="n">3.</span> <span class="s">ftp</span> &nbsp;&nbsp;<span class="n">4.</span> <span class="s">admin</span> &nbsp;&nbsp;<span class="n">5.</span> <span class="s">api</span><br>
+        <span class="n">6.</span> <span class="s">dev</span> &nbsp;&nbsp;<span class="n">7.</span> <span class="s">test</span> &nbsp;&nbsp;<span class="n">8.</span> <span class="s">smtp</span> &nbsp;&nbsp;<span class="n">9.</span> <span class="s">blog</span> &nbsp;&nbsp;<span class="n">10.</span> <span class="s">webmail</span>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; قيود مهمة</h4>
+        <p>تولّد هجمات القوة الغاشمة <strong>حركة شبكة كبيرة يسهل رصدها وتسجيلها</strong>. قد تقوم الخوادم بحظر عنوان <span class="term">IP</span> الخاص بك. يجب أن تكون هذه دائمًا <strong>ملاذك الأخير</strong> بعد استنفاد الطرق الأقل إحداثًا للضجة.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; الترتيب الموصى به</h4>
+        <p>1. أدوات المتصفح ← 2. بحث Google المتقدم ← 3. أرشيف الإنترنت ← 4. نقل منطقة DNS ← 5. هجوم القاموس ← 6. القوة الغاشمة (الملاذ الأخير)</p>
+    </div>
+</div>
+
+<!-- ملخص الفصل 4 -->
+<div id="ch4-summary" class="summary-banner ch4">
+    <h3>&#10003; ملخص الفصل 4 — إيجاد النطاقات الفرعية</h3>
+    <ul>
+        <li>النطاقات الفرعية هي خوادم منفصلة تحصل في الغالب على <strong>اهتمام أمني أقل</strong> من الموقع الرئيسي</li>
+        <li><strong>أدوات المتصفح</strong> (تبويب الشبكة) تكشف النطاقات الفرعية فقط بتصفّح الموقع</li>
+        <li>استعلامات <strong>Google المتقدمة</strong> مثل <span class="term">site:domain.com -inurl:www</span> تجد النطاقات المفهرسة</li>
+        <li><strong>أرشيف الإنترنت</strong> يكشف النطاقات القديمة التي أُزيلت من الموقع الحالي لكنها لا تزال تعمل</li>
+        <li><strong>هجمات نقل المنطقة</strong> تستغل أخطاء تهيئة DNS للحصول على قائمة كاملة في ثوانٍ</li>
+        <li><strong>هجمات القاموس</strong> تستخدم أسماء شائعة (mail, admin, dev) — أسرع بكثير من القوة الغاشمة</li>
+        <li>وثّق كل نطاق فرعي تجده — فهي تُشكّل أساس خريطة الاستطلاع</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     الفصل 5 — تحليل واجهات API
+     ════════════════════════════════════════════════ -->
+<div id="chapter-5" class="chapter-header">
+    <div class="chapter-num ch5">الفصل 5</div>
+    <div class="chapter-title">تحليل واجهات API</div>
+    <div class="chapter-divider ch5"></div>
+</div>
+
+<!-- أهداف التعلم -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch5">1</div>
+            <div class="objective-text"><strong>التعرّف</strong> على أنماط <span class="term">REST API</span> من خلال بنية الروابط ورؤوس <span class="term">HTTP</span>.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch5">2</div>
+            <div class="objective-text"><strong>رسم خريطة</strong> لأفعال <span class="term">HTTP</span> المتاحة (<span class="term">GET, POST, PUT, DELETE</span>) على أي نقطة وصول.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch5">3</div>
+            <div class="objective-text"><strong>التعرف على</strong> مخططات المصادقة الشائعة — <span class="term">Basic Auth</span> و<span class="term">Digest</span> و<span class="term">OAuth</span> — ونقاط ضعف كل منها.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch5">4</div>
+            <div class="objective-text"><strong>اكتشاف</strong> الشكل المطلوب (الحقول المطلوبة) لنقطة وصول عبر الملاحظة والاستنتاج المنطقي.</div>
+        </div>
+    </div>
+</div>
+
+<!-- اكتشاف نقاط الوصول -->
+<div id="ch5-endpoints" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128279;</div>
+        <h2>ما هي نقطة الوصول؟ (القائمة السرية)</h2>
+    </div>
+
+    <p>بعد إيجاد النطاقات الفرعية، السؤال التالي هو: <strong>ما الذي يفعله كل خادم بالضبط؟</strong> تُعرّض الخوادم <em>نقاط وصول</em> — روابط محددة تقبل الطلبات وتُعيد البيانات. إيجاد هذه النقاط ورسم خريطتها يُسمى <strong>تحليل الـ API</strong>.</p>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; وقت القصة — أحمد يقرأ القائمة السرية</div>
+        <p>فكّر في الـ <span class="term">API</span> مثل مطعم. الزبون (المتصفح) يرى القائمة العامة فقط. لكن المطبخ لديه <strong>قائمة داخلية سرية</strong> — طلبات للطهاة، طلبات مخزن، تقارير للمدير.</p>
+        <p><strong>أحمد</strong> يعرف أن JeddahBank لديه نطاق فرعي <span class="term">api.jeddahbank.com</span>. أثناء تصفح الموقع مع أدوات المطوّر مفتوحة، يرى هذه الطلبات:</p>
+        <div class="code-box">
+            <span class="t">GET</span>  <span class="s">api.jeddahbank.com/users/1234</span><br>
+            <span class="t">GET</span>  <span class="s">api.jeddahbank.com/users/1234/payments</span><br>
+            <span class="t">POST</span> <span class="s">api.jeddahbank.com/users/1234/payments</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "هذا بوضوح <span class="term">REST API</span>. الرابط يصف <em>موردًا</em> (مدفوعات المستخدم 1234)، وليس إجراءً. يُخبرني هذا بالكثير عن كيفية هيكلة النظام."
+        </div>
+    </div>
+
+    <h3>كيف تتعرف على REST API</h3>
+    <ul class="clean-list ch5">
+        <li><strong>الروابط تمثل موارد</strong> لا إجراءات — <span class="term">/users/1234</span> وليس <span class="term">/getUser?id=1234</span></li>
+        <li><strong>الموارد متداخلة هرميًا</strong> — <span class="term">/users/1234/payments</span> تعني "مدفوعات تابعة للمستخدم 1234"</li>
+        <li><strong>رمز مميز يُرسَل مع كل طلب</strong> — الـ <span class="term">REST</span> "عديم الحالة"، الخادم لا يتذكرك بين الطلبات</li>
+        <li><strong>يستخدم أفعال HTTP القياسية</strong> — <span class="term">GET, POST, PUT, DELETE</span> لتنفيذ إجراءات مختلفة</li>
+    </ul>
+</div>
+
+<!-- أفعال HTTP -->
+<div id="ch5-verbs" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128295;</div>
+        <h2>أفعال HTTP — "ماذا يمكنني أن أفعل هنا؟"</h2>
+    </div>
+
+    <p>كل نقطة وصول <span class="term">REST</span> تدعم فعلاً أو أكثر من <strong>أفعال HTTP</strong>. كل فعل يعني إجراءً مختلفًا. كمختبر أمني، تريد معرفة <em>أي الأفعال تقبلها كل نقطة وصول</em> — لأن نقطة وصول لا ينبغي أن تقبل <span class="term">DELETE</span> ربما تقبله في الواقع.</p>
+
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>الفعل</th>
+                <th>الإجراء</th>
+                <th>مثال من الواقع</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge get">GET</span></td>
+                <td><strong>قراءة</strong> البيانات</td>
+                <td>عرض رصيدك البنكي</td>
+            </tr>
+            <tr>
+                <td><span class="badge post">POST</span></td>
+                <td><strong>إنشاء</strong> بيانات جديدة</td>
+                <td>إرسال دفعة مالية</td>
+            </tr>
+            <tr>
+                <td><span class="badge put">PUT</span></td>
+                <td><strong>استبدال</strong> بيانات موجودة</td>
+                <td>تحديث ملفك الشخصي بالكامل</td>
+            </tr>
+            <tr>
+                <td><span class="badge patch">PATCH</span></td>
+                <td><strong>تعديل</strong> جزء من البيانات</td>
+                <td>تغيير رقم هاتفك فقط</td>
+            </tr>
+            <tr>
+                <td><span class="badge delete">DELETE</span></td>
+                <td><strong>حذف</strong> البيانات</td>
+                <td>إغلاق حسابك</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; وقت القصة — اختبار الأفعال</div>
+        <p>أحمد وجد نقطة الوصول <span class="term">GET api.jeddahbank.com/users/1234</span>. يعلم أن <span class="term">GET</span> يعمل — لكن ماذا عن <span class="term">DELETE</span>؟</p>
+        <p>يرسل: <span class="term">DELETE api.jeddahbank.com/users/1234</span></p>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد يفكر:</span> "إذا أعاد الخادم <span class="term">200 OK</span> بدلاً من <span class="term">405 Method Not Allowed</span>، فقد يسمح لأي شخص بحذف حساب أي مستخدم. ستكون هذه ثغرة حرجة!"
+        </div>
+        <p>هناك أيضًا فعل خاص يُسمى <strong><span class="term">OPTIONS</span></strong> — بعض الـ APIs تُخبرك بالضبط أي الأفعال تدعمها إذا سألتها:</p>
+        <div class="code-box">
+            <span class="c"># اسأل الخادم: "ما الأفعال التي تدعمها؟"</span><br>
+            curl -X OPTIONS https://api.jeddahbank.com/users/1234<br><br>
+            <span class="c"># رد مفيد سيقول:</span><br>
+            Allow: HEAD, GET, PUT, OPTIONS
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; تحذير</h4>
+        <p>اختبار أفعال مثل <span class="term">DELETE</span> أو <span class="term">PUT</span> <strong>قد يُعدّل بيانات حقيقية أو يحذفها</strong>. احرص دائمًا على الحصول على <strong>إذن كتابي صريح</strong> من مالك النظام قبل اختبار أي فعل بخلاف <span class="term">GET</span>.</p>
+    </div>
+</div>
+
+<!-- مخططات المصادقة -->
+<div id="ch5-auth" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128274;</div>
+        <h2>مخططات المصادقة — "من أنت؟"</h2>
+    </div>
+
+    <p>معظم نقاط الوصول تتطلب منك إثبات هويتك قبل إعطائك البيانات. فهم <strong>كيفية عمل المصادقة</strong> أمر بالغ الأهمية — لأنك إن فهمتها، تستطيع أيضًا محاولة تجاوزها.</p>
+
+    <table class="auth-table">
+        <thead>
+            <tr>
+                <th>المخطط</th>
+                <th>كيف يعمل</th>
+                <th>نقطة قوة</th>
+                <th>نقطة ضعف</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="term">Basic Auth</span></td>
+                <td>اسم المستخدم وكلمة المرور مُشفَّران بـ <span class="term">Base64</span> ويُرسلان مع كل طلب</td>
+                <td>بسيط ومدعوم في كل مكان</td>
+                <td>سهل فكّ تشفيره عند اعتراضه؛ لا تنتهي صلاحية بيانات الاعتماد</td>
+            </tr>
+            <tr>
+                <td><span class="term">Digest Auth</span></td>
+                <td>نسخة مجزأة (<span class="term">hashed</span>) من بيانات الاعتماد — أصعب اعتراضًا من <span class="term">Basic</span></td>
+                <td>أصعب سرقةً أثناء النقل</td>
+                <td>أمانه يعتمد على خوارزمية التجزئة المستخدمة</td>
+            </tr>
+            <tr>
+                <td><span class="term">OAuth 2.0</span></td>
+                <td>رمز مميز (<span class="term">Bearer Token</span>) يُصدر بعد تسجيل الدخول ويُرسَل مع كل طلب</td>
+                <td>الرموز تنتهي صلاحيتها؛ يمكن تسجيل الدخول بحساب Google/Apple</td>
+                <td>إذا سُرق الرمز، يحصل المهاجم على وصول كامل حتى انتهاء صلاحيته</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; وقت القصة — أحمد يقرأ الرمز المميز</div>
+        <p>يُسجّل أحمد الدخول إلى JeddahBank ويراقب حركة الشبكة. في رأس الاستجابة يرى:</p>
+        <div class="code-box">
+            Authorization: Basic am9lOjEyMzQ=
+        </div>
+        <p>يتعرف على هذا باعتباره <strong><span class="term">HTTP Basic Auth</span></strong>. السلسلة <span class="term">am9lOjEyMzQ=</span> هي مجرد اسم مستخدم وكلمة مرور مُشفَّرَين بـ <span class="term">Base64</span>. يفكّكها في وحدة تحكم المتصفح:</p>
+        <div class="code-box">
+            <span class="c">// فكّ تشفير السلسلة في وحدة التحكم</span><br>
+            <span class="k">atob</span>(<span class="s">'am9lOjEyMzQ='</span>);<br>
+            <span class="c">// النتيجة: "joe:1234" — اسم المستخدم joe وكلمة المرور 1234!</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "الـ <span class="term">Basic Auth</span> مثل كتابة كلمة مرورك بلغة يستطيع الجميع قراءتها. هو آمن فقط إذا كان الاتصال مشفّرًا بـ <span class="term">HTTPS</span>. إذا اعترض أحد طلب <span class="term">HTTP</span> بمصادقة <span class="term">Basic</span>، يحصل على كلمة المرور فورًا."
+        </div>
+    </div>
+</div>
+
+<!-- أشكال نقاط الوصول -->
+<div id="ch5-shapes" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch5">&#128221;</div>
+        <h2>أشكال نقاط الوصول — "ما الذي تتوقعه هذه النقطة؟"</h2>
+    </div>
+
+    <p>معرفة وجود نقطة الوصول شيء، وفهم <em>البيانات التي تقبلها</em> — أي <strong>شكلها</strong> — مستوى أعلى. يتيح لك هذا إرسال طلبات ذات معنى واكتشاف كيفية عمل التطبيق داخليًا.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch5);">
+            <h4>&#128214; أشكال قياسية (سهلة)</h4>
+            <p>البروتوكولات القياسية مثل <strong><span class="term">OAuth 2.0</span></strong> لها أشكال موثّقة علنًا. يمكنك البحث عنها ومعرفة الحقول المطلوبة على الفور.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch4);">
+            <h4>&#128260; أشكال خاصة بالتطبيق (صعبة)</h4>
+            <p>الـ APIs الداخلية المخصصة لها أشكال مخصصة. يجب اكتشافها عبر <strong>تحليل الطلبات الموجودة</strong> في المتصفح أو قراءة رسائل الخطأ أو التجربة والخطأ.</p>
+        </div>
+    </div>
+
+    <div class="story ch5">
+        <div class="story-label ch5">&#128214; وقت القصة — رسائل الخطأ كتلميحات</div>
+        <p>يُرسل أحمد طلب <span class="term">POST</span> إلى <span class="term">api.jeddahbank.com/users/config</span> ببيانات ناقصة. الخادم، غير المؤمَّن بشكل كافٍ، يردّ بـ:</p>
+        <div class="code-box">
+            400 Bad Request<br>
+            "error": "auth_token not supplied"
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "رسالة الخطأ للتو أخبرتني أن هذه النقطة تتوقع حقل <span class="term">auth_token</span>. معلومة لم أكن أملكها من قبل — وهي علامة على أن هذا الـ <span class="term">API</span> يكشف معلومات أكثر مما ينبغي في رسائل خطئه."
+        </div>
+        <p>الـ API الآمن لن يقول سوى <strong>"400 Bad Request"</strong> دون تفاصيل إضافية. المعلومات في رسائل الخطأ ثغرة أمنية شائعة.</p>
+    </div>
+</div>
+
+<!-- ملخص الفصل 5 -->
+<div id="ch5-summary" class="summary-banner ch5">
+    <h3>&#10003; ملخص الفصل 5 — تحليل واجهات API</h3>
+    <ul>
+        <li>بعد إيجاد النطاقات الفرعية، الخطوة التالية اكتشاف <strong>نقاط الوصول الخاصة بها</strong></li>
+        <li><strong>الـ REST APIs</strong> تستخدم روابط تعتمد على الموارد وأفعال <span class="term">HTTP</span> القياسية</li>
+        <li>اختبر كل <strong>فعل HTTP</strong> على كل نقطة وصول — ربما تقبل نقطةٌ ما أفعالاً لا ينبغي لها ذلك</li>
+        <li><strong><span class="term">OPTIONS</span></strong> فعل خاص يسرد الأفعال المدعومة لنقطة الوصول</li>
+        <li><strong>رموز المصادقة المميزة</strong> تكشف المخطط المستخدم — <span class="term">Basic Auth</span> هو الأضعف</li>
+        <li><strong>رسائل الخطأ</strong> من التطبيقات غير الآمنة غالبًا ما تكشف الشكل المتوقع للبيانات (ثغرة أمنية)</li>
+        <li>وثّق نقاط الوصول والأفعال والأشكال في خريطة الاستطلاع — هذه هي خارطة طريق الهجوم</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     الفصل 6 — التعرف على التبعيات الخارجية
+     ════════════════════════════════════════════════ -->
+<div id="chapter-6" class="chapter-header">
+    <div class="chapter-num ch6">الفصل 6</div>
+    <div class="chapter-title">التعرف على التبعيات الخارجية</div>
+    <div class="chapter-divider ch6"></div>
+</div>
+
+<!-- أهداف التعلم -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch6">1</div>
+            <div class="objective-text"><strong>شرح</strong> سبب كون مكتبات الطرف الثالث خطرًا أمنيًا كبيرًا.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">2</div>
+            <div class="objective-text"><strong>اكتشاف</strong> أطر الواجهة الأمامية الكبرى (<span class="term">React, Angular, Vue, Ember</span>) وتحديد إصداراتها.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">3</div>
+            <div class="objective-text"><strong>إيجاد</strong> جميع مكتبات <span class="term">JavaScript</span> و<span class="term">CSS</span> التي تحمّلها صفحة الويب عبر وحدة تحكم المتصفح.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">4</div>
+            <div class="objective-text"><strong>تحديد</strong> تقنيات الخادم من خلال رؤوس <span class="term">HTTP</span> وصفحات الخطأ والبصمات الرقمية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch6">5</div>
+            <div class="objective-text"><strong>التعرف</strong> على أنواع قواعد البيانات بتحليل أنماط حقول المعرّف في استجابات الـ <span class="term">API</span>.</div>
+        </div>
+    </div>
+</div>
+
+<!-- لماذا التبعيات خطر؟ -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#9888;&#65039;</div>
+        <h2>لماذا تُشكّل المكتبات الخارجية خطرًا أمنيًا؟</h2>
+    </div>
+
+    <p>لا يبني أي مطوّر كل شيء من الصفر. تطبيقات الويب الحديثة مُشكَّلة من <strong>80 إلى 95% من أكواد الطرف الثالث</strong>: أطر عمل، مكتبات، قواعد بيانات، معالجات دفع. كل واحدة منها هي كود <em>لم تكتبه</em> ولا تسيطر عليه بالكامل.</p>
+
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; وقت القصة — مكتبة قديمة، ضحايا كثيرون</div>
+        <p>في عام 2017، كشف اختراق كبير لبيانات شخصية 147 مليون شخص. السبب؟ <strong>إصدار قديم من Apache Struts</strong> — إطار عمل للويب — يحتوي على ثغرة معروفة. كان التحديث متاحًا منذ شهرَين، لكن لم يُثبّته أحد.</p>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "كمختبر أمني، إذا استطعت معرفة المكتبات التي يستخدمها التطبيق وأي إصدار، يمكنني البحث عنها في <strong>قاعدة بيانات CVE</strong> (الثغرات والتعرضات الشائعة) وربما أجد استغلالاً جاهزًا."
+        </div>
+    </div>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128203;</div>
+            <div class="mc-title">اكتشف المكتبة</div>
+            <div class="mc-desc">حدّد أي إطار أو حزمة يستخدمها الموقع</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128269;</div>
+            <div class="mc-title">حدّد الإصدار</div>
+            <div class="mc-desc">الإصدارات القديمة لها ثغرات منشورة معروفة</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128451;</div>
+            <div class="mc-title">ابحث في CVE</div>
+            <div class="mc-desc">ابحث عن الاستغلالات المعروفة لذلك الإصدار</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#127919;</div>
+            <div class="mc-title">رتّب الأولويات</div>
+            <div class="mc-desc">الثغرات المعروفة = أدوات هجوم جاهزة للاستخدام</div>
+        </div>
+    </div>
+</div>
+
+<!-- اكتشاف أطر الواجهة الأمامية -->
+<div id="ch6-spa" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128187;</div>
+        <h2>اكتشاف أطر الواجهة الأمامية (اكتشاف SPA)</h2>
+    </div>
+
+    <p>أطر تطبيقات الصفحة الواحدة مثل <span class="term">React</span> و<span class="term">Angular</span> و<span class="term">Vue</span> و<span class="term">Ember</span> تترك كل منها <strong>بصمة رقمية</strong> في المتصفح. يمكنك اكتشافها — وإصدارها الدقيق — من وحدة تحكم المتصفح.</p>
+
+    <div class="framework-grid">
+        <div class="framework-card react">
+            <div class="fw-icon">&#9889;</div>
+            <div class="fw-name">React</div>
+            <div class="fw-company">من Facebook / Meta</div>
+            <div class="fw-detect">React.version</div>
+        </div>
+        <div class="framework-card angular">
+            <div class="fw-icon">&#9651;</div>
+            <div class="fw-name">AngularJS</div>
+            <div class="fw-company">من Google</div>
+            <div class="fw-detect">ng-version</div>
+        </div>
+        <div class="framework-card vue">
+            <div class="fw-icon">&#128001;</div>
+            <div class="fw-name">Vue.js</div>
+            <div class="fw-company">Adobe, GitLab</div>
+            <div class="fw-detect">Vue.version</div>
+        </div>
+        <div class="framework-card ember">
+            <div class="fw-icon">&#128293;</div>
+            <div class="fw-name">EmberJS</div>
+            <div class="fw-company">LinkedIn, Netflix</div>
+            <div class="fw-detect">Ember.VERSION</div>
+        </div>
+    </div>
+
+    <h3>كيفية الاكتشاف في وحدة التحكم</h3>
+    <div class="code-box">
+        <span class="c">// افتح وحدة تحكم المتصفح (F12 ← Console) واكتب:</span><br><br>
+        <span class="c">// React</span><br>
+        <span class="k">console.log</span>(<span class="s">React.version</span>);  <span class="c">// → "18.2.0"</span><br><br>
+        <span class="c">// Vue</span><br>
+        <span class="k">console.log</span>(<span class="s">Vue.version</span>);    <span class="c">// → "3.3.4"</span><br><br>
+        <span class="c">// Ember</span><br>
+        <span class="k">console.log</span>(<span class="s">Ember.VERSION</span>);  <span class="c">// → "4.12.0"</span><br><br>
+        <span class="c">// Angular 4+ — تحقق من خصائص عناصر DOM</span><br>
+        <span class="k">document.querySelector</span>(<span class="s">'[ng-version]'</span>).<span class="k">getAttribute</span>(<span class="s">'ng-version'</span>);
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; لماذا يهم الإصدار؟</h4>
+        <p>إذا كان الموقع يشغّل <span class="term">React 16.x</span>، يمكنك البحث عن "React 16 CVE" وإيجاد ثغرات منشورة. الإصدارات القديمة غير المحدَّثة كنوز للمهاجمين.</p>
+    </div>
+</div>
+
+<!-- مكتبات JS وCSS -->
+<div id="ch6-libs" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128196;</div>
+        <h2>اكتشاف مكتبات JavaScript وCSS</h2>
+    </div>
+
+    <p>إلى جانب الأطر الكبيرة، تحمّل المواقع عشرات من <strong>مكتبات <span class="term">JavaScript</span></strong> الأصغر (<span class="term">jQuery, Lodash, D3, Stripe</span>) و<strong>أطر <span class="term">CSS</span></strong> (<span class="term">Bootstrap, Tailwind</span>). يمكنك إدراج جميعها بسطر كود واحد في وحدة التحكم.</p>
+
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; وقت القصة — أحمد يفحص المكوّنات</div>
+        <p>يلصق أحمد هذا الكود في وحدة تحكم المتصفح على موقع JeddahBank:</p>
+        <div class="code-box">
+            <span class="c">// أدرج جميع ملفات JavaScript الخارجية المحمَّلة في هذه الصفحة</span><br>
+            <span class="k">document.querySelectorAll</span>(<span class="s">'script'</span>).<span class="k">forEach</span>(s =&gt; {<br>
+            &nbsp;&nbsp;<span class="k">if</span> (s.src) <span class="k">console.log</span>(s.src);<br>
+            });
+        </div>
+        <p>يكشف الناتج:</p>
+        <div class="code-box">
+            <span class="found">https://js.stripe.com/v3/</span>                        <span class="c">← معالج الدفع</span><br>
+            <span class="found">https://code.jquery.com/jquery-3.4.1.min.js</span>      <span class="c">← jQuery 3.4.1</span><br>
+            <span class="found">https://www.google-analytics.com/analytics.js</span>    <span class="c">← تتبع التحليلات</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "<span class="term">jQuery 3.4.1</span> — دعني أتحقق من قاعدة CVE. وجدتها: <span class="term">CVE-2020-11022</span>، ثغرة <span class="term">XSS</span> في الإصدارات قبل <span class="term">3.5.0</span>. ربما يكون هذا الموقع عُرضةً للاستغلال!"
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch6);">
+            <h4>&#128196; اكتشاف مكتبات JavaScript</h4>
+            <p>شغّل <span class="term">document.querySelectorAll('script')</span> في وحدة التحكم. انظر إلى كل رابط <span class="term">src</span> — اسم الملف غالبًا يتضمن اسم المكتبة ورقم إصدارها.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch5);">
+            <h4>&#127912; اكتشاف مكتبات CSS</h4>
+            <p>شغّل <span class="term">document.querySelectorAll('link[rel=stylesheet]')</span>. نتيجة مثل <span class="term">bootstrap.css</span> أو <span class="term">tailwind.min.css</span> تُخبرك فورًا بإطار <span class="term">CSS</span> المستخدم.</p>
+        </div>
+    </div>
+</div>
+
+<!-- اكتشاف تقنيات الخادم -->
+<div id="ch6-server" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128451;</div>
+        <h2>اكتشاف أطر الخادم</h2>
+    </div>
+
+    <p>الخادم مخفي عن المتصفح — لكنه كثيرًا ما <strong>يترك آثارًا في رؤوس HTTP وصفحات الخطأ</strong>.</p>
+
+    <h3>&#128203; الطريقة الأولى: رؤوس HTTP</h3>
+    <p>بعض الخوادم المُهيَّأة بشكل غير آمن تُعلن صراحةً عن البرمجيات التي تستخدمها في رؤوس الاستجابة. يفتح أحمد أدوات المطوّر ← الشبكة ← ينقر على أي طلب ← الرؤوس:</p>
+    <div class="code-box">
+        <span class="c"># خادم يكشف معلومات أكثر من اللازم:</span><br>
+        <span class="found">X-Powered-By: ASP.NET</span><br>
+        <span class="found">Server: Microsoft-IIS/4.5</span><br>
+        <span class="found">X-AspNet-Version: 4.0.25</span><br><br>
+        <span class="c"># خادم مُهيَّأ بشكل صحيح لا يكشف شيئًا:</span><br>
+        <span class="out">Server: nginx</span>   <span class="c">← يقول فقط "نستخدم nginx"، بدون رقم الإصدار</span>
+    </div>
+
+    <h3>&#128214; الطريقة الثانية: صفحات الخطأ الافتراضية (تحديد البصمة)</h3>
+    <p>أطر العمل تُشحَن مع صفحات خطأ افتراضية مميزة. حتى لو استبدلت الشركة المحتوى الرئيسي، قد تكشف بنية الـ HTML عن إطار العمل وإصداره.</p>
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; وقت القصة — صفحة 404 تتكلم كثيرًا</div>
+        <p>يزور أحمد رابطًا غير موجود على موقع عميله فيحصل على صفحة 404. يتعرف على التصميم — يتطابق مع صفحة <span class="term">Ruby on Rails</span> الافتراضية. يفحص مصدر الـ <span class="term">HTML</span> بحثًا عن أسماء صنف <span class="term">CSS</span> محددة أُضيفت في الإصدار 4.2.</p>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "وجود صنف CSS يسمى <span class="term">.rails-default-errorpage</span> يُخبرني أن هذا <span class="term">Rails</span> إصدار 4.2 أو أحدث. غياب الخاصية <span class="term">type</span> لـ <span class="term">HTML5</span> يُخبرني أنه ما بعد 2012. مقارنة هذه الأدلة تمنحني نطاقًا من الإصدارات — وتحمل <span class="term">Rails 3.x</span> حتى <span class="term">4.2.7</span> ثغرة <span class="term">XSS</span> معروفة (CVE-2016-6316)."
+        </div>
+    </div>
+</div>
+
+<!-- اكتشاف قاعدة البيانات -->
+<div id="ch6-db" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch6">&#128202;</div>
+        <h2>اكتشاف قاعدة البيانات — قراءة أنماط المعرّفات</h2>
+    </div>
+
+    <p>تُنشئ قواعد البيانات معرّفات فريدة لكل سجل. قواعد البيانات المختلفة تستخدم تنسيقات مختلفة للمعرّفات. بالنظر إلى المعرّفات في استجابات الـ <span class="term">API</span>، يمكنك في الغالب تحديد قاعدة البيانات المستخدمة.</p>
+
+    <div class="story ch6">
+        <div class="story-label ch6">&#128214; وقت القصة — أحمد يقرأ ما بين السطور</div>
+        <p>يرسل أحمد طلب <span class="term">GET</span> إلى <span class="term">api.jeddahbank.com/users/1234</span> ويفحص استجابة <span class="term">JSON</span>:</p>
+        <div class="code-box">
+            {<br>
+            &nbsp;&nbsp;<span class="k">"_id"</span>: <span class="s">"507f1f77bcf86cd799439011"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"username"</span>: <span class="s">"joe123"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"email"</span>: <span class="s">"joe@jeddahbank.com"</span><br>
+            }
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "الحقل يسمى <span class="term">_id</span> والقيمة سلسلة سداسية عشرية من 24 حرفًا. هذا <strong>MongoDB ObjectId</strong>! أعرف تمامًا كيف تُنشئ <span class="term">MongoDB</span> هذه المعرّفات — الـ 8 أحرف الأولى هي طابع زمني بصيغة Unix، يمكنني حتى معرفة متى أُنشئ هذا الحساب بالضبط."
+        </div>
+    </div>
+
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>قاعدة البيانات</th>
+                <th>نمط المعرّف الافتراضي</th>
+                <th>مثال</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>MongoDB</strong></td>
+                <td>سداسي عشري 24 حرفًا، حقل <span class="term">_id</span></td>
+                <td><code style="direction:ltr;display:inline-block;">507f1f77bcf86cd799439011</code></td>
+            </tr>
+            <tr>
+                <td><strong>MySQL / PostgreSQL</strong></td>
+                <td>أعداد صحيحة متتالية</td>
+                <td><code style="direction:ltr;display:inline-block;">1, 2, 3, 4 ...</code></td>
+            </tr>
+            <tr>
+                <td><strong>قائم على UUID</strong></td>
+                <td>سلسلة 36 حرفًا بشرطات</td>
+                <td><code style="direction:ltr;display:inline-block;font-size:0.8em;">550e8400-e29b-41d4-a716-446655440000</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128161; إضافة — ثغرة IDOR (المرجع المباشر غير الآمن للكائنات)</h4>
+        <p>عندما تكون المعرّفات <strong>أعدادًا صحيحة متتالية</strong> (1، 2، 3...)، يستطيع المهاجم تخمينها. إذا أعاد <span class="term">/users/1234</span> بياناتك، جرّب <span class="term">/users/1235</span> — ربما يُعيد بيانات شخص آخر! هذه ثغرة حرجة تُسمى <strong>IDOR</strong>.</p>
+    </div>
+</div>
+
+<!-- ملخص الفصل 6 -->
+<div id="ch6-summary" class="summary-banner ch6">
+    <h3>&#10003; ملخص الفصل 6 — التبعيات الخارجية</h3>
+    <ul>
+        <li>التطبيقات الحديثة مُشكَّلة أساسًا من <strong>كود الطرف الثالث</strong> — مكتبات وأطر وقواعد بيانات لم تكتبها</li>
+        <li>المكتبات القديمة غير المحدَّثة لديها <strong>ثغرات CVE منشورة</strong> جاهزة للاستغلال</li>
+        <li>اكتشف أطر الواجهة الأمامية (<span class="term">React, Vue, Angular, Ember</span>) عبر <strong>المتغيرات العالمية في وحدة التحكم</strong></li>
+        <li>اكتشف مكتبات <span class="term">JS</span> و<span class="term">CSS</span> بإدراج <strong>وسوم <span class="term">&lt;script&gt;</span> و<span class="term">&lt;link&gt;</span></strong></li>
+        <li>تقنية الخادم تتسرّب عبر <strong>رؤوس HTTP</strong> (X-Powered-By) و<strong>صفحات الخطأ الافتراضية</strong></li>
+        <li>يمكن استنتاج نوع قاعدة البيانات من <strong>شكل وتنسيق حقول المعرّف</strong> في استجابات الـ API</li>
+        <li>المعرّفات الصحيحة المتتالية هي علامة على ثغرات <strong>IDOR</strong> المحتملة</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     الفصل 7 — نقاط الضعف في بنية التطبيق
+     ════════════════════════════════════════════════ -->
+<div id="chapter-7" class="chapter-header">
+    <div class="chapter-num ch7">الفصل 7</div>
+    <div class="chapter-title">تحديد نقاط الضعف في بنية التطبيق</div>
+    <div class="chapter-divider ch7"></div>
+</div>
+
+<!-- أهداف التعلم -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch7">1</div>
+            <div class="objective-text"><strong>تجميع</strong> وثيقة استطلاع كاملة تشمل التقنيات ونقاط الوصول والمصادقة والنطاقات.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch7">2</div>
+            <div class="objective-text"><strong>التمييز</strong> بين البنية الآمنة وغير الآمنة للتطبيق من خلال فحص أنماط التصميم.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch7">3</div>
+            <div class="objective-text"><strong>شرح</strong> سبب ضرورة وجود آليات الأمان في طبقات متعددة، وليس في طبقة واحدة فقط.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch7">4</div>
+            <div class="objective-text"><strong>تحديد</strong> الميزات الخطرة التي يجب عدم إعادة بنائها، خاصةً وظائف التشفير.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ملاحظات الاستطلاع -->
+<div id="ch7-notes" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#128221;</div>
+        <h2>ملاحظات الاستطلاع — ماذا تُوثّق؟</h2>
+    </div>
+
+    <p>أعطتك الفصول 4 و5 و6 أدوات جمع المعلومات. لكن المعلومات الخام عديمة الفائدة ما لم تكن <strong>منظّمة</strong>. قبل البدء في البحث عن الثغرات، تحتاج إلى خريطة واضحة لكل ما وجدته.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; وقت القصة — الخريطة النهائية لأحمد</div>
+        <p>بعد أيام من الاستطلاع على JeddahBank، ينظّم أحمد كل شيء في وثيقة منهجية. هذه ستصبح مخطط الهجوم الخاص به:</p>
+        <div class="code-box">
+            <span class="c">// ملاحظات الاستطلاع الكاملة لأحمد — JeddahBank</span><br><br>
+            <span class="k">"technology"</span>: {<br>
+            &nbsp;&nbsp;<span class="k">"frontend"</span>: <span class="s">"React 16.8 (تحقق من CVE-2018-6341!)"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"backend"</span>: <span class="s">"Node.js + Express"</span>,<br>
+            &nbsp;&nbsp;<span class="k">"database"</span>: <span class="s">"MongoDB (محدد من تنسيق _id)"</span><br>
+            },<br>
+            <span class="k">"domains"</span>: [<span class="s">"www"</span>, <span class="s">"api"</span>, <span class="s">"admin"</span>, <span class="s">"legacy-api (قديم!)"</span>],<br>
+            <span class="k">"api_endpoints"</span>: [<span class="s">"/users/:id"</span>, <span class="s">"/payments"</span>, <span class="s">"/admin/reports"</span>],<br>
+            <span class="k">"auth"</span>: <span class="s">"OAuth 2.0 Bearer tokens (تنتهي خلال ساعة)"</span>,<br>
+            <span class="k">"weak_spots"</span>: [<br>
+            &nbsp;&nbsp;<span class="s">"خادم legacy-api يشغّل برمجيات متقادمة"</span>,<br>
+            &nbsp;&nbsp;<span class="s">"لوحة admin مكشوفة على الإنترنت العام"</span>,<br>
+            &nbsp;&nbsp;<span class="s">"إصدار React يحمل ثغرة XSS معروفة"</span><br>
+            ]
+        </div>
+    </div>
+
+    <h3>ما يجب أن تتضمنه ملاحظاتك دائمًا</h3>
+    <ul class="clean-list ch7">
+        <li><strong>الحزمة التقنية</strong> — إطار العمل، اللغة، قاعدة البيانات، المكتبات + الإصدارات</li>
+        <li><strong>جميع النطاقات الفرعية والخوادم</strong> — خاصةً المنسية أو الداخلية منها</li>
+        <li><strong>نقاط الوصول الخاصة بالـ API</strong> — منظّمة حسب فعل <span class="term">HTTP</span> والنطاق الفرعي</li>
+        <li><strong>نظام المصادقة</strong> — <span class="term">Basic Auth</span>؟ <span class="term">OAuth</span>؟ <span class="term">JWT</span>؟ ملفات تعريف ارتباط الجلسة؟</li>
+        <li><strong>الميزات الموجودة</strong> — تسجيل دخول، مدفوعات، رفع ملفات، رسائل، لوحة إدارة</li>
+        <li><strong>التهيئات الأمنية الموجودة</strong> — رؤوس <span class="term">CSP</span>، إعدادات <span class="term">CORS</span></li>
+        <li><strong>نقاط الضعف المحتملة</strong> — مكتبات قديمة، لوحات إدارة مكشوفة، رسائل خطأ مفصّلة</li>
+    </ul>
+</div>
+
+<!-- آمن مقابل غير آمن -->
+<div id="ch7-arch" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#127959;</div>
+        <h2>البنية الآمنة مقابل غير الآمنة — قصة تطبيق المراسلة</h2>
+    </div>
+
+    <p>معظم الثغرات الأمنية ليست <strong>أخطاء في دالة واحدة</strong> — بل هي نتيجة تصميم التطبيق بأكمله بشكل غير آمن منذ البداية. تطبيق ذو بنية سيئة سيحتوي على ثغرات في كل مكان، وليس في مكان واحد فقط.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; وقت القصة — بنكان، نفس الميزة</div>
+        <p>بنى JeddahBank وبنك سيكيور ميزة تراسل فوري لموظفيهما. الميزة بسيطة: يمكن للموظفين إرسال رسائل داخلية لبعضهم.</p>
+        <p><strong>مقاربة JeddahBank</strong> (غير آمنة): يكتب المطورون ميزة الرسائل بسرعة. لا يفكرون في الأمان. كل مطوّر يعالج الأمان بطريقته — واحد يُطهّر المدخلات، آخر لا يفعل.</p>
+        <p><strong>مقاربة بنك سيكيور</strong> (آمنة): قبل بناء أي ميزة، يبني فريق البنية أداة مشتركة <span class="term">appendToDOM()</span> تُطهّر <strong>جميع النصوص تلقائيًا</strong> قبل عرضها. يجب على كل مطوّر استخدام هذه الأداة.</p>
+    </div>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#128308; بنية غير آمنة (JeddahBank)</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>كل مطوّر ينفّذ الأمان بشكل منفصل</li>
+                    <li>من السهل نسيان التطهير في مكان ما</li>
+                    <li>مطوّر واحد يتجاهله ← ثغرة XSS</li>
+                    <li>الأمان يُضاف بعد بناء الميزة</li>
+                    <li>الميزات الجديدة لا ترث الأمان من القديمة</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#128994; بنية آمنة (بنك سيكيور)</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>أدوات الأمان مبنية في الكود المشترك</li>
+                    <li>كل مطوّر يستخدم الدوال الآمنة تلقائيًا</li>
+                    <li>التطهير يحدث في مكان واحد — إصلاح واحد يصلح الكل</li>
+                    <li>الأمان مُصمَّم قبل بدء التطوير</li>
+                    <li>الميزات الجديدة ترث الأمان من البنية</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; رؤية مهمة لمختبري الأمان</h4>
+        <p>عندما تجد ثغرة <span class="term">XSS</span> واحدة في ميزة ما، ربما تكون خطأ في الكود. لكن عندما تجد ثغرات <span class="term">XSS</span> في <strong>ميزات متعددة</strong>، هذه علامة على <strong>بنية ضعيفة</strong>. ركّز اختبارك هناك — المزيد من الثغرات في الجوار.</p>
+    </div>
+</div>
+
+<!-- طبقات متعددة من الأمان -->
+<div id="ch7-layers" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#127959;</div>
+        <h2>طبقات متعددة من الأمان — "الدفاع في العمق"</h2>
+    </div>
+
+    <p>التطبيق الآمن لا يعتمد على فحص أمني واحد. بل يُطبّق الحماية في <strong>كل طبقة</strong> من تدفق البيانات. يُسمى هذا <strong>الدفاع في العمق</strong> — مثل خزينة بنك ذات أبواب مقفلة متعددة، لا باب واحد فقط.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; وقت القصة — نقطة وصول الرسائل المجمّعة الجديدة</div>
+        <p>بنى بنك سيكيور نقطة وصول الرسالة الواحدة مع حماية <span class="term">XSS</span> على طبقة الـ <span class="term">API</span>. ثم، بعد 6 أشهر، أضاف مطوّر نقطة وصول <strong>الرسائل المجمّعة</strong> — لإرسال رسائل كثيرة دفعة واحدة لحملات التسويق.</p>
+        <p>نسي المطوّر إضافة تطهير <span class="term">XSS</span> لنقطة الوصول الجديدة. اكتشف مهاجم هذا وبدأ في رفع نصوص برمجية خبيثة عبر نقطة الوصول المجمّعة، متجاوزًا الحماية الأصلية.</p>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "لو كانت طبقة قاعدة البيانات قد طهّرت كل رسالة عند الكتابة، أو لو كانت الواجهة الأمامية قد طهّرت كل رسالة عند القراءة، لكان هجوم نقطة الوصول المجمّعة محجوبًا أيضًا. فشل طبقة واحدة لا يفتح الخزينة."
+        </div>
+    </div>
+
+    <!-- مكدّس الطبقات -->
+    <div class="layer-stack">
+        <div class="layer-item l1">
+            <div class="layer-icon">&#128421;</div>
+            <div class="layer-label">
+                <strong>الطبقة 1: العميل (المتصفح)</strong>
+                <span>التحقق من صحة المدخلات في الواجهة قبل إرسال الطلب</span>
+            </div>
+        </div>
+        <div class="layer-item l2">
+            <div class="layer-icon">&#128279;</div>
+            <div class="layer-label">
+                <strong>الطبقة 2: نقطة وصول الـ API</strong>
+                <span>تطهير والتحقق من جميع البيانات الواردة قبل معالجتها</span>
+            </div>
+        </div>
+        <div class="layer-item l3">
+            <div class="layer-icon">&#128451;</div>
+            <div class="layer-label">
+                <strong>الطبقة 3: منطق الأعمال</strong>
+                <span>تطبيق قواعد الأمان عند معالجة البيانات وتحويلها</span>
+            </div>
+        </div>
+        <div class="layer-item l4">
+            <div class="layer-icon">&#128202;</div>
+            <div class="layer-label">
+                <strong>الطبقة 4: قاعدة البيانات</strong>
+                <span>قيود المخطط ترفض البيانات غير الصالحة أو الخبيثة</span>
+            </div>
+        </div>
+        <div class="layer-item l5">
+            <div class="layer-icon">&#128241;</div>
+            <div class="layer-label">
+                <strong>الطبقة 5: المخرجات (DOM)</strong>
+                <span>تطهير جميع البيانات قبل عرضها — خط الدفاع الأخير</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; استراتيجية المختبر</h4>
+        <p>ابحث عن الميزات التي لديها <strong>طبقات كثيرة لكن آليات أمان قليلة</strong> — هذه إحصائيًا الأكثر احتمالاً لوجود ثغرات قابلة للاستغلال. تدفق دفع مالي بـ 5 خطوات لكن أمانه فقط في الخطوة الأولى هو هدف مثالي.</p>
+    </div>
+</div>
+
+<!-- لا تبنِ تشفيرك الخاص -->
+<div id="ch7-reinvent" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch7">&#128273;</div>
+        <h2>لا تبنِ تشفيرك الخاص أبدًا</h2>
+    </div>
+
+    <p>بعض الميزات يجب <strong>ألّا تُعاد بناؤها</strong> من قِبَل فريق التطوير أبدًا — مهما كان موهوبًا. أخطر الأمثلة تتعلق بـ<strong>التشفير</strong>.</p>
+
+    <div class="story ch7">
+        <div class="story-label ch7">&#128214; وقت القصة — الاختصار المُكلف</div>
+        <p>اعتقد مطوّر في JeddahBank أن خوارزمية التجزئة القياسية <span class="term">SHA-256</span> "مملة" وقرر كتابة خوارزمية تجزئة مخصصة لتخزين كلمات المرور. ظن أنها ذكية وفريدة.</p>
+        <p>أمضى باحث أمني 3 أيام في تحليل الخوارزمية المخصصة ووجد نمطًا. في غضون أسبوع، كان لديه برنامج يستطيع عكس التجزئة لكلمات المرور الشائعة — مُبطّلاً بذلك الغرض كله من التجزئة.</p>
+        <div class="dialogue">
+            <span class="character ahmed">أحمد:</span> "تم تطوير <span class="term">SHA-256</span> على مدى سنوات بمشاركة مئات من أفضل علماء الرياضيات في العالم، واختبره المعهد الوطني للمعايير والتقنية <span class="term">NIST</span> في الولايات المتحدة. مطوّر واحد لا يستطيع منافسة ذلك — ولا ينبغي له أن يحاول."
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--green);">
+            <h4>&#128994; آمن لإعادة البناء</h4>
+            <p>مكوّنات الواجهة، مخططات البيانات، أنظمة الإشعارات، تخزين التعليقات، فلاتر البحث — هذه <strong>ميزات وظيفية</strong> يمكن اكتشاف أخطائها وإصلاحها.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--red);">
+            <h4>&#128308; لا تُعد بناؤه أبدًا</h4>
+            <p>التشفير (التجزئة والتشفير)، بروتوكولات المصادقة، محركات قواعد البيانات، إدارة الذاكرة، عزل العمليات — هذه تتطلب <strong>خبرة رياضية عميقة</strong> وسنوات من الاختبار من قِبَل متخصصين.</p>
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; فرحة المهاجم</h4>
+        <p>التطبيقات المبنية بـ<strong>تشفير مخصص</strong> أو أنظمة مصادقة مخصصة هي من أسهل ما يُكسر. عندما يرى أحمد نظام تسجيل دخول أو مُجزِّئ كلمات مرور مبنيًا بأيدٍ محلية، يبتسم — هذه النظم تحتوي شبه دائمًا على ثغرات حرجة.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; القاعدة الذهبية</h4>
+        <p>إذا كانت التقنية تتطلب خبرة في <strong>الرياضيات أو أنظمة التشغيل أو العتاد</strong> للتنفيذ الصحيح — اعتمد على حل راسخ ومُختبَر. لا تُعد اختراعه.</p>
+    </div>
+</div>
+
+<!-- ملخص الفصل 7 -->
+<div id="ch7-summary" class="summary-banner ch7">
+    <h3>&#10003; ملخص الفصل 7 — نقاط الضعف في البنية</h3>
+    <ul>
+        <li>قبل الاختبار، جمّع <strong>خريطة استطلاع كاملة</strong>: التقنيات والنطاقات والـ APIs والمصادقة والملاحظات</li>
+        <li>معظم الثغرات لا تنشأ من سطر كود سيئ بل من <strong>تصميم بنية سيئ</strong></li>
+        <li>التطبيقات الآمنة تبني الأمان في <strong>البنية المشتركة</strong>، لا على أساس كل ميزة على حدة</li>
+        <li>التطبيق بأمان بمستوى <strong>أضعف طبقاته</strong> — الدفاع في العمق يعني حماية كل طبقة</li>
+        <li>نقطة وصول جديدة أُضيفت لاحقًا قد تتجاوز كل الأمان الأصلي — تحقق دائمًا من مسارات الكود الجديدة</li>
+        <li>لا تبنِ <strong>تشفيرًا مخصصًا</strong> أبدًا — ستحتوي شبه دائمًا على ثغرات حرجة</li>
+        <li>الميزات ذات <strong>طبقات كثيرة وآليات أمان قليلة</strong> = أولوية الاختبار القصوى</li>
+    </ul>
+</div>
+
+</main>
+</div>
+</div>
+
+<!-- ══════════════════════ التذييل ══════════════════════ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 — أمن تطبيقات الويب</div>
+        <div class="footer-links">
+            <a href="../index.html">الصفحة الرئيسية</a>
+            <a href="../week2/index-ar.html">الأسبوع 2</a>
+            <a href="index-ar.html">الأسبوع 3</a>
+        </div>
+        <div style="color: var(--neutral-500); font-size: 13px;">الفصول 4 و5 و6 و7 — تقنيات الاستطلاع</div>
+    </div>
+</footer>
+
+<script>
+    // تفعيل رابط الشريط الجانبي عند التمرير
+    const sections = document.querySelectorAll('[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                sidebarLinks.forEach(link => link.classList.remove('active'));
+                const active = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
