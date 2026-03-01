@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 4 — Teaching Guide | CYB236</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --font: 'Inter', sans-serif;
+      --mono: 'Fira Code', monospace;
+
+      /* Chapter palette */
+      --c9:  #7c3aed; --c9-l:  #ede9fe; --c9-b:  #4c1d95;
+      --c10: #ea580c; --c10-l: #fff7ed; --c10-b: #9a3412;
+      --c11: #0891b2; --c11-l: #e0f9ff; --c11-b: #164e63;
+      --c12: #16a34a; --c12-l: #dcfce7; --c12-b: #14532d;
+      --c13: #dc2626; --c13-l: #fee2e2; --c13-b: #7f1d1d;
+      --c14: #4f46e5; --c14-l: #e0e7ff; --c14-b: #1e1b4b;
+
+      --bg:      #0f0e17;
+      --bg2:     #1a1830;
+      --surface: #ffffff;
+      --border:  #e5e7eb;
+      --text:    #1f2937;
+      --muted:   #6b7280;
+      --light:   #f9fafb;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--light);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    /* ─────────────────────────────────────────
+       HERO
+    ───────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0f0e17 0%, #1a1830 40%, #2d1b69 100%);
+      color: #fff;
+      padding: 80px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(124,58,237,.25) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 30%, rgba(79,70,229,.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 100px;
+      padding: 6px 18px;
+      font-size: 13px; font-weight: 600; color: #c4b5fd;
+      margin-bottom: 24px;
+      letter-spacing: .04em;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, #fff 0%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #d1d5db;
+      max-width: 640px;
+      margin: 0 auto 40px;
+    }
+
+    .chapter-pills {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    }
+
+    .pill {
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 13px; font-weight: 600;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+      color: #e5e7eb;
+    }
+
+    /* ─────────────────────────────────────────
+       NAV BAR (sticky)
+    ───────────────────────────────────────── */
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 999;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+
+    .sticky-nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; gap: 4px; overflow-x: auto;
+      scrollbar-width: none;
+      padding: 10px 0;
+    }
+
+    .sticky-nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      text-decoration: none;
+      color: var(--muted);
+      white-space: nowrap;
+      transition: all .2s;
+    }
+
+    .nav-btn:hover { background: var(--light); color: var(--text); }
+
+    .nav-btn.c9:hover  { background: var(--c9-l);  color: var(--c9-b); }
+    .nav-btn.c10:hover { background: var(--c10-l); color: var(--c10-b); }
+    .nav-btn.c11:hover { background: var(--c11-l); color: var(--c11-b); }
+    .nav-btn.c12:hover { background: var(--c12-l); color: var(--c12-b); }
+    .nav-btn.c13:hover { background: var(--c13-l); color: var(--c13-b); }
+    .nav-btn.c14:hover { background: var(--c14-l); color: var(--c14-b); }
+
+    /* ─────────────────────────────────────────
+       LAYOUT
+    ───────────────────────────────────────── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    /* ─────────────────────────────────────────
+       CHAPTER SECTION
+    ───────────────────────────────────────── */
+    .chapter {
+      margin-bottom: 80px;
+      scroll-margin-top: 72px;
+    }
+
+    .chapter-header {
+      display: flex; align-items: flex-start; gap: 20px;
+      margin-bottom: 36px;
+      padding: 32px;
+      border-radius: 20px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chapter-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M0 0h20v20H0zM20 20h20v20H20z'/%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .ch9  .chapter-header { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
+    .ch10 .chapter-header { background: linear-gradient(135deg, #ea580c, #9a3412); }
+    .ch11 .chapter-header { background: linear-gradient(135deg, #0891b2, #164e63); }
+    .ch12 .chapter-header { background: linear-gradient(135deg, #16a34a, #14532d); }
+    .ch13 .chapter-header { background: linear-gradient(135deg, #dc2626, #7f1d1d); }
+    .ch14 .chapter-header { background: linear-gradient(135deg, #4f46e5, #1e1b4b); }
+
+    .chapter-icon {
+      width: 60px; height: 60px; flex-shrink: 0;
+      background: rgba(255,255,255,.15);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      position: relative; z-index: 1;
+    }
+
+    .chapter-meta { position: relative; z-index: 1; }
+
+    .chapter-label {
+      font-size: 12px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase;
+      opacity: .7; margin-bottom: 4px;
+    }
+
+    .chapter-title {
+      font-size: 1.8rem; font-weight: 800; line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .chapter-tagline { opacity: .85; font-size: .95rem; }
+
+    /* ─────────────────────────────────────────
+       CARDS & BLOCKS
+    ───────────────────────────────────────── */
+    .big-idea {
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      border-left: 5px solid;
+      background: var(--surface);
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+
+    .ch9  .big-idea { border-color: var(--c9);  background: var(--c9-l); }
+    .ch10 .big-idea { border-color: var(--c10); background: var(--c10-l); }
+    .ch11 .big-idea { border-color: var(--c11); background: var(--c11-l); }
+    .ch12 .big-idea { border-color: var(--c12); background: var(--c12-l); }
+    .ch13 .big-idea { border-color: var(--c13); background: var(--c13-l); }
+    .ch14 .big-idea { border-color: var(--c14); background: var(--c14-l); }
+
+    .big-idea-label {
+      font-size: 11px; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .ch9  .big-idea-label { color: var(--c9-b); }
+    .ch10 .big-idea-label { color: var(--c10-b); }
+    .ch11 .big-idea-label { color: var(--c11-b); }
+    .ch12 .big-idea-label { color: var(--c12-b); }
+    .ch13 .big-idea-label { color: var(--c13-b); }
+    .ch14 .big-idea-label { color: var(--c14-b); }
+
+    .big-idea p { font-size: 1rem; color: var(--text); font-weight: 500; }
+
+    /* Section headings inside chapters */
+    .section-title {
+      font-size: 1.15rem; font-weight: 700;
+      margin: 36px 0 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block; width: 4px; height: 22px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .ch9  .section-title::before { background: var(--c9); }
+    .ch10 .section-title::before { background: var(--c10); }
+    .ch11 .section-title::before { background: var(--c11); }
+    .ch12 .section-title::before { background: var(--c12); }
+    .ch13 .section-title::before { background: var(--c13); }
+    .ch14 .section-title::before { background: var(--c14); }
+
+    /* ─────────────────────────────────────────
+       TYPE CARDS  (XSS types, attack vectors, etc.)
+    ───────────────────────────────────────── */
+    .type-grid { display: grid; gap: 20px; margin-bottom: 24px; }
+
+    .type-card {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 24px 28px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .type-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+
+    .ch9  .type-card::before { background: var(--c9); }
+    .ch10 .type-card::before { background: var(--c10); }
+    .ch11 .type-card::before { background: var(--c11); }
+    .ch12 .type-card::before { background: var(--c12); }
+    .ch13 .type-card::before { background: var(--c13); }
+    .ch14 .type-card::before { background: var(--c14); }
+
+    .type-card-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .type-badge {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .ch9  .type-badge { background: var(--c9); }
+    .ch10 .type-badge { background: var(--c10); }
+    .ch11 .type-badge { background: var(--c11); }
+    .ch12 .type-badge { background: var(--c12); }
+    .ch13 .type-badge { background: var(--c13); }
+    .ch14 .type-badge { background: var(--c14); }
+
+    .type-name { font-size: 1rem; font-weight: 700; }
+    .type-sub  { font-size: .8rem; color: var(--muted); margin-top: 1px; }
+
+    .type-card p { font-size: .93rem; color: #374151; margin-bottom: 10px; }
+    .type-card p:last-child { margin-bottom: 0; }
+
+    /* ─────────────────────────────────────────
+       ANALOGY BOX
+    ───────────────────────────────────────── */
+    .analogy {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-top: 14px;
+    }
+
+    .analogy-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+    .analogy-label {
+      font-size: 11px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .08em; color: #92400e; margin-bottom: 4px;
+    }
+
+    .analogy p { font-size: .92rem; color: #78350f; font-weight: 500; }
+
+    /* ─────────────────────────────────────────
+       CODE BLOCK
+    ───────────────────────────────────────── */
+    .code-wrap {
+      background: #0f0e17;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 14px 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    }
+
+    .code-bar {
+      background: #1a1830;
+      padding: 10px 18px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .code-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+
+    .code-dot.r { background: #ff5f57; }
+    .code-dot.y { background: #ffbd2e; }
+    .code-dot.g { background: #28ca41; }
+
+    .code-lang {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 11px; color: #6b7280;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px 22px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: #e2e8f0;
+    }
+
+    .kw  { color: #c084fc; }
+    .str { color: #86efac; }
+    .cm  { color: #6b7280; font-style: italic; }
+    .fn  { color: #93c5fd; }
+    .tg  { color: #f9a8d4; }
+    .at  { color: #fcd34d; }
+    .val { color: #6ee7b7; }
+
+    /* ─────────────────────────────────────────
+       TABLES
+    ───────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 20px 0; border-radius: 12px; border: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; background: var(--surface); }
+
+    thead tr {
+      background: linear-gradient(90deg, #1f2937, #374151);
+      color: #fff;
+    }
+
+    th {
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    td { padding: 13px 20px; font-size: .91rem; border-top: 1px solid var(--border); vertical-align: top; }
+
+    tr:nth-child(even) td { background: #f9fafb; }
+    tr:hover td { background: #f3f4f6; }
+
+    td strong { font-weight: 700; }
+
+    /* ─────────────────────────────────────────
+       BULLET LISTS
+    ───────────────────────────────────────── */
+    .styled-list { list-style: none; padding: 0; display: grid; gap: 10px; margin: 16px 0; }
+
+    .styled-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .93rem;
+    }
+
+    .styled-list li::before {
+      content: '→';
+      font-weight: 800; font-size: 14px; flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .ch9  .styled-list li::before { color: var(--c9); }
+    .ch10 .styled-list li::before { color: var(--c10); }
+    .ch11 .styled-list li::before { color: var(--c11); }
+    .ch12 .styled-list li::before { color: var(--c12); }
+    .ch13 .styled-list li::before { color: var(--c13); }
+    .ch14 .styled-list li::before { color: var(--c14); }
+
+    /* ─────────────────────────────────────────
+       DANGER / INFO CALLOUT
+    ───────────────────────────────────────── */
+    .callout {
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin: 16px 0;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+
+    .callout.danger  { background: #fef2f2; border: 1px solid #fca5a5; }
+    .callout.info    { background: #eff6ff; border: 1px solid #93c5fd; }
+    .callout.success { background: #f0fdf4; border: 1px solid #86efac; }
+    .callout.warning { background: #fffbeb; border: 1px solid #fcd34d; }
+
+    .callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+
+    .callout-title { font-weight: 700; font-size: .88rem; margin-bottom: 4px; }
+    .callout.danger  .callout-title { color: #991b1b; }
+    .callout.info    .callout-title { color: #1e40af; }
+    .callout.success .callout-title { color: #166534; }
+    .callout.warning .callout-title { color: #92400e; }
+
+    .callout p { font-size: .9rem; color: var(--text); }
+
+    /* ─────────────────────────────────────────
+       SUMMARY TABLE (bottom)
+    ───────────────────────────────────────── */
+    .summary-section {
+      background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+      color: #fff;
+      border-radius: 24px;
+      padding: 52px 40px;
+      margin-top: 80px;
+    }
+
+    .summary-section h2 {
+      font-size: 1.8rem; font-weight: 800; margin-bottom: 8px;
+      background: linear-gradient(90deg, #fff, #c4b5fd);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .summary-section > p { color: #9ca3af; margin-bottom: 32px; }
+
+    .summary-table-wrap { overflow-x: auto; border-radius: 14px; }
+
+    .summary-table { width: 100%; border-collapse: collapse; }
+
+    .summary-table thead tr { background: rgba(255,255,255,.07); }
+
+    .summary-table th {
+      padding: 14px 20px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: #9ca3af; text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .summary-table td {
+      padding: 16px 20px;
+      font-size: .9rem; color: #e5e7eb;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      vertical-align: middle;
+      background: transparent;
+    }
+
+    .summary-table tr:hover td { background: rgba(255,255,255,.04); }
+
+    .ch-tag {
+      display: inline-flex; align-items: center;
+      padding: 4px 12px; border-radius: 100px;
+      font-size: 12px; font-weight: 700; color: #fff;
+    }
+
+    /* ─────────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--muted);
+      font-size: .85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer strong { color: var(--text); }
+
+    /* ─────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .chapter-header { flex-direction: column; }
+      .summary-section { padding: 36px 24px; }
+      .hero { padding: 56px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">📚 CYB 236 — Web Application Security</div>
+    <h1>Week 4 Teaching Guide<br/>Hacking Web Applications</h1>
+    <p>A simple, clear, example-driven breakdown of Chapters 9–14 designed for classroom teaching.</p>
+    <div class="chapter-pills">
+      <span class="pill">Ch 9 · Hacker's Mindset</span>
+      <span class="pill">Ch 10 · XSS</span>
+      <span class="pill">Ch 11 · CSRF</span>
+      <span class="pill">Ch 12 · XXE</span>
+      <span class="pill">Ch 13 · Injection</span>
+      <span class="pill">Ch 14 · DoS / DDoS</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     STICKY NAV
+══════════════════════════════════════════ -->
+<nav class="sticky-nav">
+  <div class="sticky-nav-inner">
+    <a href="#ch9"  class="nav-btn c9">🧠 Ch 9 – Mindset</a>
+    <a href="#ch10" class="nav-btn c10">💉 Ch 10 – XSS</a>
+    <a href="#ch11" class="nav-btn c11">🔁 Ch 11 – CSRF</a>
+    <a href="#ch12" class="nav-btn c12">📄 Ch 12 – XXE</a>
+    <a href="#ch13" class="nav-btn c13">🗄️ Ch 13 – Injection</a>
+    <a href="#ch14" class="nav-btn c14">💥 Ch 14 – DoS</a>
+    <a href="#summary" class="nav-btn">📋 Summary</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ────────────────────────────────────────
+       CHAPTER 9
+  ──────────────────────────────────────── -->
+  <section class="chapter ch9" id="ch9">
+    <div class="chapter-header">
+      <div class="chapter-icon">🧠</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter 9</div>
+        <div class="chapter-title">The Hacker's Mindset</div>
+        <div class="chapter-tagline">How hackers think — and why patience is their greatest weapon.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 The Big Idea</div>
+      <p>A hacker and a developer look at the same application in completely opposite ways. A developer asks <em>"How do I build this feature?"</em> A hacker asks <em>"Where is the unlocked door?"</em> Most hacking is not dramatic — it is weeks of quiet, patient research.</p>
+    </div>
+
+    <h3 class="section-title">Simple Explanation</h3>
+    <p>Most people imagine a hacker furiously typing and breaking systems in minutes. That is a movie myth. In reality, <strong>90% of hacking is boring research</strong> — reading documentation, mapping the application, and patiently taking notes until one weak point appears.</p>
+
+    <p style="margin-top:12px;">A hacker does not need to <em>rewrite</em> the application. They just need to find <strong>one weak spot</strong> — a window that was left open, a door with an old lock.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🏠</div>
+      <div>
+        <div class="analogy-label">Analogy</div>
+        <p>Think of a burglar walking slowly around a neighborhood — looking at every house, checking which windows are open, which locks are old, which door looks flimsy. That walk-around <em>is</em> the hacking. The actual break-in takes 10 seconds once the open window is found.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">The Hacker's Four Core Traits</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Trait</th><th>What It Means</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Seeks entrypoints</strong></td><td>Looks for every input, form, or interface the app accepts</td></tr>
+          <tr><td><strong>Takes detailed notes</strong></td><td>Documents everything — even dead ends have value later</td></tr>
+          <tr><td><strong>Constantly learns</strong></td><td>Reads CVE reports, security blogs, and new attack techniques</td></tr>
+          <tr><td><strong>Patient</strong></td><td>May spend weeks or months before finding one real vulnerability</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="section-title">How Recon Skills Become Weapons</h3>
+    <p>Everything learned in Weeks 1–3 (finding subdomains, reading APIs, identifying libraries) now feeds directly into offense:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Skill from Recon</th><th>Offensive Use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Subdomain Discovery</strong></td><td>Find less-tested internal servers like <code>legacy-api.company.com</code></td></tr>
+          <tr><td><strong>API Analysis</strong></td><td>Send malicious payloads directly to REST endpoints</td></tr>
+          <tr><td><strong>Auth Schemes</strong></td><td>Try to forge or bypass login tokens</td></tr>
+          <tr><td><strong>3rd-Party Libraries</strong></td><td>Look up known CVEs for detected library versions</td></tr>
+          <tr><td><strong>App Architecture</strong></td><td>Use App A's trusted connection to App B as an attack path</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────
+       CHAPTER 10
+  ──────────────────────────────────────── -->
+  <section class="chapter ch10" id="ch10">
+    <div class="chapter-header">
+      <div class="chapter-icon">💉</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter 10</div>
+        <div class="chapter-title">Cross-Site Scripting (XSS)</div>
+        <div class="chapter-tagline">Injecting malicious JavaScript into pages that other users see.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 The Big Idea</div>
+      <p>A website that displays text typed by users can be tricked into displaying <em>executable JavaScript</em> instead. That script runs silently in every victim's browser — stealing data, hijacking sessions, or showing fake login forms.</p>
+    </div>
+
+    <h3 class="section-title">Simple Explanation</h3>
+    <p>Imagine a website with a comment box. You type a comment, it saves, and every visitor sees it. Now imagine typing this instead of a comment:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">HTML</span></div>
+      <pre><span class="tg">&lt;script&gt;</span><span class="fn">alert</span>(<span class="str">'Your session has been stolen!'</span>)<span class="tg">&lt;/script&gt;</span></pre>
+    </div>
+    <p>If the website does not clean that input, every visitor's browser will <strong>run that code</strong> — not display it as text. Replace <code>alert()</code> with a script that sends the visitor's login cookie to the attacker, and the attacker is now logged in as that visitor.</p>
+
+    <h3 class="section-title">The 4 Types of XSS</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">Stored XSS (Persistent)</div>
+            <div class="type-sub">Most dangerous · Script saved in the database</div>
+          </div>
+        </div>
+        <p>The malicious script is <strong>saved in the database</strong> and served to every single visitor who views the page.</p>
+        <p><strong>Example:</strong> A product review on a shopping site contains a script. Every customer who views that product page has their session token stolen automatically.</p>
+        <div class="analogy">
+          <div class="analogy-icon">🚰</div>
+          <div><div class="analogy-label">Analogy</div><p>A poisoned water supply — everyone who drinks gets sick. You only need to poison it once.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">Reflected XSS</div>
+            <div class="type-sub">Script embedded in a URL · Never stored</div>
+          </div>
+        </div>
+        <p>The payload is hidden inside a link sent to the victim (via email, social media, or ads). The server "reflects" it back in the response and the browser runs it.</p>
+        <p><strong>Example:</strong> A phishing email contains a link like:<br/><code>https://bank.com/search?q=&lt;script&gt;steal()&lt;/script&gt;</code></p>
+        <div class="analogy">
+          <div class="analogy-icon">✉️</div>
+          <div><div class="analogy-label">Analogy</div><p>A poisoned letter — only the one person who opens it is affected. Very hard to detect because nothing is saved.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">DOM-Based XSS</div>
+            <div class="type-sub">Runs entirely in the browser · Server never sees it</div>
+          </div>
+        </div>
+        <p>The page's own JavaScript reads data from the URL (a <strong>source</strong>) and writes it into the page (a <strong>sink</strong>) without sanitizing. The server is never involved.</p>
+        <ul class="styled-list">
+          <li><strong>Sources:</strong> <code>window.location.hash</code>, <code>window.location.search</code>, <code>document.referrer</code></li>
+          <li><strong>Sinks:</strong> <code>document.write()</code>, <code>element.innerHTML</code>, <code>eval()</code></li>
+        </ul>
+        <div class="analogy">
+          <div class="analogy-icon">💣</div>
+          <div><div class="analogy-label">Analogy</div><p>The bomb was already inside the house. You unknowingly built it yourself when you set up the page.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">4</div>
+          <div>
+            <div class="type-name">Mutation-Based XSS (mXSS)</div>
+            <div class="type-sub">Most advanced · Bypasses sanitizers</div>
+          </div>
+        </div>
+        <p>The payload <strong>looks harmless</strong> when it passes through the sanitizer (like DOMPurify). But once the browser renders it, the HTML mutates into a dangerous script. Exploits browser-specific quirks. Has bypassed major security libraries.</p>
+        <div class="analogy">
+          <div class="analogy-icon">🧪</div>
+          <div><div class="analogy-label">Analogy</div><p>A smuggler carries innocent-looking sugar through customs. Once inside, he adds one chemical and it becomes explosive. The scanner saw sugar — what he made is a bomb.</p></div>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 class="section-title">What XSS Can Do to Victims</h3>
+    <ul class="styled-list">
+      <li>Steal session cookies → log in as the victim on any website</li>
+      <li>Steal credit card numbers, passwords, and personal data</li>
+      <li>Display a fake login form (phishing overlay) on top of the real page</li>
+      <li>Run silently in the background for months without detection</li>
+      <li>Persist across sessions (Stored XSS keeps attacking every visitor)</li>
+    </ul>
+  </section>
+
+  <!-- ────────────────────────────────────────
+       CHAPTER 11
+  ──────────────────────────────────────── -->
+  <section class="chapter ch11" id="ch11">
+    <div class="chapter-header">
+      <div class="chapter-icon">🔁</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter 11</div>
+        <div class="chapter-title">Cross-Site Request Forgery (CSRF)</div>
+        <div class="chapter-tagline">Tricking your browser into making requests you never authorized.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 The Big Idea</div>
+      <p>Your browser automatically sends your login cookie with <em>every</em> request to a website — even requests triggered by a completely different website. CSRF exploits this to make <em>you</em> perform actions you never intended, using your own credentials.</p>
+    </div>
+
+    <h3 class="section-title">Simple Explanation</h3>
+    <p>You are logged into your bank at <code>bank.com</code>. In another tab, you visit <code>evil.com</code>. Without your knowledge, <code>evil.com</code> sends a request to <code>bank.com/transfer?amount=10000&amp;to=hacker</code>. Your browser automatically attaches your bank session cookie. The bank thinks <strong>you</strong> requested the transfer and processes it.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div>
+        <div class="callout-title">Key Insight</div>
+        <p>The bank server cannot tell whether a request came from you clicking a button on bank.com or from a hidden script on evil.com. Both carry the same cookie, the same IP address. They look identical.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">Two Defining Characteristics</h3>
+    <ul class="styled-list">
+      <li><strong>Privilege escalation</strong> — the attacker performs actions using <em>your</em> privileged account without knowing your password.</li>
+      <li><strong>Stealth</strong> — the victim typically never knows anything happened. No popup, no error, no clue.</li>
+    </ul>
+
+    <h3 class="section-title">The 3 Attack Vectors</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">GET-Based CSRF (URL Tampering)</div>
+            <div class="type-sub">Victim must click a malicious link</div>
+          </div>
+        </div>
+        <p>Some apps use GET requests for actions like bank transfers. Attacker crafts a link with their own account as the destination and disguises it as "Click here for your prize!"</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">URL</span></div>
+          <pre>https://bank.com/transfer<span class="at">?to=hacker&amp;amount=10000</span></pre>
+        </div>
+        <div class="callout danger" style="margin-top:12px;">
+          <div class="callout-icon">🚫</div>
+          <div><div class="callout-title">Rule to Teach</div><p>GET requests must <strong>NEVER</strong> change data (create, update, delete). GET is read-only. Always.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">Hidden Image Tag — Zero Clicks</div>
+            <div class="type-sub">Fires automatically when the page loads</div>
+          </div>
+        </div>
+        <p>HTML tags with <code>src</code> attributes fire GET requests automatically. No user interaction needed. An invisible 0×0 image silently triggers the attack the moment the victim visits the page.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">HTML</span></div>
+          <pre><span class="tg">&lt;img</span> <span class="at">src</span>=<span class="str">"https://bank.com/transfer?to=hacker&amp;amount=10000"</span>
+     <span class="at">width</span>=<span class="str">"0"</span> <span class="at">height</span>=<span class="str">"0"</span><span class="tg">&gt;</span></pre>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">🪤</div>
+          <div><div class="analogy-label">Analogy</div><p>A trip wire — you do not have to push anything. Simply walking near it triggers it.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">Hidden Form (POST-Based)</div>
+            <div class="type-sub">HTML forms can POST to any domain</div>
+          </div>
+        </div>
+        <p>Attacker builds a fake "Win a Prize!" page. Behind the scenes, clicking the button POSTs to the bank with hidden fields the victim cannot see.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">HTML</span></div>
+          <pre><span class="tg">&lt;form</span> <span class="at">action</span>=<span class="str">"https://bank.com/transfer"</span> <span class="at">method</span>=<span class="str">"POST"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;input</span> <span class="at">type</span>=<span class="str">"hidden"</span> <span class="at">name</span>=<span class="str">"to"</span>     <span class="at">value</span>=<span class="str">"hacker"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;input</span> <span class="at">type</span>=<span class="str">"hidden"</span> <span class="at">name</span>=<span class="str">"amount"</span> <span class="at">value</span>=<span class="str">"10000"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;button&gt;</span>Claim My Prize!<span class="tg">&lt;/button&gt;</span>
+<span class="tg">&lt;/form&gt;</span></pre>
+        </div>
+        <p style="margin-top:10px;"><strong>Bonus:</strong> Can also reach internal network servers — the victim's browser can access intranet resources that the attacker can never reach directly.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────
+       CHAPTER 12
+  ──────────────────────────────────────── -->
+  <section class="chapter ch12" id="ch12">
+    <div class="chapter-header">
+      <div class="chapter-icon">📄</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter 12</div>
+        <div class="chapter-title">XML External Entity (XXE)</div>
+        <div class="chapter-tagline">Reading secret server files through a dangerous XML feature.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 The Big Idea</div>
+      <p>XML has a built-in feature that allows a document to say "go read this file on the server and insert its contents here." When a server's XML parser hasn't disabled this feature, an attacker can read any file on that server — including passwords and private keys.</p>
+    </div>
+
+    <h3 class="section-title">Simple Explanation</h3>
+    <p>XML is a data format (similar to JSON, but older). It has a powerful feature called <strong>external entities</strong>. Legitimate use: automatically pull a shared footer into every document. Malicious use: pull the server's password file instead.</p>
+
+    <p style="margin-top:12px;">An attacker sends this XML to an API:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">XML</span></div>
+      <pre><span class="cm">&lt;?xml version="1.0"?&gt;</span>
+<span class="tg">&lt;!DOCTYPE</span> foo [
+  <span class="tg">&lt;!ENTITY</span> <span class="at">xxe</span> <span class="kw">SYSTEM</span> <span class="str">"file:///etc/passwd"</span><span class="tg">&gt;</span>
+]<span class="tg">&gt;</span>
+<span class="tg">&lt;request&gt;&lt;id&gt;</span><span class="val">&amp;xxe;</span><span class="tg">&lt;/id&gt;&lt;/request&gt;</span></pre>
+    </div>
+    <p>The parser reads <code>/etc/passwd</code>, substitutes it where <code>&amp;xxe;</code> appears, and returns the file contents in the response. The attacker now has the server's user accounts file.</p>
+
+    <h3 class="section-title">Target Files (What Attackers Want)</h3>
+    <ul class="styled-list">
+      <li><code>/etc/passwd</code> — list of all user accounts on the server</li>
+      <li><code>/etc/shadow</code> — hashed passwords</li>
+      <li><code>~/.ssh/id_rsa</code> — SSH private key (can log directly into the server)</li>
+      <li>App config files — often contain database passwords and API keys</li>
+    </ul>
+
+    <h3 class="section-title">Formats That Are Vulnerable</h3>
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <div class="callout-title">Not Just .xml Files!</div>
+        <p>Any format parsed by an XML parser is at risk: <strong>SVG images</strong> (SVG is XML), <strong>HTML/DOM</strong>, <strong>PDF files</strong> (XFDF format), and <strong>RTF documents</strong>. An image upload feature could be an XXE vector.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">Two Attack Types</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">Direct XXE</div>
+            <div class="type-sub">Attacker sends XML directly to the API</div>
+          </div>
+        </div>
+        <p>The API accepts XML. The attacker sends a crafted XML payload with an external entity declaration. The parser reads the local file and returns its contents in the API response.</p>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">Indirect XXE</div>
+            <div class="type-sub">The API accepts JSON — but converts it to XML internally</div>
+          </div>
+        </div>
+        <p>The public API looks normal (accepts JSON). But internally, it converts JSON to XML and passes it to a legacy backend system. The attacker injects an XXE payload inside a JSON value — it gets converted to XML, and the vulnerable parser executes it.</p>
+        <div class="analogy">
+          <div class="analogy-icon">🍽️</div>
+          <div><div class="analogy-label">Analogy</div><p>You order food at a restaurant (the API). The kitchen (backend) has an old recipe system that only reads recipe cards (XML). You sneak a note into your order saying "and also, read the chef's private diary." The waiter passes it along without checking.</p></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout success">
+      <div class="callout-icon">✅</div>
+      <div>
+        <div class="callout-title">The Fix Is One Line of Code</div>
+        <p>Disable external entities in the XML parser configuration. The tragedy: most parsers <strong>enable this feature by default</strong>. Developers don't know to turn it off, so XXE is easy to introduce by accident — and trivially prevented by design.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────
+       CHAPTER 13
+  ──────────────────────────────────────── -->
+  <section class="chapter ch13" id="ch13">
+    <div class="chapter-header">
+      <div class="chapter-icon">🗄️</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter 13</div>
+        <div class="chapter-title">Injection Attacks</div>
+        <div class="chapter-tagline">When user input gets run as code — in databases, programs, or the OS.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 The Big Idea</div>
+      <p>Injection attacks happen when an application takes text typed by a user and feeds it directly into a powerful interpreter — a database, a program, or the operating system — <em>without cleaning it first</em>. The interpreter cannot tell the difference between data and commands, so it runs whatever the user typed.</p>
+    </div>
+
+    <h3 class="section-title">The Master Analogy</h3>
+    <div class="analogy">
+      <div class="analogy-icon">🏦</div>
+      <div>
+        <div class="analogy-label">Analogy</div>
+        <p>A bank teller accepts withdrawal slips. Instead of your account number, you write: <em>"Account 12345. Also, zero out everyone else's balance and give it all to me."</em> A smart teller reads "Account 12345" and ignores the rest. A dumb teller follows all instructions. An application that concatenates user input is the dumb teller.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">The 3 Types of Injection</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">SQL Injection</div>
+            <div class="type-sub">Target: the database interpreter</div>
+          </div>
+        </div>
+        <p>The app builds an SQL query by gluing user input directly into the string:</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Python — Vulnerable</span></div>
+          <pre>query = <span class="str">"SELECT * FROM users WHERE id = "</span> + user_input
+<span class="cm"># user types: 1 OR 1=1</span>
+<span class="cm"># result: SELECT * FROM users WHERE id = 1 OR 1=1</span>
+<span class="cm"># returns: ALL users in the database</span></pre>
+        </div>
+        <p><strong>Scarier:</strong> Deleting the entire users table:</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- user types: 1; DROP TABLE users;</span>
+SELECT * FROM users WHERE id = <span class="val">1</span>; <span class="kw">DROP TABLE</span> users;</pre>
+        </div>
+        <p><strong>Scariest (silent manipulation):</strong></p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- No error, no alert, completely silent:</span>
+<span class="kw">UPDATE</span> users <span class="kw">SET</span> credits = <span class="val">99999</span> <span class="kw">WHERE</span> id = <span class="val">42</span>;</pre>
+        </div>
+        <div class="callout success" style="margin-top:14px;">
+          <div class="callout-icon">✅</div>
+          <div>
+            <div class="callout-title">The Fix — Parameterized Queries</div>
+            <pre style="font-size:12px; background:transparent; padding:0; color:#166534;"><span class="cm"># Wrong (vulnerable):</span>
+query = "SELECT * FROM users WHERE id = " + user_input
+
+<span class="cm"># Right (safe):</span>
+query = "SELECT * FROM users WHERE id = ?"
+cursor.execute(query, [user_input])</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">Code Injection</div>
+            <div class="type-sub">Target: a CLI tool or program (e.g., FFmpeg, ImageMagick)</div>
+          </div>
+        </div>
+        <p>The app builds a command-line call with user input directly pasted in. Attacker escapes out of the expected input and appends their own commands.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Bash</span></div>
+          <pre>convert input.jpg -resize <span class="val">100x100</span> output.jpg
+<span class="cm"># attacker inputs: 100; delete_all_files</span>
+<span class="cm"># result: injected command runs inside the tool</span></pre>
+        </div>
+        <p><strong>Limited damage</strong> — attacker is confined to what that specific tool can do. Cannot access the operating system directly.</p>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">Command Injection</div>
+            <div class="type-sub">Target: the host operating system shell (Bash)</div>
+          </div>
+        </div>
+        <div class="callout danger" style="margin-bottom:14px;">
+          <div class="callout-icon">🔴</div>
+          <div><div class="callout-title">Most Dangerous — #1 on Every Risk Scale</div><p>Attacker escapes to the OS and runs arbitrary commands with web server process privileges.</p></div>
+        </div>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Python — Vulnerable</span></div>
+          <pre>os.<span class="fn">system</span>(<span class="str">"ping "</span> + user_input)
+<span class="cm"># attacker types: google.com; cat /etc/passwd</span>
+<span class="cm"># runs: ping google.com AND reads the password file</span></pre>
+        </div>
+        <p style="margin-top:12px;"><strong>What the attacker can now do:</strong></p>
+        <ul class="styled-list" style="margin-top:8px;">
+          <li>Read any file on the server</li>
+          <li>Delete logs to cover their tracks</li>
+          <li>Add backdoor user accounts</li>
+          <li>Plant malware for future access</li>
+          <li>Use the server to send spam or attack others</li>
+        </ul>
+        <p style="margin-top:12px; font-size:.88rem; color:var(--muted);"><strong>Note:</strong> Over 95% of web servers run Unix/Linux — meaning Bash is almost always available as a target.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────
+       CHAPTER 14
+  ──────────────────────────────────────── -->
+  <section class="chapter ch14" id="ch14">
+    <div class="chapter-header">
+      <div class="chapter-icon">💥</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter 14</div>
+        <div class="chapter-title">Denial of Service (DoS)</div>
+        <div class="chapter-tagline">Making the application unavailable so no legitimate user can reach it.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 The Big Idea</div>
+      <p>Instead of stealing data, DoS attacks make the application completely <em>unavailable</em>. They attack the <strong>A (Availability)</strong> pillar of the CIA triad. The server is overwhelmed and cannot respond to real users.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><strong>DoS</strong></td><td>Denial of Service — one machine attacks a server</td></tr>
+          <tr><td><strong>DDoS</strong></td><td>Distributed DoS — thousands of machines attack simultaneously</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="section-title">The 3 Types of DoS</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">Regex DoS (ReDoS)</div>
+            <div class="type-sub">One crafted string crashes the server</div>
+          </div>
+        </div>
+        <p>Certain regex patterns cause <strong>exponential backtracking</strong> — the regex engine tries every possible combination of characters before giving up. One carefully crafted input string can hang the server for minutes.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Regex — Evil Pattern</span></div>
+          <pre><span class="str">/^((ab)*)+$/</span>
+<span class="cm"># 50 characters → takes seconds</span>
+<span class="cm"># 80 characters → takes minutes</span>
+<span class="cm"># Server is completely frozen</span></pre>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">♾️</div>
+          <div><div class="analogy-label">Analogy</div><p>Ask someone to count every possible way to arrange letters in a word — but the word has a trick ending with no answer. They would be counting forever.</p></div>
+        </div>
+        <div class="callout warning" style="margin-top:14px;">
+          <div class="callout-icon">⚠️</div>
+          <div><div class="callout-title">Often Found in Libraries</div><p>One vulnerable open-source validation library can bring down your entire app when imported. Always check library dependencies.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">Logical DoS</div>
+            <div class="type-sub">Legally hammers your most expensive endpoint</div>
+          </div>
+        </div>
+        <p>The attacker does not break anything. They simply identify the most <strong>resource-intensive feature</strong> of the app and call it repeatedly at high volume. The server's CPU and memory are drained, causing timeouts for all legitimate users.</p>
+        <p><strong>Example:</strong> A photo app loads all albums, photos, tags, and metadata for a user at once. Attacker creates an account with 100,000 photos and calls that endpoint 1,000 times per second.</p>
+        <p style="margin-top:10px;"><strong>Most vulnerable operations:</strong></p>
+        <ul class="styled-list" style="margin-top:8px;">
+          <li>Bulk database writes</li>
+          <li>SQL JOINs across many large tables</li>
+          <li>File compression or backup operations</li>
+          <li>Synchronous calls that block the server thread</li>
+          <li>Any loop that grows with data size</li>
+        </ul>
+        <div class="analogy">
+          <div class="analogy-icon">🍽️</div>
+          <div><div class="analogy-label">Analogy</div><p>You order the most complicated dish on the menu, legally, 500 times using 500 separate receipts. The kitchen collapses. Other customers cannot be served.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">DDoS — Distributed Denial of Service</div>
+            <div class="type-sub">Thousands of hijacked computers attack at once</div>
+          </div>
+        </div>
+        <p>A <strong>botnet</strong> — thousands of real computers (home PCs, smart TVs, IoT devices) infected with malware — all attack your server simultaneously on a single command from the attacker.</p>
+        <div class="table-wrap" style="margin-top:14px;">
+          <table>
+            <thead><tr><th>Type</th><th>How It Works</th><th>Difficulty to Stop</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Network-Level</strong></td>
+                <td>Bots flood the server's IP with raw UDP packets to saturate bandwidth</td>
+                <td>Easier — packets look malformed; requires ISP help</td>
+              </tr>
+              <tr>
+                <td><strong>Application-Level</strong></td>
+                <td>Bots send real HTTP requests to expensive API endpoints</td>
+                <td>Very hard — looks identical to real user traffic</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout info" style="margin-top:14px;">
+          <div class="callout-icon">🛡️</div>
+          <div>
+            <div class="callout-title">The Hardest Problem in Web Security</div>
+            <p>Distinguishing legitimate users from bot traffic is so difficult that entire companies (like Cloudflare) exist solely to solve it.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout warning" style="margin-top:8px;">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <div class="callout-title">Secondary Risk of DoS</div>
+        <p>Some DoS conditions cause the application to crash with error messages that reveal internal details — stack traces, file paths, library versions — which attackers use to plan their next attack.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────
+       SUMMARY
+  ──────────────────────────────────────── -->
+  <div class="summary-section" id="summary">
+    <h2>Week 4 — Quick Reference Summary</h2>
+    <p>Six chapters, one theme: turning recon into active exploitation.</p>
+    <div class="summary-table-wrap">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Chapter</th>
+            <th>Attack</th>
+            <th>What It Does</th>
+            <th>Simple Analogy</th>
+            <th>The Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c9);">Ch 9</span></td>
+            <td><strong>Hacker's Mindset</strong></td>
+            <td>Recon → find one weak point → exploit</td>
+            <td>Burglar scoping the neighborhood</td>
+            <td>Build with security from day one</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c10);">Ch 10</span></td>
+            <td><strong>XSS</strong></td>
+            <td>Inject JS into pages other users see</td>
+            <td>Poisoning the water supply</td>
+            <td>Sanitize and encode all user output</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c11);">Ch 11</span></td>
+            <td><strong>CSRF</strong></td>
+            <td>Force victim's browser to act on their behalf</td>
+            <td>Forging someone's signature</td>
+            <td>CSRF tokens + SameSite cookies</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c12);">Ch 12</span></td>
+            <td><strong>XXE</strong></td>
+            <td>Read server files via XML parser feature</td>
+            <td>Sneaking a note into the kitchen</td>
+            <td>Disable external entities in XML parser</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c13);">Ch 13</span></td>
+            <td><strong>Injection</strong></td>
+            <td>Run commands via unsanitized user input</td>
+            <td>Teller following all instructions on the slip</td>
+            <td>Parameterized queries · Never concatenate input</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c14);">Ch 14</span></td>
+            <td><strong>DoS / DDoS</strong></td>
+            <td>Overwhelm server → nobody can access the app</td>
+            <td>Flooding a restaurant with impossible orders</td>
+            <td>Rate limiting · DDoS protection services</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>CYB 236 — Web Application Security</strong> · Week 4 Teaching Guide ·
+  Chapters 9–14 · Part II: Offense — Hacking Web Applications
+</footer>
+
+</body>
+</html>

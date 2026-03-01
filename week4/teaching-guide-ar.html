@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الأسبوع الرابع — دليل التدريس | CYB236</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --font: 'Cairo', sans-serif;
+      --mono: 'Fira Code', monospace;
+
+      --c9:  #7c3aed; --c9-l:  #ede9fe; --c9-b:  #4c1d95;
+      --c10: #ea580c; --c10-l: #fff7ed; --c10-b: #9a3412;
+      --c11: #0891b2; --c11-l: #e0f9ff; --c11-b: #164e63;
+      --c12: #16a34a; --c12-l: #dcfce7; --c12-b: #14532d;
+      --c13: #dc2626; --c13-l: #fee2e2; --c13-b: #7f1d1d;
+      --c14: #4f46e5; --c14-l: #e0e7ff; --c14-b: #1e1b4b;
+
+      --bg:      #0f0e17;
+      --bg2:     #1a1830;
+      --surface: #ffffff;
+      --border:  #e5e7eb;
+      --text:    #1f2937;
+      --muted:   #6b7280;
+      --light:   #f9fafb;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--light);
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.9;
+    }
+
+    /* ─────────────────────────────────────────
+       HERO
+    ───────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0f0e17 0%, #1a1830 40%, #2d1b69 100%);
+      color: #fff;
+      padding: 80px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(124,58,237,.25) 0%, transparent 60%),
+                  radial-gradient(ellipse at 30% 30%, rgba(79,70,229,.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 100px;
+      padding: 6px 20px;
+      font-size: 14px; font-weight: 700; color: #c4b5fd;
+      margin-bottom: 24px;
+      letter-spacing: .02em;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, #fff 0%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #d1d5db;
+      max-width: 640px;
+      margin: 0 auto 40px;
+    }
+
+    .chapter-pills {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    }
+
+    .pill {
+      padding: 6px 18px;
+      border-radius: 100px;
+      font-size: 13px; font-weight: 700;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+      color: #e5e7eb;
+    }
+
+    /* ─────────────────────────────────────────
+       NAV BAR
+    ───────────────────────────────────────── */
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 999;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+
+    .sticky-nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; gap: 4px; overflow-x: auto;
+      scrollbar-width: none;
+      padding: 10px 0;
+      flex-direction: row-reverse;
+    }
+
+    .sticky-nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 700;
+      text-decoration: none;
+      color: var(--muted);
+      white-space: nowrap;
+      font-family: var(--font);
+      transition: all .2s;
+    }
+
+    .nav-btn:hover { background: var(--light); color: var(--text); }
+    .nav-btn.c9:hover  { background: var(--c9-l);  color: var(--c9-b); }
+    .nav-btn.c10:hover { background: var(--c10-l); color: var(--c10-b); }
+    .nav-btn.c11:hover { background: var(--c11-l); color: var(--c11-b); }
+    .nav-btn.c12:hover { background: var(--c12-l); color: var(--c12-b); }
+    .nav-btn.c13:hover { background: var(--c13-l); color: var(--c13-b); }
+    .nav-btn.c14:hover { background: var(--c14-l); color: var(--c14-b); }
+
+    /* ─────────────────────────────────────────
+       LAYOUT
+    ───────────────────────────────────────── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    /* ─────────────────────────────────────────
+       CHAPTER SECTION
+    ───────────────────────────────────────── */
+    .chapter {
+      margin-bottom: 80px;
+      scroll-margin-top: 72px;
+    }
+
+    .chapter-header {
+      display: flex; align-items: flex-start; gap: 20px;
+      margin-bottom: 36px;
+      padding: 32px;
+      border-radius: 20px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      flex-direction: row-reverse;
+    }
+
+    .chapter-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M0 0h20v20H0zM20 20h20v20H20z'/%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .ch9  .chapter-header { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
+    .ch10 .chapter-header { background: linear-gradient(135deg, #ea580c, #9a3412); }
+    .ch11 .chapter-header { background: linear-gradient(135deg, #0891b2, #164e63); }
+    .ch12 .chapter-header { background: linear-gradient(135deg, #16a34a, #14532d); }
+    .ch13 .chapter-header { background: linear-gradient(135deg, #dc2626, #7f1d1d); }
+    .ch14 .chapter-header { background: linear-gradient(135deg, #4f46e5, #1e1b4b); }
+
+    .chapter-icon {
+      width: 60px; height: 60px; flex-shrink: 0;
+      background: rgba(255,255,255,.15);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      position: relative; z-index: 1;
+    }
+
+    .chapter-meta { position: relative; z-index: 1; text-align: right; }
+
+    .chapter-label {
+      font-size: 12px; font-weight: 800; letter-spacing: .05em;
+      text-transform: uppercase;
+      opacity: .7; margin-bottom: 4px;
+    }
+
+    .chapter-title {
+      font-size: 1.8rem; font-weight: 900; line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .chapter-tagline { opacity: .85; font-size: .95rem; }
+
+    /* ─────────────────────────────────────────
+       BIG IDEA
+    ───────────────────────────────────────── */
+    .big-idea {
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      border-right: 5px solid;
+      border-left: none;
+      background: var(--surface);
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+
+    .ch9  .big-idea { border-color: var(--c9);  background: var(--c9-l); }
+    .ch10 .big-idea { border-color: var(--c10); background: var(--c10-l); }
+    .ch11 .big-idea { border-color: var(--c11); background: var(--c11-l); }
+    .ch12 .big-idea { border-color: var(--c12); background: var(--c12-l); }
+    .ch13 .big-idea { border-color: var(--c13); background: var(--c13-l); }
+    .ch14 .big-idea { border-color: var(--c14); background: var(--c14-l); }
+
+    .big-idea-label {
+      font-size: 12px; font-weight: 900; letter-spacing: .05em;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .ch9  .big-idea-label { color: var(--c9-b); }
+    .ch10 .big-idea-label { color: var(--c10-b); }
+    .ch11 .big-idea-label { color: var(--c11-b); }
+    .ch12 .big-idea-label { color: var(--c12-b); }
+    .ch13 .big-idea-label { color: var(--c13-b); }
+    .ch14 .big-idea-label { color: var(--c14-b); }
+
+    .big-idea p { font-size: 1rem; color: var(--text); font-weight: 600; }
+
+    /* ─────────────────────────────────────────
+       SECTION TITLE
+    ───────────────────────────────────────── */
+    .section-title {
+      font-size: 1.15rem; font-weight: 800;
+      margin: 36px 0 16px;
+      display: flex; align-items: center; gap: 10px;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
+
+    .section-title::after {
+      content: '';
+      display: inline-block; width: 4px; height: 22px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .ch9  .section-title::after { background: var(--c9); }
+    .ch10 .section-title::after { background: var(--c10); }
+    .ch11 .section-title::after { background: var(--c11); }
+    .ch12 .section-title::after { background: var(--c12); }
+    .ch13 .section-title::after { background: var(--c13); }
+    .ch14 .section-title::after { background: var(--c14); }
+
+    /* ─────────────────────────────────────────
+       TYPE CARDS
+    ───────────────────────────────────────── */
+    .type-grid { display: grid; gap: 20px; margin-bottom: 24px; }
+
+    .type-card {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 24px 28px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .type-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+
+    .ch9  .type-card::before { background: var(--c9); }
+    .ch10 .type-card::before { background: var(--c10); }
+    .ch11 .type-card::before { background: var(--c11); }
+    .ch12 .type-card::before { background: var(--c12); }
+    .ch13 .type-card::before { background: var(--c13); }
+    .ch14 .type-card::before { background: var(--c14); }
+
+    .type-card-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 14px;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
+
+    .type-badge {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 14px; color: #fff;
+      flex-shrink: 0;
+      font-family: var(--mono);
+    }
+
+    .ch9  .type-badge { background: var(--c9); }
+    .ch10 .type-badge { background: var(--c10); }
+    .ch11 .type-badge { background: var(--c11); }
+    .ch12 .type-badge { background: var(--c12); }
+    .ch13 .type-badge { background: var(--c13); }
+    .ch14 .type-badge { background: var(--c14); }
+
+    .type-name { font-size: 1rem; font-weight: 800; }
+    .type-sub  { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+
+    .type-card p { font-size: .94rem; color: #374151; margin-bottom: 10px; }
+    .type-card p:last-child { margin-bottom: 0; }
+
+    /* ─────────────────────────────────────────
+       ANALOGY BOX
+    ───────────────────────────────────────── */
+    .analogy {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-top: 14px;
+      flex-direction: row-reverse;
+    }
+
+    .analogy-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+    .analogy-label {
+      font-size: 11px; font-weight: 900;
+      letter-spacing: .05em; color: #92400e; margin-bottom: 4px;
+    }
+
+    .analogy p { font-size: .93rem; color: #78350f; font-weight: 600; }
+
+    /* ─────────────────────────────────────────
+       CODE BLOCK
+    ───────────────────────────────────────── */
+    .code-wrap {
+      background: #0f0e17;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 14px 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      direction: ltr;
+    }
+
+    .code-bar {
+      background: #1a1830;
+      padding: 10px 18px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      direction: ltr;
+    }
+
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-dot.r { background: #ff5f57; }
+    .code-dot.y { background: #ffbd2e; }
+    .code-dot.g { background: #28ca41; }
+
+    .code-lang {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 11px; color: #6b7280;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px 22px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: #e2e8f0;
+      text-align: left;
+      direction: ltr;
+    }
+
+    .kw  { color: #c084fc; }
+    .str { color: #86efac; }
+    .cm  { color: #6b7280; font-style: italic; }
+    .fn  { color: #93c5fd; }
+    .tg  { color: #f9a8d4; }
+    .at  { color: #fcd34d; }
+    .val { color: #6ee7b7; }
+
+    /* ─────────────────────────────────────────
+       TABLES
+    ───────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 20px 0; border-radius: 12px; border: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; background: var(--surface); }
+
+    thead tr {
+      background: linear-gradient(90deg, #374151, #1f2937);
+      color: #fff;
+    }
+
+    th {
+      padding: 14px 20px;
+      text-align: right;
+      font-size: 13px; font-weight: 800;
+    }
+
+    td {
+      padding: 13px 20px;
+      font-size: .92rem;
+      border-top: 1px solid var(--border);
+      vertical-align: top;
+      text-align: right;
+    }
+
+    tr:nth-child(even) td { background: #f9fafb; }
+    tr:hover td { background: #f3f4f6; }
+    td strong { font-weight: 800; }
+
+    /* ─────────────────────────────────────────
+       BULLET LIST
+    ───────────────────────────────────────── */
+    .styled-list { list-style: none; padding: 0; display: grid; gap: 10px; margin: 16px 0; }
+
+    .styled-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .94rem;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
+
+    .styled-list li::before {
+      content: '←';
+      font-weight: 900; font-size: 14px; flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .ch9  .styled-list li::before { color: var(--c9); }
+    .ch10 .styled-list li::before { color: var(--c10); }
+    .ch11 .styled-list li::before { color: var(--c11); }
+    .ch12 .styled-list li::before { color: var(--c12); }
+    .ch13 .styled-list li::before { color: var(--c13); }
+    .ch14 .styled-list li::before { color: var(--c14); }
+
+    /* ─────────────────────────────────────────
+       CALLOUTS
+    ───────────────────────────────────────── */
+    .callout {
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin: 16px 0;
+      display: flex; gap: 14px; align-items: flex-start;
+      flex-direction: row-reverse;
+    }
+
+    .callout.danger  { background: #fef2f2; border: 1px solid #fca5a5; }
+    .callout.info    { background: #eff6ff; border: 1px solid #93c5fd; }
+    .callout.success { background: #f0fdf4; border: 1px solid #86efac; }
+    .callout.warning { background: #fffbeb; border: 1px solid #fcd34d; }
+
+    .callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .callout-body { text-align: right; }
+
+    .callout-title { font-weight: 800; font-size: .9rem; margin-bottom: 4px; }
+    .callout.danger  .callout-title { color: #991b1b; }
+    .callout.info    .callout-title { color: #1e40af; }
+    .callout.success .callout-title { color: #166534; }
+    .callout.warning .callout-title { color: #92400e; }
+
+    .callout p { font-size: .9rem; color: var(--text); }
+
+    /* ─────────────────────────────────────────
+       SUMMARY
+    ───────────────────────────────────────── */
+    .summary-section {
+      background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+      color: #fff;
+      border-radius: 24px;
+      padding: 52px 40px;
+      margin-top: 80px;
+    }
+
+    .summary-section h2 {
+      font-size: 1.8rem; font-weight: 900; margin-bottom: 8px;
+      background: linear-gradient(90deg, #fff, #c4b5fd);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      text-align: right;
+    }
+
+    .summary-section > p { color: #9ca3af; margin-bottom: 32px; text-align: right; }
+
+    .summary-table-wrap { overflow-x: auto; border-radius: 14px; }
+
+    .summary-table { width: 100%; border-collapse: collapse; }
+
+    .summary-table thead tr { background: rgba(255,255,255,.07); }
+
+    .summary-table th {
+      padding: 14px 20px;
+      font-size: 12px; font-weight: 800;
+      color: #9ca3af; text-align: right;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .summary-table td {
+      padding: 16px 20px;
+      font-size: .9rem; color: #e5e7eb;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      vertical-align: middle;
+      background: transparent;
+      text-align: right;
+    }
+
+    .summary-table tr:hover td { background: rgba(255,255,255,.04); }
+
+    .ch-tag {
+      display: inline-flex; align-items: center;
+      padding: 4px 14px; border-radius: 100px;
+      font-size: 12px; font-weight: 800; color: #fff;
+    }
+
+    /* ─────────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--muted);
+      font-size: .88rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer strong { color: var(--text); }
+
+    /* ─────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .chapter-header { flex-direction: column; }
+      .summary-section { padding: 36px 20px; }
+      .hero { padding: 56px 16px 48px; }
+    }
+
+    /* inline code */
+    code {
+      font-family: var(--mono);
+      background: #f3f4f6;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: .85em;
+      color: #7c3aed;
+      direction: ltr;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">📚 CYB 236 — أمن تطبيقات الويب</div>
+    <h1>دليل التدريس — الأسبوع الرابع<br/>اختراق تطبيقات الويب</h1>
+    <p>شرح مبسّط وواضح بأمثلة عملية للفصول من 9 إلى 14، مُعدّ خصيصاً لاستخدامه في تدريس الطلاب.</p>
+    <div class="chapter-pills">
+      <span class="pill">الفصل 9 · عقلية المخترق</span>
+      <span class="pill">الفصل 10 · XSS</span>
+      <span class="pill">الفصل 11 · CSRF</span>
+      <span class="pill">الفصل 12 · XXE</span>
+      <span class="pill">الفصل 13 · هجمات الحقن</span>
+      <span class="pill">الفصل 14 · الحرمان من الخدمة</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     STICKY NAV
+══════════════════════════════════════════ -->
+<nav class="sticky-nav">
+  <div class="sticky-nav-inner">
+    <a href="#ch9"     class="nav-btn c9">🧠 الفصل 9 – عقلية المخترق</a>
+    <a href="#ch10"    class="nav-btn c10">💉 الفصل 10 – XSS</a>
+    <a href="#ch11"    class="nav-btn c11">🔁 الفصل 11 – CSRF</a>
+    <a href="#ch12"    class="nav-btn c12">📄 الفصل 12 – XXE</a>
+    <a href="#ch13"    class="nav-btn c13">🗄️ الفصل 13 – الحقن</a>
+    <a href="#ch14"    class="nav-btn c14">💥 الفصل 14 – DoS</a>
+    <a href="#summary" class="nav-btn">📋 ملخص</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ══════════════════════════════════════
+       الفصل 9
+  ══════════════════════════════════════ -->
+  <section class="chapter ch9" id="ch9">
+    <div class="chapter-header">
+      <div class="chapter-icon">🧠</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">الفصل التاسع</div>
+        <div class="chapter-title">عقلية المخترق</div>
+        <div class="chapter-tagline">كيف يفكر المخترق — ولماذا الصبر هو أقوى أسلحته.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 الفكرة الأساسية</div>
+      <p>المخترق والمطوّر يَنظران إلى نفس التطبيق بطريقتين متعاكستين تماماً. المطوّر يسأل: <em>"كيف أبني هذه الميزة؟"</em> أما المخترق فيسأل: <em>"أين الباب غير المقفل؟"</em> معظم الاختراق الحقيقي ليس مثيراً — إنه أسابيع من البحث الهادئ والصبر حتى تظهر نقطة ضعف واحدة.</p>
+    </div>
+
+    <h3 class="section-title">الشرح المبسّط</h3>
+    <p>كثير من الناس يتخيّلون المخترق وهو يكتب بسرعة جنونية ويخترق الأنظمة في ثوانٍ — هذه أسطورة أفلام. في الواقع، <strong>90% من الاختراق هو بحث ممل</strong>: قراءة وثائق، رسم خريطة للتطبيق، وتسجيل ملاحظات بصبر حتى تظهر ثغرة واحدة.</p>
+
+    <p style="margin-top:12px;">المخترق لا يحتاج إلى <em>إعادة كتابة</em> التطبيق. يحتاج فقط إلى إيجاد <strong>نقطة ضعف واحدة</strong> — نافذة مفتوحة، أو باب بقفل قديم.</p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🏠</div>
+      <div>
+        <div class="analogy-label">مثال توضيحي</div>
+        <p>تخيّل لصاً يمشي ببطء في الحي — يفحص كل بيت، يتحقق من النوافذ المفتوحة، والأقفال القديمة، والأبواب الضعيفة. هذه الجولة الاستطلاعية <em>هي</em> الاختراق. الدخول الفعلي يستغرق عشر ثوانٍ بعد إيجاد النافذة المفتوحة.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">السمات الأربع الجوهرية للمخترق</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>الصفة</th><th>ما تعنيه</th></tr></thead>
+        <tbody>
+          <tr><td><strong>يبحث عن نقاط الدخول</strong></td><td>يفحص كل مدخل وحقل إدخال وواجهة يقبلها التطبيق</td></tr>
+          <tr><td><strong>يدوّن ملاحظات تفصيلية</strong></td><td>يوثّق كل شيء — حتى الطرق المسدودة قد تفيد لاحقاً</td></tr>
+          <tr><td><strong>يتعلم باستمرار</strong></td><td>يقرأ تقارير الثغرات والمدونات الأمنية وأحدث تقنيات الهجوم</td></tr>
+          <tr><td><strong>صبور</strong></td><td>قد يقضي أسابيع أو شهوراً قبل اكتشاف ثغرة قابلة للاستغلال</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="section-title">كيف تتحوّل مهارات الاستطلاع إلى أسلحة هجومية</h3>
+    <p>كل ما تعلّمه الطلاب في الأسابيع السابقة من البحث عن النطاقات الفرعية وقراءة واجهات API وتحديد المكتبات المستخدمة — يصبح الآن سلاحاً هجومياً مباشراً:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>مهارة الاستطلاع</th><th>الاستخدام الهجومي</th></tr></thead>
+        <tbody>
+          <tr><td><strong>اكتشاف النطاقات الفرعية</strong></td><td>العثور على خوادم داخلية أقل اختباراً مثل <code>legacy-api.company.com</code></td></tr>
+          <tr><td><strong>تحليل واجهات API</strong></td><td>إرسال بيانات خبيثة مباشرةً إلى نقاط النهاية</td></tr>
+          <tr><td><strong>أنظمة المصادقة</strong></td><td>محاولة تزوير رموز تسجيل الدخول أو تجاوزها</td></tr>
+          <tr><td><strong>مكتبات الطرف الثالث</strong></td><td>البحث عن ثغرات معروفة (CVE) في إصدارات المكتبات المكتشفة</td></tr>
+          <tr><td><strong>بنية التطبيق</strong></td><td>استغلال الاتصال الموثوق بين تطبيق وآخر كمسار للهجوم</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       الفصل 10
+  ══════════════════════════════════════ -->
+  <section class="chapter ch10" id="ch10">
+    <div class="chapter-header">
+      <div class="chapter-icon">💉</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">الفصل العاشر</div>
+        <div class="chapter-title">البرمجة النصية عبر المواقع (XSS)</div>
+        <div class="chapter-tagline">حقن كود JavaScript خبيث في صفحات يراها مستخدمون آخرون.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 الفكرة الأساسية</div>
+      <p>أي موقع يعرض النصوص التي يكتبها المستخدمون يمكن خداعه لعرض <em>كود JavaScript قابل للتنفيذ</em> بدلاً من نص عادي. هذا الكود يعمل بصمت في متصفح كل ضحية — يسرق البيانات، ويختطف الجلسات، أو يعرض صفحات تسجيل دخول مزيّفة.</p>
+    </div>
+
+    <h3 class="section-title">الشرح المبسّط</h3>
+    <p>تخيّل موقعاً به خانة تعليقات. تكتب تعليقاً، يُحفظ، ويراه كل زائر. الآن تخيّل أن شخصاً كتب هذا بدلاً من التعليق:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">HTML</span></div>
+      <pre><span class="tg">&lt;script&gt;</span><span class="fn">alert</span>(<span class="str">'تم سرقة جلستك!'</span>)<span class="tg">&lt;/script&gt;</span></pre>
+    </div>
+    <p>إذا لم يُنظّف الموقع هذا المدخل، فإن متصفح كل زائر سيُنفّذ هذا الكود — لن يعرضه كنص. استبدل <code>alert()</code> بكود يُرسل ملف تعريف ارتباط الجلسة للمهاجم، وسيتمكن المهاجم من الدخول كأي ضحية.</p>
+
+    <h3 class="section-title">الأنواع الأربعة لـ XSS</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">XSS المخزّن (Stored XSS)</div>
+            <div class="type-sub">الأكثر خطورة · الكود يُحفظ في قاعدة البيانات</div>
+          </div>
+        </div>
+        <p>يُحفظ الكود الخبيث في <strong>قاعدة البيانات</strong> ويُرسَل لكل زائر يفتح الصفحة.</p>
+        <p><strong>مثال:</strong> تعليق على منتج في متجر إلكتروني يحتوي على كود خبيث. كل عميل يفتح صفحة المنتج يُسرق منه رمز الجلسة تلقائياً.</p>
+        <div class="analogy">
+          <div class="analogy-icon">🚰</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>كتسميم خزان المياه — كل من يشرب يتضرر. لا تحتاج إلا إلى التسميم مرة واحدة.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">XSS المنعكس (Reflected XSS)</div>
+            <div class="type-sub">مُضمَّن في رابط · لا يُخزَّن أبداً</div>
+          </div>
+        </div>
+        <p>الكود الخبيث مخبّأ داخل رابط يُرسَل للضحية عبر البريد الإلكتروني أو وسائل التواصل. الخادم "يعكس" الرابط في الاستجابة والمتصفح ينفّذه.</p>
+        <p><strong>مثال:</strong> بريد تصيّد يحتوي على رابط مثل:<br/><code>https://bank.com/search?q=&lt;script&gt;steal()&lt;/script&gt;</code></p>
+        <div class="analogy">
+          <div class="analogy-icon">✉️</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>كرسالة مسمومة — الضرر يمسّ فقط من يفتحها. صعب الاكتشاف لأنه لا يُخزَّن في أي مكان.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">XSS القائم على DOM (DOM-Based XSS)</div>
+            <div class="type-sub">يعمل كلياً في المتصفح · الخادم لا يراه</div>
+          </div>
+        </div>
+        <p>JavaScript الصفحة نفسها يقرأ بيانات من الرابط (مصدر) ويكتبها في الصفحة (مصرف) دون تنظيف. الخادم غير متورط أبداً.</p>
+        <ul class="styled-list">
+          <li><strong>المصادر (Sources):</strong> <code>window.location.hash</code>، <code>window.location.search</code>، <code>document.referrer</code></li>
+          <li><strong>المصارف (Sinks):</strong> <code>document.write()</code>، <code>element.innerHTML</code>، <code>eval()</code></li>
+        </ul>
+        <div class="analogy">
+          <div class="analogy-icon">💣</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>القنبلة كانت داخل المنزل منذ البداية. أنت من بناها عن غير قصد عند إعداد الصفحة.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">4</div>
+          <div>
+            <div class="type-name">XSS التحوّلي (mXSS)</div>
+            <div class="type-sub">الأكثر تطوراً · يتجاوز أنظمة التطهير</div>
+          </div>
+        </div>
+        <p>الكود الخبيث <strong>يبدو بريئاً</strong> عند مروره عبر المطهّر (مثل DOMPurify). لكن بمجرد أن يُعيد المتصفح رسم الصفحة، يتحوّل HTML إلى كود خطير. يستغل سلوكيات خاصة بالمتصفح، وقد نجح في تجاوز مكتبات حماية كبرى.</p>
+        <div class="analogy">
+          <div class="analogy-icon">🧪</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>مهرّب يحمل "سكّراً بريئاً" عبر الجمارك. بمجرد دخوله، يُضيف مادة كيميائية فتتحوّل إلى متفجرة. الجهاز رأى سكّراً — ما صنعه كان قنبلة.</p></div>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 class="section-title">ماذا يمكن لـ XSS أن يفعل بالضحية؟</h3>
+    <ul class="styled-list">
+      <li>سرقة ملفات تعريف الارتباط (Cookies) → تسجيل الدخول كالضحية في أي موقع</li>
+      <li>سرقة أرقام بطاقات الائتمان وكلمات المرور والبيانات الشخصية</li>
+      <li>عرض صفحة تسجيل دخول مزيّفة فوق الصفحة الأصلية (تصيّد)</li>
+      <li>العمل بصمت في الخلفية لأشهر دون أن يُكتشف</li>
+      <li>الاستمرار عبر الجلسات (XSS المخزّن يهاجم كل زائر جديد)</li>
+    </ul>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       الفصل 11
+  ══════════════════════════════════════ -->
+  <section class="chapter ch11" id="ch11">
+    <div class="chapter-header">
+      <div class="chapter-icon">🔁</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">الفصل الحادي عشر</div>
+        <div class="chapter-title">تزوير الطلبات عبر المواقع (CSRF)</div>
+        <div class="chapter-tagline">خداع متصفحك لإرسال طلبات لم تأذن بها قط.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 الفكرة الأساسية</div>
+      <p>متصفحك يُرسل تلقائياً ملف تعريف الارتباط الخاص بجلستك مع <em>كل</em> طلب يُرسَل إلى موقع معيّن — حتى الطلبات التي أطلقها موقع آخر تماماً. يستغل CSRF هذا لجعلك تُنفّذ إجراءات لم تقصدها، باستخدام بيانات اعتمادك أنت.</p>
+    </div>
+
+    <h3 class="section-title">الشرح المبسّط</h3>
+    <p>أنت مسجّل الدخول في بنكك على <code>bank.com</code>. في نافذة أخرى، تفتح <code>evil.com</code>. دون علمك، يُرسل <code>evil.com</code> طلباً إلى <code>bank.com/transfer?amount=10000&amp;to=hacker</code>. متصفحك يُرفق تلقائياً ملف تعريف ارتباط البنك. البنك يظن أن <strong>أنت</strong> من طلب التحويل وينفّذه.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">النقطة الجوهرية</div>
+        <p>خادم البنك لا يستطيع التمييز بين طلب أرسلته بنقر زر على bank.com وطلب أرسله كود مخفي على evil.com. كلاهما يحمل نفس ملف تعريف الارتباط ونفس عنوان IP. يبدوان متطابقين.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">الخاصيتان الجوهريتان لهجمات CSRF</h3>
+    <ul class="styled-list">
+      <li><strong>تصعيد الامتيازات</strong> — المهاجم يُنفّذ إجراءات باستخدام حسابك المميّز دون معرفة كلمة مرورك.</li>
+      <li><strong>التخفّي</strong> — الضحية لا تعلم بوقوع شيء. لا نافذة منبثقة، لا خطأ، لا دليل.</li>
+    </ul>
+
+    <h3 class="section-title">طرق الهجوم الثلاث</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">CSRF عبر GET (التلاعب بمعاملات الرابط)</div>
+            <div class="type-sub">يستلزم نقر الضحية على رابط خبيث</div>
+          </div>
+        </div>
+        <p>بعض التطبيقات تستخدم طلبات GET لإجراءات مثل تحويل الأموال. المهاجم يصنع رابطاً بحسابه الخاص ويخفيه تحت "اضغط هنا للفوز بجائزة!"</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">URL</span></div>
+          <pre>https://bank.com/transfer<span class="at">?to=hacker&amp;amount=10000</span></pre>
+        </div>
+        <div class="callout danger" style="margin-top:12px;">
+          <div class="callout-icon">🚫</div>
+          <div class="callout-body">
+            <div class="callout-title">قاعدة لا تُنسى</div>
+            <p>طلبات GET يجب أن <strong>لا تُغيّر البيانات إطلاقاً</strong> (إنشاء، تعديل، حذف). GET للقراءة فقط. دائماً.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">وسم الصورة المخفية — بلا نقرة</div>
+            <div class="type-sub">يُطلَق تلقائياً عند تحميل الصفحة</div>
+          </div>
+        </div>
+        <p>وسوم HTML مثل <code>&lt;img&gt;</code>، <code>&lt;video&gt;</code>، <code>&lt;iframe&gt;</code> تُرسل طلبات GET تلقائياً. لا يحتاج المستخدم إلى النقر. صورة بأبعاد صفر مخفية تُطلق الهجوم فور فتح الصفحة.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">HTML</span></div>
+          <pre><span class="tg">&lt;img</span> <span class="at">src</span>=<span class="str">"https://bank.com/transfer?to=hacker&amp;amount=10000"</span>
+     <span class="at">width</span>=<span class="str">"0"</span> <span class="at">height</span>=<span class="str">"0"</span><span class="tg">&gt;</span></pre>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">🪤</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>كفخ — لا تحتاج إلى دفع شيء. مجرد المرور بجانبه يُطلقه.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">النموذج المخفي (CSRF عبر POST)</div>
+            <div class="type-sub">نماذج HTML يمكنها الإرسال إلى أي نطاق</div>
+          </div>
+        </div>
+        <p>المهاجم يبني صفحة "اربح جائزة!" مزيّفة. خلف الكواليس، الضغط على الزر يُرسل طلب POST للبنك بحقول مخفية لا تراها الضحية.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">HTML</span></div>
+          <pre><span class="tg">&lt;form</span> <span class="at">action</span>=<span class="str">"https://bank.com/transfer"</span> <span class="at">method</span>=<span class="str">"POST"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;input</span> <span class="at">type</span>=<span class="str">"hidden"</span> <span class="at">name</span>=<span class="str">"to"</span>     <span class="at">value</span>=<span class="str">"hacker"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;input</span> <span class="at">type</span>=<span class="str">"hidden"</span> <span class="at">name</span>=<span class="str">"amount"</span> <span class="at">value</span>=<span class="str">"10000"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;button&gt;</span>استلم جائزتك!<span class="tg">&lt;/button&gt;</span>
+<span class="tg">&lt;/form&gt;</span></pre>
+        </div>
+        <p style="margin-top:10px;"><strong>ميزة إضافية:</strong> يمكن استخدامه للوصول إلى خوادم الشبكة الداخلية — متصفح الضحية يصل إلى موارد الإنترانت التي لا يستطيع المهاجم الوصول إليها مباشرةً.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       الفصل 12
+  ══════════════════════════════════════ -->
+  <section class="chapter ch12" id="ch12">
+    <div class="chapter-header">
+      <div class="chapter-icon">📄</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">الفصل الثاني عشر</div>
+        <div class="chapter-title">كيان XML الخارجي (XXE)</div>
+        <div class="chapter-tagline">قراءة ملفات الخادم السرية عبر ميزة خطيرة في XML.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 الفكرة الأساسية</div>
+      <p>تمتلك XML ميزة مدمجة تسمح لمستند بأن يقول "اقرأ هذا الملف من الخادم وضع محتواه هنا." حين لا يُعطّل محلّل XML هذه الميزة، يستطيع المهاجم قراءة أي ملف على الخادم — بما فيها كلمات المرور والمفاتيح الخاصة.</p>
+    </div>
+
+    <h3 class="section-title">الشرح المبسّط</h3>
+    <p>XML صيغة بيانات (شبيهة بـ JSON لكن أقدم). تملك ميزة قوية وخطيرة اسمها <strong>الكيانات الخارجية</strong>. الاستخدام المشروع: سحب تذييل مشترك إلى كل مستندات XML. الاستخدام الخبيث: سحب ملف كلمات مرور الخادم بدلاً من ذلك.</p>
+
+    <p style="margin-top:12px;">المهاجم يُرسل هذا XML إلى واجهة API:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">XML</span></div>
+      <pre><span class="cm">&lt;?xml version="1.0"?&gt;</span>
+<span class="tg">&lt;!DOCTYPE</span> foo [
+  <span class="tg">&lt;!ENTITY</span> <span class="at">xxe</span> <span class="kw">SYSTEM</span> <span class="str">"file:///etc/passwd"</span><span class="tg">&gt;</span>
+]<span class="tg">&gt;</span>
+<span class="tg">&lt;request&gt;&lt;id&gt;</span><span class="val">&amp;xxe;</span><span class="tg">&lt;/id&gt;&lt;/request&gt;</span></pre>
+    </div>
+    <p>المحلّل يقرأ <code>/etc/passwd</code>، يضع محتواه مكان <code>&amp;xxe;</code>، ويُعيده في الاستجابة. المهاجم يحصل الآن على ملف حسابات المستخدمين على الخادم.</p>
+
+    <h3 class="section-title">الملفات المستهدفة (ما يريده المهاجمون)</h3>
+    <ul class="styled-list">
+      <li><code>/etc/passwd</code> — قائمة بجميع حسابات المستخدمين على الخادم</li>
+      <li><code>/etc/shadow</code> — كلمات المرور المشفّرة</li>
+      <li><code>~/.ssh/id_rsa</code> — المفتاح الخاص لـ SSH (يتيح الدخول المباشر للخادم)</li>
+      <li>ملفات الإعداد — غالباً تحتوي على كلمات مرور قواعد البيانات ومفاتيح API</li>
+    </ul>
+
+    <h3 class="section-title">الصيغ المعرّضة للخطر</h3>
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">ليست ملفات .xml فقط!</div>
+        <p>أي صيغة يُعالجها محلّل XML معرّضة للخطر: <strong>صور SVG</strong> (لأن SVG هي XML)، <strong>HTML/DOM</strong>، <strong>ملفات PDF</strong> (صيغة XFDF)، و<strong>مستندات RTF</strong>. ميزة رفع الصور قد تكون بوابة لـ XXE.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">نوعا الهجوم</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">XXE المباشر</div>
+            <div class="type-sub">المهاجم يُرسل XML مباشرةً للـ API</div>
+          </div>
+        </div>
+        <p>الـ API يقبل XML. المهاجم يُرسل حمولة XML مصنّعة تحتوي على تصريح كيان خارجي. المحلّل يقرأ الملف المحلي ويعيد محتواه في استجابة الـ API.</p>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">XXE غير المباشر</div>
+            <div class="type-sub">الـ API يقبل JSON — لكنه يحوّله داخلياً إلى XML</div>
+          </div>
+        </div>
+        <p>الـ API الظاهر يبدو طبيعياً (يقبل JSON). لكن داخلياً يُحوّل JSON إلى XML ويمرّره لنظام قديم. المهاجم يحقن حمولة XXE داخل قيمة JSON — تتحوّل إلى XML ويُنفّذها المحلّل الضعيف.</p>
+        <div class="analogy">
+          <div class="analogy-icon">🍽️</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>تطلب طعاماً من مطعم (الـ API). المطبخ (الواجهة الخلفية) يملك نظاماً قديماً يقرأ فقط بطاقات الوصفات (XML). تُخفّي في طلبك ملاحظة تقول "واقرأ مذكرة الطاهي الشخصية أيضاً." النادل يمرّر الطلب دون فحص.</p></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout success">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body">
+        <div class="callout-title">الإصلاح سطر واحد فقط</div>
+        <p>تعطيل الكيانات الخارجية في إعدادات محلّل XML. المأساة: معظم المحلّلات <strong>تُفعّل هذه الميزة افتراضياً</strong>. المطوّرون لا يعرفون أنهم بحاجة لتعطيلها، لذا يسهل الوقوع في XXE بالصدفة — ومنعها بشكل كامل بسطر واحد.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       الفصل 13
+  ══════════════════════════════════════ -->
+  <section class="chapter ch13" id="ch13">
+    <div class="chapter-header">
+      <div class="chapter-icon">🗄️</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">الفصل الثالث عشر</div>
+        <div class="chapter-title">هجمات الحقن</div>
+        <div class="chapter-tagline">حين يُنفّذ المُفسِّر ما يكتبه المستخدم كأوامر حقيقية.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 الفكرة الأساسية</div>
+      <p>تحدث هجمات الحقن حين يأخذ التطبيق نصاً كتبه المستخدم ويُمرّره مباشرةً إلى مُفسِّر قوي — قاعدة بيانات، أو برنامج، أو نظام تشغيل — <em>دون تنظيفه أولاً</em>. المُفسِّر لا يستطيع التمييز بين البيانات والأوامر، فيُنفّذ ما كتبه المستخدم.</p>
+    </div>
+
+    <h3 class="section-title">المثال الجوهري</h3>
+    <div class="analogy">
+      <div class="analogy-icon">🏦</div>
+      <div>
+        <div class="analogy-label">مثال توضيحي</div>
+        <p>أمين صندوق في بنك يستلم قسائم سحب. بدلاً من رقم حسابك، تكتب: <em>"حساب 12345. وأيضاً: أفرّغ أرصدة الجميع وأضفها إلى حسابي."</em> أمين صندوق ذكي يقرأ "حساب 12345" ويتجاهل الباقي. أمين صندوق ساذج ينفّذ كل التعليمات. التطبيق الذي يلصق مدخل المستخدم مباشرةً — هو أمين الصندوق الساذج.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">الأنواع الثلاثة لهجمات الحقن</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">حقن SQL</div>
+            <div class="type-sub">الهدف: مُفسِّر قاعدة البيانات</div>
+          </div>
+        </div>
+        <p>التطبيق يبني استعلام SQL بلصق مدخل المستخدم مباشرةً:</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Python — كود ضعيف</span></div>
+          <pre>query = <span class="str">"SELECT * FROM users WHERE id = "</span> + user_input
+<span class="cm"># المستخدم يكتب: 1 OR 1=1</span>
+<span class="cm"># الاستعلام: SELECT * FROM users WHERE id = 1 OR 1=1</span>
+<span class="cm"># النتيجة: إرجاع جميع المستخدمين في قاعدة البيانات!</span></pre>
+        </div>
+        <p><strong>أشد خطورة:</strong> حذف جدول بأكمله:</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- المستخدم يكتب: 1; DROP TABLE users;</span>
+SELECT * FROM users WHERE id = <span class="val">1</span>; <span class="kw">DROP TABLE</span> users;</pre>
+        </div>
+        <p><strong>الأخطر — التلاعب الصامت:</strong></p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">SQL</span></div>
+          <pre><span class="cm">-- لا خطأ، لا تنبيه، صامت تماماً:</span>
+<span class="kw">UPDATE</span> users <span class="kw">SET</span> credits = <span class="val">99999</span> <span class="kw">WHERE</span> id = <span class="val">42</span>;</pre>
+        </div>
+        <div class="callout success" style="margin-top:14px;">
+          <div class="callout-icon">✅</div>
+          <div class="callout-body">
+            <div class="callout-title">الحل — الاستعلامات المعلّمة (Parameterized Queries)</div>
+            <pre style="font-size:12px; background:transparent; padding:0; color:#166534; direction:ltr; text-align:left;"><span class="cm"># خاطئ (ضعيف):</span>
+query = "SELECT * FROM users WHERE id = " + user_input
+
+<span class="cm"># صحيح (آمن):</span>
+query = "SELECT * FROM users WHERE id = ?"
+cursor.execute(query, [user_input])</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">حقن الكود (Code Injection)</div>
+            <div class="type-sub">الهدف: أداة أو برنامج (مثل FFmpeg أو ImageMagick)</div>
+          </div>
+        </div>
+        <p>التطبيق يبني استدعاء سطر أوامر بلصق مدخل المستخدم مباشرةً. المهاجم يهرب من المدخل المتوقع ويضيف أوامره الخاصة.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Bash</span></div>
+          <pre>convert input.jpg -resize <span class="val">100x100</span> output.jpg
+<span class="cm"># المهاجم يُدخل: 100; delete_all_files</span>
+<span class="cm"># الأمر المحقون يُنفَّذ داخل البرنامج</span></pre>
+        </div>
+        <p><strong>الضرر محدود</strong> — المهاجم محصور بما يستطيع ذلك البرنامج تحديداً فعله. لا يصل لنظام التشغيل مباشرةً.</p>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">حقن الأوامر (Command Injection)</div>
+            <div class="type-sub">الهدف: صدفة نظام التشغيل (Bash) — الأكثر خطورة</div>
+          </div>
+        </div>
+        <div class="callout danger" style="margin-bottom:14px;">
+          <div class="callout-icon">🔴</div>
+          <div class="callout-body">
+            <div class="callout-title">الأخطر على الإطلاق — رقم 1 في كل مقاييس المخاطر</div>
+            <p>المهاجم يتجاوز التطبيق ويُنفّذ أوامر عشوائية بصلاحيات عملية خادم الويب.</p>
+          </div>
+        </div>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Python — كود ضعيف</span></div>
+          <pre>os.<span class="fn">system</span>(<span class="str">"ping "</span> + user_input)
+<span class="cm"># المهاجم يكتب: google.com; cat /etc/passwd</span>
+<span class="cm"># يُنفَّذ: ping google.com ثم قراءة ملف كلمات المرور</span></pre>
+        </div>
+        <p style="margin-top:12px;"><strong>ما يستطيع المهاجم فعله الآن:</strong></p>
+        <ul class="styled-list" style="margin-top:8px;">
+          <li>قراءة أي ملف على الخادم</li>
+          <li>حذف السجلات لإخفاء آثاره</li>
+          <li>إضافة حسابات مستخدمين للباب الخلفي</li>
+          <li>زرع برمجيات خبيثة للوصول المستقبلي</li>
+          <li>استخدام الخادم لإرسال بريد مزعج أو مهاجمة آخرين</li>
+        </ul>
+        <p style="margin-top:12px; font-size:.88rem; color:var(--muted);"><strong>ملاحظة:</strong> أكثر من 95% من خوادم الويب تعمل على Linux/Unix — أي أن Bash متاحة دائماً تقريباً كهدف.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       الفصل 14
+  ══════════════════════════════════════ -->
+  <section class="chapter ch14" id="ch14">
+    <div class="chapter-header">
+      <div class="chapter-icon">💥</div>
+      <div class="chapter-meta">
+        <div class="chapter-label">الفصل الرابع عشر</div>
+        <div class="chapter-title">هجمات الحرمان من الخدمة (DoS)</div>
+        <div class="chapter-tagline">إرهاق الخادم حتى لا يتمكن أي مستخدم شرعي من الوصول إليه.</div>
+      </div>
+    </div>
+
+    <div class="big-idea">
+      <div class="big-idea-label">💡 الفكرة الأساسية</div>
+      <p>بدلاً من سرقة البيانات، تجعل هجمات DoS التطبيق <em>غير متاح</em> كلياً. تستهدف <strong>التوافرية (Availability)</strong> — الحرف "A" في ثالوث أمن المعلومات CIA. الخادم ينهار ولا يستطيع الرد على المستخدمين الحقيقيين.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>المصطلح</th><th>المعنى</th></tr></thead>
+        <tbody>
+          <tr><td><strong>DoS</strong></td><td>الحرمان من الخدمة — جهاز واحد يهاجم الخادم</td></tr>
+          <tr><td><strong>DDoS</strong></td><td>الحرمان الموزّع — آلاف الأجهزة تهاجم في وقت واحد</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="section-title">الأنواع الثلاثة لهجمات الحرمان من الخدمة</h3>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">1</div>
+          <div>
+            <div class="type-name">حرمان الخدمة عبر التعبيرات النمطية (ReDoS)</div>
+            <div class="type-sub">سلسلة واحدة مصنّعة تُعطّل الخادم</div>
+          </div>
+        </div>
+        <p>أنماط التعبير النمطي المعيّنة تُسبّب <strong>تراجعاً أسياً</strong> — محرّك التعبير يُجرّب كل تركيبة ممكنة قبل الاستسلام. سلسلة واحدة مصنّعة يمكنها تجميد الخادم لدقائق.</p>
+        <div class="code-wrap">
+          <div class="code-bar"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><span class="code-lang">Regex — نمط خطير</span></div>
+          <pre><span class="str">/^((ab)*)+$/</span>
+<span class="cm"># 50 حرفاً  → يستغرق ثوانٍ</span>
+<span class="cm"># 80 حرفاً  → يستغرق دقائق</span>
+<span class="cm"># الخادم مُجمَّد تماماً</span></pre>
+        </div>
+        <div class="analogy">
+          <div class="analogy-icon">♾️</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>اطلب من شخص عدّ جميع الطرق الممكنة لترتيب حروف كلمة — لكن الكلمة لها نهاية خادعة لا يوجد لها جواب. سيستمر في العدّ إلى ما لا نهاية.</p></div>
+        </div>
+        <div class="callout warning" style="margin-top:14px;">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <div class="callout-title">كثيراً ما يوجد في المكتبات</div>
+            <p>مكتبة تحقق مفتوحة المصدر واحدة وضعيفة يمكنها إسقاط تطبيقك بأكمله عند استيرادها. تحقق دائماً من تبعيات المكتبات.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">2</div>
+          <div>
+            <div class="type-name">الحرمان المنطقي (Logical DoS)</div>
+            <div class="type-sub">استهداف أغلى ميزة في التطبيق بشكل متكرر</div>
+          </div>
+        </div>
+        <p>المهاجم لا يكسر شيئاً. يُحدّد فقط <strong>الوظيفة الأكثر استهلاكاً للموارد</strong> في التطبيق ويستدعيها بحجم عالٍ. وحدة المعالجة والذاكرة تُستنزف، مما يُسبّب انتهاء مهلة الانتظار لجميع المستخدمين الشرعيين.</p>
+        <p><strong>مثال:</strong> تطبيق صور يُحمّل كل الألبومات والصور والوسوم والبيانات الوصفية دفعة واحدة. المهاجم ينشئ حساباً بـ 100,000 صورة ويستدعي ذلك الـ endpoint ألف مرة في الثانية.</p>
+        <p style="margin-top:10px;"><strong>أكثر العمليات عرضة للخطر:</strong></p>
+        <ul class="styled-list" style="margin-top:8px;">
+          <li>عمليات الكتابة الجماعية في قواعد البيانات</li>
+          <li>استعلامات SQL تجمع جداول كبيرة كثيرة (JOIN)</li>
+          <li>عمليات ضغط الملفات أو النسخ الاحتياطي</li>
+          <li>الاستدعاءات المتزامنة التي تُجمّد خيط الخادم</li>
+          <li>أي حلقة تنمو بحجم البيانات</li>
+        </ul>
+        <div class="analogy">
+          <div class="analogy-icon">🍽️</div>
+          <div><div class="analogy-label">مثال توضيحي</div><p>تطلب الطبق الأكثر تعقيداً في القائمة، بشكل قانوني، 500 مرة باستخدام 500 فاتورة منفصلة. المطبخ ينهار. لا يمكن تقديم الخدمة للزبائن الآخرين.</p></div>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-card-header">
+          <div class="type-badge">3</div>
+          <div>
+            <div class="type-name">الحرمان الموزّع (DDoS)</div>
+            <div class="type-sub">آلاف الأجهزة المُختطفة تهاجم في آنٍ واحد</div>
+          </div>
+        </div>
+        <p><strong>الشبكة الروبوتية (Botnet)</strong> — آلاف الأجهزة الحقيقية (أجهزة منزلية، تلفزيونات ذكية، أجهزة IoT) مُصابة ببرمجيات خبيثة — تهاجم جميعها خادمك في وقت واحد بأمر واحد من المهاجم.</p>
+        <div class="table-wrap" style="margin-top:14px;">
+          <table>
+            <thead><tr><th>النوع</th><th>كيف يعمل</th><th>صعوبة الإيقاف</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>على مستوى الشبكة</strong></td>
+                <td>الروبوتات تُغرق عنوان IP الخادم بحزم UDP الخام لاستنزاف النطاق الترددي</td>
+                <td>أسهل — الحزم تبدو مشوّهة؛ يتطلب تدخل مزود الإنترنت</td>
+              </tr>
+              <tr>
+                <td><strong>على مستوى التطبيق</strong></td>
+                <td>الروبوتات ترسل طلبات HTTP حقيقية لنقاط النهاية الغالية</td>
+                <td>صعب جداً — يبدو متطابقاً مع حركة المستخدمين الحقيقيين</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout info" style="margin-top:14px;">
+          <div class="callout-icon">🛡️</div>
+          <div class="callout-body">
+            <div class="callout-title">من أصعب المشاكل في أمن الويب</div>
+            <p>التمييز بين المستخدمين الحقيقيين وحركة الروبوتات صعب لدرجة أن شركات بأكملها (مثل Cloudflare) وجدت خصيصاً لحله.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout warning" style="margin-top:8px;">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">خطر إضافي من هجمات DoS</div>
+        <p>بعض حالات الإعطال تجعل التطبيق يتعطّل مُظهراً رسائل خطأ تكشف تفاصيل داخلية — مسارات الملفات، إصدارات المكتبات، تتبّعات المكدس — يستخدمها المهاجمون لتخطيط هجماتهم التالية.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       SUMMARY
+  ══════════════════════════════════════ -->
+  <div class="summary-section" id="summary">
+    <h2>ملخص الأسبوع الرابع — مرجع سريع</h2>
+    <p>ستة فصول، موضوع واحد: تحويل الاستطلاع إلى اختراق فعلي.</p>
+    <div class="summary-table-wrap">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>الفصل</th>
+            <th>نوع الهجوم</th>
+            <th>ما يفعله</th>
+            <th>مثال توضيحي</th>
+            <th>طريقة الوقاية</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c9);">ف 9</span></td>
+            <td><strong>عقلية المخترق</strong></td>
+            <td>استطلاع → إيجاد نقطة ضعف → استغلال</td>
+            <td>لص يجوب الحي بحثاً عن نافذة مفتوحة</td>
+            <td>بناء الأمان من اليوم الأول</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c10);">ف 10</span></td>
+            <td><strong>XSS</strong></td>
+            <td>حقن JavaScript في صفحات يراها مستخدمون آخرون</td>
+            <td>تسميم خزان مياه الحي</td>
+            <td>تنظيف وترميز جميع مخرجات المستخدمين</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c11);">ف 11</span></td>
+            <td><strong>CSRF</strong></td>
+            <td>إجبار متصفح الضحية على التصرف نيابةً عنها</td>
+            <td>تزوير توقيع شخص ما</td>
+            <td>رموز CSRF + ملفات ارتباط SameSite</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c12);">ف 12</span></td>
+            <td><strong>XXE</strong></td>
+            <td>قراءة ملفات الخادم عبر ميزة محلّل XML</td>
+            <td>إخفاء ملاحظة في طلب المطبخ</td>
+            <td>تعطيل الكيانات الخارجية في المحلّل</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c13);">ف 13</span></td>
+            <td><strong>الحقن</strong></td>
+            <td>تنفيذ أوامر عبر مدخلات المستخدم غير المنقّاة</td>
+            <td>أمين صندوق ينفّذ كل تعليمات القسيمة</td>
+            <td>الاستعلامات المعلّمة · لا تلصق المدخلات أبداً</td>
+          </tr>
+          <tr>
+            <td><span class="ch-tag" style="background:var(--c14);">ف 14</span></td>
+            <td><strong>DoS / DDoS</strong></td>
+            <td>إرهاق الخادم حتى لا يصل أحد للتطبيق</td>
+            <td>إغراق مطعم بطلبات مستحيلة</td>
+            <td>تحديد معدل الطلبات + خدمات حماية DDoS</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>CYB 236 — أمن تطبيقات الويب</strong> · دليل التدريس — الأسبوع الرابع ·
+  الفصول 9–14 · الجزء الثاني: الهجوم — اختراق تطبيقات الويب
+</footer>
+
+</body>
+</html>

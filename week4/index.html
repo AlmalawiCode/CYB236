@@ -3,71 +3,2079 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 4: Cross-Site Scripting (XSS) | CYB236</title>
+    <title>CYB236 Handout - Chapters 9, 10, 11, 12, 13 &amp; 14</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #f5f3ff;
+            --primary-600: #7c3aed;
+            --primary-700: #6d28d9;
+            --primary-800: #5b21b6;
+            --primary-900: #4c1d95;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Colors ── */
+            --ch9: #7c3aed;
+            --ch9-light: #ede9fe;
+            --ch9-mid: #c4b5fd;
+
+            --ch10: #ea580c;
+            --ch10-light: #fff7ed;
+            --ch10-mid: #fed7aa;
+
+            --ch11: #0891b2;
+            --ch11-light: #cffafe;
+            --ch11-mid: #67e8f9;
+
+            --ch12: #059669;
+            --ch12-light: #d1fae5;
+            --ch12-mid: #6ee7b7;
+
+            --ch13: #dc2626;
+            --ch13-light: #fee2e2;
+            --ch13-mid: #fca5a5;
+
+            --ch14: #4f46e5;
+            --ch14-light: #e0e7ff;
+            --ch14-mid: #a5b4fc;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --orange: #ea580c;
+            --orange-light: #fff7ed;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+            --get: #22c55e;
+            --post: #3b82f6;
+            --put: #f59e0b;
+            --delete: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #c0392b, #c0392bdd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #7c3aed, #dc2626);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .week-badge {
-            background: #c0392b;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #c0392b;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #c0392b;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-left: 16px;
+        }
+
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #c4b5fd;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot {
+            width: 8px; height: 8px;
+            background: #a78bfa;
+            border-radius: 50%;
+        }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub {
+            font-size: 20px;
+            color: #d4d4d4;
+            margin-bottom: 30px;
+        }
+
+        .cover-chips {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .cover-chip.ch9  { background: rgba(124,58,237,0.3); }
+        .cover-chip.ch10 { background: rgba(234,88,12,0.3); }
+        .cover-chip.ch11 { background: rgba(8,145,178,0.3); }
+        .cover-chip.ch12 { background: rgba(5,150,105,0.3); }
+        .cover-chip.ch13 { background: rgba(220,38,38,0.3); }
+        .cover-chip.ch14 { background: rgba(79,70,229,0.3); }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .sidebar-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-ch-label {
+            padding: 8px 12px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--neutral-400);
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--primary-600); color: white; }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .chapter-num.ch9  { background: var(--ch9-light);  color: var(--ch9);  }
+        .chapter-num.ch10 { background: var(--ch10-light); color: var(--ch10); }
+        .chapter-num.ch11 { background: var(--ch11-light); color: var(--ch11); }
+        .chapter-num.ch12 { background: var(--ch12-light); color: var(--ch12); }
+        .chapter-num.ch13 { background: var(--ch13-light); color: var(--ch13); }
+        .chapter-num.ch14 { background: var(--ch14-light); color: var(--ch14); }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider { height: 4px; border-radius: 2px; margin: 10px auto 0; width: 80px; }
+        .chapter-divider.ch9  { background: var(--ch9);  }
+        .chapter-divider.ch10 { background: var(--ch10); }
+        .chapter-divider.ch11 { background: var(--ch11); }
+        .chapter-divider.ch12 { background: var(--ch12); }
+        .chapter-divider.ch13 { background: var(--ch13); }
+        .chapter-divider.ch14 { background: var(--ch14); }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .topic-icon.ch9  { background: var(--ch9-light);  }
+        .topic-icon.ch10 { background: var(--ch10-light); }
+        .topic-icon.ch11 { background: var(--ch11-light); }
+        .topic-icon.ch12 { background: var(--ch12-light); }
+        .topic-icon.ch13 { background: var(--ch13-light); }
+        .topic-icon.ch14 { background: var(--ch14-light); }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--neutral-800);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-number.ch9  { background: var(--ch9);  }
+        .objective-number.ch10 { background: var(--ch10); }
+        .objective-number.ch11 { background: var(--ch11); }
+        .objective-number.ch12 { background: var(--ch12); }
+        .objective-number.ch13 { background: var(--ch13); }
+        .objective-number.ch14 { background: var(--ch14); }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--neutral-50);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+            border-left: 5px solid;
+        }
+
+        .story.ch9  { border-color: var(--ch9);  }
+        .story.ch10 { border-color: var(--ch10); }
+        .story.ch11 { border-color: var(--ch11); }
+        .story.ch12 { border-color: var(--ch12); }
+        .story.ch13 { border-color: var(--ch13); }
+        .story.ch14 { border-color: var(--ch14); }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+        }
+
+        .story-label.ch9  { background: var(--ch9-light);  color: var(--ch9);  }
+        .story-label.ch10 { background: var(--ch10-light); color: var(--ch10); }
+        .story-label.ch11 { background: var(--ch11-light); color: var(--ch11); }
+        .story-label.ch12 { background: var(--ch12-light); color: var(--ch12); }
+        .story-label.ch13 { background: var(--ch13-light); color: var(--ch13); }
+        .story-label.ch14 { background: var(--ch14-light); color: var(--ch14); }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-left: 3px solid var(--border);
+        }
+
+        .character { font-weight: 700; font-style: normal; }
+        .character.ahmed  { color: var(--ch9); }
+        .character.hacker { color: var(--ch13); }
+        .character.system { color: var(--ch12); }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+        }
+
+        .clean-list.ch9  li::before { background: var(--ch9-light);  }
+        .clean-list.ch10 li::before { background: var(--ch10-light); }
+        .clean-list.ch11 li::before { background: var(--ch11-light); }
+        .clean-list.ch12 li::before { background: var(--ch12-light); }
+        .clean-list.ch13 li::before { background: var(--ch13-light); }
+        .clean-list.ch14 li::before { background: var(--ch14-light); }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-num.ch9  { background: var(--ch9);  }
+        .step-num.ch10 { background: var(--ch10); }
+        .step-num.ch11 { background: var(--ch11); }
+        .step-num.ch12 { background: var(--ch12); }
+        .step-num.ch13 { background: var(--ch13); }
+        .step-num.ch14 { background: var(--ch14); }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .t { color: #f9a8d4; }
+        .code-box .r { color: #f87171; }
+        .code-box .found { color: #fbbf24; font-weight: bold; }
+        .code-box .cmd  { color: #86efac; }
+        .code-box .out  { color: #93c5fd; }
+
+        /* ───── XSS Type Cards ───── */
+        .xss-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .xss-card {
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid;
+        }
+
+        .xss-card.stored  { border-color: var(--ch13); background: var(--ch13-light); }
+        .xss-card.reflected { border-color: var(--ch10); background: var(--ch10-light); }
+        .xss-card.dom     { border-color: var(--ch11); background: var(--ch11-light); }
+        .xss-card.mutation { border-color: var(--ch9);  background: var(--ch9-light);  }
+
+        .xss-card .xss-icon { font-size: 2.2em; margin-bottom: 8px; }
+        .xss-card .xss-name { font-weight: 800; font-size: 1.05em; margin-bottom: 6px; }
+        .xss-card.stored .xss-name    { color: var(--ch13); }
+        .xss-card.reflected .xss-name { color: var(--ch10); }
+        .xss-card.dom .xss-name       { color: var(--ch11); }
+        .xss-card.mutation .xss-name  { color: var(--ch9);  }
+        .xss-card .xss-desc { font-size: 0.85em; color: var(--gray); }
+
+        /* ───── Verb Table ───── */
+        .verb-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .verb-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .verb-table td {
+            padding: 14px 16px;
+            background: white;
+            font-size: 0.98em;
+        }
+
+        .verb-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .verb-table tr td:last-child  { border-radius: 0 10px 10px 0; }
+        .verb-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: white;
+        }
+
+        .badge.get    { background: var(--get);    }
+        .badge.post   { background: var(--post);   }
+        .badge.put    { background: var(--put);    }
+        .badge.delete { background: var(--delete); }
+
+        /* ───── Injection type cards ───── */
+        .injection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .injection-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            border-left: 5px solid;
+            text-align: center;
+        }
+
+        .injection-card.sql     { border-color: var(--ch13); }
+        .injection-card.code    { border-color: var(--ch10); }
+        .injection-card.command { border-color: var(--ch9);  }
+
+        .injection-card .inj-icon { font-size: 2em; margin-bottom: 8px; }
+        .injection-card .inj-title { font-weight: 800; font-size: 1em; margin-bottom: 4px; }
+        .injection-card.sql .inj-title     { color: var(--ch13); }
+        .injection-card.code .inj-title    { color: var(--ch10); }
+        .injection-card.command .inj-title { color: var(--ch9);  }
+        .injection-card .inj-target { font-size: 0.82em; color: var(--gray); }
+
+        /* ───── Secure vs Insecure Visual ───── */
+        .secure-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .secure-side { border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-md); }
+
+        .secure-side-header {
+            padding: 14px 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .secure-side-header.bad  { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .secure-side-header.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .secure-side-body { padding: 20px; background: white; }
+        .secure-side-body ul { list-style: none; padding: 0; }
+        .secure-side-body li { padding: 8px 0 8px 28px; position: relative; font-size: 0.95em; }
+        .secure-side-body.bad  li::before { content: '✗'; position: absolute; left: 0; color: var(--red);   font-weight: 700; }
+        .secure-side-body.good li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner.ch9  { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+        .summary-banner.ch10 { background: linear-gradient(135deg, #9a3412, #ea580c); }
+        .summary-banner.ch11 { background: linear-gradient(135deg, #0e7490, #0891b2); }
+        .summary-banner.ch12 { background: linear-gradient(135deg, #065f46, #059669); }
+        .summary-banner.ch13 { background: linear-gradient(135deg, #991b1b, #dc2626); }
+        .summary-banner.ch14 { background: linear-gradient(135deg, #312e81, #4f46e5); }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        /* ───── Page Break ───── */
+        .page-break {
+            height: 6px;
+            background: linear-gradient(90deg, var(--ch9), var(--ch10), var(--ch11), var(--ch12), var(--ch13), var(--ch14));
+            margin: 60px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Footer ───── */
+        .footer {
+            background: var(--neutral-900);
+            color: white;
+            padding: 48px 40px;
+            margin-top: 20px;
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .secure-compare { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+            .xss-grid, .injection-grid { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="week-badge">Week 4 - Offense</span>
-        <h1>Cross-Site Scripting (XSS)</h1>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="index-ar.html" class="lang-switch">العربية</a>
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week3/index.html" class="nav-link">Week 3</a>
+            <a href="index.html" class="nav-link active">Week 4</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>Week 4</span>
+            <span>›</span>
+            <span>Part II — Offense</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            Week 4 &nbsp;·&nbsp; Offense
+        </div>
+        <h1>Hacking Web Applications</h1>
+        <p class="sub">XSS · CSRF · XXE · Injection · Denial of Service</p>
+        <div class="cover-chips">
+            <div class="cover-chip ch9">Ch.9 Hacker's Mindset</div>
+            <div class="cover-chip ch10">Ch.10 XSS</div>
+            <div class="cover-chip ch11">Ch.11 CSRF</div>
+            <div class="cover-chip ch12">Ch.12 XXE</div>
+            <div class="cover-chip ch13">Ch.13 Injection</div>
+            <div class="cover-chip ch14">Ch.14 DoS</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ BODY ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-ch-label">Ch. 9 — Hacker's Mindset</div>
+            <a href="#chapter-9"   class="sidebar-link active"><span class="sidebar-link-number">1</span>Ch.9 Overview</a>
+            <a href="#ch9-mindset" class="sidebar-link"><span class="sidebar-link-number">2</span>The Hacker's Mindset</a>
+            <a href="#ch9-recon"   class="sidebar-link"><span class="sidebar-link-number">3</span>Applied Recon</a>
+            <a href="#ch9-summary" class="sidebar-link"><span class="sidebar-link-number">4</span>Ch.9 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 10 — XSS</div>
+            <a href="#chapter-10"      class="sidebar-link"><span class="sidebar-link-number">5</span>Ch.10 Overview</a>
+            <a href="#ch10-discovery"  class="sidebar-link"><span class="sidebar-link-number">6</span>How XSS Works</a>
+            <a href="#ch10-stored"     class="sidebar-link"><span class="sidebar-link-number">7</span>Stored XSS</a>
+            <a href="#ch10-reflected"  class="sidebar-link"><span class="sidebar-link-number">8</span>Reflected XSS</a>
+            <a href="#ch10-dom"        class="sidebar-link"><span class="sidebar-link-number">9</span>DOM-Based XSS</a>
+            <a href="#ch10-mutation"   class="sidebar-link"><span class="sidebar-link-number">10</span>Mutation-Based XSS</a>
+            <a href="#ch10-summary"    class="sidebar-link"><span class="sidebar-link-number">11</span>Ch.10 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 11 — CSRF</div>
+            <a href="#chapter-11"     class="sidebar-link"><span class="sidebar-link-number">12</span>Ch.11 Overview</a>
+            <a href="#ch11-get"       class="sidebar-link"><span class="sidebar-link-number">13</span>Query Param Tampering</a>
+            <a href="#ch11-alt"       class="sidebar-link"><span class="sidebar-link-number">14</span>Alternate GET Payloads</a>
+            <a href="#ch11-post"      class="sidebar-link"><span class="sidebar-link-number">15</span>CSRF via POST</a>
+            <a href="#ch11-summary"   class="sidebar-link"><span class="sidebar-link-number">16</span>Ch.11 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 12 — XXE</div>
+            <a href="#chapter-12"   class="sidebar-link"><span class="sidebar-link-number">17</span>Ch.12 Overview</a>
+            <a href="#ch12-direct"  class="sidebar-link"><span class="sidebar-link-number">18</span>Direct XXE</a>
+            <a href="#ch12-indirect" class="sidebar-link"><span class="sidebar-link-number">19</span>Indirect XXE</a>
+            <a href="#ch12-summary" class="sidebar-link"><span class="sidebar-link-number">20</span>Ch.12 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 13 — Injection</div>
+            <a href="#chapter-13"    class="sidebar-link"><span class="sidebar-link-number">21</span>Ch.13 Overview</a>
+            <a href="#ch13-sql"      class="sidebar-link"><span class="sidebar-link-number">22</span>SQL Injection</a>
+            <a href="#ch13-code"     class="sidebar-link"><span class="sidebar-link-number">23</span>Code Injection</a>
+            <a href="#ch13-command"  class="sidebar-link"><span class="sidebar-link-number">24</span>Command Injection</a>
+            <a href="#ch13-summary"  class="sidebar-link"><span class="sidebar-link-number">25</span>Ch.13 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 14 — DoS</div>
+            <a href="#chapter-14"    class="sidebar-link"><span class="sidebar-link-number">26</span>Ch.14 Overview</a>
+            <a href="#ch14-redos"    class="sidebar-link"><span class="sidebar-link-number">27</span>Regex DoS (ReDoS)</a>
+            <a href="#ch14-logical"  class="sidebar-link"><span class="sidebar-link-number">28</span>Logical DoS</a>
+            <a href="#ch14-ddos"     class="sidebar-link"><span class="sidebar-link-number">29</span>Distributed DoS</a>
+            <a href="#ch14-summary"  class="sidebar-link"><span class="sidebar-link-number">30</span>Ch.14 Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 9 — Introduction to Hacking Web Applications
+     ════════════════════════════════════════════════ -->
+<div id="chapter-9" class="chapter-header">
+    <div class="chapter-num ch9">Chapter 9</div>
+    <div class="chapter-title">Introduction to Hacking Web Applications</div>
+    <div class="chapter-divider ch9"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch9">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch9">1</div>
+            <div class="objective-text"><strong>Describe</strong> the mindset and approach that distinguishes a successful hacker from a developer.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch9">2</div>
+            <div class="objective-text"><strong>Explain</strong> why the majority of hacking work is data gathering and analysis, not code manipulation.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch9">3</div>
+            <div class="objective-text"><strong>Connect</strong> Part I recon skills (subdomains, APIs, dependencies) to offensive exploitation in Part II.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch9">4</div>
+            <div class="objective-text"><strong>Appreciate</strong> the importance of documentation and patience as core hacking skills.</div>
+        </div>
+    </div>
+</div>
+
+<!-- The Hacker's Mindset -->
+<div id="ch9-mindset" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch9">&#129504;</div>
+        <h2>The Hacker's Mindset</h2>
+    </div>
+
+    <p>Becoming a successful hacker takes more than technical knowledge — it requires a <strong>very particular mindset</strong>. Understanding how hackers think is essential both for attacking and defending systems.</p>
+
+    <div class="story ch9">
+        <div class="story-label ch9">&#128214; From the Book — Engineer vs. Hacker</div>
+        <p>A <strong>software engineer</strong> measures productivity in value-add: "I added feature X, I improved performance by 10%." Their work is quantifiably measurable.</p>
+        <p>A <strong>hacker</strong> measures productivity very differently. Most of hacking is <em>data gathering and analysis</em> — riddled with false positives, it may look like wasted time to an outsider. A hacker might spend weeks or months analyzing a single application before finding a usable entrypoint.</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "A hacker is first and foremost a <strong>detective</strong>. A great hacker is a detective with excellent technical knowledge who is constantly learning and adapting."
+        </div>
+    </div>
+
+    <h3>Core Traits of a Successful Hacker</h3>
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128270;</div>
+            <div class="mc-title">Seeks Entrypoints</div>
+            <div class="mc-desc">Works with existing code to find vulnerabilities, not modify features</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128221;</div>
+            <div class="mc-title">Detailed Notes</div>
+            <div class="mc-desc">Carefully logs every attempt and lesson learned</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128218;</div>
+            <div class="mc-title">Constantly Learns</div>
+            <div class="mc-desc">Old techniques lose value as the web adapts — must keep updating skills</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9203;</div>
+            <div class="mc-title">Patient</div>
+            <div class="mc-desc">Prepared for weeks without a "big find" — persistence is key</div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Key Insight</h4>
+        <p>Most hackers don't <em>modify</em> software — they <em>analyze</em> it to find entrypoints. The skills for finding those entrypoints are nearly identical to the recon skills in Part I of the book.</p>
+    </div>
+</div>
+
+<!-- Applied Recon -->
+<div id="ch9-recon" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch9">&#128279;</div>
+        <h2>Applied Recon — Bridging Part I to Part II</h2>
+    </div>
+
+    <p>Everything learned in Part I — subdomains, API analysis, third-party dependencies, and architecture — is now put to offensive use. <strong>Recon and hacking go hand in hand.</strong></p>
+
+    <div class="story ch9">
+        <div class="story-label ch9">&#128214; How Recon Feeds Offense</div>
+        <p>Throughout Part II we attack <strong>mega-bank.com</strong> — the same application profiled in Part I. Every piece of recon data becomes a potential attack surface.</p>
+    </div>
+
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>Part I Skill</th>
+                <th>How It's Used Offensively</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Subdomain Discovery</strong></td>
+                <td>Find less-tested internal servers to attack (admin, legacy-api)</td>
+            </tr>
+            <tr>
+                <td><strong>API Analysis (REST)</strong></td>
+                <td>Send malicious payloads over REST endpoints to trigger vulnerabilities</td>
+            </tr>
+            <tr>
+                <td><strong>Authentication Schemes</strong></td>
+                <td>Understand the trust model to forge or bypass authentication</td>
+            </tr>
+            <tr>
+                <td><strong>3rd-Party Dependencies</strong></td>
+                <td>Find CVEs for detected library versions and use ready-made exploits</td>
+            </tr>
+            <tr>
+                <td><strong>Application Architecture</strong></td>
+                <td>If App A can't be attacked directly, use its connection to App B as a vector</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Ethical &amp; Legal Reminder</h4>
+        <p>All offensive techniques in this course are for <strong>authorized penetration testing, security research, and educational purposes only</strong>. Applying these techniques against real systems without explicit written permission is illegal and unethical.</p>
+    </div>
+</div>
+
+<!-- Chapter 9 Summary -->
+<div id="ch9-summary" class="summary-banner ch9">
+    <h3>&#10003; Chapter 9 Summary — Introduction to Hacking</h3>
+    <ul>
+        <li>Hacking requires a <strong>detective's mindset</strong>: patience, documentation, and constant learning</li>
+        <li>Most hacking work is <strong>data gathering and analysis</strong>, not dramatic code manipulation</li>
+        <li>Hackers <strong>seek entrypoints</strong> in existing code — they don't need to modify it</li>
+        <li>All <strong>recon skills from Part I</strong> directly feed offensive exploitation in Part II</li>
+        <li>Code reuse across an organization means one found exploit can replicate to multiple systems</li>
+        <li>Both recon and hacking skills combined are <strong>significantly more powerful</strong> than either alone</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 10 — Cross-Site Scripting (XSS)
+     ════════════════════════════════════════════════ -->
+<div id="chapter-10" class="chapter-header">
+    <div class="chapter-num ch10">Chapter 10</div>
+    <div class="chapter-title">Cross-Site Scripting (XSS)</div>
+    <div class="chapter-divider ch10"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch10">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch10">1</div>
+            <div class="objective-text"><strong>Explain</strong> how XSS attacks work and why web applications that execute dynamic scripts are at risk.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch10">2</div>
+            <div class="objective-text"><strong>Distinguish</strong> between Stored, Reflected, DOM-Based, and Mutation-Based XSS.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch10">3</div>
+            <div class="objective-text"><strong>Describe</strong> how a Stored XSS attack steals sensitive data from privileged users.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch10">4</div>
+            <div class="objective-text"><strong>Identify</strong> DOM sources and sinks that enable DOM-Based XSS without any server interaction.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch10">5</div>
+            <div class="objective-text"><strong>Recognize</strong> how mutation-based XSS bypasses sanitization filters using browser DOM behavior.</div>
+        </div>
+    </div>
+</div>
+
+<!-- XSS Overview -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch10">&#128161;</div>
+        <h2>What Is XSS? — The Core Idea</h2>
+    </div>
+
+    <p>XSS (Cross-Site Scripting) vulnerabilities are among the <strong>most common on the internet</strong>. At its core, an XSS attack works by taking advantage of the fact that web applications execute scripts in users' browsers.</p>
+
+    <p>If a script being executed can be <strong>contaminated or modified by an end user</strong>, that web application is at risk. The attacker's goal: inject malicious JavaScript that runs in the victim's browser — stealing data, hijacking sessions, or drawing fake UI.</p>
+
+    <h3>The Three Major XSS Categories (OWASP)</h3>
+    <div class="xss-grid">
+        <div class="xss-card stored">
+            <div class="xss-icon">&#128451;</div>
+            <div class="xss-name">Stored XSS</div>
+            <div class="xss-desc">Script is saved in the server database and later served to all visitors</div>
+        </div>
+        <div class="xss-card reflected">
+            <div class="xss-icon">&#128257;</div>
+            <div class="xss-name">Reflected XSS</div>
+            <div class="xss-desc">Script is not stored — reflected back from the server in a URL or query</div>
+        </div>
+        <div class="xss-card dom">
+            <div class="xss-icon">&#128187;</div>
+            <div class="xss-name">DOM-Based XSS</div>
+            <div class="xss-desc">Script executes entirely in the browser — never touches the server</div>
+        </div>
+        <div class="xss-card mutation">
+            <div class="xss-icon">&#129516;</div>
+            <div class="xss-name">Mutation XSS</div>
+            <div class="xss-desc">Payload passes filters safely, then mutates into a valid exploit in the browser</div>
+        </div>
+    </div>
+</div>
+
+<!-- XSS Discovery and Exploitation -->
+<div id="ch10-discovery" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch10">&#128269;</div>
+        <h2>How XSS Works — The MegaBank Story</h2>
+    </div>
+
+    <p>Finding XSS starts with testing whether a web application treats user input as <strong>text or as DOM markup</strong>. If HTML tags entered in a form are rendered by the browser instead of displayed as plain text, an XSS vulnerability exists.</p>
+
+    <div class="story ch10">
+        <div class="story-label ch10">&#128214; Story — Ahmed Finds XSS at MegaBank Support</div>
+        <p>Ahmed visits <code>support.mega-bank.com</code> and submits a complaint. He includes a <code>&lt;strong&gt;</code> tag to bold a word. When the page reloads, the text is actually bolded — meaning the browser interpreted his HTML as markup.</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "If <code>&lt;strong&gt;</code> works, so will <code>&lt;script&gt;</code>. The server stored my comment and rendered it as HTML without sanitization."
+        </div>
+        <p>The architectural flaw is simple:</p>
+        <div class="code-box">
+            <span class="c">// Vulnerable pattern — user input written directly to DOM</span><br>
+            <span class="k">const</span> comment = <span class="s">'user provided text with &lt;script&gt;...&lt;/script&gt;'</span>;<br>
+            <span class="k">const</span> div = document.createElement(<span class="s">'div'</span>);<br>
+            div.<span class="k">innerHTML</span> = comment; <span class="c">// ← DANGEROUS: treats content as DOM, not text</span><br>
+            wrapper.appendChild(div);
+        </div>
+    </div>
+
+    <h3>What XSS Attacks Can Do</h3>
+    <ul class="clean-list ch10">
+        <li><strong>Steal session tokens</strong> — hijack the user's authenticated account</li>
+        <li><strong>Exfiltrate PII</strong> — collect names, emails, phone numbers visible in the UI and send to attacker's server</li>
+        <li><strong>Run silently</strong> — execute in the background with no visible interaction required</li>
+        <li><strong>Draw fake UI</strong> — overlay a phishing login form that is indistinguishable from the real site</li>
+        <li><strong>Persist across sessions</strong> — in stored XSS, the payload affects every user who views the contaminated content</li>
+    </ul>
+</div>
+
+<!-- Stored XSS -->
+<div id="ch10-stored" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch10">&#128451;</div>
+        <h2>Stored XSS — The Database Payload</h2>
+    </div>
+
+    <p>Stored XSS is the most common type. The malicious script is <strong>saved in the server's database</strong>, and every user who later views that content has the script executed in their browser.</p>
+
+    <div class="story ch10">
+        <div class="story-label ch10">&#128214; Story — Ahmed Steals Customer Data</div>
+        <p>Ahmed submits a support comment that includes a malicious <code>&lt;script&gt;</code> tag instead of normal text. A customer support agent opens the ticket. The script immediately executes in the agent's browser, collects all visible customer records from the DOM, and silently sends them to Ahmed's server.</p>
+        <div class="code-box">
+            <span class="c">// What the server stores in the database (looks like a comment)</span><br>
+            <span class="r">&lt;script&gt;</span> ... JavaScript that reads the page and sends data to an attacker's server ... <span class="r">&lt;/script&gt;</span><br><br>
+            <span class="c">// When the support agent opens the ticket, the browser cannot tell</span><br>
+            <span class="c">// the difference between Ahmed's script and the app's own scripts.</span><br>
+            <span class="c">// Both execute automatically — the attack is completely invisible.</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The support agent sees nothing unusual — the script tag is invisible. But their browser runs my code and sends every customer record visible on screen to an external server."
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch13);">
+            <h4>&#128308; Why Stored XSS is Dangerous</h4>
+            <p>One payload in a shared database can affect <strong>every user</strong> who views that record. A "featured" video with XSS in its title could attack every visitor of the homepage.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch12);">
+            <h4>&#128994; Easier to Detect</h4>
+            <p>Scripts are stored server-side as plain text. Regularly scanning database entries for <code>&lt;script&gt;</code> tags is a cheap first defense — though advanced payloads may use base64 encoding to evade this.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Reflected XSS -->
+<div id="ch10-reflected" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch10">&#128257;</div>
+        <h2>Reflected XSS — The Weaponized URL</h2>
+    </div>
+
+    <p>Reflected XSS is <strong>not stored in a database</strong>. Instead, the malicious payload is embedded in a URL that the attacker distributes. When a victim clicks the link, the server reads the URL parameter and reflects it back in the HTML response — executing the script.</p>
+
+    <div class="story ch10">
+        <div class="story-label ch10">&#128214; Story — Ahmed Crafts a Malicious Search Link</div>
+        <p>Ahmed finds that the support portal's search bar reflects the query in its heading: searching for "open savings account" shows "3 results for open savings account." He tests whether <code>&lt;script&gt;</code> works in the URL parameter:</p>
+        <div class="code-box">
+            <span class="c"># Normal search URL</span><br>
+            <span class="cmd">support.mega-bank.com/search?query=open+savings+account</span><br><br>
+            <span class="c"># Reflected XSS payload in the URL</span><br>
+            <span class="found">support.mega-bank.com/search?query=&lt;script&gt;alert('XSS');&lt;/script&gt;</span><br><br>
+            <span class="c"># Disguised in a legitimate-looking link</span><br>
+            <span class="out">&lt;a href="...malicious-url..."&gt;Create a New Checking Account&lt;/a&gt;</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "This link looks legitimate — it's a real domain. But anyone who clicks it has a script execute in their browser. The attack never touched a database, making it very hard to detect."
+        </div>
+    </div>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#128308; Stored XSS</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>Script saved in the database</li>
+                    <li>Affects anyone who views the record</li>
+                    <li>Easy to detect (scan the database)</li>
+                    <li>Hard to distribute — one location</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#128308; Reflected XSS</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>Script embedded in a URL</li>
+                    <li>Targets specific victims via link</li>
+                    <li>Very hard to detect (no DB storage)</li>
+                    <li>Easy to distribute via email, ads, social media</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DOM-Based XSS -->
+<div id="ch10-dom" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch10">&#128187;</div>
+        <h2>DOM-Based XSS — No Server Required</h2>
+    </div>
+
+    <p>DOM-Based XSS executes <strong>entirely in the browser</strong> — no server interaction is required. The payload is read from a DOM <strong>source</strong> (e.g., <code>window.location.hash</code>) and executed via a DOM <strong>sink</strong> (e.g., <code>document.write()</code>).</p>
+
+    <div class="story ch10">
+        <div class="story-label ch10">&#128214; Story — The Hash-Based XSS</div>
+        <p>MegaBank's investment portal reads the URL hash to scroll to a section of funds. A developer also uses <code>document.write()</code> to display the current filter in the heading. Ahmed crafts a URL where the hash contains a script tag:</p>
+        <div class="code-box">
+            <span class="c">// Vulnerable client-side code</span><br>
+            <span class="k">const</span> hash = document.location.hash;  <span class="c">// ← SOURCE</span><br>
+            document.<span class="k">write</span>(<span class="s">'Showing results for: '</span> + hash);  <span class="c">// ← SINK (dangerous)</span><br><br>
+            <span class="c">// Ahmed's malicious URL</span><br>
+            <span class="found">investors.mega-bank.com/listing#&lt;script&gt;alert(document.cookie);&lt;/script&gt;</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "This attack never reached the server. It's entirely client-side. No database logs, no server logs — nearly impossible to detect with traditional scanning tools."
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch14);">
+            <h4>&#128203; DOM Sources (Where Data Comes From)</h4>
+            <p><code>window.location.search</code>, <code>window.location.hash</code>, <code>document.referrer</code>, <code>localStorage</code>, <code>sessionStorage</code> — any DOM object capable of storing user-controlled text.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch13);">
+            <h4>&#127919; DOM Sinks (Where Scripts Execute)</h4>
+            <p><code>document.write()</code>, <code>element.innerHTML</code>, <code>eval()</code>, <code>setTimeout(string)</code> — any DOM API that interprets a string as executable code or HTML markup.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Mutation-Based XSS -->
+<div id="ch10-mutation" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch10">&#129516;</div>
+        <h2>Mutation-Based XSS (mXSS) — Bypassing Filters</h2>
+    </div>
+
+    <p>mXSS is an advanced technique where a payload is crafted to be <strong>harmless when scanned</strong> by a sanitizer, but <strong>mutates into a dangerous script</strong> when the browser renders it — exploiting browser-specific DOM optimizations.</p>
+
+    <div class="story ch10">
+        <div class="story-label ch10">&#128214; Story — Google Search mXSS (2019)</div>
+        <p>Security researcher Masato Kinugawa found that Google's Closure library used DOMPurify for sanitization. He crafted a payload that DOMPurify considered safe:</p>
+        <div class="code-box">
+            <span class="c">// Safe-looking payload (passes DOMPurify)</span><br>
+            <span class="s">&lt;noscript&gt;&lt;p title="&lt;/noscript&gt;&lt;img src=x onerror=alert(1)&gt;"&gt;</span><br><br>
+            <span class="c">// After browser renders it (mutated — dangerous!)</span><br>
+            <span class="found">&lt;noscript&gt;&lt;p title="&lt;/noscript&gt;</span><br>
+            <span class="found">&lt;img src="x" onerror="alert(1)"&gt;</span>
+        </div>
+        <p>Inside the sanitizer's <code>&lt;template&gt;</code> element, scripting is disabled — so the <code>&lt;noscript&gt;</code> tag wraps its children and looks safe. But in the real browser, scripting is enabled, so the <code>&lt;noscript&gt;</code> becomes inert and the <code>img onerror</code> fires.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Why mXSS Is Dangerous</h4>
+        <p>Tools like DOMPurify, OWASP AntiSamy, and Google Caja have all been bypassed by mXSS payloads. Because the payload is valid and safe at sanitization time, it evades all filters. This technique has been used to exploit major email clients and web applications at scale.</p>
+    </div>
+</div>
+
+<!-- Chapter 10 Summary -->
+<div id="ch10-summary" class="summary-banner ch10">
+    <h3>&#10003; Chapter 10 Summary — Cross-Site Scripting (XSS)</h3>
+    <ul>
+        <li><strong>Stored XSS</strong>: payload saved in DB, affects every user who views it — most dangerous, easiest to detect</li>
+        <li><strong>Reflected XSS</strong>: payload embedded in URL, distributed via links — stealthy, hard to detect</li>
+        <li><strong>DOM-Based XSS</strong>: runs entirely in the browser, requires a source and a sink — never logged server-side</li>
+        <li><strong>Mutation-Based XSS</strong>: crafted to pass filters, then mutates in the browser — bypasses even robust sanitizers</li>
+        <li>XSS can steal <strong>session tokens, PII, and credentials</strong>, and can overlay phishing UIs</li>
+        <li>XSS attacks run <strong>behind the scenes</strong> — the victim typically sees nothing unusual</li>
+        <li>XSS has been present throughout the web's history and remains rampant due to ever-increasing user interaction</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 11 — Cross-Site Request Forgery (CSRF)
+     ════════════════════════════════════════════════ -->
+<div id="chapter-11" class="chapter-header">
+    <div class="chapter-num ch11">Chapter 11</div>
+    <div class="chapter-title">Cross-Site Request Forgery (CSRF)</div>
+    <div class="chapter-divider ch11"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch11">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch11">1</div>
+            <div class="objective-text"><strong>Explain</strong> how CSRF exploits the trust relationship between a browser, a user, and a web server.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch11">2</div>
+            <div class="objective-text"><strong>Explain</strong> how CSRF attacks exploit query parameters in HTTP GET requests to trigger unauthorized actions.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch11">3</div>
+            <div class="objective-text"><strong>Identify</strong> which HTML tags automatically trigger GET requests without user interaction.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch11">4</div>
+            <div class="objective-text"><strong>Describe</strong> how HTML forms can be used to forge POST requests against a privileged endpoint.</div>
+        </div>
+    </div>
+</div>
+
+<!-- CSRF Overview -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch11">&#128275;</div>
+        <h2>What Is CSRF? — Abusing Browser Trust</h2>
+    </div>
+
+    <p>CSRF attacks cause a <strong>privileged user to perform actions on a server without knowing it</strong>. They exploit the fact that browsers automatically attach authentication cookies and credentials to every request — even if the request originated from a <em>different</em> website.</p>
+
+    <div class="story ch11">
+        <div class="story-label ch11">&#128214; The Trust Problem</div>
+        <p>When you click a link anywhere on the internet, your browser makes a GET request from <em>your account</em> — with your session cookies attached. The destination server has no way to tell if <em>you</em> clicked it, or if a malicious page tricked you into clicking it.</p>
+        <p>CSRF exploits this. An attacker crafts a URL that triggers a privileged action (like a bank transfer) and tricks a logged-in user into clicking it.</p>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch11);">
+            <h4>&#127991; Key CSRF Characteristic #1</h4>
+            <p><strong>Privilege escalation</strong>: the attacker performs an action using the victim's higher-privilege account (e.g., initiating a bank transfer they couldn't initiate themselves).</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch9);">
+            <h4>&#128373; Key CSRF Characteristic #2</h4>
+            <p><strong>Stealth</strong>: the user who initiates the request typically doesn't know it happened. Requests occur behind the scenes — no visible browser action.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Query Parameter Tampering -->
+<div id="ch11-get" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch11">&#128279;</div>
+        <h2>Query Parameter Tampering — CSRF via GET</h2>
+    </div>
+
+    <p>The simplest CSRF attack. A web application that uses <strong>HTTP GET with query parameters to perform state changes</strong> (e.g., transferring money) is trivially exploitable via a crafted hyperlink.</p>
+
+    <div class="story ch11">
+        <div class="story-label ch11">&#128214; Story — Ahmed Forges a Bank Transfer</div>
+        <p>Ahmed discovers MegaBank uses this endpoint to transfer money:</p>
+        <div class="code-box">
+            <span class="c">// The vulnerable server route</span><br>
+            <span class="k">app.get</span>(<span class="s">'/transfer'</span>, function(req, res) {<br>
+            &nbsp;&nbsp;<span class="k">if</span> (!session.isAuthenticated) { <span class="k">return</span> res.sendStatus(<span class="n">401</span>); }<br>
+            &nbsp;&nbsp;<span class="c">// Transfers money based on URL query params — DANGEROUS!</span><br>
+            &nbsp;&nbsp;transferFunds(session.currentUser, req.query.to_user, req.query.amount);<br>
+            });
+        </div>
+        <p>Ahmed crafts a malicious link and sends it to a MegaBank customer via email:</p>
+        <div class="code-box">
+            <span class="c">&lt;!-- Disguised as a helpful link --&gt;</span><br>
+            <span class="found">&lt;a href="https://www.mega-bank.com/transfer?to_user=ahmed&amp;amount=10000"&gt;</span><br>
+            &nbsp;&nbsp;Claim Your Promotional Reward<br>
+            <span class="found">&lt;/a&gt;</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The victim is logged in to MegaBank. When they click this link, their browser sends the GET request with their session cookie attached. MegaBank's server sees an authenticated request — and transfers $10,000 to my account."
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Never Use GET for State Changes</h4>
+        <p>HTTP GET requests should be <strong>read-only</strong>. Any operation that modifies data (transfers, deletions, updates) must use POST, PUT, or DELETE — which are significantly harder to forge via simple links.</p>
+    </div>
+</div>
+
+<!-- Alternate GET Payloads -->
+<div id="ch11-alt" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch11">&#128444;&#65039;</div>
+        <h2>Alternate GET Payloads — No Click Required</h2>
+    </div>
+
+    <p>Many HTML tags automatically trigger GET requests <strong>without any user interaction</strong> when they load into the browser. This makes them ideal CSRF vectors — no click needed.</p>
+
+    <div class="code-box">
+        <span class="c">&lt;!-- IMG tag: triggers a GET request when it loads into the DOM --&gt;</span><br>
+        <span class="found">&lt;img src="https://mega-bank.com/transfer?to_user=ahmed&amp;amount=10000"</span><br>
+        <span class="found">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;width="0" height="0" border="0"&gt;</span><br><br>
+        <span class="c">&lt;!-- VIDEO tag: same behavior — fires a GET to its src on load --&gt;</span><br>
+        <span class="out">&lt;video width="1" height="1"&gt;</span><br>
+        <span class="out">&nbsp;&nbsp;&lt;source src="https://mega-bank.com/transfer?to_user=ahmed&amp;amount=10000"&gt;</span><br>
+        <span class="out">&lt;/video&gt;</span>
+    </div>
+
+    <p>An invisible 0×0 pixel image placed on any webpage will silently trigger the CSRF the moment the page loads. The victim does not need to click anything.</p>
+
+    <div class="key-point">
+        <h4>&#128161; Other Automatic GET Triggers</h4>
+        <p>Any HTML tag with a <code>src</code> attribute can fire a GET request automatically on page load: <code>&lt;img&gt;</code>, <code>&lt;video&gt;</code>, <code>&lt;audio&gt;</code>, <code>&lt;iframe&gt;</code>, <code>&lt;script&gt;</code>, <code>&lt;link&gt;</code>. This is why CSRF vulnerabilities are so broad — even a seemingly innocuous embedded image can silently trigger a state-changing request on behalf of the victim.</p>
+    </div>
+</div>
+
+<!-- CSRF Against POST Endpoints -->
+<div id="ch11-post" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch11">&#128203;</div>
+        <h2>CSRF via POST — The Hidden Form Attack</h2>
+    </div>
+
+    <p>POST-based CSRF is harder to deliver but still possible. HTML <strong>forms</strong> are the only HTML element that can initiate a POST request without JavaScript — making them the primary vector for POST CSRF.</p>
+
+    <div class="story ch11">
+        <div class="story-label ch11">&#128214; Story — The Fake Login Form</div>
+        <p>Ahmed builds a convincing-looking "win a prize" webpage. Hidden inside the HTML is a form that, when submitted, sends a POST request to MegaBank on behalf of the authenticated user:</p>
+        <div class="code-box">
+            <span class="c">&lt;!-- Hidden fields carry the CSRF payload --&gt;</span><br>
+            <span class="found">&lt;form action="https://www.mega-bank.com/transfer" method="POST"&gt;</span><br>
+            <span class="found">&nbsp;&nbsp;&lt;input type="hidden" name="to_user" value="ahmed"&gt;</span><br>
+            <span class="found">&nbsp;&nbsp;&lt;input type="hidden" name="amount"  value="10000"&gt;</span><br>
+            &nbsp;&nbsp;<span class="c">&lt;!-- Visible fields look legitimate to the user --&gt;</span><br>
+            &nbsp;&nbsp;<span class="out">&lt;input type="text"     name="username" placeholder="Enter your name"&gt;</span><br>
+            &nbsp;&nbsp;<span class="out">&lt;input type="submit"   value="Claim Your Prize!"&gt;</span><br>
+            <span class="found">&lt;/form&gt;</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The victim sees a prize form. They fill in their name and click submit. But the form POSTs to MegaBank — not to a prize server — and the hidden fields transfer funds to my account."
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; Advanced Use Case — Internal Network Access</h4>
+        <p>An attacker who cannot directly access an internal network can use CSRF to have a victim (who <em>is</em> on the internal network) make requests on their behalf. The form's action can target any server the victim has access to — including private intranet servers.</p>
+    </div>
+</div>
+
+<!-- Chapter 11 Summary -->
+<div id="ch11-summary" class="summary-banner ch11">
+    <h3>&#10003; Chapter 11 Summary — Cross-Site Request Forgery (CSRF)</h3>
+    <ul>
+        <li>CSRF exploits the browser's <strong>trust model</strong> — cookies are sent with every request, regardless of origin</li>
+        <li>GET-based CSRF: craft a malicious URL and distribute it via email, ads, or social media</li>
+        <li><code>&lt;img&gt;</code>, <code>&lt;video&gt;</code>, and other tags with <code>src</code> fire GET requests <strong>automatically on page load</strong></li>
+        <li>POST-based CSRF requires user interaction (form submission) but can be disguised as a legitimate form</li>
+        <li>CSRF goes completely <strong>unnoticed by the victim</strong> — one of the stealthiest attack types</li>
+        <li><strong>Never use GET requests for state-changing operations</strong> (transfers, deletions, updates)</li>
+        <li>Defense: CSRF tokens, SameSite cookies, Origin/Referer header verification (covered in Part III)</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 12 — XML External Entity (XXE)
+     ════════════════════════════════════════════════ -->
+<div id="chapter-12" class="chapter-header">
+    <div class="chapter-num ch12">Chapter 12</div>
+    <div class="chapter-title">XML External Entity (XXE)</div>
+    <div class="chapter-divider ch12"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch12">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch12">1</div>
+            <div class="objective-text"><strong>Explain</strong> what an XML external entity is and why improperly configured parsers are vulnerable.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch12">2</div>
+            <div class="objective-text"><strong>Describe</strong> a Direct XXE attack where the attacker sends a crafted XML payload to read server files.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch12">3</div>
+            <div class="objective-text"><strong>Identify</strong> XML-like formats (SVG, HTML, PDF, RTF) that may be parsed by an XML parser.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch12">4</div>
+            <div class="objective-text"><strong>Recognize</strong> Indirect XXE where a non-XML API still processes XML internally through a third-party system.</div>
+        </div>
+    </div>
+</div>
+
+<!-- XXE Overview -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch12">&#128196;</div>
+        <h2>What Is XXE? — A Flaw in the XML Standard</h2>
+    </div>
+
+    <p>XXE (XML External Entity) attacks are often <strong>simple to execute but devastating in effect</strong>. The vulnerability lives in the XML specification itself: it includes a feature called <strong>external entities</strong> that allows an XML file to reference files from the host server's file system.</p>
+
+    <p>A poorly configured XML parser that doesn't disable this feature will happily read server files (like <code>/etc/passwd</code>, <code>/etc/shadow</code>, or SSH keys) and return their contents in the response.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch12);">
+            <h4>&#128196; XML-Like Formats at Risk</h4>
+            <p>XXE is not limited to <code>.xml</code> files. Any format that shares XML structure may be parsed by an XML parser: <strong>SVG</strong> images, <strong>HTML/DOM</strong>, <strong>PDF (XFDF)</strong>, and <strong>RTF</strong> documents.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch13);">
+            <h4>&#128451; What Attackers Can Steal</h4>
+            <p><code>/etc/passwd</code> (user accounts), <code>/etc/shadow</code> (hashed passwords), <code>~/.ssh/id_rsa</code> (private SSH keys), application source code, config files with database credentials.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Direct XXE -->
+<div id="ch12-direct" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch12">&#128247;</div>
+        <h2>Direct XXE — The Screenshot Attack</h2>
+    </div>
+
+    <p>In a Direct XXE attack, the attacker <strong>sends a crafted XML payload directly to an API</strong> that processes XML. The XML contains an external entity declaration pointing to a file on the server. The parser returns the file's contents.</p>
+
+    <div class="story ch12">
+        <div class="story-label ch12">&#128214; Story — Ahmed Reads the Password File</div>
+        <p>MegaBank has a "Send Screenshot to Support" feature that converts the user's DOM (HTML) to XML, then sends it to a server for processing. Ahmed bypasses the client-side code and sends a custom XML payload directly:</p>
+        <div class="code-box">
+            <span class="c">&lt;!-- What a normal screenshot request's XML might look like --&gt;</span><br>
+            <span class="cmd">&lt;screenshot&gt;&lt;dom&gt; ... page HTML ... &lt;/dom&gt;&lt;/screenshot&gt;</span><br><br>
+            <span class="c">&lt;!-- What Ahmed sends instead — XML with an external entity declaration --&gt;</span><br>
+            <span class="found">&lt;!DOCTYPE xxe [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;</span><br>
+            <span class="found">&lt;xxe&gt;&amp;xxe;&lt;/xxe&gt;</span><br><br>
+            <span class="c">&lt;!-- The parser substitutes &amp;xxe; with the actual file contents</span><br>
+            <span class="c">&nbsp;&nbsp;&nbsp;&nbsp; and returns them embedded in the server's response. --&gt;</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The server's XML parser sees the external entity declaration, opens <code>/etc/passwd</code>, substitutes its contents for <code>&amp;xxe;</code>, and returns it to me in the screenshot response."
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; How Direct XXE Works — Conceptually</h4>
+        <p>The attacker sends XML to an endpoint that processes it. Inside that XML, they include a standard XML feature called an <strong>external entity</strong> — a declaration that tells the parser to load a local file and substitute its contents into the XML. If the parser has not disabled this feature (which many do not, by default), it obediently reads the requested file and returns its contents embedded in the response. The attacker receives server file contents without ever touching the server directly.</p>
+    </div>
+</div>
+
+<!-- Indirect XXE -->
+<div id="ch12-indirect" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch12">&#128257;</div>
+        <h2>Indirect XXE — Hidden XML Processing</h2>
+    </div>
+
+    <p>Indirect XXE targets APIs that <strong>do not visibly accept XML</strong> but convert the user's input to XML internally before passing it to another system (like a legacy CRM or enterprise software).</p>
+
+    <div class="story ch12">
+        <div class="story-label ch12">&#128214; Story — The CRM Integration</div>
+        <p>MegaBank's modern REST API accepts JSON. But behind the scenes, it converts that JSON to XML to communicate with an old enterprise CRM system. A hacker who knows the CRM is in use (from public records or LinkedIn job postings) can inject an XXE payload into the JSON field — which gets converted to XML and parsed by the vulnerable CRM.</p>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The public-facing API doesn't accept XML. But if I know the backend uses a CRM that expects XML, I can craft my JSON input so that when converted to XML, it contains the XXE payload."
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Why Indirect XXE Is Hard to Spot</h4>
+        <p>Because the public-facing API does not mention XML, the vulnerability is invisible from the outside. Clues that a backend XML system exists include: unusual formatting constraints on input fields (hinting at XML schema requirements), legacy enterprise software in the company's tech stack, and internal API responses that follow XML naming conventions even when the public API uses JSON.</p>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; The Fix Is One Line</h4>
+        <p>Disabling external entities in an XML parser is usually a <strong>single configuration option</strong>. But because it is an opt-in security measure, many parsers ship with external entities enabled by default — making XXE one of the easiest vulnerabilities to introduce by accident.</p>
+    </div>
+</div>
+
+<!-- Chapter 12 Summary -->
+<div id="ch12-summary" class="summary-banner ch12">
+    <h3>&#10003; Chapter 12 Summary — XML External Entity (XXE)</h3>
+    <ul>
+        <li>XXE exploits a <strong>feature of the XML standard</strong> — external entities that can read local server files</li>
+        <li>Any API accepting <strong>XML-like formats</strong> (SVG, HTML, RTF, PDF) may be vulnerable</li>
+        <li>Direct XXE: attacker sends a crafted XML payload directly and receives file contents in the response</li>
+        <li>Indirect XXE: input is converted to XML internally — the endpoint may not appear to use XML at all</li>
+        <li>Target files: <code>/etc/passwd</code>, <code>/etc/shadow</code>, SSH keys, config files with credentials</li>
+        <li>The fix is typically a <strong>single parser configuration line</strong> to disable external entities</li>
+        <li>Because the fix is a single configuration line, XXE is one of the easiest vulnerabilities to <em>introduce by accident</em> and one of the easiest to <em>prevent by design</em></li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 13 — Injection
+     ════════════════════════════════════════════════ -->
+<div id="chapter-13" class="chapter-header">
+    <div class="chapter-num ch13">Chapter 13</div>
+    <div class="chapter-title">Injection</div>
+    <div class="chapter-divider ch13"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch13">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch13">1</div>
+            <div class="objective-text"><strong>Define</strong> injection attacks and identify the two core components: an interpreter and an unsanitized user input.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch13">2</div>
+            <div class="objective-text"><strong>Explain</strong> how SQL injection works by describing how truthy statements and query chaining escape the intended query.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch13">3</div>
+            <div class="objective-text"><strong>Distinguish</strong> between SQL injection, Code injection, and Command injection based on the target interpreter.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch13">4</div>
+            <div class="objective-text"><strong>Explain</strong> why command injection is the most dangerous form — granting OS-level access to the server.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Injection Types Overview -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch13">&#128300;</div>
+        <h2>Injection — The Core Concept</h2>
+    </div>
+
+    <p>An injection attack occurs when <strong>user input is passed unsanitized into an interpreter or command-line interface (CLI)</strong>. The interpreter runs the input as code — executing commands the developer never intended.</p>
+
+    <div class="injection-grid">
+        <div class="injection-card sql">
+            <div class="inj-icon">&#128202;</div>
+            <div class="inj-title">SQL Injection</div>
+            <div class="inj-target">Target: SQL database interpreter</div>
+        </div>
+        <div class="injection-card code">
+            <div class="inj-icon">&#128736;</div>
+            <div class="inj-title">Code Injection</div>
+            <div class="inj-target">Target: CLI or application interpreter</div>
+        </div>
+        <div class="injection-card command">
+            <div class="inj-icon">&#128421;</div>
+            <div class="inj-title">Command Injection</div>
+            <div class="inj-target">Target: Host operating system shell</div>
+        </div>
+    </div>
+</div>
+
+<!-- SQL Injection -->
+<div id="ch13-sql" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch13">&#128202;</div>
+        <h2>SQL Injection — Escaping the Query</h2>
+    </div>
+
+    <p>SQL injection occurs when user input is <strong>concatenated directly into an SQL query string</strong> instead of being parameterized. The attacker escapes the intended query and injects their own SQL commands.</p>
+
+    <div class="story ch13">
+        <div class="story-label ch13">&#128214; Story — Ahmed Empties the Database</div>
+        <p>A Node.js API endpoint looks up a user by ID using string concatenation:</p>
+        <div class="code-box">
+            <span class="c">// Vulnerable query — unsanitized user input concatenated directly</span><br>
+            <span class="k">const</span> user_id = req.params.user_id;  <span class="c">// comes from HTTP request</span><br>
+            <span class="k">const</span> result = await sql.query(<span class="s">'SELECT * FROM users WHERE USER = '</span> + user_id);<br><br>
+            <span class="c">// Normal input: SELECT * FROM users WHERE USER = 42</span><br>
+            <span class="c">// Truthy attack:</span><br>
+            <span class="found">user_id = '1=1'</span>  <span class="c">→ returns ALL users</span><br><br>
+            <span class="c">// Table drop attack:</span><br>
+            <span class="found">user_id = '42; DROP TABLE users;'</span>  <span class="c">→ deletes the entire user table</span><br><br>
+            <span class="c">// Stealthy credit manipulation:</span><br>
+            <span class="found">user_id = '42; UPDATE users SET credits = 10000 WHERE user = 42;'</span>
+        </div>
+        <div class="dialogue">
+            <span class="character ahmed">Ahmed:</span> "The last example is the most dangerous — it modifies data silently without triggering obvious alerts. The developer only notices when account credits don't match billing records."
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; SQL Injection Trend</h4>
+        <p>SQL injection has declined from ~5% of all vulnerabilities in 2010 to under 1% today, thanks to modern frameworks enforcing parameterized queries. However, it still exists in legacy systems and applications that ignore secure coding practices.</p>
+    </div>
+</div>
+
+<!-- Code Injection -->
+<div id="ch13-code" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch13">&#128736;</div>
+        <h2>Code Injection — Beyond SQL</h2>
+    </div>
+
+    <p>Code injection targets any <strong>interpreter or CLI</strong> — not just SQL. If an API endpoint invokes a CLI tool (like a video converter, image processor, or PDF generator) and includes user input in the command string without sanitization, the user can inject extra CLI commands.</p>
+
+    <div class="story ch13">
+        <div class="story-label ch13">&#128214; Story — Ahmed Hijacks the Video Converter</div>
+        <p>MegaBank's video upload API uses a "converter" CLI tool. The options string is built by concatenating user input:</p>
+        <div class="code-box">
+            <span class="c">// Vulnerable: user-provided options concatenated into a CLI call</span><br>
+            <span class="k">const</span> options = defaultOptions + req.body.options; <span class="c">// req.body.options not sanitized</span><br>
+            exec(<span class="s">`convert -d ${videoData} -n ${videoName} -o ${options}`</span>);<br><br>
+            <span class="c">// Normal input:   options = '-c h264 -ab 192k'</span><br>
+            <span class="c">// Injection input:</span><br>
+            <span class="found">options = '-c h264 -ab 192k \\ convert -dir /videos -s 1x1'</span><br>
+            <span class="c">// ↑ Adds a second convert command — redirecting video processing</span>
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch11);">
+            <h4>&#128187; Code Injection</h4>
+            <p>Limited to the <strong>target interpreter or CLI's own commands</strong>. Cannot access the host OS directly. Example: injecting extra FFmpeg flags into a video processor.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch13);">
+            <h4>&#9888;&#65039; Command Injection (More Dangerous)</h4>
+            <p>Escapes the CLI entirely and runs commands against the <strong>host operating system</strong>. Example: appending <code>&amp;&amp; rm -rf /</code> to a Bash command built from user input.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Command Injection -->
+<div id="ch13-command" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch13">&#128421;</div>
+        <h2>Command Injection — Full OS Access</h2>
+    </div>
+
+    <p>Command injection is the <strong>most dangerous form of injection</strong>. The attacker's input escapes to the host OS shell (usually Bash on Linux servers) and can execute arbitrary OS commands — with the privileges of the web server process.</p>
+
+    <div class="story ch13">
+        <div class="story-label ch13">&#128214; Story — Ahmed Deletes All Videos</div>
+        <p>The upload API uses Node.js <code>exec()</code> to remove the raw video file after conversion. The filename comes directly from user input:</p>
+        <div class="code-box">
+            <span class="c">// Vulnerable: exec() builds a Bash command from unsanitized filename</span><br>
+            exec(<span class="s">`rm /videos/raw/${req.body.name}`</span>);<br><br>
+            <span class="c">// Normal:    rm /videos/raw/myVideo.mp4</span><br>
+            <span class="c">// Injection:</span><br>
+            <span class="found">req.body.name = 'myVideo.mp4 &amp;&amp; rm -rf /videos/converted/'</span><br>
+            <span class="c">// Result:    rm /videos/raw/myVideo.mp4 &amp;&amp; rm -rf /videos/converted/</span>
+        </div>
+    </div>
+
+    <h3>What Command Injection Unlocks</h3>
+    <ul class="clean-list ch13">
+        <li><strong>Steal server data</strong> — read any file the web process has access to</li>
+        <li><strong>Rewrite logs</strong> — erase evidence of the intrusion from server logs</li>
+        <li><strong>Add backdoor users</strong> — create a persistent database or OS user for later access</li>
+        <li><strong>Delete critical files</strong> — destroy the application or its data</li>
+        <li><strong>Send spam</strong> — use the server's SendGrid or SMTP credentials to send mass email</li>
+        <li><strong>Lock out admins</strong> — change passwords and extort the organization</li>
+        <li><strong>Phishing overlay</strong> — modify the login form to send credentials to the attacker's server</li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; #1 on Every Vulnerability Risk Scale</h4>
+        <p>Command injection sits at the top of every major vulnerability scoring framework. Over 95% of web servers run Unix-based OS (Linux/macOS). If commands run as a superuser, the attacker controls the entire server.</p>
+    </div>
+</div>
+
+<!-- Chapter 13 Summary -->
+<div id="ch13-summary" class="summary-banner ch13">
+    <h3>&#10003; Chapter 13 Summary — Injection</h3>
+    <ul>
+        <li>Injection attacks have two components: an <strong>interpreter</strong> and <strong>unsanitized user input</strong> fed into it</li>
+        <li><strong>SQL Injection</strong>: escapes SQL query strings to run arbitrary database commands</li>
+        <li><strong>Code Injection</strong>: injects commands into a CLI or application interpreter (FFMPEG, imagemin, etc.)</li>
+        <li><strong>Command Injection</strong>: escapes to the host OS shell — the most dangerous, grants full server control</li>
+        <li>The root cause in all injection types: user input is concatenated directly instead of being <strong>parameterized</strong> — parameterization is the universal defense</li>
+        <li>Application-specific CLIs are <strong>less documented</strong> than SQL — often have fewer defenses in place</li>
+        <li>Command injection can result in data theft, backdoors, phishing, log tampering, and full server takeover</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 14 — Denial of Service (DoS)
+     ════════════════════════════════════════════════ -->
+<div id="chapter-14" class="chapter-header">
+    <div class="chapter-num ch14">Chapter 14</div>
+    <div class="chapter-title">Denial of Service (DoS)</div>
+    <div class="chapter-divider ch14"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch14">1</div>
+            <div class="objective-text"><strong>Explain</strong> the difference between DoS and DDoS, and how each affects legitimate users.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch14">2</div>
+            <div class="objective-text"><strong>Describe</strong> how a malicious regular expression (evil regex) causes exponential backtracking.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch14">3</div>
+            <div class="objective-text"><strong>Identify</strong> resource-intensive server operations that are prime targets for Logical DoS attacks.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch14">4</div>
+            <div class="objective-text"><strong>Distinguish</strong> between application-level and network-level DDoS attacks.</div>
+        </div>
+    </div>
+</div>
+
+<!-- DoS Overview -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#9889;</div>
+        <h2>DoS — Consuming Resources to Deny Service</h2>
+    </div>
+
+    <p>Denial of Service (DoS) attacks aim to <strong>consume server or client resources</strong> so that legitimate users cannot access the application. Unlike most attacks, DoS rarely causes permanent damage — but it can render a service completely unusable.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch14);">
+            <h4>&#128101; Single-Source DoS</h4>
+            <p>One attacker targeting one server. Includes regex DoS and logical DoS. Range: from slight page slowdown to complete crash. Tests are best run in a <strong>local dev environment</strong> to avoid disrupting real users.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch13);">
+            <h4>&#127760; Distributed DoS (DDoS)</h4>
+            <p>Thousands of coordinated devices (often botnets — hijacked computers) flooding a server. Typically attacks at the <strong>network layer</strong> (UDP flooding) rather than application layer.</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; DoS vs Other Attack Types</h4>
+        <p>Unlike data breaches or code injection, DoS attacks typically do <strong>not steal data</strong> — their goal is pure disruption. However, availability is a core pillar of security (the "A" in the CIA triad — Confidentiality, Integrity, <strong>Availability</strong>). An application that cannot be reached has failed its users, even if no data was compromised.</p>
+    </div>
+</div>
+
+<!-- Regex DoS (ReDoS) -->
+<div id="ch14-redos" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#128300;</div>
+        <h2>Regex DoS (ReDoS) — The Evil Regex</h2>
+    </div>
+
+    <p>Regular expressions are used throughout web apps to validate form inputs. While usually fast, certain regex patterns are vulnerable to <strong>"evil" or "malicious" inputs</strong> that cause the regex engine to perform exponential backtracking — grinding the server or browser to a halt.</p>
+
+    <div class="story ch14">
+        <div class="story-label ch14">&#128214; The Greedy Regex Trap</div>
+        <p>Consider the regex: <code>/^((ab)*)+$/</code>. For normal "ab" repeated inputs it runs fast. But adding one extra character triggers catastrophic backtracking:</p>
+        <div class="code-box">
+            <span class="c">// Regex: /^((ab)*)+$/</span><br><br>
+            <span class="cmd">Input: "abababababababababababa" (23 chars)</span>  &nbsp;&nbsp;<span class="found">→ 8 ms</span><br>
+            <span class="cmd">Input: "ababababababababababababa" (25 chars)</span>&nbsp;&nbsp;<span class="found">→ 15 ms</span><br>
+            <span class="cmd">Input: "abababababababababababababa" (27 chars)</span>&nbsp;<span class="found">→ 31 ms</span><br><br>
+            <span class="c">// Execution time doubles with every 2 characters added!</span><br>
+            <span class="c">// At ~50 chars → seconds. At ~80 chars → minutes. Server hangs.</span>
+        </div>
+        <p>The regex engine exhaustively tries every possible combination of <code>(ab)</code> matches before concluding the string is invalid — an exponential explosion in computation.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Why ReDoS Matters</h4>
+        <p>A malicious regex can sit dormant for years, triggering only with a specific crafted input. It's particularly dangerous in open-source libraries where few developers understand regex internals. Server-side ReDoS can crash the server; client-side ReDoS can freeze the user's browser.</p>
+    </div>
+</div>
+
+<!-- Logical DoS -->
+<div id="ch14-logical" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#129504;</div>
+        <h2>Logical DoS — Draining Server Resources</h2>
+    </div>
+
+    <p>Logical DoS exploits <strong>expensive server operations</strong> that scale with user data. By creating an account with maximum data and repeatedly calling the expensive endpoint, an attacker drains server CPU/memory — degrading performance for all users.</p>
+
+    <div class="story ch14">
+        <div class="story-label ch14">&#128214; Story — Ahmed Times the API</div>
+        <p>A photo-sharing app exposes <code>GET /metadata/:userid</code> which aggregates metadata for all a user's albums and photos. Ahmed measures how the response time scales:</p>
+        <div class="code-box">
+            <span class="c">// Response times scale with the amount of data in the account</span><br>
+            <span class="cmd">New account (1 album, 1 photo)</span>      &nbsp;<span class="found">→ 120 ms</span><br>
+            <span class="cmd">Average user (6 albums, 60 photos)</span>  &nbsp;<span class="found">→ 470 ms</span><br>
+            <span class="cmd">Power user (28 albums, 490 photos)</span>  <span class="found">→ 1,870 ms</span><br><br>
+            <span class="c">// Pattern: the operation is not O(1) — cost grows with data volume.</span><br>
+            <span class="c">// An attacker who maximizes data and hammers the endpoint</span><br>
+            <span class="r">→ Server resources exhausted. Legitimate users experience timeouts.</span>
+        </div>
+    </div>
+
+    <h3>What Server Operations to Look For</h3>
+    <ul class="clean-list ch14">
+        <li><strong>Database writes</strong> — especially in bulk or with complex constraints</li>
+        <li><strong>SQL joins</strong> — operations that span many tables scale poorly with data volume</li>
+        <li><strong>File backups</strong> — copying large files consumes disk I/O and CPU</li>
+        <li><strong>Synchronous operations</strong> — blocking calls that hold threads until completion</li>
+        <li><strong>Looping logical operations</strong> — server-side loops that grow with user data size</li>
+    </ul>
+</div>
+
+<!-- Distributed DoS -->
+<div id="ch14-ddos" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#127760;</div>
+        <h2>Distributed DoS (DDoS) — The Botnet Attack</h2>
+    </div>
+
+    <p>DDoS attacks involve <strong>many coordinated devices</strong> simultaneously flooding a server. The devices are usually botnets — real computers owned by innocent people, infected with malware that allows remote control by the attacker.</p>
+
+    <div class="story ch14">
+        <div class="story-label ch14">&#128214; How DDoS Works in Practice</div>
+        <p>In most real-world DDoS attacks, thousands of bots send <strong>UDP packets directly to the server's IP address</strong> — not to any specific API endpoint. This saturates the server's available bandwidth, preventing legitimate HTTP requests from reaching the application. This is a <strong>network-layer</strong> attack, not an application-layer one.</p>
+        <div class="dialogue">
+            <span class="character system">Security Note:</span> "The bots look like real users because they are real computers. Distinguishing bot traffic from legitimate traffic is one of the hardest problems in web security — requiring services like Cloudflare's DDoS protection."
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch14);">
+            <h4>&#128203; Application-Level DDoS</h4>
+            <p>Bots send requests to expensive API endpoints (like the metadata query above). Each request consumes CPU and database resources. Harder to execute but hard to distinguish from legitimate traffic.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch9);">
+            <h4>&#127760; Network-Level DDoS</h4>
+            <p>Bots flood the server's IP with raw UDP packets — no HTTP headers, no API calls. Saturates bandwidth. Easier to detect (malformed packets) but requires ISP-level mitigation (volume is too high for the server to handle alone).</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; DoS and Unintended Data Leakage</h4>
+        <p>While DoS typically causes availability issues, some DoS conditions generate error messages that accidentally reveal server internals — stack traces, library versions, and file paths. This is why error handling must be carefully designed: a crashed server can inadvertently disclose more information than a running one.</p>
+    </div>
+</div>
+
+<!-- Chapter 14 Summary -->
+<div id="ch14-summary" class="summary-banner ch14">
+    <h3>&#10003; Chapter 14 Summary — Denial of Service (DoS)</h3>
+    <ul>
+        <li><strong>DoS</strong>: single attacker consumes resources; <strong>DDoS</strong>: many coordinated devices do the same at scale</li>
+        <li><strong>ReDoS</strong>: malicious regex inputs cause exponential backtracking — doubles execution time with each character added</li>
+        <li><strong>Logical DoS</strong>: exploit expensive server operations (SQL joins, file backups) that scale poorly with data size</li>
+        <li><strong>DDoS</strong>: botnets of hijacked real computers flood a server's IP — typically at the network (UDP) layer</li>
+        <li>DoS vulnerabilities are found by identifying the <strong>most resource-intensive operations</strong> in the application</li>
+        <li>Unlike most attacks, DoS rarely causes permanent damage — but availability loss can be as costly as a data breach for online businesses</li>
+        <li>Some DoS attempts produce <strong>error messages that leak server internals</strong> — a secondary vulnerability to capture</li>
+    </ul>
+</div>
+
+</main>
+</div>
+</div>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 — Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week3/index.html">Week 3</a>
+            <a href="index.html">Week 4</a>
+        </div>
+        <div style="color: var(--neutral-500); font-size: 13px;">Chapters 9, 10, 11, 12, 13 &amp; 14 — Part II: Offense</div>
+    </div>
+</footer>
+
+<script>
+    // Active sidebar link on scroll
+    const sections = document.querySelectorAll('[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                sidebarLinks.forEach(link => link.classList.remove('active'));
+                const active = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+</script>
+
 </body>
 </html>
