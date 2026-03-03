@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 05: SQL Injection, Command Injection &amp; CSRF with DVWA</title>
+    <style>
+        :root {
+            --primary-color: #8e44ad;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white; padding: 40px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">💉</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.15em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* ── Lab Info Bar ── */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.82em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* ── Content ── */
+        .content { padding: 40px; }
+
+        /* ── TOC ── */
+        .toc {
+            background: linear-gradient(135deg, #f0e6f6, #d7a8e8);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-left: 5px solid #8e44ad;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-left: 20px; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #8e44ad; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* ── Sections ── */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #8e44ad; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* ── Alert Boxes ── */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-left: 5px solid var(--info-color); }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-left: 5px solid var(--warning-color); }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-left: 5px solid var(--danger-color); }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-left: 5px solid var(--accent-color); }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* ── Tables ── */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#0f172a,#1e293b); color: white; padding: 14px 18px; text-align: left; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* ── Code ── */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        pre code { background: none; color: #68d391; padding: 0; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+
+        /* ── Steps ── */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-left: 50px; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; width: 35px; height: 35px; background: linear-gradient(135deg,#8e44ad,#6c3483); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(142,68,173,0.3); }
+
+        /* ── Checklist ── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 0 9px 35px; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '☐'; position: absolute; left: 0; font-size: 1.2em; color: #8e44ad; }
+
+        /* ── Expected Output ── */
+        .expected-output { background: #f7fafc; border: 2px dashed #8e44ad; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #8e44ad; margin-top: 0; margin-bottom: 8px; }
+
+        /* ── Deliverable ── */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-left: 5px solid #805ad5; border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* ── Fill-in ── */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.93em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #8e44ad; box-shadow: 0 0 0 3px rgba(142,68,173,0.1); }
+
+        /* ── Concept Banner ── */
+        .concept-banner { background: linear-gradient(135deg,#0f172a,#1e293b); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #d7a8e8; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* ── Module Badge ── */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#8e44ad,#6c3483); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* ── Troubleshooting ── */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* ── Footer ── */
+        .footer { background: linear-gradient(135deg,#0f172a,#1e293b); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header class="header">
+        <h1>&#128300; Lab 05: SQL Injection, Command Injection &amp; CSRF</h1>
+        <p class="subtitle">CYB236 &mdash; Web Application Security</p>
+        <div class="chapter-ref">Covers: Chapters 11 &amp; 13 &mdash; SQLi &bull; Command Injection &bull; CSRF</div>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>Lab Number</strong><span>05</span></div>
+        <div class="lab-info-item"><strong>Difficulty</strong><span>Intermediate</span></div>
+        <div class="lab-info-item"><strong>Duration</strong><span>40&ndash;50 min</span></div>
+        <div class="lab-info-item"><strong>Environment</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>Prerequisite</strong><span>Lab 04</span></div>
+    </div>
+
+    <div class="content">
+
+        <nav class="toc">
+            <h2>&#128203; Table of Contents</h2>
+            <ol>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#objectives">Learning Objectives</a></li>
+                <li><a href="#setup">Part 1: Start DVWA</a></li>
+                <li><a href="#task1">Task 1: SQL Injection</a></li>
+                <li><a href="#task2">Task 2: Command Injection</a></li>
+                <li><a href="#task3">Task 3: CSRF &mdash; The Forged Request</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#report">Generate Your Report</a></li>
+            </ol>
+        </nav>
+
+        <!-- Introduction -->
+        <section id="introduction">
+            <h2>&#128161; Introduction</h2>
+            <p>This lab continues from Lab 04. You will explore three more critical vulnerability classes: <strong>SQL Injection</strong> (escaping a database query), <strong>Command Injection</strong> (escaping to the host operating system), and <strong>CSRF</strong> (forging a legitimate user's request from another origin).</p>
+            <p>All tasks use <strong>DVWA</strong> — the same environment from Lab 04 — with the Security Level set to <strong>Low</strong>.</p>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Authorized Use Only</h4>
+                    <p>All tasks are performed against DVWA <strong>running locally on your own Kali machine</strong>. These techniques must never be applied to external systems without explicit written permission.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Objectives -->
+        <section id="objectives">
+            <h2>&#127919; Learning Objectives</h2>
+            <p>By the end of this lab, you will be able to:</p>
+            <ul class="checklist">
+                <li>Observe how SQL injection escapes a query and returns unintended data</li>
+                <li>Explain the role of the truthy condition (<code>OR 1=1</code>) in a SQL injection attack</li>
+                <li>Observe how command injection appends OS commands to a legitimate server request</li>
+                <li>Distinguish between SQL injection (database) and command injection (operating system)</li>
+                <li>Identify a CSRF vulnerability by observing the GET-based password change and absence of a token</li>
+                <li>Explain why browsers automatically "authorize" requests triggered from other origins</li>
+            </ul>
+        </section>
+
+        <!-- Setup -->
+        <section id="setup">
+            <h2>&#9881;&#65039; Part 1: Start DVWA</h2>
+
+            <p>If DVWA is already running from Lab 04, you can skip the docker commands below. Just open Firefox and go to <code>http://localhost</code>.</p>
+
+<pre><code><span class="command-label"># Check if DVWA is already running</span>
+sudo docker ps
+
+<span class="command-label"># If NOT listed, start it</span>
+sudo docker start dvwa</code></pre>
+
+            <ol class="steps">
+                <li>Open Firefox and go to <code>http://localhost</code></li>
+                <li>Log in: Username <code>admin</code> &nbsp;|&nbsp; Password <code>password</code></li>
+                <li>Go to <strong>DVWA Security</strong> and confirm the level is <strong>Low</strong></li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Checkpoint</h4>
+                    <p>You can see the DVWA module list on the left and the Security Level shows <strong>Low</strong>. You are ready to begin.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task 1: SQL Injection -->
+        <section id="task1">
+            <h2>&#128202; Task 1: SQL Injection</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept Recap — SQL Injection</h4>
+                    <p>SQL injection occurs when user input is concatenated directly into an SQL query instead of being parameterized. The attacker provides input that <strong>changes the logic of the query</strong> — escaping the intended lookup and running their own SQL commands, returning data the application never intended to expose.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">DVWA Module: SQL Injection</span>
+            <p>Click <strong>SQL Injection</strong> in the left navigation. You will see a simple form with a single field: <em>"User ID"</em>.</p>
+
+            <h3>1A: Normal Lookup</h3>
+            <ol class="steps">
+                <li>Type <code>1</code> in the User ID field and click <strong>Submit</strong></li>
+                <li>One user's details appear (First name, Surname)</li>
+                <li>Try <code>2</code>, then <code>3</code> &mdash; a different user appears each time</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>What the Server Does Behind the Scenes</h4>
+                    <p>The server builds a query like this:<br>
+                    <code>SELECT first_name, last_name FROM users WHERE user_id = '<strong>1</strong>';</code><br><br>
+                    Your input is placed directly inside the SQL string &mdash; without any sanitization. This is the flaw.</p>
+                </div>
+            </div>
+
+            <h3>1B: Inject a Truthy Condition</h3>
+            <ol class="steps">
+                <li>Clear the field and type: <code>1 OR 1=1</code></li>
+                <li>Click <strong>Submit</strong></li>
+                <li>Instead of one user, the page now shows <strong>all users in the database</strong></li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>What Happened to the Query?</h4>
+                    <p>Your input changed the query to:<br>
+                    <code>SELECT first_name, last_name FROM users WHERE user_id = '<strong>1 OR 1=1</strong>';</code><br><br>
+                    Because <code>1=1</code> is <strong>always true</strong>, the WHERE clause matches every row. All users are returned — data the application should never expose to a regular user.</p>
+                </div>
+            </div>
+
+            <h3>1C: Escape the Quote</h3>
+            <ol class="steps">
+                <li>Clear the field and type: <code>1' OR '1'='1</code></li>
+                <li>Click <strong>Submit</strong></li>
+                <li>Again, all users are returned — this time the opening <code>'</code> closes the server's own quote, so everything after it becomes raw SQL</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Why the Single Quote Matters</h4>
+                    <p>The single quote at the start (<code>1'</code>) <strong>closes the quote</strong> the server opened around your input. Everything after the closing quote is interpreted as SQL commands, not as a string value. This is the fundamental mechanism of SQL injection.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 1 &mdash; Fill In Your Answers</h4></div>
+            <div class="fill-in">
+                <label>1. When you entered ID "1", how many users were returned?</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="Number">
+
+                <label>2. When you entered "1 OR 1=1", how many users were returned?</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="Number">
+
+                <label>3. List the first names of the users that appeared after the injection:</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="e.g., admin, Gordon, Hack...">
+
+                <label>4. In your own words, explain what "OR 1=1" does to the SQL query and why all records are returned:</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="Your explanation..."></textarea>
+
+                <label>5. What is the root cause of this vulnerability?</label>
+                <textarea class="task-answer" data-task="1" rows="2" placeholder="Hint: how does the server build its query?"></textarea>
+
+                <label>6. Screenshot filename (showing all users returned vs. single user):</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="e.g., task1_sqli_all_users.png">
+            </div>
+        </section>
+
+        <!-- Task 2: Command Injection -->
+        <section id="task2">
+            <h2>&#128421; Task 2: Command Injection</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept Recap — Command Injection</h4>
+                    <p>Command injection occurs when user input is passed to an OS shell command without sanitization. The attacker appends extra OS commands using shell operators like <code>;</code> or <code>&amp;&amp;</code>. These run on the server's operating system with the web server's privileges — making this the most dangerous injection type.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">DVWA Module: Command Injection</span>
+            <p>Click <strong>Command Injection</strong> in the left navigation. You will see a form asking for an IP address to ping.</p>
+
+            <h3>2A: Normal Ping</h3>
+            <ol class="steps">
+                <li>Type <code>127.0.0.1</code> in the IP address field and click <strong>Submit</strong></li>
+                <li>The page displays the output of the <code>ping</code> command — round-trip times to your own machine</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>What the Server Is Doing</h4>
+                    <p>The server runs a shell command like: <code>ping -c 4 <strong>127.0.0.1</strong></code><br>
+                    Your input is inserted directly into that command. The shell runs it and the output is displayed on the page. What happens if you add more commands after the IP?</p>
+                </div>
+            </div>
+
+            <h3>2B: Append a Second Command</h3>
+            <ol class="steps">
+                <li>In the IP field, type: <code>127.0.0.1; whoami</code></li>
+                <li>Click <strong>Submit</strong></li>
+                <li>The page shows the ping output <strong>AND</strong> the result of <code>whoami</code> &mdash; the name of the OS account the web server runs under</li>
+            </ol>
+
+            <h3>2C: List the Server's Files</h3>
+            <ol class="steps">
+                <li>Type: <code>127.0.0.1; ls /var/www/html</code></li>
+                <li>Click <strong>Submit</strong></li>
+                <li>The ping output is followed by a <strong>listing of files</strong> in the web server's document root</li>
+            </ol>
+
+            <h3>2D: Reveal the Server's Hostname</h3>
+            <ol class="steps">
+                <li>Type: <code>127.0.0.1; hostname</code></li>
+                <li>Click <strong>Submit</strong></li>
+                <li>The server's hostname appears alongside the ping output</li>
+            </ol>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#128308;</span>
+                <div>
+                    <h4>Why This Is the Most Dangerous Injection Type</h4>
+                    <p>SQL injection targets the database. Command injection targets the <strong>entire operating system</strong>. With OS access via a web form, an attacker can read any file the server process has access to, list directories, discover running processes, and much more.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 2 &mdash; Fill In Your Answers</h4></div>
+            <div class="fill-in">
+                <label>1. When you typed "127.0.0.1; whoami", what username appeared?</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="e.g., www-data">
+
+                <label>2. When you listed /var/www/html, name two or three files you found:</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="e.g., index.php, ...">
+
+                <label>3. What does the semicolon (;) do in the shell? Why does it allow two commands to run?</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="Your explanation..."></textarea>
+
+                <label>4. How is Command Injection different from SQL Injection? (What is the target of each?)</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="SQL Injection targets... / Command Injection targets..."></textarea>
+
+                <label>5. Screenshot filename (ping output + whoami result visible):</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="e.g., task2_command_injection.png">
+            </div>
+        </section>
+
+        <!-- Task 3: CSRF -->
+        <section id="task3">
+            <h2>&#128275; Task 3: CSRF &mdash; The Forged Request</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept Recap — CSRF</h4>
+                    <p>Cross-Site Request Forgery exploits the fact that <strong>browsers automatically attach session cookies</strong> to every request &mdash; including requests triggered by a malicious page. An attacker crafts a URL that, when visited by a logged-in user, performs a privileged action on their behalf without their knowledge.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">DVWA Module: CSRF</span>
+            <p>Click <strong>CSRF</strong> in the left navigation. You will see a form that allows the current user to change their password.</p>
+
+            <h3>3A: Observe the Change-Password Form</h3>
+            <ol class="steps">
+                <li>Look at the form &mdash; it has two fields: <strong>New Password</strong> and <strong>Confirm New Password</strong></li>
+                <li>Type <code>test123</code> in both fields and click <strong>Change</strong></li>
+                <li>You see the success message: "Password Changed."</li>
+                <li>Now look at the URL in the browser address bar &mdash; the new password values appear directly as query parameters</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>First Problem: GET Request for a State Change</h4>
+                    <p>A password change is a <strong>state-changing operation</strong>. It must use a POST request &mdash; not GET. A GET request embeds all parameters in the URL, meaning <em>any link, image, or embedded object on any webpage</em> can silently trigger that same action when a logged-in user visits it.</p>
+                </div>
+            </div>
+
+            <h3>3B: Forge a Request via the URL Bar</h3>
+            <ol class="steps">
+                <li>Look at the current URL &mdash; it contains something like:<br>
+                    <code>?password_new=test123&amp;password_conf=test123&amp;Change=Change</code></li>
+                <li>Edit the URL directly in the address bar, replacing <code>test123</code> with a different value (e.g., <code>hacked</code>)</li>
+                <li>Press <strong>Enter</strong></li>
+                <li>The password changed again &mdash; by a URL visit alone, with no form interaction</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>What This Simulates:</h4>
+                <p>Imagine this URL is embedded as an invisible <code>&lt;img src="..."&gt;</code> on a webpage. A logged-in DVWA user who visits that page would have their password changed automatically &mdash; without clicking anything, without seeing anything, without knowing anything happened.</p>
+            </div>
+
+            <h3>3C: Check for a CSRF Token in the Page Source</h3>
+            <ol class="steps">
+                <li>Right-click on the CSRF module page and select <strong>View Page Source</strong></li>
+                <li>Look at the <code>&lt;form&gt;</code> element</li>
+                <li>There is <strong>no hidden token field</strong> &mdash; no <code>csrf_token</code>, no <code>_token</code>, no <code>nonce</code></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>What a CSRF Token Would Look Like</h4>
+                    <p>A properly protected form would include a hidden field:<br>
+                    <code>&lt;input type="hidden" name="csrf_token" value="x8f3Kpq2..."&gt;</code><br><br>
+                    The server validates this token on every submission. Because the attacker cannot know the token value, forged requests from other origins are rejected. This is the primary CSRF defense.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 3 &mdash; Fill In Your Answers</h4></div>
+            <div class="fill-in">
+                <label>1. What HTTP method (GET or POST) does the password change form use? Write the full URL that appeared after submitting:</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="Method: GET — URL: http://localhost/...?password_new=...">
+
+                <label>2. When you edited the URL directly in the address bar to a different password, did it work? (Yes / No)</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="Yes or No">
+
+                <label>3. Did you find a CSRF token in the page source? (Yes / No)</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="Yes or No">
+
+                <label>4. In your own words: why does a logged-in user's browser automatically "authorize" a request triggered by a completely different website?</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="Your explanation..."></textarea>
+
+                <label>5. What is the difference between CSRF and XSS in terms of what the attacker controls?</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="XSS controls... / CSRF controls..."></textarea>
+
+                <label>6. Name two defenses that would prevent this CSRF vulnerability:</label>
+                <textarea class="task-answer" data-task="3" rows="2" placeholder="1. ... 2. ..."></textarea>
+
+                <label>7. Screenshot filename (browser URL bar showing the password parameters):</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="e.g., task3_csrf_url.png">
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting">
+            <h2>&#128295; Troubleshooting</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; DVWA doesn't load (connection refused)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> <code>sudo docker ps</code> — if <code>dvwa</code> not listed, run <code>sudo docker start dvwa</code>. Go to <code>http://localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; SQL Injection — only one user appears regardless of input</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Confirm Security Level is <strong>Low</strong> (DVWA Security menu). Medium and High add filters. Also try <code>1' OR '1'='1</code> (with single quotes) if the plain version doesn't work.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Command injection shows no output after the ping</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Use a <strong>semicolon</strong> (<code>;</code>), not a comma. Try <code>&amp;&amp;</code> if semicolon fails: <code>127.0.0.1 &amp;&amp; whoami</code>. Security Level must be <strong>Low</strong>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; CSRF — "Password Changed" message doesn't appear</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Make sure you are still logged in. Session cookies may have expired after the database reset. Log out and log back in with admin / password, then navigate back to the CSRF module.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; DVWA container already exists when running docker run</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Just start it: <code>sudo docker start dvwa</code>. <code>docker run</code> is for the very first time only.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Report -->
+        <section id="report">
+            <h2>&#128196; Generate Your Lab Report</h2>
+            <p>Fill in your information and click <strong>Generate PDF Report</strong>. All your answers from the three tasks will be compiled into a printable page. Save it as PDF and submit it along with your screenshots.</p>
+
+            <div style="border:2px solid #8e44ad; border-radius:15px; padding:28px; margin:18px 0; background:#fafbfc;">
+                <div style="text-align:center; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid #8e44ad;">
+                    <h3 style="color:var(--secondary-color); margin:0;">CYB236 &mdash; Lab 05: SQLi, Command Injection &amp; CSRF Report</h3>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">Student Name:</label>
+                        <input type="text" id="student-name" placeholder="Full name" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">Student ID:</label>
+                        <input type="text" id="student-id" placeholder="Student ID" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">Lab Date:</label>
+                    <input type="text" id="lab-date" placeholder="e.g., 2026-03-01" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                </div>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#8e44ad,#6c3483); color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:pointer; box-shadow:0 4px 15px rgba(29,78,216,0.4);">
+                        &#128196; Generate PDF Report
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Submission Checklist</h4>
+                    <ul>
+                        <li>PDF report from this page (name + ID + all answers)</li>
+                        <li>Screenshot: Task 1 &mdash; all users returned by SQL injection vs. single user</li>
+                        <li>Screenshot: Task 2 &mdash; command injection output (ping + whoami)</li>
+                        <li>Screenshot: Task 3 &mdash; URL bar showing the CSRF password parameters</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Grading Rubric</h3>
+            <table>
+                <tr><th>Task</th><th>Description</th><th>Points</th></tr>
+                <tr><td><strong>Task 1</strong></td><td>SQL Injection &mdash; user count, names, explanation of truthy condition</td><td>30</td></tr>
+                <tr><td><strong>Task 2</strong></td><td>Command Injection &mdash; username, files found, shell operator explanation</td><td>30</td></tr>
+                <tr><td><strong>Task 3</strong></td><td>CSRF &mdash; URL observation, token check, browser trust explanation</td><td>35</td></tr>
+                <tr><td><strong>Quality</strong></td><td>Clear answers, screenshots labelled, report formatted</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:right;font-weight:bold;">Total</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>Cleanup</h3>
+<pre><code><span class="command-label"># Stop DVWA when finished with both labs</span>
+sudo docker stop dvwa</code></pre>
+        </section>
+
+    </div><!-- end content -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; Web Application Security</p>
+        <p>Lab 05: SQL Injection, Command Injection &amp; CSRF &mdash; Chapters 11 &amp; 13</p>
+    </div>
+
+</div><!-- end container -->
+
+<script>
+function generateReport() {
+    var name = document.getElementById('student-name').value.trim();
+    var sid  = document.getElementById('student-id').value.trim();
+    var date = document.getElementById('lab-date').value.trim();
+    if (!name || !sid) { alert('Please enter your Student Name and Student ID first.'); return; }
+
+    var answers = {};
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!answers[t]) answers[t] = [];
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers[t].push({ label: lbl, value: f.value.trim() || '(not answered)' });
+    });
+
+    var w = window.open('','_blank');
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lab 05 \u2014 '+name+'</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
+    h += 'h1{color:#1e3a5f;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#eff6ff;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #bfdbfe}';
+    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-left:4px solid #8e44ad;padding-left:14px}';
+    h += '.tt{color:#1e3a5f;font-size:1.15em;margin-bottom:10px;font-weight:700}';
+    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 Lab 05: SQL Injection, Command Injection &amp; CSRF</h1>';
+    h += '<p class="sub">DVWA \u2014 Chapters 11 &amp; 13</p>';
+    h += '<div class="si"><div><strong>Student Name:</strong> '+name+'</div><div><strong>Student ID:</strong> '+sid+'</div>'+(date?'<div><strong>Date:</strong> '+date+'</div>':'')+'</div>';
+    var tn = {'1':'Task 1: SQL Injection','2':'Task 2: Command Injection','3':'Task 3: CSRF \u2014 The Forged Request'};
+    for (var t=1;t<=3;t++) {
+        h += '<div class="ts"><div class="tt">'+tn[t]+'</div>';
+        if (answers[t]) answers[t].forEach(function(a){ h+='<div class="ar"><div class="al">'+a.label+'</div><div class="av">'+a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div>'; });
+        h += '</div>';
+        if (t<3) h += '<hr>';
+    }
+    h += '<div class="fn">CYB236 \u2014 Lab 05 \u2014 Web Application Security</div></body></html>';
+    w.document.write(h); w.document.close(); w.onload = function(){ w.print(); };
+}
+</script>
+</body>
+</html>

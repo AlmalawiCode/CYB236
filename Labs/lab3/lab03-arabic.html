@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المختبر 03: البرمجة النصية العابرة للمواقع (XSS) مع DVWA</title>
+    <style>
+        :root {
+            --primary-color: #8e44ad;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        /* مصطلح إنجليزي داخل النص العربي */
+        .term-en {
+            color: var(--primary-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* ── الترويسة ── */
+        .header {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">🖥</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.15em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* ── شريط معلومات المختبر ── */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.85em; letter-spacing: 0.5px; margin-bottom: 5px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* ── المحتوى ── */
+        .content { padding: 40px; }
+
+        /* ── فهرس المحتويات ── */
+        .toc {
+            background: linear-gradient(135deg, #f0e6f6 0%, #d7a8e8 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-right: 5px solid #8e44ad;
+            border-left: none;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-right: 20px; padding-left: 0; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #6c3483; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* ── الأقسام ── */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #8e44ad; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-right: 25px; margin-left: 0; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* ── صناديق التنبيه ── */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-right: 5px solid var(--info-color); border-left: none; }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-right: 5px solid var(--warning-color); border-left: none; }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-right: 5px solid var(--danger-color); border-left: none; }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-right: 5px solid var(--accent-color); border-left: none; }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* ── الجداول ── */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 14px 18px; text-align: right; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* ── الكود ── */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; direction: ltr; display: inline-block; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); direction: ltr; text-align: left; }
+        pre code { background: none; color: #68d391; padding: 0; display: inline; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+
+        /* ── الخطوات المرقّمة ── */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-right: 50px; padding-left: 0; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; right: 0; top: 0; left: auto; width: 35px; height: 35px; background: linear-gradient(135deg,#8e44ad,#6c3483); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(142,68,173,0.3); }
+
+        /* ── قائمة التحقق ── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 35px 9px 0; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '☐'; position: absolute; right: 0; left: auto; font-size: 1.2em; color: #8e44ad; }
+
+        /* ── الناتج المتوقع ── */
+        .expected-output { background: #f7fafc; border: 2px dashed #8e44ad; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #8e44ad; margin-top: 0; margin-bottom: 8px; }
+
+        /* ── صندوق التسليم ── */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-right: 5px solid #805ad5; border-left: none; border-radius: 12px 0 0 12px; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* ── حقول الإجابة ── */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.95em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #8e44ad; box-shadow: 0 0 0 3px rgba(142,68,173,0.1); }
+
+        /* ── بانر المفهوم ── */
+        .concept-banner { background: linear-gradient(135deg,#1c1917,#292524); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #fdba74; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* ── شارة الوحدة ── */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#8e44ad,#6c3483); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* ── استكشاف الأخطاء ── */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* ── التذييل ── */
+        .footer { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        /* ── زر تبديل اللغة ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- زر تبديل اللغة -->
+<div class="lang-switch">
+    <a href="lab03-english.html" class="lang-btn">
+        &#127760; English
+    </a>
+</div>
+
+<div class="container">
+
+    <header class="header">
+        <h1>&#128187; المختبر 03: البرمجة النصية العابرة للمواقع (XSS)</h1>
+        <p class="subtitle">CYB236 &mdash; أمن تطبيقات الويب</p>
+        <div class="chapter-ref">يغطي: الفصل 10 &mdash; <span class="term-en">Reflected XSS</span> &bull; <span class="term-en">Stored XSS</span></div>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>رقم المختبر</strong><span>03</span></div>
+        <div class="lab-info-item"><strong>المستوى</strong><span>مبتدئ متقدم</span></div>
+        <div class="lab-info-item"><strong>المدة</strong><span>35&ndash;45 دقيقة</span></div>
+        <div class="lab-info-item"><strong>البيئة</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>التالي</strong><span>المختبر 04</span></div>
+    </div>
+
+    <div class="content">
+
+        <nav class="toc">
+            <h2>&#128203; فهرس المحتويات</h2>
+            <ol>
+                <li><a href="#introduction">المقدمة</a></li>
+                <li><a href="#dvwa">ما هو DVWA؟</a></li>
+                <li><a href="#objectives">أهداف التعلم</a></li>
+                <li><a href="#setup">الجزء 1: إعداد DVWA</a></li>
+                <li><a href="#task1">المهمة 1: XSS المنعكس</a></li>
+                <li><a href="#task2">المهمة 2: XSS المخزّن</a></li>
+                <li><a href="#troubleshooting">استكشاف الأخطاء</a></li>
+                <li><a href="#report">إنشاء التقرير</a></li>
+            </ol>
+        </nav>
+
+        <!-- المقدمة -->
+        <section id="introduction">
+            <h2>&#128161; المقدمة</h2>
+            <p>في هذا المختبر ستشهد بنفسك ثغرة <strong>البرمجة النصية العابرة للمواقع (<span class="term-en">Cross-Site Scripting — XSS</span>)</strong> — إحدى أكثر الثغرات شيوعاً على شبكة الإنترنت. ستستخدم تطبيق <strong><span class="term-en">DVWA (Damn Vulnerable Web Application)</span></strong> العامل محلياً على جهاز Kali الخاص بك لترى بنفسك كيف تسمح هذه الثغرة للمتصفح بتنفيذ كود برمجي لم يكن جزءاً من التطبيق الأصلي أبداً.</p>
+            <p>يغطي هذا المختبر نوعين من <span class="term-en">XSS</span>: <strong>المنعكس (<span class="term-en">Reflected</span>)</strong> — حيث يأتي السكريبت من الرابط (<span class="term-en">URL</span>) — و<strong>المخزّن (<span class="term-en">Stored</span>)</strong> — حيث يُحفظ السكريبت في قاعدة البيانات وينفَّذ تلقائياً لكل زائر للصفحة.</p>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>للاستخدام المصرّح به فقط</h4>
+                    <p>تُنفَّذ جميع المهام على <span class="term-en">DVWA</span> العامل <strong>محلياً على جهازك الخاص</strong>. تطبيق هذه التقنيات على أي نظام خارجي دون إذن كتابي مسبق هو أمر غير قانوني. احصل دائماً على التصريح قبل إجراء أي اختبار.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ما هو DVWA -->
+        <section id="dvwa">
+            <h2>&#127760; ما هو DVWA؟</h2>
+
+            <p><strong><span class="term-en">DVWA (Damn Vulnerable Web Application)</span> — تطبيق الويب شديد الضعف</strong> هو تطبيق ويب <span class="term-en">PHP/MySQL</span> معرَّض للثغرات عمداً، صُمِّم لطلاب وممارسي أمن المعلومات لتمرين استغلال ثغرات الويب الشائعة في بيئة قانونية وآمنة تماماً. وهو مشروع مفتوح المصدر تدعمه مجتمع الأمن السيبراني وتبنّته <span class="term-en">OWASP</span>.</p>
+
+            <div class="concept-banner">
+                <span class="ci">&#127891;</span>
+                <div>
+                    <h4>لماذا نستخدم DVWA؟</h4>
+                    <p>لا يمكن استخدام المواقع الحقيقية في تمارين الاختراق — فذلك غير قانوني وغير أخلاقي. يمنحك <span class="term-en">DVWA</span> تطبيق ويب كامل الوظائف لكنه <em>معطوب عمداً</em>، مما يتيح لك تطبيق نفس التقنيات التي يستخدمها المهاجمون الحقيقيون دون الإضرار بأي نظام فعلي.</p>
+                </div>
+            </div>
+
+            <h3>ما هي الثغرات التي يغطيها DVWA؟</h3>
+            <p>يتضمن <span class="term-en">DVWA</span> وحدات تدريبية مخصصة لأخطر ثغرات الويب، منها:</p>
+            <ul>
+                <li><strong>حقن SQL (<span class="term-en">SQL Injection</span>)</strong> — التلاعب في استعلامات قاعدة البيانات عبر مدخلات المستخدم</li>
+                <li><strong>البرمجة النصية العابرة للمواقع (<span class="term-en">XSS</span>)</strong> — حقن سكريبتات تُنفَّذ في متصفح الضحية</li>
+                <li><strong>تزوير الطلبات عبر المواقع (<span class="term-en">CSRF</span>)</strong> — خداع متصفح المستخدم لإرسال طلبات غير مقصودة</li>
+                <li><strong>حقن الأوامر (<span class="term-en">Command Injection</span>)</strong> — تنفيذ أوامر على مستوى نظام التشغيل عبر نموذج ويب</li>
+                <li><strong>تضمين الملفات ورفعها (<span class="term-en">File Inclusion / Upload</span>)</strong> — استغلال معالجة الملفات لتنفيذ كود خبيث</li>
+                <li><strong>الهجوم بالقوة الغاشمة (<span class="term-en">Brute Force</span>)</strong> — تخمين بيانات تسجيل الدخول بصورة منهجية</li>
+                <li><strong>معرّفات الجلسة الضعيفة (<span class="term-en">Weak Session IDs</span>)</strong> — التنبؤ بجلسات المستخدمين واختطافها</li>
+            </ul>
+
+            <h3>مستويات الأمان</h3>
+            <p>يوفّر <span class="term-en">DVWA</span> ثلاثة مستويات أمان تتحكم في درجة حماية كل وحدة:</p>
+            <table>
+                <tr><th>المستوى</th><th>الوصف</th><th>الغرض</th></tr>
+                <tr>
+                    <td><strong>منخفض (<span class="term-en">Low</span>)</strong></td>
+                    <td>لا يوجد أي تحقق من المدخلات أو فلترة لها</td>
+                    <td>تعلّم كيفية عمل الهجوم — هذا ما نستخدمه اليوم</td>
+                </tr>
+                <tr>
+                    <td><strong>متوسط (<span class="term-en">Medium</span>)</strong></td>
+                    <td>حمايات أساسية يمكن تجاوزها</td>
+                    <td>فهم الدفاعات الجزئية ونقاط ضعفها</td>
+                </tr>
+                <tr>
+                    <td><strong>مرتفع (<span class="term-en">High</span>)</strong></td>
+                    <td>حمايات قوية لكنها ليست مثالية</td>
+                    <td>دراسة كيفية عمل الدفاعات والثغرات المتبقية فيها</td>
+                </tr>
+            </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128279;</span>
+                <div>
+                    <h4>كيفية الوصول إلى DVWA في هذه المقرر</h4>
+                    <p>يعمل <span class="term-en">DVWA</span> داخل حاوية <strong><span class="term-en">Docker</span></strong> على جهازك الافتراضي <span class="term-en">Kali Linux</span>. بعد تشغيل الحاوية، يمكنك الوصول إليه من خلال المتصفح على الرابط <code>http://localhost</code>. بيانات الدخول الافتراضية: <strong>admin / password</strong>.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>تذكير مهم</h4>
+                    <p>يجب تشغيل <span class="term-en">DVWA</span> <strong>على جهازك المحلي فقط</strong>، ولا يجوز إتاحته على شبكة عامة. فالتطبيق مصمَّم ليكون قابلاً للاختراق — تعريضه للإنترنت سيسمح لأي شخص باختراق جهازك.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- أهداف التعلم -->
+        <section id="objectives">
+            <h2>&#127919; أهداف التعلم</h2>
+            <p>بنهاية هذا المختبر، ستتمكن من:</p>
+            <ul class="checklist">
+                <li>إعداد <span class="term-en">DVWA</span> والوصول إليه باستخدام <span class="term-en">Docker</span> على <span class="term-en">Kali Linux</span></li>
+                <li>شرح كيف تُمكِّن ثقة المتصفح باستجابات الخادم من حدوث هجمات <span class="term-en">XSS</span></li>
+                <li>مشاهدة كيف ينفّذ <span class="term-en">Reflected XSS</span> سكريبتاً مضمّناً في الرابط</li>
+                <li>مشاهدة كيف يُخزّن <span class="term-en">Stored XSS</span> سكريبتاً وينفّذه تلقائياً لكل زائر للصفحة</li>
+                <li>توضيح سبب كون <span class="term-en">Stored XSS</span> أخطر من <span class="term-en">Reflected XSS</span></li>
+            </ul>
+        </section>
+
+        <!-- الجزء 1: إعداد DVWA -->
+        <section id="setup">
+            <h2>&#9881;&#65039; الجزء 1: إعداد DVWA</h2>
+
+            <h3>الخطوة 1: تشغيل DVWA باستخدام Docker</h3>
+            <p>افتح الطرفية (<span class="term-en">Terminal</span>) في جهاز <span class="term-en">Kali</span> الافتراضي ونفّذ:</p>
+<pre><code><span class="command-label"># في المرة الأولى فقط — تحميل صورة DVWA</span>
+sudo docker pull vulnerables/web-dvwa
+
+<span class="command-label"># تشغيل DVWA على المنفذ 80</span>
+sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>هل سبق لك إنشاؤه؟</h4>
+                    <p>نفّذ <code>sudo docker start dvwa</code> فقط — الصورة محملة مسبقاً.</p>
+                </div>
+            </div>
+
+            <h3>الخطوة 2: تسجيل الدخول وتهيئة قاعدة البيانات</h3>
+            <ol class="steps">
+                <li>افتح <span class="term-en">Firefox</span> وانتقل إلى <code>http://localhost</code></li>
+                <li>سجّل الدخول: اسم المستخدم <code>admin</code> &nbsp;|&nbsp; كلمة المرور <code>password</code></li>
+                <li>انقر على <strong>Setup / Reset DB</strong> في القائمة الجانبية، ثم انقر على <strong>Create / Reset Database</strong></li>
+                <li>سجّل الدخول مرة أخرى بعد إعادة التوجيه</li>
+            </ol>
+
+            <h3>الخطوة 3: ضبط مستوى الأمان على منخفض</h3>
+            <ol class="steps">
+                <li>انقر على <strong>DVWA Security</strong> في القائمة الجانبية</li>
+                <li>اختر <strong>Low</strong> من القائمة المنسدلة وانقر على <strong>Submit</strong></li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>نقطة تحقق</h4>
+                    <p>يجب أن ترى لوحة تحكم <span class="term-en">DVWA</span> مع قائمة الوحدات الكاملة على الجانب الأيسر ومستوى الأمان يُظهر <strong>Low</strong>. أنت جاهز لبدء المهام.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- المهمة 1: XSS المنعكس -->
+        <section id="task1">
+            <h2>&#128257; المهمة 1: XSS المنعكس</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مراجعة المفهوم — XSS المنعكس</h4>
+                    <p>في <span class="term-en">Reflected XSS</span>، يأخذ الخادم قيمة من الرابط (<span class="term-en">URL</span>) و<strong>يعكسها مباشرةً في استجابة HTML دون تصفيتها</strong>. يستقبل المتصفح صفحةً تحتوي على سكريبت المهاجم وينفّذه فوراً. الحمولة البرمجية تنتقل عبر الرابط فقط — ولا تُخزَّن في أي مكان.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">وحدة DVWA: XSS (Reflected)</span>
+            <p>انقر على <strong>XSS (Reflected)</strong> في القائمة الجانبية. ستظهر لك استمارة تسألك: <em>"What's your name?"</em></p>
+
+            <h3>1أ: مدخل عادي</h3>
+            <ol class="steps">
+                <li>اكتب اسمك (مثلاً: <code>Ahmed</code>) وانقر على <strong>Submit</strong></li>
+                <li>تستجيب الصفحة: <em>"Hello Ahmed"</em></li>
+                <li>انظر إلى شريط الرابط في المتصفح — اسمك يظهر كمعامل في الرابط: <code>?name=Ahmed</code></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>ماذا يحدث؟</h4>
+                    <p>يقرأ الخادم قيمة <code>name</code> من الرابط ويضعها مباشرةً في كود <span class="term-en">HTML</span> الذي يُرسله. في الحالات الاعتيادية هذا مقبول — لكن المشكلة أن الخادم لا يتحقق إن كان المدخل نصاً عادياً أم وسماً <span class="term-en">HTML</span>.</p>
+                </div>
+            </div>
+
+            <h3>1ب: تجربة وسم HTML</h3>
+            <ol class="steps">
+                <li>امسح الحقل واكتب: <code>&lt;b&gt;Ahmed&lt;/b&gt;</code></li>
+                <li>انقر على <strong>Submit</strong></li>
+                <li>ستظهر كلمة "Ahmed" بخط <strong>عريض</strong> — المتصفح نفّذ وسم <span class="term-en">HTML</span> الذي أدخلته، وليس الخادم</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>هنا تكمن الثغرة</h4>
+                    <p>إذا كان <code>&lt;b&gt;</code> يعمل، فكذلك <code>&lt;script&gt;</code>. الخادم يعامل الاثنين بنفس الطريقة — يعكس ما يتلقاه دون تصفية. هذا هو جوهر الثغرة.</p>
+                </div>
+            </div>
+
+            <h3>1ج: تشغيل هجوم XSS</h3>
+            <ol class="steps">
+                <li>امسح الحقل واكتب: <code>&lt;script&gt;alert('XSS Works!')&lt;/script&gt;</code></li>
+                <li>انقر على <strong>Submit</strong></li>
+                <li>ستظهر نافذة تنبيه في المتصفح: <em>"XSS Works!"</em> — انقر موافق</li>
+                <li>انظر إلى الرابط — وسم السكريبت بأكمله مضمَّن كمعامل <code>name</code></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>ما يجب أن تراه:</h4>
+                <p>نافذة تنبيه منبثقة في المتصفح تحمل الرسالة <strong>"XSS Works!"</strong>. هذا <span class="term-en">JavaScript</span> جاء من الرابط — لا من كود التطبيق نفسه. لم يستطع المتصفح التمييز بينهما.</p>
+            </div>
+
+            <h3>1د: ماذا يعني هذا في الواقع؟</h3>
+            <p>دالة <code>alert()</code> هي مجرد توضيح غير ضار. في هجوم حقيقي، سيقوم السكريبت بصمت بسرقة ملفات تعريف الجلسة (<span class="term-en">cookies</span>)، أو جمع البيانات المرئية في الصفحة، أو إعادة توجيه الضحية إلى موقع تصيد احتيالي — كل هذا دون أن يشعر الضحية بشيء.</p>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 1 &mdash; أدخل إجاباتك</h4></div>
+            <div class="fill-in">
+                <label>1. أين يظهر مدخل المستخدم في الرابط بعد النقر على Submit؟</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="مثلاً: في معامل ?name=">
+
+                <label>2. عندما كتبت &lt;b&gt;Ahmed&lt;/b&gt;، ماذا حدث للنص على الشاشة؟</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="صِف ما لاحظته">
+
+                <label>3. عندما أرسلت وسم السكريبت، ماذا ظهر في المتصفح؟</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="صِف النتيجة">
+
+                <label>4. لماذا لا يستطيع الخادم التمييز بين الاسم العادي ووسم السكريبت؟</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>5. لقطة الشاشة &mdash; ارفع لقطة شاشة تظهر نافذة التنبيه:</label>
+                <input type="file" id="screenshot-task1" accept="image/*" onchange="previewImage(this,'preview-task1')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="preview-task1" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة المهمة 1">
+            </div>
+        </section>
+
+        <!-- المهمة 2: XSS المخزّن -->
+        <section id="task2">
+            <h2>&#128451; المهمة 2: XSS المخزّن</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مراجعة المفهوم — XSS المخزّن</h4>
+                    <p>في <span class="term-en">Stored XSS</span>، يُحفظ السكريبت الخبيث <strong>في قاعدة بيانات الخادم</strong> كجزء من المحتوى العادي (تعليق، رسالة، أو مراجعة). في كل مرة يحمّل فيها أي مستخدم ذلك المحتوى، يُنفَّذ السكريبت في متصفحه — دون الحاجة لرابط مخصص ودون أن يتطلب الأمر أي تدخل من المهاجم.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">وحدة DVWA: XSS (Stored)</span>
+            <p>انقر على <strong>XSS (Stored)</strong> في القائمة الجانبية. ستجد سجلاً للزوار (<span class="term-en">Guestbook</span>) يحتوي على حقل <strong>Name</strong> وحقل <strong>Message</strong>.</p>
+
+            <h3>2أ: إضافة إدخال عادي</h3>
+            <ol class="steps">
+                <li>الاسم: <code>Ahmed</code> &nbsp;|&nbsp; الرسالة: <code>Hello, this is my first entry.</code></li>
+                <li>انقر على <strong>Sign Guestbook</strong></li>
+                <li>يظهر إدخالك أسفل الاستمارة</li>
+            </ol>
+
+            <h3>2ب: إرسال سكريبت كرسالة</h3>
+            <ol class="steps">
+                <li>الاسم: <code>Tester</code> &nbsp;|&nbsp; الرسالة: <code>&lt;script&gt;alert('Stored XSS!')&lt;/script&gt;</code></li>
+                <li>انقر على <strong>Sign Guestbook</strong></li>
+                <li>تظهر نافذة تنبيه فوراً — انقر موافق</li>
+            </ol>
+
+            <h3>2ج: إعادة تحميل الصفحة</h3>
+            <ol class="steps">
+                <li>اضغط <strong>Ctrl + R</strong> لإعادة التحميل</li>
+                <li>تظهر نافذة التنبيه <strong>تلقائياً مرة أخرى</strong> — دون أن ترسل شيئاً جديداً</li>
+                <li>انقر موافق</li>
+            </ol>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#128308;</span>
+                <div>
+                    <h4>لماذا هذا أخطر من XSS المنعكس؟</h4>
+                    <p>السكريبت الآن <strong>مخزَّن في قاعدة البيانات</strong>. كل زائر لهذه الصفحة — طالب، مسؤول، أو عميل — سيُنفَّذ السكريبت في متصفحه. لا يحتاج المهاجم إلى أي تواجد ولا يحتاج إلى إرسال رابط مخصص لأحد.</p>
+                </div>
+            </div>
+
+            <h3>2د: مقارنة بين النوعين</h3>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>XSS المنعكس</th>
+                    <th>XSS المخزّن</th>
+                </tr>
+                <tr>
+                    <td><strong>أين تكون الحمولة البرمجية؟</strong></td>
+                    <td>في الرابط (<span class="term-en">URL</span>)</td>
+                    <td>في قاعدة البيانات</td>
+                </tr>
+                <tr>
+                    <td><strong>ماذا يحتاج الضحية أن يفعل؟</strong></td>
+                    <td>النقر على رابط خبيث</td>
+                    <td>مجرد زيارة الصفحة</td>
+                </tr>
+                <tr>
+                    <td><strong>من يتأثر؟</strong></td>
+                    <td>الضحايا الذين يستلمون الرابط فقط</td>
+                    <td>كل زائر مستقبلاً</td>
+                </tr>
+                <tr>
+                    <td><strong>قابلية الاكتشاف</strong></td>
+                    <td>لا تخزين في الخادم — يصعب اكتشافه</td>
+                    <td>مخزَّن كنص — يمكن فحصه</td>
+                </tr>
+            </table>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 2 &mdash; أدخل إجاباتك</h4></div>
+            <div class="fill-in">
+                <label>1. عند إعادة تحميل الصفحة، هل ظهرت نافذة التنبيه مرة أخرى؟ (نعم / لا)</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="نعم أو لا">
+
+                <label>2. لماذا ظهرت نافذة التنبيه عند إعادة التحميل، رغم أنك لم ترسل شيئاً جديداً؟</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>3. في XSS المنعكس، ماذا يحتاج الضحية أن يفعل لتشغيل الهجوم؟ وفي XSS المخزّن؟</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="المنعكس: ... / المخزّن: ..."></textarea>
+
+                <label>4. لو كان هذا نظام تذاكر دعم فعلياً لبنك، وأرسل مهاجم سكريبتاً في تذكرة، من سيتأثر ولماذا؟</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>5. لقطة الشاشة &mdash; ارفع لقطة تُظهر سجل الزوار مع إدخال السكريبت:</label>
+                <input type="file" id="screenshot-task2" accept="image/*" onchange="previewImage(this,'preview-task2')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="preview-task2" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة المهمة 2">
+            </div>
+        </section>
+
+        <!-- استكشاف الأخطاء -->
+        <section id="troubleshooting">
+            <h2>&#128295; استكشاف الأخطاء</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; صفحة DVWA لا تُحمَّل (الاتصال مرفوض)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تحقق باستخدام <code>sudo docker ps</code>. إن لم تكن <code>dvwa</code> مدرجة، نفّذ <code>sudo docker start dvwa</code>. افتح <code>http://localhost</code> (وليس منفذاً آخر).</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; المنفذ 80 قيد الاستخدام</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> أوقف Apache إن كان يعمل: <code>sudo systemctl stop apache2</code>. ثم نفّذ: <code>sudo docker start dvwa</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; يظهر خطأ في قاعدة البيانات بعد تسجيل الدخول</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> انتقل إلى <code>http://localhost/setup.php</code> وانقر على <strong>Create / Reset Database</strong>. ثم سجّل الدخول من جديد.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; وسم السكريبت لا يُشغّل نافذة التنبيه (المتصفح يمنعه)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> استخدم <strong>Firefox</strong> (وليس Chromium). إن استمر Firefox في المنع، افتح نافذة خاصة (<span class="term-en">Ctrl+Shift+P</span>) وحاول مرة أخرى. تأكد من أن مستوى الأمان في DVWA مضبوط على <strong>Low</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- إنشاء التقرير -->
+        <section id="report">
+            <h2>&#128196; إنشاء تقرير المختبر</h2>
+            <p>أدخل معلوماتك أدناه وانقر على <strong>إنشاء تقرير PDF</strong>. سيُجمَع جميع إجاباتك من المهمتين في صفحة قابلة للطباعة. احفظها كـ PDF وأرفقها مع لقطات الشاشة.</p>
+
+            <div style="border: 2px solid #8e44ad; border-radius: 15px; padding: 28px; margin: 18px 0; background: #fafbfc;">
+                <div style="text-align:center; margin-bottom:22px; padding-bottom:14px; border-bottom: 2px solid #8e44ad;">
+                    <h3 style="color: var(--secondary-color); margin:0;">CYB236 &mdash; المختبر 03: تقرير XSS</h3>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">اسم الطالب: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="الاسم الكامل (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">الرقم الجامعي: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="الرقم الجامعي (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">البريد الإلكتروني: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="البريد الإلكتروني (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;" dir="ltr">
+                </div>
+                <p style="font-size:0.85em; color:#e53e3e; margin-bottom:18px; text-align:center;">&#9432; جميع الحقول المحددة بـ <strong>*</strong> إلزامية ولا يمكن إنشاء التقرير دون تعبئتها.</p>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#8e44ad,#6c3483); color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:pointer; box-shadow:0 4px 15px rgba(142,68,173,0.4);">
+                        &#128196; إنشاء تقرير PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>قائمة التسليم</h4>
+                    <ul>
+                        <li>تقرير PDF من هذه الصفحة (الاسم + الرقم الجامعي + جميع الإجابات)</li>
+                        <li>لقطة شاشة: المهمة 1 &mdash; نافذة التنبيه من XSS المنعكس</li>
+                        <li>لقطة شاشة: المهمة 2 &mdash; سجل الزوار يُظهر إدخال السكريبت المخزّن</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>معايير التقييم</h3>
+            <table>
+                <tr><th>المهمة</th><th>الوصف</th><th>الدرجة</th></tr>
+                <tr><td><strong>المهمة 1</strong></td><td>XSS المنعكس — الملاحظات + لقطة الشاشة + الشرح</td><td>45</td></tr>
+                <tr><td><strong>المهمة 2</strong></td><td>XSS المخزّن — شرح الاستمرارية + المقارنة + لقطة الشاشة</td><td>50</td></tr>
+                <tr><td><strong>الجودة</strong></td><td>وضوح الإجابات وتسمية لقطات الشاشة وتنسيق التقرير</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:left; font-weight:bold;">المجموع</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>التنظيف بعد الانتهاء</h3>
+<pre><code><span class="command-label"># أوقف DVWA عند الانتهاء (تابع مع المختبر 04 قبل الإيقاف إن كنت ستُنجزهما في نفس الجلسة)</span>
+sudo docker stop dvwa</code></pre>
+        </section>
+
+    </div><!-- نهاية المحتوى -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; أمن تطبيقات الويب</p>
+        <p>المختبر 03: البرمجة النصية العابرة للمواقع (XSS) &mdash; الفصل 10 &bull; تابع مع المختبر 04</p>
+    </div>
+
+</div><!-- نهاية الحاوية -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('اسم الطالب مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
+    if (!sid)   { alert('الرقم الجامعي مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
+    if (!email) { alert('البريد الإلكتروني مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
+
+    var answers = {};
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!answers[t]) answers[t] = [];
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers[t].push({ label: lbl, value: f.value.trim() || '(لم تتم الإجابة)' });
+    });
+
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g, '').replace(/\s+/g, '_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g, '');
+    var w = window.open('', '_blank');
+    var h = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">';
+    h += '<title>Lab03_' + safeName + '_' + safeSid + '</title><style>';
+    h += 'body{font-family:"Segoe UI","Arial",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.9;direction:rtl}';
+    h += 'h1{color:#8e44ad;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#f0e6f6;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #d7a8e8}';
+    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-right:4px solid #8e44ad;border-left:none;padding-right:14px;padding-left:0}';
+    h += '.tt{color:#6c3483;font-size:1.15em;margin-bottom:10px;font-weight:700}';
+    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
+    h += '.ss{margin-top:16px;page-break-inside:avoid}';
+    h += '.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 المختبر 03: البرمجة النصية العابرة للمواقع (XSS)</h1>';
+    h += '<p class="sub">DVWA \u2014 XSS المنعكس و XSS المخزّن \u2014 الفصل 10</p>';
+    h += '<div class="si"><div><strong>اسم الطالب:</strong> ' + name + '</div><div><strong>الرقم الجامعي:</strong> ' + sid + '</div><div><strong>البريد الإلكتروني:</strong> ' + email + '</div></div>';
+
+    var tn    = { '1': 'المهمة 1: XSS المنعكس', '2': 'المهمة 2: XSS المخزّن' };
+    var ssId  = { '1': 'preview-task1',          '2': 'preview-task2' };
+    var ssLbl = { '1': 'لقطة الشاشة \u2014 نافذة تنبيه XSS المنعكس', '2': 'لقطة الشاشة \u2014 سجل الزوار مع سكريبت XSS المخزّن' };
+
+    for (var t = 1; t <= 2; t++) {
+        h += '<div class="ts"><div class="tt">' + tn[t] + '</div>';
+        if (answers[t]) {
+            answers[t].forEach(function(a) {
+                h += '<div class="ar"><div class="al">' + a.label + '</div>';
+                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+            });
+        }
+        if (screenshotData[ssId[t]]) {
+            h += '<div class="ss"><div class="ss-lbl">' + ssLbl[t] + '</div><img src="' + screenshotData[ssId[t]] + '"></div>';
+        }
+        h += '</div>';
+        if (t < 2) h += '<hr>';
+    }
+
+    h += '<div class="fn">CYB236 \u2014 المختبر 03 \u2014 أمن تطبيقات الويب</div></body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 6: Authentication & Session Attacks | CYB 236</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f8f9fa; color: #2c3e50; }
+        .banner { background: linear-gradient(135deg, #e67e22, #d35400); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
+        .banner h1 { margin: 0 0 8px 0; font-size: 1.6em; }
+        .banner p { margin: 0; opacity: 0.9; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; margin-top: 10px; }
+        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .card h2 { color: #d35400; margin-top: 0; border-bottom: 2px solid #f0e0d0; padding-bottom: 10px; }
+        ul li { margin-bottom: 8px; line-height: 1.6; }
+        .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .tool-tag { background: #fef0e0; color: #d35400; padding: 5px 12px; border-radius: 6px; font-size: 0.9em; font-weight: 600; }
+        .note { background: #fff3cd; border-left: 4px solid #e67e22; padding: 15px 20px; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+    </style>
+</head>
+<body>
+
+<div class="banner">
+    <h1>Lab 6: Authentication & Session Management Attacks</h1>
+    <p>Topic 6 — Web Application Security Fundamentals II</p>
+    <span class="badge">DVWA + Burp Suite + Hydra (Kali)</span>
+</div>
+
+<div class="card">
+    <h2>Lab Purpose</h2>
+    <p>This lab demonstrates how authentication and session management weaknesses can be exploited. Students will perform a brute force attack on a login form, analyze weak session tokens, and observe the consequences of poor session handling — directly connecting to the theory of Authentication, Access Control, and Session Management from Topic 4.</p>
+</div>
+
+<div class="card">
+    <h2>Tools Required</h2>
+    <div class="tools">
+        <span class="tool-tag">DVWA</span>
+        <span class="tool-tag">Burp Suite (Intruder)</span>
+        <span class="tool-tag">Hydra (Kali)</span>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Planned Tasks</h2>
+    <ul>
+        <li><strong>Task 1 — Brute Force Login:</strong> Use Burp Suite Intruder or Hydra to brute force the DVWA login page. Observe how a weak password policy allows an attacker to guess credentials automatically.</li>
+        <li><strong>Task 2 — Weak Session IDs:</strong> Use the DVWA "Weak Session IDs" module. Generate multiple session tokens and analyze their pattern. Demonstrate how a predictable session ID can be hijacked.</li>
+        <li><strong>Task 3 — Session Fixation Observation:</strong> Observe how session tokens behave before and after login. Discuss the concept of session fixation and why session regeneration on login is important.</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h2>Learning Outcomes</h2>
+    <ul>
+        <li>Understand how brute force attacks exploit weak authentication</li>
+        <li>Recognize the risk of predictable or weak session tokens</li>
+        <li>Connect these attacks to the defensive principles covered in Topic 4 (Input Validation, Defense-in-Depth)</li>
+    </ul>
+</div>
+
+<div class="note">
+    <strong>Instructor Note:</strong> Set DVWA security level to LOW for Tasks 1 and 2. For Task 3, compare LOW vs MEDIUM behavior to show how a simple fix (randomizing session IDs) mitigates the risk.
+</div>
+
+</body>
+</html>

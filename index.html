@@ -439,6 +439,26 @@
             transform: translateY(-1px);
         }
 
+        .module-btn.tech {
+            background: #2980b9;
+            color: var(--white);
+        }
+
+        .module-btn.tech:hover {
+            background: #1a5276;
+            transform: translateY(-1px);
+        }
+
+        .module-btn.fundamentals {
+            background: #8e44ad;
+            color: var(--white);
+        }
+
+        .module-btn.fundamentals:hover {
+            background: #6c3483;
+            transform: translateY(-1px);
+        }
+
         .module-btn.lab-btn {
             background: #2980b9;
             color: var(--white);
@@ -457,6 +477,141 @@
         }
 
         .module-btn.disabled:hover {
+            transform: none;
+        }
+
+        /* Labs Section */
+        .labs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .lab-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lab-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .lab-card.lab-disabled {
+            opacity: 0.75;
+        }
+
+        .lab-card-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .lab-number-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.95em;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+
+        .lab-number-badge.intro       { background: linear-gradient(135deg, #1a5f4a, #134436); }
+        .lab-number-badge.recon       { background: linear-gradient(135deg, #2980b9, #1a5276); }
+        .lab-number-badge.offense     { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+        .lab-number-badge.principles  { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .lab-number-badge.development { background: linear-gradient(135deg, #27ae60, #1e8449); }
+
+        .lab-card-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.95em;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        .lab-card-body {
+            padding: 14px 20px;
+            flex: 1;
+        }
+
+        .lab-card-desc {
+            font-size: 0.875em;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .lab-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .lab-tool-tag {
+            font-size: 0.75em;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .lab-tool-tag.intro       { background: #d5ede8; color: #134436; }
+        .lab-tool-tag.recon       { background: #e3f0fa; color: #1a5276; }
+        .lab-tool-tag.offense     { background: #f0e6f6; color: #6c3483; }
+        .lab-tool-tag.principles  { background: #fdebd0; color: #d35400; }
+        .lab-tool-tag.development { background: #d5f0e0; color: #1e8449; }
+
+        .lab-card-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .lab-open-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            color: var(--white);
+        }
+
+        .lab-open-btn:hover { transform: translateY(-1px); }
+
+        .lab-open-btn.intro       { background: #1a5f4a; }
+        .lab-open-btn.intro:hover { background: #134436; }
+        .lab-open-btn.recon       { background: #2980b9; }
+        .lab-open-btn.recon:hover { background: #1a5276; }
+        .lab-open-btn.offense       { background: #8e44ad; }
+        .lab-open-btn.offense:hover { background: #6c3483; }
+        .lab-open-btn.principles       { background: #e67e22; }
+        .lab-open-btn.principles:hover { background: #d35400; }
+        .lab-open-btn.development       { background: #27ae60; }
+        .lab-open-btn.development:hover { background: #1e8449; }
+
+        .lab-open-btn.disabled {
+            background: #e0e0e0;
+            color: #999;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .lab-open-btn.disabled:hover {
             transform: none;
         }
 
@@ -654,6 +809,7 @@
             <li><a href="#modules">Topics</a></li>
             <li><a href="#assessment">Assessment</a></li>
             <li><a href="#resources">Resources</a></li>
+            <li><a href="#labs">Labs</a></li>
             <li><a href="syllabus.html" target="_blank">Full Syllabus</a></li>
         </ul>
     </div>
@@ -765,13 +921,13 @@
                 <div class="module-card">
                     <div class="module-header" style="background: linear-gradient(135deg, #1a5f4a, #134436);">
                         <div class="module-topic">Topic 1</div>
-                        <div class="module-title">Introduction & History</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <div class="module-title">Introduction &amp; History</div>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
-                            <li>Course introduction & objectives</li>
-                            <li>History of hacking (1930s-2015+)</li>
+                            <li>Course introduction &amp; objectives</li>
+                            <li>History of hacking (1930s–2015+)</li>
                             <li>Modern web architecture overview</li>
                         </ul>
                         <div class="module-footer">
@@ -779,10 +935,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a href="Labs/lab1/lab01-english.html" class="module-btn lab-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge ready">&#9679; Available</span>
                         </div>
                     </div>
                 </div>
@@ -791,24 +944,21 @@
                 <div class="module-card">
                     <div class="module-header tech">
                         <div class="module-topic">Topic 2</div>
-                        <div class="module-title">Web Reconnaissance & Modern Web App Structure</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <div class="module-title">Web Reconnaissance &amp; Modern Web App Structure</div>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
-                            <li>Web reconnaissance & application mapping</li>
+                            <li>Web reconnaissance &amp; application mapping</li>
                             <li>Client/server, DOM, SPA frameworks</li>
-                            <li>REST API, JSON, authentication & authorization</li>
+                            <li>REST API, JSON, authentication &amp; authorization</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week2/index.html" class="module-btn book-btn">
+                            <a href="week2/index.html" class="module-btn tech">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a href="Labs/lab2/lab02-english.html" class="module-btn lab-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge ready">&#9679; Available</span>
                         </div>
                     </div>
                 </div>
@@ -818,23 +968,20 @@
                     <div class="module-header tech">
                         <div class="module-topic">Topic 3</div>
                         <div class="module-title">Reconnaissance Techniques</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
                             <li>Finding Subdomains (Ch. 4)</li>
-                            <li>API Analysis & Endpoint Discovery (Ch. 5)</li>
-                            <li>Third-Party Dependencies & Weak Points (Ch. 6–7)</li>
+                            <li>API Analysis &amp; Endpoint Discovery (Ch. 5)</li>
+                            <li>Third-Party Dependencies &amp; Weak Points (Ch. 6–7)</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week3/index.html" class="module-btn book-btn">
+                            <a href="week3/index.html" class="module-btn tech">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a href="Labs/lab3/lab03-english.html" class="module-btn lab-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge ready">&#9679; Available</span>
                         </div>
                     </div>
                 </div>
@@ -843,8 +990,8 @@
                 <div class="module-card">
                     <div class="module-header fundamentals">
                         <div class="module-topic">Topic 4</div>
-                        <div class="module-title">Offense — Hacking Web Applications</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <div class="module-title">Offense &mdash; Hacking Web Applications</div>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
@@ -853,14 +1000,11 @@
                             <li>Denial of Service (DoS)</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week4/index.html" class="module-btn book-btn">
+                            <a href="week4/index.html" class="module-btn fundamentals">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a class="module-btn lab-btn disabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge ready">&#9679; Available</span>
                         </div>
                     </div>
                 </div>
@@ -870,23 +1014,21 @@
                     <div class="module-header principles">
                         <div class="module-topic">Topic 5</div>
                         <div class="module-title">Security Principles I</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
                             <li>Authentication mechanisms</li>
                             <li>Access Control</li>
                             <li>Authorization frameworks</li>
+                            <li>Session management</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week5/index.html" class="module-btn book-btn disabled">
+                            <a class="module-btn book-btn disabled">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a class="module-btn lab-btn disabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge coming-soon">Coming Soon</span>
                         </div>
                     </div>
                 </div>
@@ -896,23 +1038,21 @@
                     <div class="module-header principles">
                         <div class="module-topic">Topic 6</div>
                         <div class="module-title">Security Principles II</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
                             <li>Browser Security</li>
                             <li>Database Security</li>
                             <li>File Security</li>
+                            <li>Content Security Policy (CSP)</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week6/index.html" class="module-btn book-btn disabled">
+                            <a class="module-btn book-btn disabled">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a class="module-btn lab-btn disabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge coming-soon">Coming Soon</span>
                         </div>
                     </div>
                 </div>
@@ -921,24 +1061,22 @@
                 <div class="module-card coming-soon">
                     <div class="module-header development">
                         <div class="module-topic">Topic 7</div>
-                        <div class="module-title">Secure Development I</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <div class="module-title">Secure Development Methodologies I</div>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
+                            <li>Penetrate-and-Patch vs Holistic Approach</li>
                             <li>Threat Modeling</li>
                             <li>Secure Coding Libraries</li>
                             <li>Security Testing</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week7/index.html" class="module-btn book-btn disabled">
+                            <a class="module-btn book-btn disabled">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a class="module-btn lab-btn disabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge coming-soon">Coming Soon</span>
                         </div>
                     </div>
                 </div>
@@ -947,24 +1085,21 @@
                 <div class="module-card coming-soon">
                     <div class="module-header development">
                         <div class="module-topic">Topic 8</div>
-                        <div class="module-title">Secure Development II</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <div class="module-title">Secure Development Methodologies II</div>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
-                            <li>Secure Architecture</li>
+                            <li>Secure Application Architecture</li>
                             <li>Vulnerability Management</li>
-                            <li>Security code review</li>
+                            <li>Security Code Review</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week8/index.html" class="module-btn book-btn disabled">
+                            <a class="module-btn book-btn disabled">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a class="module-btn lab-btn disabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge coming-soon">Coming Soon</span>
                         </div>
                     </div>
                 </div>
@@ -973,8 +1108,8 @@
                 <div class="module-card coming-soon">
                     <div class="module-header development">
                         <div class="module-topic">Topic 9</div>
-                        <div class="module-title">Secure Development III</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <div class="module-title">Secure Development Methodologies III</div>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
@@ -983,14 +1118,11 @@
                             <li>Defending Against XXE</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week9/index.html" class="module-btn book-btn disabled">
+                            <a class="module-btn book-btn disabled">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a class="module-btn lab-btn disabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge coming-soon">Coming Soon</span>
                         </div>
                     </div>
                 </div>
@@ -999,25 +1131,213 @@
                 <div class="module-card coming-soon">
                     <div class="module-header development">
                         <div class="module-topic">Topic 10</div>
-                        <div class="module-title">Secure Development IV</div>
-                        <span class="module-hours">75 min + Lab</span>
+                        <div class="module-title">Secure Development Methodologies IV</div>
+                        <span class="module-hours">75 min</span>
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
                             <li>Defending Against Injection</li>
                             <li>Defending Against DoS</li>
-                            <li>Third-Party Dependencies</li>
+                            <li>Securing Third-Party Dependencies</li>
                         </ul>
                         <div class="module-footer">
-                            <a href="week10/index.html" class="module-btn book-btn disabled">
+                            <a class="module-btn book-btn disabled">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <a class="module-btn lab-btn disabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                Lab
-                            </a>
+                            <span class="status-badge coming-soon">Coming Soon</span>
                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Laboratory Exercises -->
+        <section id="labs" style="margin-top: 50px;">
+            <h2 class="section-title">Laboratory Exercises (10 Labs)</h2>
+            <div class="labs-grid">
+
+                <!-- Lab 1 — intro (dark green) -->
+                <div class="lab-card">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge intro">L1</div>
+                        <div class="lab-card-title">Kali Linux Setup &amp; Environment Preparation</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Install and configure Kali Linux in VirtualBox, set up DVWA, and verify your lab environment is ready for all course activities.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag intro">VirtualBox</span>
+                            <span class="lab-tool-tag intro">Kali Linux</span>
+                            <span class="lab-tool-tag intro">DVWA</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a href="Labs/lab1/lab01-english.html" class="lab-open-btn intro">Open Lab &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Lab 2 — recon (blue) -->
+                <div class="lab-card">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge recon">L2</div>
+                        <div class="lab-card-title">Web Reconnaissance with Browser DevTools</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Use browser DevTools and online tools to perform passive and active reconnaissance on web applications.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag recon">Browser DevTools</span>
+                            <span class="lab-tool-tag recon">Kali Linux</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a href="Labs/lab2/lab02-english.html" class="lab-open-btn recon">Open Lab &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Lab 3 — offense (purple) -->
+                <div class="lab-card">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge offense">L3</div>
+                        <div class="lab-card-title">Cross-Site Scripting (XSS) with DVWA</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Perform Reflected and Stored XSS attacks against DVWA. Understand how JavaScript injection exploits web applications.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag offense">DVWA</span>
+                            <span class="lab-tool-tag offense">Kali Linux</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a href="Labs/lab3/lab03-english.html" class="lab-open-btn offense">Open Lab &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Lab 4 — offense (purple) -->
+                <div class="lab-card lab-disabled">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge offense">L4</div>
+                        <div class="lab-card-title">SQL Injection, Command Injection &amp; CSRF</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Exploit SQL injection, OS command injection, and cross-site request forgery vulnerabilities in DVWA using hands-on attack techniques.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag offense">DVWA</span>
+                            <span class="lab-tool-tag offense">Kali Linux</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a class="lab-open-btn disabled">Coming Soon</a>
+                    </div>
+                </div>
+
+                <!-- Lab 5 — recon (blue) -->
+                <div class="lab-card lab-disabled">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge recon">L5</div>
+                        <div class="lab-card-title">Burp Suite: HTTP Interception &amp; Recon</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Configure Burp Suite as a proxy, intercept HTTP traffic, use the Repeater and Spider tools, and map a web application's attack surface.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag recon">Burp Suite</span>
+                            <span class="lab-tool-tag recon">DVWA</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a class="lab-open-btn disabled">Coming Soon</a>
+                    </div>
+                </div>
+
+                <!-- Lab 6 — principles (orange) -->
+                <div class="lab-card lab-disabled">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge principles">L6</div>
+                        <div class="lab-card-title">Authentication &amp; Session Attacks</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Perform brute-force attacks with Burp Suite Intruder, test for weak session tokens, and explore privilege escalation in DVWA.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag principles">Burp Suite</span>
+                            <span class="lab-tool-tag principles">DVWA</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a class="lab-open-btn disabled">Coming Soon</a>
+                    </div>
+                </div>
+
+                <!-- Lab 7 — development (green) -->
+                <div class="lab-card lab-disabled">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge development">L7</div>
+                        <div class="lab-card-title">Automated Scanning with Nikto &amp; OWASP ZAP</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Use Nikto and OWASP ZAP to automatically scan DVWA for vulnerabilities. Compare automated results with manual findings.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag development">Nikto</span>
+                            <span class="lab-tool-tag development">OWASP ZAP</span>
+                            <span class="lab-tool-tag development">Kali Linux</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a class="lab-open-btn disabled">Coming Soon</a>
+                    </div>
+                </div>
+
+                <!-- Lab 8 — development (green) -->
+                <div class="lab-card lab-disabled">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge development">L8</div>
+                        <div class="lab-card-title">Full Vulnerability Assessment + CVSS Scoring</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Conduct a structured vulnerability assessment of DVWA combining manual and automated testing, then score findings using CVSS v3.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag development">Burp Suite</span>
+                            <span class="lab-tool-tag development">Nikto</span>
+                            <span class="lab-tool-tag development">CVSS Calculator</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a class="lab-open-btn disabled">Coming Soon</a>
+                    </div>
+                </div>
+
+                <!-- Lab 9 — development (green) -->
+                <div class="lab-card lab-disabled">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge development">L9</div>
+                        <div class="lab-card-title">Defense in Practice: DVWA Security Levels</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Re-run XSS, CSRF, and SQL Injection attacks at DVWA's Low, Medium, and High security levels. Analyze source code to understand each defense mechanism.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag development">DVWA</span>
+                            <span class="lab-tool-tag development">Burp Suite</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a class="lab-open-btn disabled">Coming Soon</a>
+                    </div>
+                </div>
+
+                <!-- Lab 10 — development (green) -->
+                <div class="lab-card lab-disabled">
+                    <div class="lab-card-header">
+                        <div class="lab-number-badge development">L10</div>
+                        <div class="lab-card-title">Implementing Injection Defenses</div>
+                    </div>
+                    <div class="lab-card-body">
+                        <p class="lab-card-desc">Read and compare vulnerable vs. secure PHP code in DVWA. Study parameterized queries, command sanitization, and third-party dependency risks.</p>
+                        <div class="lab-tools">
+                            <span class="lab-tool-tag development">DVWA Source Code</span>
+                            <span class="lab-tool-tag development">Text Editor</span>
+                        </div>
+                    </div>
+                    <div class="lab-card-footer">
+                        <a class="lab-open-btn disabled">Coming Soon</a>
                     </div>
                 </div>
 
@@ -1109,6 +1429,7 @@
             <div class="footer-links">
                 <a href="syllabus.html">Full Syllabus</a>
                 <a href="#modules">Topics</a>
+                <a href="#labs">Labs</a>
                 <a href="#resources">Resources</a>
             </div>
         </div>

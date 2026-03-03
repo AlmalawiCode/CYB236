@@ -6,7 +6,7 @@
     <title>Lab 02: Introduction to Web Application Reconnaissance</title>
     <style>
         :root {
-            --primary-color: #2b5797;
+            --primary-color: #2980b9;
             --secondary-color: #1a365d;
             --accent-color: #38a169;
             --warning-color: #d69e2e;
@@ -15,7 +15,7 @@
             --light-bg: #f7fafc;
             --dark-text: #2d3748;
             --border-color: #e2e8f0;
-            --kali-blue: #367bf0;
+            --kali-blue: #2980b9;
             --kali-dark: #1f2937;
         }
 
@@ -25,7 +25,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.7;
             color: var(--dark-text);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -88,7 +88,7 @@
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             padding: 25px 40px;
-            background: linear-gradient(135deg, var(--kali-blue) 0%, #5b8def 100%);
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #1a5276 100%);
             color: white;
         }
 
@@ -118,7 +118,7 @@
 
         /* Table of Contents */
         .toc {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            background: linear-gradient(135deg, #e8f4fd 0%, #d1eaf9 100%);
             border-radius: 15px;
             padding: 25px 30px;
             margin-bottom: 40px;
@@ -300,14 +300,14 @@
             position: absolute;
             left: 0; top: 0;
             width: 35px; height: 35px;
-            background: linear-gradient(135deg, var(--kali-blue) 0%, #5b8def 100%);
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #1a5276 100%);
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(54, 123, 240, 0.3);
+            box-shadow: 0 4px 6px rgba(41, 128, 185, 0.3);
         }
 
         /* Checklist */
@@ -909,7 +909,7 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
                 </div>
 
                 <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="generateReport()" style="background: linear-gradient(135deg, var(--kali-blue) 0%, #5b8def 100%); color: white; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(54, 123, 240, 0.4); transition: transform 0.2s ease;">Generate PDF Report</button>
+                    <button onclick="generateReport()" style="background: linear-gradient(135deg, var(--kali-blue) 0%, #1a5276 100%); color: white; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(54, 123, 240, 0.4); transition: transform 0.2s ease;">Generate PDF Report</button>
                 </div>
             </div>
         </section>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 8: Vulnerability Assessment on DVWA | CYB 236</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f8f9fa; color: #2c3e50; }
+        .banner { background: linear-gradient(135deg, #27ae60, #1e8449); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
+        .banner h1 { margin: 0 0 8px 0; font-size: 1.6em; }
+        .banner p { margin: 0; opacity: 0.9; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; margin-top: 10px; }
+        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .card h2 { color: #1e8449; margin-top: 0; border-bottom: 2px solid #d5f0e0; padding-bottom: 10px; }
+        ul li { margin-bottom: 8px; line-height: 1.6; }
+        .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .tool-tag { background: #e8f8f0; color: #1e8449; padding: 5px 12px; border-radius: 6px; font-size: 0.9em; font-weight: 600; }
+        .note { background: #d5f0e0; border-left: 4px solid #27ae60; padding: 15px 20px; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+    </style>
+</head>
+<body>
+
+<div class="banner">
+    <h1>Lab 8: Full Vulnerability Assessment on DVWA</h1>
+    <p>Topic 8 — Secure Development Methodologies II</p>
+    <span class="badge">DVWA + Burp Suite + Nikto + CVSS Scoring</span>
+</div>
+
+<div class="card">
+    <h2>Lab Purpose</h2>
+    <p>This is a capstone assessment lab. Students apply all skills learned in previous labs to conduct a structured vulnerability assessment of DVWA — combining manual testing (Burp Suite) and automated scanning (Nikto/ZAP) — and then score each finding using CVSS. This directly reflects the Vulnerability Management process from Topic 8.</p>
+</div>
+
+<div class="card">
+    <h2>Tools Required</h2>
+    <div class="tools">
+        <span class="tool-tag">DVWA</span>
+        <span class="tool-tag">Burp Suite</span>
+        <span class="tool-tag">Nikto (Kali)</span>
+        <span class="tool-tag">OWASP ZAP (Kali)</span>
+        <span class="tool-tag">CVSS Calculator</span>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Planned Tasks</h2>
+    <ul>
+        <li><strong>Task 1 — Scoping:</strong> Define the assessment scope — which DVWA modules will be tested, what is out of scope, what tools will be used.</li>
+        <li><strong>Task 2 — Testing:</strong> Run a combination of manual and automated tests against DVWA. Students apply what they learned in Labs 3–7 (Burp Suite, XSS, SQLi, CSRF, Auth attacks, Nikto, ZAP).</li>
+        <li><strong>Task 3 — CVSS Scoring:</strong> For each vulnerability found, calculate a CVSS v3 base score using the online CVSS calculator. Justify the score based on Attack Vector, Complexity, Impact, etc.</li>
+        <li><strong>Task 4 — Report:</strong> Write a short vulnerability assessment report with: Executive Summary, Vulnerability Table (name, description, CVSS score, evidence), and Recommendations.</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h2>Learning Outcomes</h2>
+    <ul>
+        <li>Conduct a structured vulnerability assessment combining manual and automated techniques</li>
+        <li>Apply CVSS scoring to real vulnerabilities</li>
+        <li>Practice professional security report writing</li>
+        <li>Understand the full Vulnerability Management lifecycle</li>
+    </ul>
+</div>
+
+<div class="note">
+    <strong>Instructor Note:</strong> This lab is best used as a graded assignment (part of Assignment #2). Students should produce a PDF report. Allow students to use any tool they have learned so far. CVSS calculator is available at nvd.nist.gov/vuln-metrics/cvss/v3-calculator.
+</div>
+
+</body>
+</html>
