@@ -1,0 +1,35 @@
+Lab 02: Introduction to Web Application Reconnaissance             
+
+                                         
+
+ In this lab, you will practice the information-gathering phase of web application security using only your browser and its built-in Developer Tools against OWASP Juice Shop, a deliberately vulnerable application running locally via Docker on Kali Linux. You will complete four tasks: identifying the technology stack (web server, framework, and security headers), observing live REST API requests, reading and analyzing JSON responses, and inspecting client-side storage (cookies, localStorage, and sessionStorage). At the end, you will generate a PDF report directly from the lab page by entering your name and student ID and clicking "Generate PDF Report." Submit the PDF report through Blackboard. Estimated time: 45–50 minutes.
+
+
+
+جمع المعلومات في أمن تطبيقات الويب
+في هذا اللاب، ستتدرب على مرحلة جمع المعلومات (Information Gathering) في مجال أمن تطبيقات الويب، وذلك باستخدام متصفح الويب وأدوات المطور (Developer Tools) المدمجة فيه.
+
+سيتم تنفيذ هذا اللاب عمليًا على تطبيق OWASP Juice Shop، والذي يعمل محليًا باستخدام Docker على نظام Kali Linux.
+
+
+
+🎯 أهداف اللاب ومهامه
+يتضمن هذا اللاب إنجاز أربع مهام رئيسية، وهي:
+
+التعرّف على المكدس التقني للتطبيق، ويشمل ذلك:
+الخادم (Server)
+الإطار البرمجي (Framework)
+ترويسات الأمان (Security Headers)
+مراقبة وتحليل طلبات REST API المباشرة باستخدام أدوات المطور في المتصفح.
+قراءة وفهم وتحليل بيانات JSON المتبادلة بين العميل والخادم.
+فحص التخزين المحلي في المتصفح، ويشمل:
+ملفات تعريف الارتباط (Cookies)
+التخزين المحلي (localStorage)
+تخزين الجلسة (sessionStorage)
+📄 متطلبات التسليم
+في نهاية هذا اللاب، يجب عليك:
+
+إنشاء تقرير بصيغة PDF مباشرةً من صفحة اللاب
+إدخال اسمك و رقمك الجامعي
+الضغط على زر Generate PDF Report
+رفع ملف PDF الناتج عبر نظام Blackboard

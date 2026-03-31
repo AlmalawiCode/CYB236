@@ -1,0 +1,40 @@
+Lab 03: Cross-Site Scripting (XSS)
+
+In this lab, you will explore Cross-Site Scripting (XSS) using DVWA (Damn Vulnerable Web Application) running locally on Kali Linux with Docker. You will first set up DVWA, log in, initialize the database, and set the security level to Low. Then you will complete two practical tasks: observing Reflected XSS, where malicious input is delivered through the URL and executed immediately in the browser, and observing Stored XSS, where malicious input is saved in the application and executes again whenever the page is revisited. You will compare the behavior and risk of both attack types, answer the lab questions, capture the required screenshots, and generate a PDF report from the lab page for Blackboard submission. Estimated time: 35-45 minutes.
+
+
+
+هجمات البرمجة عبر المواقع (XSS)
+في هذا اللاب، ستتعرف عمليًا على ثغرة البرمجة عبر المواقع (Cross-Site Scripting - XSS) باستخدام تطبيق DVWA، وهو تطبيق ويب تعليمي ضعيف الحماية يعمل محليًا على نظام Kali Linux باستخدام Docker.
+
+ستبدأ بإعداد DVWA، وتسجيل الدخول، وتهيئة قاعدة البيانات، ثم ضبط مستوى الحماية على Low. بعد ذلك ستنفذ مهمتين عمليتين: الأولى لفهم Reflected XSS حيث يتم تمرير الحمولة الخبيثة عبر الرابط وتُنفذ مباشرة داخل المتصفح، والثانية لفهم Stored XSS حيث يتم حفظ الحمولة داخل التطبيق وتُنفذ مرة أخرى كلما تمت زيارة الصفحة.
+
+
+
+🎯 أهداف اللاب ومهامه
+يتضمن هذا اللاب إنجاز المهام التالية:
+
+إعداد وتشغيل DVWA محليًا باستخدام Docker على Kali Linux.
+تسجيل الدخول إلى التطبيق وتهيئة قاعدة البيانات وضبط مستوى الحماية على Low.
+تنفيذ تجربة Reflected XSS من خلال إدخال نص عادي، ثم وسم HTML، ثم شيفرة JavaScript داخل حقل الإدخال.
+ملاحظة كيف يظهر الإدخال داخل الرابط وكيف يقوم المتصفح بتنفيذ الشيفرة القادمة من عنوان URL.
+تنفيذ تجربة Stored XSS من خلال إدخال رسالة خبيثة داخل صفحة Guestbook وملاحظة أنها تُنفذ مرة أخرى بعد إعادة تحميل الصفحة.
+المقارنة بين Reflected XSS و Stored XSS من حيث مكان وجود الحمولة، وكيفية تفعيلها، ومدى تأثيرها على الضحايا.
+فهم سبب كون Stored XSS أخطر من Reflected XSS في التطبيقات الحقيقية.
+
+
+
+📄 متطلبات التسليم
+في نهاية هذا اللاب، يجب عليك:
+
+الإجابة على جميع أسئلة Task 1 و Task 2 داخل صفحة اللاب.
+التقاط صورة شاشة لنافذة التنبيه الخاصة بـ Reflected XSS.
+التقاط صورة شاشة لصفحة Guestbook بحيث تظهر فيها المدخلة العادية ومدخلة Stored XSS.
+إدخال الاسم والرقم الجامعي والبريد الإلكتروني داخل نموذج التقرير.
+الضغط على زر Generate PDF Report.
+حفظ التقرير بصيغة PDF ورفعه عبر Blackboard مع لقطات الشاشة المطلوبة.
+
+
+
+تنبيه مهم
+يجب تنفيذ جميع الخطوات على DVWA الذي يعمل محليًا على جهازك فقط. يمنع تطبيق هذه الأساليب على أي موقع أو نظام خارجي دون تصريح رسمي.

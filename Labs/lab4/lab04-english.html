@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 05: SQL Injection, Command Injection &amp; CSRF with DVWA</title>
+    <title>Lab 04: SQL Injection, Command Injection &amp; CSRF with DVWA</title>
     <style>
         :root {
             --primary-color: #8e44ad;
@@ -159,6 +159,37 @@
         .footer { background: linear-gradient(135deg,#0f172a,#1e293b); color: white; padding: 28px 40px; text-align: center; }
         .footer p { margin: 5px 0; opacity: 0.9; }
 
+        /* ── Language Switch ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+        @media print { .lang-switch { display: none; } }
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             .header { padding: 28px 18px; }
@@ -173,20 +204,28 @@
     </style>
 </head>
 <body>
+
+<!-- Language Switch -->
+<div class="lang-switch">
+    <a href="lab04-arabic.html" class="lang-btn">
+        &#127760; عربي
+    </a>
+</div>
+
 <div class="container">
 
     <header class="header">
-        <h1>&#128300; Lab 05: SQL Injection, Command Injection &amp; CSRF</h1>
+        <h1>&#128300; Lab 04: SQL Injection, Command Injection &amp; CSRF</h1>
         <p class="subtitle">CYB236 &mdash; Web Application Security</p>
         <div class="chapter-ref">Covers: Chapters 11 &amp; 13 &mdash; SQLi &bull; Command Injection &bull; CSRF</div>
     </header>
 
     <div class="lab-info">
-        <div class="lab-info-item"><strong>Lab Number</strong><span>05</span></div>
+        <div class="lab-info-item"><strong>Lab Number</strong><span>04</span></div>
         <div class="lab-info-item"><strong>Difficulty</strong><span>Intermediate</span></div>
         <div class="lab-info-item"><strong>Duration</strong><span>40&ndash;50 min</span></div>
         <div class="lab-info-item"><strong>Environment</strong><span>Kali + DVWA</span></div>
-        <div class="lab-info-item"><strong>Prerequisite</strong><span>Lab 04</span></div>
+        <div class="lab-info-item"><strong>Prerequisite</strong><span>Lab 03</span></div>
     </div>
 
     <div class="content">
@@ -208,8 +247,8 @@
         <!-- Introduction -->
         <section id="introduction">
             <h2>&#128161; Introduction</h2>
-            <p>This lab continues from Lab 04. You will explore three more critical vulnerability classes: <strong>SQL Injection</strong> (escaping a database query), <strong>Command Injection</strong> (escaping to the host operating system), and <strong>CSRF</strong> (forging a legitimate user's request from another origin).</p>
-            <p>All tasks use <strong>DVWA</strong> — the same environment from Lab 04 — with the Security Level set to <strong>Low</strong>.</p>
+            <p>This lab continues from Lab 03. You will explore three more critical vulnerability classes: <strong>SQL Injection</strong> (escaping a database query), <strong>Command Injection</strong> (escaping to the host operating system), and <strong>CSRF</strong> (forging a legitimate user's request from another origin).</p>
+            <p>All tasks use <strong>DVWA</strong> — the same environment from Lab 03 — with the Security Level set to <strong>Low</strong>.</p>
 
             <div class="alert alert-danger">
                 <span class="alert-icon">&#9888;&#65039;</span>
@@ -238,7 +277,7 @@
         <section id="setup">
             <h2>&#9881;&#65039; Part 1: Start DVWA</h2>
 
-            <p>If DVWA is already running from Lab 04, you can skip the docker commands below. Just open Firefox and go to <code>http://localhost</code>.</p>
+            <p>If DVWA is already running from Lab 03, you can skip the docker commands below. Just open Firefox and go to <code>http://localhost</code>.</p>
 
 <pre><code><span class="command-label"># Check if DVWA is already running</span>
 sudo docker ps
@@ -559,7 +598,7 @@ sudo docker start dvwa</code></pre>
 
             <div style="border:2px solid #8e44ad; border-radius:15px; padding:28px; margin:18px 0; background:#fafbfc;">
                 <div style="text-align:center; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid #8e44ad;">
-                    <h3 style="color:var(--secondary-color); margin:0;">CYB236 &mdash; Lab 05: SQLi, Command Injection &amp; CSRF Report</h3>
+                    <h3 style="color:var(--secondary-color); margin:0;">CYB236 &mdash; Lab 04: SQLi, Command Injection &amp; CSRF Report</h3>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
                     <div>
@@ -614,7 +653,7 @@ sudo docker stop dvwa</code></pre>
 
     <div class="footer">
         <p><strong>CYB236</strong> &mdash; Web Application Security</p>
-        <p>Lab 05: SQL Injection, Command Injection &amp; CSRF &mdash; Chapters 11 &amp; 13</p>
+        <p>Lab 04: SQL Injection, Command Injection &amp; CSRF &mdash; Chapters 11 &amp; 13</p>
     </div>
 
 </div><!-- end container -->
@@ -635,7 +674,7 @@ function generateReport() {
     });
 
     var w = window.open('','_blank');
-    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lab 05 \u2014 '+name+'</title><style>';
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lab 04 \u2014 '+name+'</title><style>';
     h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
     h += 'h1{color:#1e3a5f;font-size:1.5em;text-align:center;margin-bottom:4px}';
     h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
@@ -647,7 +686,7 @@ function generateReport() {
     h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
     h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
     h += '@media print{body{padding:20px}}</style></head><body>';
-    h += '<h1>CYB236 \u2014 Lab 05: SQL Injection, Command Injection &amp; CSRF</h1>';
+    h += '<h1>CYB236 \u2014 Lab 04: SQL Injection, Command Injection &amp; CSRF</h1>';
     h += '<p class="sub">DVWA \u2014 Chapters 11 &amp; 13</p>';
     h += '<div class="si"><div><strong>Student Name:</strong> '+name+'</div><div><strong>Student ID:</strong> '+sid+'</div>'+(date?'<div><strong>Date:</strong> '+date+'</div>':'')+'</div>';
     var tn = {'1':'Task 1: SQL Injection','2':'Task 2: Command Injection','3':'Task 3: CSRF \u2014 The Forged Request'};
@@ -657,7 +696,7 @@ function generateReport() {
         h += '</div>';
         if (t<3) h += '<hr>';
     }
-    h += '<div class="fn">CYB236 \u2014 Lab 05 \u2014 Web Application Security</div></body></html>';
+    h += '<div class="fn">CYB236 \u2014 Lab 04 \u2014 Web Application Security</div></body></html>';
     w.document.write(h); w.document.close(); w.onload = function(){ w.print(); };
 }
 </script>

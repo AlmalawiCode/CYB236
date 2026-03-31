@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المختبر 04: حقن SQL وحقن الأوامر وتزوير الطلبات (CSRF) مع DVWA</title>
+    <style>
+        :root {
+            --primary-color: #8e44ad;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        /* مصطلح إنجليزي داخل النص العربي */
+        .term-en {
+            color: var(--primary-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* ── الترويسة ── */
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">💉</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.15em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* ── شريط معلومات المختبر ── */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.85em; letter-spacing: 0.5px; margin-bottom: 5px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* ── المحتوى ── */
+        .content { padding: 40px; }
+
+        /* ── فهرس المحتويات ── */
+        .toc {
+            background: linear-gradient(135deg, #f0e6f6 0%, #d7a8e8 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-right: 5px solid #8e44ad;
+            border-left: none;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-right: 20px; padding-left: 0; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #6c3483; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* ── الأقسام ── */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #8e44ad; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-right: 25px; margin-left: 0; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* ── صناديق التنبيه ── */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-right: 5px solid var(--info-color); border-left: none; }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-right: 5px solid var(--warning-color); border-left: none; }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-right: 5px solid var(--danger-color); border-left: none; }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-right: 5px solid var(--accent-color); border-left: none; }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* ── الجداول ── */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#0f172a,#1e293b); color: white; padding: 14px 18px; text-align: right; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* ── الكود ── */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; direction: ltr; display: inline-block; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); direction: ltr; text-align: left; }
+        pre code { background: none; color: #68d391; padding: 0; display: inline; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+
+        /* ── الخطوات المرقّمة ── */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-right: 50px; padding-left: 0; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; right: 0; top: 0; left: auto; width: 35px; height: 35px; background: linear-gradient(135deg,#8e44ad,#6c3483); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(142,68,173,0.3); }
+
+        /* ── قائمة التحقق ── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 35px 9px 0; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '☐'; position: absolute; right: 0; left: auto; font-size: 1.2em; color: #8e44ad; }
+
+        /* ── الناتج المتوقع ── */
+        .expected-output { background: #f7fafc; border: 2px dashed #8e44ad; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #8e44ad; margin-top: 0; margin-bottom: 8px; }
+
+        /* ── صندوق التسليم ── */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-right: 5px solid #805ad5; border-left: none; border-radius: 12px 0 0 12px; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* ── حقول الإجابة ── */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.95em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #8e44ad; box-shadow: 0 0 0 3px rgba(142,68,173,0.1); }
+
+        /* ── بانر المفهوم ── */
+        .concept-banner { background: linear-gradient(135deg,#0f172a,#1e293b); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #d7a8e8; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* ── شارة الوحدة ── */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#8e44ad,#6c3483); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* ── استكشاف الأخطاء ── */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* ── التذييل ── */
+        .footer { background: linear-gradient(135deg,#0f172a,#1e293b); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        /* ── زر تبديل اللغة ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- زر تبديل اللغة -->
+<div class="lang-switch">
+    <a href="lab04-english.html" class="lang-btn">
+        &#127760; English
+    </a>
+</div>
+
+<div class="container">
+
+    <header class="header">
+        <h1>&#128300; المختبر 04: حقن SQL وحقن الأوامر وتزوير الطلبات</h1>
+        <p class="subtitle">CYB236 &mdash; أمن تطبيقات الويب</p>
+        <div class="chapter-ref">يغطي: الفصلان 11 و13 &mdash; <span class="term-en">SQLi</span> &bull; <span class="term-en">Command Injection</span> &bull; <span class="term-en">CSRF</span></div>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>رقم المختبر</strong><span>04</span></div>
+        <div class="lab-info-item"><strong>المستوى</strong><span>متوسط</span></div>
+        <div class="lab-info-item"><strong>المدة</strong><span>40&ndash;50 دقيقة</span></div>
+        <div class="lab-info-item"><strong>البيئة</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>المتطلب السابق</strong><span>المختبر 03</span></div>
+    </div>
+
+    <div class="content">
+
+        <nav class="toc">
+            <h2>&#128203; فهرس المحتويات</h2>
+            <ol>
+                <li><a href="#introduction">المقدمة</a></li>
+                <li><a href="#objectives">أهداف التعلم</a></li>
+                <li><a href="#setup">الجزء 1: تشغيل DVWA</a></li>
+                <li><a href="#task1">المهمة 1: حقن SQL</a></li>
+                <li><a href="#task2">المهمة 2: حقن الأوامر</a></li>
+                <li><a href="#task3">المهمة 3: تزوير الطلبات (CSRF)</a></li>
+                <li><a href="#troubleshooting">استكشاف الأخطاء</a></li>
+                <li><a href="#report">إنشاء التقرير</a></li>
+            </ol>
+        </nav>
+
+        <!-- المقدمة -->
+        <section id="introduction">
+            <h2>&#128161; المقدمة</h2>
+            <p>يتواصل هذا المختبر من المختبر 03. ستستكشف ثلاث فئات إضافية من الثغرات الحرجة: <strong>حقن SQL (<span class="term-en">SQL Injection</span>)</strong> — الإفلات من استعلام قاعدة البيانات، و<strong>حقن الأوامر (<span class="term-en">Command Injection</span>)</strong> — الوصول إلى نظام التشغيل، و<strong>تزوير الطلبات عبر المواقع (<span class="term-en">CSRF</span>)</strong> — تزوير طلب مستخدم شرعي من مصدر آخر.</p>
+            <p>تستخدم جميع المهام تطبيق <strong><span class="term-en">DVWA</span></strong> — نفس البيئة من المختبر 03 — مع ضبط مستوى الأمان على <strong>منخفض (<span class="term-en">Low</span>)</strong>.</p>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>للاستخدام المصرّح به فقط</h4>
+                    <p>تُنفَّذ جميع المهام على <span class="term-en">DVWA</span> العامل <strong>محلياً على جهاز Kali الخاص بك</strong>. يُحظر تطبيق هذه التقنيات على أي نظام خارجي دون إذن كتابي صريح مسبق.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- أهداف التعلم -->
+        <section id="objectives">
+            <h2>&#127919; أهداف التعلم</h2>
+            <p>بنهاية هذا المختبر، ستتمكن من:</p>
+            <ul class="checklist">
+                <li>مشاهدة كيف يُفلت حقن SQL من الاستعلام ويُعيد بيانات غير مقصودة</li>
+                <li>شرح دور الشرط الدائم الصحة (<code>OR 1=1</code>) في هجوم حقن SQL</li>
+                <li>مشاهدة كيف يُلحق حقن الأوامر أوامر نظام التشغيل بطلب شرعي للخادم</li>
+                <li>التمييز بين حقن SQL (قاعدة البيانات) وحقن الأوامر (نظام التشغيل)</li>
+                <li>التعرف على ثغرة CSRF من خلال ملاحظة طلب تغيير كلمة المرور عبر GET وغياب الرمز المميز</li>
+                <li>شرح سبب قيام المتصفحات تلقائياً بـ"تفويض" الطلبات الصادرة من مصادر أخرى</li>
+            </ul>
+        </section>
+
+        <!-- الجزء 1: تشغيل DVWA -->
+        <section id="setup">
+            <h2>&#9881;&#65039; الجزء 1: تشغيل DVWA</h2>
+
+            <p>إن كان DVWA لا يزال يعمل من المختبر 03، يمكنك تجاوز أوامر Docker أدناه. فقط افتح Firefox وانتقل إلى <code>http://localhost</code>.</p>
+
+<pre><code><span class="command-label"># تحقق هل DVWA يعمل بالفعل</span>
+sudo docker ps
+
+<span class="command-label"># إن لم يكن مدرجاً، شغّله</span>
+sudo docker start dvwa</code></pre>
+
+            <ol class="steps">
+                <li>افتح <span class="term-en">Firefox</span> وانتقل إلى <code>http://localhost</code></li>
+                <li>سجّل الدخول: اسم المستخدم <code>admin</code> &nbsp;|&nbsp; كلمة المرور <code>password</code></li>
+                <li>انتقل إلى <strong>DVWA Security</strong> وتأكد من أن المستوى مضبوط على <strong>Low</strong></li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>نقطة تحقق</h4>
+                    <p>يجب أن ترى قائمة وحدات DVWA على الجانب الأيسر ومستوى الأمان يُظهر <strong>Low</strong>. أنت جاهز للبدء.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- المهمة 1: حقن SQL -->
+        <section id="task1">
+            <h2>&#128202; المهمة 1: حقن SQL</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مراجعة المفهوم — حقن SQL</h4>
+                    <p>يحدث حقن SQL عندما يُدرج مدخل المستخدم مباشرةً في استعلام SQL بدلاً من معالجته كمعامل منفصل. يُدخل المهاجم قيمة <strong>تُغيّر منطق الاستعلام</strong> — تُفلت من البحث المحدد وتُشغّل أوامر SQL الخاصة به، مما يُعيد بيانات لم يُفترض أن يكشفها التطبيق أبداً.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">وحدة DVWA: SQL Injection</span>
+            <p>انقر على <strong>SQL Injection</strong> في القائمة الجانبية. ستجد استمارة بسيطة بحقل واحد: <em>"User ID"</em>.</p>
+
+            <h3>1أ: بحث عادي</h3>
+            <ol class="steps">
+                <li>اكتب <code>1</code> في حقل User ID وانقر على <strong>Submit</strong></li>
+                <li>تظهر تفاصيل مستخدم واحد (الاسم الأول واسم العائلة)</li>
+                <li>جرّب <code>2</code> ثم <code>3</code> — يظهر مستخدم مختلف في كل مرة</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>ما يحدث في الخادم خلف الكواليس</h4>
+                    <p>يبني الخادم استعلاماً كهذا:<br>
+                    <code>SELECT first_name, last_name FROM users WHERE user_id = '<strong>1</strong>';</code><br><br>
+                    يوضع مدخلك مباشرةً داخل نص SQL — دون أي تعقيم. هذه هي الثغرة.</p>
+                </div>
+            </div>
+
+            <h3>1ب: حقن شرط دائم الصحة</h3>
+            <ol class="steps">
+                <li>امسح الحقل واكتب: <code>1 OR 1=1</code></li>
+                <li>انقر على <strong>Submit</strong></li>
+                <li>بدلاً من مستخدم واحد، تُظهر الصفحة الآن <strong>جميع المستخدمين في قاعدة البيانات</strong></li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>ماذا حدث للاستعلام؟</h4>
+                    <p>غيّر مدخلك الاستعلام إلى:<br>
+                    <code>SELECT first_name, last_name FROM users WHERE user_id = '<strong>1 OR 1=1</strong>';</code><br><br>
+                    لأن <code>1=1</code> <strong>دائماً صحيح</strong>، يطابق شرط WHERE كل صف. تُعاد جميع السجلات — بيانات لا يجب أن يراها المستخدم العادي أبداً.</p>
+                </div>
+            </div>
+
+            <h3>1ج: الإفلات من علامة الاقتباس</h3>
+            <ol class="steps">
+                <li>امسح الحقل واكتب: <code>1' OR '1'='1</code></li>
+                <li>انقر على <strong>Submit</strong></li>
+                <li>تُعاد جميع السجلات مرة أخرى — هذه المرة علامة الاقتباس الافتتاحية <code>'</code> تُغلق علامة الاقتباس الخاصة بالخادم، فيصبح كل ما بعدها كود SQL خام</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>لماذا تهمّ علامة الاقتباس المفردة؟</h4>
+                    <p>علامة الاقتباس في البداية (<code>1'</code>) <strong>تُغلق علامة الاقتباس</strong> التي فتحها الخادم حول مدخلك. كل ما يأتي بعد علامة الإغلاق يُفسَّر كأوامر SQL وليس كقيمة نصية. هذه هي الآلية الأساسية لحقن SQL.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 1 &mdash; أدخل إجاباتك</h4></div>
+            <div class="fill-in">
+                <label>1. حين أدخلت المعرّف "1"، كم عدد المستخدمين الذين ظهروا؟</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="عدد">
+
+                <label>2. حين أدخلت "1 OR 1=1"، كم عدد المستخدمين الذين ظهروا؟</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="عدد">
+
+                <label>3. اذكر الأسماء الأولى للمستخدمين الذين ظهروا بعد الحقن:</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="مثلاً: admin, Gordon, Hack...">
+
+                <label>4. بكلماتك الخاصة، اشرح ما الذي يفعله "OR 1=1" للاستعلام ولماذا تُعاد جميع السجلات:</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>5. ما هو السبب الجذري لهذه الثغرة؟</label>
+                <textarea class="task-answer" data-task="1" rows="2" placeholder="تلميح: كيف يبني الخادم استعلامه؟"></textarea>
+
+                <label>6. اسم ملف لقطة الشاشة (تُظهر جميع المستخدمين مقارنةً بمستخدم واحد):</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="مثلاً: task1_sqli_all_users.png">
+            </div>
+        </section>
+
+        <!-- المهمة 2: حقن الأوامر -->
+        <section id="task2">
+            <h2>&#128421; المهمة 2: حقن الأوامر</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مراجعة المفهوم — حقن الأوامر</h4>
+                    <p>يحدث حقن الأوامر عندما يُمرَّر مدخل المستخدم إلى أمر في قشرة نظام التشغيل (<span class="term-en">shell</span>) دون تعقيم. يُلحق المهاجم أوامر نظام تشغيل إضافية باستخدام معاملات القشرة مثل <code>;</code> أو <code>&&</code>. تعمل هذه الأوامر على نظام تشغيل الخادم بصلاحيات خادم الويب — مما يجعل هذا النوع الأخطر بين أنواع الحقن.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">وحدة DVWA: Command Injection</span>
+            <p>انقر على <strong>Command Injection</strong> في القائمة الجانبية. ستجد استمارة تطلب منك عنوان IP لاختبار الاتصال (ping).</p>
+
+            <h3>2أ: اختبار اتصال عادي</h3>
+            <ol class="steps">
+                <li>اكتب <code>127.0.0.1</code> في حقل عنوان IP وانقر على <strong>Submit</strong></li>
+                <li>تُظهر الصفحة ناتج أمر <code>ping</code> — أوقات الرحلة ذهاباً وإياباً إلى جهازك</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>ما يفعله الخادم</h4>
+                    <p>يُشغّل الخادم أمر قشرة مثل: <code>ping -c 4 <strong>127.0.0.1</strong></code><br>
+                    يُدرج مدخلك مباشرةً في هذا الأمر. تُشغّله القشرة ويُعرض ناتجه. ماذا يحدث لو أضفت المزيد من الأوامر بعد عنوان IP؟</p>
+                </div>
+            </div>
+
+            <h3>2ب: إلحاق أمر ثانٍ</h3>
+            <ol class="steps">
+                <li>في حقل IP، اكتب: <code>127.0.0.1; whoami</code></li>
+                <li>انقر على <strong>Submit</strong></li>
+                <li>تُظهر الصفحة ناتج ping <strong>وأيضاً</strong> ناتج <code>whoami</code> — اسم حساب نظام التشغيل الذي يعمل تحته خادم الويب</li>
+            </ol>
+
+            <h3>2ج: سرد ملفات الخادم</h3>
+            <ol class="steps">
+                <li>اكتب: <code>127.0.0.1; ls /var/www/html</code></li>
+                <li>انقر على <strong>Submit</strong></li>
+                <li>يتبع ناتج ping <strong>قائمة بالملفات</strong> في الدليل الجذر لخادم الويب</li>
+            </ol>
+
+            <h3>2د: الكشف عن اسم المضيف</h3>
+            <ol class="steps">
+                <li>اكتب: <code>127.0.0.1; hostname</code></li>
+                <li>انقر على <strong>Submit</strong></li>
+                <li>يظهر اسم مضيف الخادم جنباً إلى جنب مع ناتج ping</li>
+            </ol>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#128308;</span>
+                <div>
+                    <h4>لماذا هذا أخطر أنواع الحقن؟</h4>
+                    <p>حقن SQL يستهدف قاعدة البيانات. حقن الأوامر يستهدف <strong>نظام التشغيل بأكمله</strong>. مع وصول المهاجم إلى نظام التشغيل عبر استمارة ويب، يمكنه قراءة أي ملف تصل إليه عملية الخادم، وسرد الأدلة، واكتشاف العمليات الجارية، والمزيد.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 2 &mdash; أدخل إجاباتك</h4></div>
+            <div class="fill-in">
+                <label>1. حين كتبت "127.0.0.1; whoami"، ما اسم المستخدم الذي ظهر؟</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="مثلاً: www-data">
+
+                <label>2. حين أدرجت /var/www/html، اذكر ملفّين أو ثلاثة وجدتها:</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="مثلاً: index.php, ...">
+
+                <label>3. ما الذي تفعله الفاصلة المنقوطة (;) في القشرة؟ لماذا تسمح لأمرين بالعمل؟</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>4. كيف يختلف حقن الأوامر عن حقن SQL؟ (ما هو الهدف لكل منهما؟)</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="حقن SQL يستهدف... / حقن الأوامر يستهدف..."></textarea>
+
+                <label>5. اسم ملف لقطة الشاشة (ناتج ping مع نتيجة whoami):</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="مثلاً: task2_command_injection.png">
+            </div>
+        </section>
+
+        <!-- المهمة 3: تزوير الطلبات -->
+        <section id="task3">
+            <h2>&#128275; المهمة 3: تزوير الطلبات (CSRF)</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مراجعة المفهوم — تزوير الطلبات عبر المواقع (CSRF)</h4>
+                    <p>يستغل <span class="term-en">CSRF</span> حقيقة أن <strong>المتصفحات تُرفق ملفات تعريف الجلسة تلقائياً مع كل طلب</strong> — بما فيها الطلبات الصادرة من صفحة خبيثة. يصنع المهاجم رابطاً يُنجز، حين يزوره مستخدم مسجّل الدخول، إجراءً مميّزاً نيابةً عنه دون علمه.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">وحدة DVWA: CSRF</span>
+            <p>انقر على <strong>CSRF</strong> في القائمة الجانبية. ستجد استمارة تتيح للمستخدم الحالي تغيير كلمة مروره.</p>
+
+            <h3>3أ: مراقبة استمارة تغيير كلمة المرور</h3>
+            <ol class="steps">
+                <li>انظر إلى الاستمارة — تحتوي على حقلين: <strong>New Password</strong> و<strong>Confirm New Password</strong></li>
+                <li>اكتب <code>test123</code> في كلا الحقلين وانقر على <strong>Change</strong></li>
+                <li>تظهر رسالة النجاح: "Password Changed."</li>
+                <li>انظر الآن إلى شريط الرابط في المتصفح — قيم كلمة المرور الجديدة تظهر مباشرةً كمعاملات في الرابط</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>المشكلة الأولى: طلب GET لعملية تغيير الحالة</h4>
+                    <p>تغيير كلمة المرور هو <strong>عملية تُغيّر حالة النظام</strong>. يجب أن تستخدم طلب POST وليس GET. طلب GET يُدمج جميع المعاملات في الرابط، مما يعني أن <em>أي رابط أو صورة أو عنصر مضمّن في أي صفحة</em> يمكنه تشغيل نفس الإجراء صامتاً حين يزوره مستخدم مسجّل الدخول.</p>
+                </div>
+            </div>
+
+            <h3>3ب: تزوير طلب عبر شريط الرابط</h3>
+            <ol class="steps">
+                <li>انظر إلى الرابط الحالي — يحتوي على شيء مثل:<br>
+                    <code>?password_new=test123&amp;password_conf=test123&amp;Change=Change</code></li>
+                <li>عدّل الرابط مباشرةً في شريط العنوان، واستبدل <code>test123</code> بقيمة مختلفة (مثلاً <code>hacked</code>)</li>
+                <li>اضغط <strong>Enter</strong></li>
+                <li>تغيّرت كلمة المرور مجدداً — بمجرد زيارة رابط، دون أي تفاعل مع الاستمارة</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>ما يُحاكيه هذا:</h4>
+                <p>تخيّل أن هذا الرابط مُضمَّن كصورة غير مرئية <code>&lt;img src="..."&gt;</code> في صفحة ويب. مستخدم DVWA المسجّل دخوله الذي يزور تلك الصفحة ستُغيَّر كلمة مروره تلقائياً — دون أن ينقر شيئاً، ودون أن يرى شيئاً، ودون أن يعلم بحدوث أي شيء.</p>
+            </div>
+
+            <h3>3ج: فحص وجود رمز CSRF في مصدر الصفحة</h3>
+            <ol class="steps">
+                <li>انقر بالزر الأيمن على صفحة وحدة CSRF واختر <strong>View Page Source</strong></li>
+                <li>ابحث عن عنصر <code>&lt;form&gt;</code></li>
+                <li><strong>لا يوجد حقل رمز مخفي</strong> — لا <code>csrf_token</code> ولا <code>_token</code> ولا <code>nonce</code></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>كيف سيبدو رمز CSRF في الاستمارة</h4>
+                    <p>الاستمارة المحمية صحيحاً ستتضمن حقلاً مخفياً:<br>
+                    <code>&lt;input type="hidden" name="csrf_token" value="x8f3Kpq2..."&gt;</code><br><br>
+                    يتحقق الخادم من هذا الرمز عند كل إرسال. لأن المهاجم لا يستطيع معرفة قيمة الرمز، تُرفض الطلبات المزوّرة من مصادر أخرى. هذا هو الدفاع الأساسي ضد CSRF.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 3 &mdash; أدخل إجاباتك</h4></div>
+            <div class="fill-in">
+                <label>1. ما طريقة HTTP (GET أم POST) التي تستخدمها استمارة تغيير كلمة المرور؟ اكتب الرابط الكامل الذي ظهر بعد الإرسال:</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="الطريقة: GET — الرابط: http://localhost/...?password_new=...">
+
+                <label>2. حين عدّلت الرابط مباشرةً في شريط العنوان لكلمة مرور مختلفة، هل نجح ذلك؟ (نعم / لا)</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="نعم أو لا">
+
+                <label>3. هل وجدت رمز CSRF في مصدر الصفحة؟ (نعم / لا)</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="نعم أو لا">
+
+                <label>4. بكلماتك الخاصة: لماذا يُفوِّض متصفح المستخدم المسجّل دخوله تلقائياً طلباً صادراً من موقع آخر تماماً؟</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>5. ما الفرق بين CSRF وXSS من حيث ما يتحكم فيه المهاجم؟</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="XSS يتحكم في... / CSRF يتحكم في..."></textarea>
+
+                <label>6. اذكر دفاعين يمنعان ثغرة CSRF هذه:</label>
+                <textarea class="task-answer" data-task="3" rows="2" placeholder="1. ... 2. ..."></textarea>
+
+                <label>7. اسم ملف لقطة الشاشة (شريط الرابط يُظهر معاملات كلمة المرور):</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="مثلاً: task3_csrf_url.png">
+            </div>
+        </section>
+
+        <!-- استكشاف الأخطاء -->
+        <section id="troubleshooting">
+            <h2>&#128295; استكشاف الأخطاء</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; DVWA لا يُحمَّل (الاتصال مرفوض)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> نفّذ <code>sudo docker ps</code> — إن لم تكن <code>dvwa</code> مدرجة، شغّلها بـ <code>sudo docker start dvwa</code>. انتقل إلى <code>http://localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; حقن SQL — يظهر مستخدم واحد فقط بغض النظر عن المدخل</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تأكد من أن مستوى الأمان <strong>Low</strong> (قائمة DVWA Security). المستويان Medium وHigh يُضيفان فلاتر. جرّب <code>1' OR '1'='1</code> (بعلامات اقتباس مفردة) إن لم تنجح النسخة البسيطة.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; حقن الأوامر — لا يظهر ناتج بعد ping</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> استخدم <strong>فاصلة منقوطة</strong> (<code>;</code>) وليس فاصلة. جرّب <code>&&</code> إن فشلت الفاصلة المنقوطة: <code>127.0.0.1 && whoami</code>. يجب أن يكون مستوى الأمان <strong>Low</strong>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; CSRF — لا تظهر رسالة "Password Changed"</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تأكد من أنك لا تزال مسجّل الدخول. قد تنتهي صلاحية ملفات تعريف الجلسة بعد إعادة تهيئة قاعدة البيانات. سجّل الخروج وأعد الدخول بـ admin / password، ثم انتقل مجدداً إلى وحدة CSRF.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; حاوية DVWA موجودة بالفعل عند تشغيل docker run</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> فقط شغّلها: <code>sudo docker start dvwa</code>. أمر <code>docker run</code> للمرة الأولى فقط.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- إنشاء التقرير -->
+        <section id="report">
+            <h2>&#128196; إنشاء تقرير المختبر</h2>
+            <p>أدخل معلوماتك وانقر على <strong>إنشاء تقرير PDF</strong>. سيُجمَع جميع إجاباتك من المهام الثلاث في صفحة قابلة للطباعة. احفظها كـ PDF وأرفقها مع لقطات الشاشة.</p>
+
+            <div style="border:2px solid #8e44ad; border-radius:15px; padding:28px; margin:18px 0; background:#fafbfc;">
+                <div style="text-align:center; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid #8e44ad;">
+                    <h3 style="color:var(--secondary-color); margin:0;">CYB236 &mdash; المختبر 04: تقرير SQLi وحقن الأوامر وCSRF</h3>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">اسم الطالب: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="الاسم الكامل (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">الرقم الجامعي: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="الرقم الجامعي (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">البريد الإلكتروني: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="البريد الإلكتروني (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;" dir="ltr">
+                </div>
+                <p style="font-size:0.85em; color:#e53e3e; margin-bottom:18px; text-align:center;">&#9432; جميع الحقول المحددة بـ <strong>*</strong> إلزامية ولا يمكن إنشاء التقرير دون تعبئتها.</p>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#8e44ad,#6c3483); color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:pointer; box-shadow:0 4px 15px rgba(142,68,173,0.4);">
+                        &#128196; إنشاء تقرير PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>قائمة التسليم</h4>
+                    <ul>
+                        <li>تقرير PDF من هذه الصفحة (الاسم + الرقم الجامعي + جميع الإجابات)</li>
+                        <li>لقطة شاشة: المهمة 1 &mdash; جميع المستخدمين الناتجين عن حقن SQL مقارنةً بمستخدم واحد</li>
+                        <li>لقطة شاشة: المهمة 2 &mdash; ناتج حقن الأوامر (ping + whoami)</li>
+                        <li>لقطة شاشة: المهمة 3 &mdash; شريط الرابط يُظهر معاملات كلمة مرور CSRF</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>معايير التقييم</h3>
+            <table>
+                <tr><th>المهمة</th><th>الوصف</th><th>الدرجة</th></tr>
+                <tr><td><strong>المهمة 1</strong></td><td>حقن SQL — عدد المستخدمين، الأسماء، شرح الشرط الدائم</td><td>30</td></tr>
+                <tr><td><strong>المهمة 2</strong></td><td>حقن الأوامر — اسم المستخدم، الملفات، شرح معامل القشرة</td><td>30</td></tr>
+                <tr><td><strong>المهمة 3</strong></td><td>CSRF — ملاحظة الرابط، فحص الرمز، شرح ثقة المتصفح</td><td>35</td></tr>
+                <tr><td><strong>الجودة</strong></td><td>وضوح الإجابات وتسمية لقطات الشاشة وتنسيق التقرير</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:left; font-weight:bold;">المجموع</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>التنظيف بعد الانتهاء</h3>
+<pre><code><span class="command-label"># أوقف DVWA عند الانتهاء من المختبرين</span>
+sudo docker stop dvwa</code></pre>
+        </section>
+
+    </div><!-- نهاية المحتوى -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; أمن تطبيقات الويب</p>
+        <p>المختبر 04: حقن SQL وحقن الأوامر وتزوير الطلبات (CSRF) &mdash; الفصلان 11 و13</p>
+    </div>
+
+</div><!-- نهاية الحاوية -->
+
+<script>
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('اسم الطالب مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
+    if (!sid)   { alert('الرقم الجامعي مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
+    if (!email) { alert('البريد الإلكتروني مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
+
+    var answers = {};
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!answers[t]) answers[t] = [];
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers[t].push({ label: lbl, value: f.value.trim() || '(لم تتم الإجابة)' });
+    });
+
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g, '').replace(/\s+/g, '_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g, '');
+    var w = window.open('', '_blank');
+    var h = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">';
+    h += '<title>Lab04_' + safeName + '_' + safeSid + '</title><style>';
+    h += 'body{font-family:"Segoe UI","Arial",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.9;direction:rtl}';
+    h += 'h1{color:#8e44ad;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#f0e6f6;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #d7a8e8}';
+    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-right:4px solid #8e44ad;border-left:none;padding-right:14px;padding-left:0}';
+    h += '.tt{color:#6c3483;font-size:1.15em;margin-bottom:10px;font-weight:700}';
+    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 المختبر 04: حقن SQL وحقن الأوامر وتزوير الطلبات (CSRF)</h1>';
+    h += '<p class="sub">DVWA \u2014 الفصلان 11 و13</p>';
+    h += '<div class="si"><div><strong>اسم الطالب:</strong> ' + name + '</div><div><strong>الرقم الجامعي:</strong> ' + sid + '</div><div><strong>البريد الإلكتروني:</strong> ' + email + '</div></div>';
+    var tn = {'1': 'المهمة 1: حقن SQL', '2': 'المهمة 2: حقن الأوامر', '3': 'المهمة 3: تزوير الطلبات (CSRF)'};
+    for (var t = 1; t <= 3; t++) {
+        h += '<div class="ts"><div class="tt">' + tn[t] + '</div>';
+        if (answers[t]) answers[t].forEach(function(a) {
+            h += '<div class="ar"><div class="al">' + a.label + '</div>';
+            h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+        });
+        h += '</div>';
+        if (t < 3) h += '<hr>';
+    }
+    h += '<div class="fn">CYB236 \u2014 المختبر 04 \u2014 أمن تطبيقات الويب</div></body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
+</body>
+</html>

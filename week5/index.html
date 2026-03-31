@@ -3,71 +3,1600 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 5: CSRF, XXE & Injection | CYB236</title>
+    <title>CYB236 Handout - Chapters 17 &amp; 18</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #fef3e2;
+            --primary-600: #e67e22;
+            --primary-700: #d35400;
+            --primary-800: #a04000;
+            --primary-900: #6e2c00;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Colors ── */
+            --ch17: #e67e22;
+            --ch17-light: #fdebd0;
+            --ch17-mid: #f0b27a;
+
+            --ch18: #d35400;
+            --ch18-light: #fae5d3;
+            --ch18-mid: #e59866;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --orange: #e67e22;
+            --orange-light: #fef3e2;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #c0392b, #c0392bdd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .week-badge {
-            background: #c0392b;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #c0392b;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #c0392b;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-left: 16px;
+        }
+
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #1a0800 0%, #3d1a00 50%, #2a1200 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #f0b27a;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot {
+            width: 8px; height: 8px;
+            background: #e67e22;
+            border-radius: 50%;
+        }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub {
+            font-size: 20px;
+            color: #d4d4d4;
+            margin-bottom: 30px;
+        }
+
+        .cover-chips {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .cover-chip.ch17 { background: rgba(230,126,34,0.35); }
+        .cover-chip.ch18 { background: rgba(211,84,0,0.35); }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .sidebar-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-ch-label {
+            padding: 8px 12px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--neutral-400);
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--primary-600); color: white; }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .chapter-num.ch17 { background: var(--ch17-light); color: var(--ch17); }
+        .chapter-num.ch18 { background: var(--ch18-light); color: var(--ch18); }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider { height: 4px; border-radius: 2px; margin: 10px auto 0; width: 80px; }
+        .chapter-divider.ch17 { background: var(--ch17); }
+        .chapter-divider.ch18 { background: var(--ch18); }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .topic-icon.ch17 { background: var(--ch17-light); }
+        .topic-icon.ch18 { background: var(--ch18-light); }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-number.ch17 { background: var(--ch17); }
+        .objective-number.ch18 { background: var(--ch18); }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--neutral-50);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+            border-left: 5px solid;
+        }
+
+        .story.ch17 { border-color: var(--ch17); }
+        .story.ch18 { border-color: var(--ch18); }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+        }
+
+        .story-label.ch17 { background: var(--ch17-light); color: var(--ch17); }
+        .story-label.ch18 { background: var(--ch18-light); color: var(--ch18); }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-left: 3px solid var(--border);
+        }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Orange Info Box ───── */
+        .orange-box {
+            background: linear-gradient(135deg, #fef3e2, #fdebd0);
+            border-left: 5px solid var(--ch17);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .orange-box h4 { color: var(--ch17); margin-bottom: 6px; font-size: 1em; }
+        .orange-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+        }
+
+        .clean-list.ch17 li::before { background: var(--ch17-light); }
+        .clean-list.ch18 li::before { background: var(--ch18-light); }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-num.ch17 { background: var(--ch17); }
+        .step-num.ch18 { background: var(--ch18); }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .good { color: #86efac; font-weight: bold; }
+        .code-box .bad  { color: #f87171; font-weight: bold; }
+
+        /* ───── Hash Comparison Cards ───── */
+        .hash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .hash-card {
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid;
+        }
+
+        .hash-card.plain   { border-color: var(--red);   background: var(--red-light); }
+        .hash-card.md5     { border-color: #f59e0b; background: #fffbeb; }
+        .hash-card.bcrypt  { border-color: var(--green);  background: var(--green-light); }
+
+        .hash-card .h-icon { font-size: 2.2em; margin-bottom: 8px; }
+        .hash-card .h-name { font-weight: 800; font-size: 1.05em; margin-bottom: 6px; }
+        .hash-card.plain  .h-name { color: var(--red); }
+        .hash-card.md5    .h-name { color: #d97706; }
+        .hash-card.bcrypt .h-name { color: var(--green); }
+        .hash-card .h-result { font-size: 0.85em; color: var(--gray); }
+
+        /* ───── Secure vs Insecure ───── */
+        .secure-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .secure-side { border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-md); }
+
+        .secure-side-header {
+            padding: 14px 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .secure-side-header.bad  { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .secure-side-header.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .secure-side-body { padding: 20px; background: white; }
+        .secure-side-body ul { list-style: none; padding: 0; }
+        .secure-side-body li { padding: 8px 0 8px 28px; position: relative; font-size: 0.95em; }
+        .secure-side-body.bad  li::before { content: '✗'; position: absolute; left: 0; color: var(--red);   font-weight: 700; }
+        .secure-side-body.good li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+        /* ───── Verb Table ───── */
+        .verb-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .verb-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .verb-table td {
+            padding: 14px 16px;
+            background: white;
+            font-size: 0.98em;
+        }
+
+        .verb-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .verb-table tr td:last-child  { border-radius: 0 10px 10px 0; }
+        .verb-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── Risk Badge ───── */
+        .risk-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.82em;
+            color: white;
+        }
+        .risk-badge.high   { background: var(--red); }
+        .risk-badge.medium { background: #f59e0b; }
+        .risk-badge.low    { background: var(--green); }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner.ch17 { background: linear-gradient(135deg, #a04000, #e67e22); }
+        .summary-banner.ch18 { background: linear-gradient(135deg, #6e2c00, #d35400); }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        /* ───── Page Break ───── */
+        .page-break {
+            height: 6px;
+            background: linear-gradient(90deg, var(--ch17), var(--ch18), var(--ch17-mid), var(--ch18-mid));
+            margin: 60px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Footer ───── */
+        .footer {
+            background: var(--neutral-900);
+            color: white;
+            padding: 48px 40px;
+            margin-top: 20px;
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .secure-compare { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+            .hash-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="week-badge">Week 5 - Offense</span>
-        <h1>CSRF, XXE & Injection</h1>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="index-ar.html" class="lang-switch" style="font-family:'Noto Sans Arabic',sans-serif;">العربية</a>
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week4/index.html" class="nav-link">Week 4</a>
+            <a href="index.html" class="nav-link active">Week 5</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>Week 5</span>
+            <span>›</span>
+            <span>Part III — Security Principles</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            Week 5 &nbsp;·&nbsp; Security Principles I
+        </div>
+        <h1>Security Principles I</h1>
+        <p class="sub">Authentication · Authorization · Access Control · Session Management</p>
+        <div class="cover-chips">
+            <div class="cover-chip ch17">Ch.17 Intro to Defense</div>
+            <div class="cover-chip ch18">Ch.18 Secure Architecture</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ BODY ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-ch-label">Ch. 17 — Intro to Defense</div>
+            <a href="#chapter-17"       class="sidebar-link active"><span class="sidebar-link-number">1</span>Ch.17 Overview</a>
+            <a href="#ch17-castle"      class="sidebar-link"><span class="sidebar-link-number">2</span>The Castle Metaphor</a>
+            <a href="#ch17-pillars"     class="sidebar-link"><span class="sidebar-link-number">3</span>Five Pillars of Defense</a>
+            <a href="#ch17-mitigation"  class="sidebar-link"><span class="sidebar-link-number">4</span>Mitigation Strategies</a>
+            <a href="#ch17-summary"     class="sidebar-link"><span class="sidebar-link-number">5</span>Ch.17 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 18 — Secure Architecture</div>
+            <a href="#chapter-18"       class="sidebar-link"><span class="sidebar-link-number">6</span>Ch.18 Overview</a>
+            <a href="#ch18-requirements" class="sidebar-link"><span class="sidebar-link-number">7</span>Feature Requirements</a>
+            <a href="#ch18-authn"       class="sidebar-link"><span class="sidebar-link-number">8</span>Authentication &amp; Authorization</a>
+            <a href="#ch18-tls"         class="sidebar-link"><span class="sidebar-link-number">9</span>SSL / TLS</a>
+            <a href="#ch18-credentials" class="sidebar-link"><span class="sidebar-link-number">10</span>Secure Credentials</a>
+            <a href="#ch18-hashing"     class="sidebar-link"><span class="sidebar-link-number">11</span>Password Hashing</a>
+            <a href="#ch18-2fa"         class="sidebar-link"><span class="sidebar-link-number">12</span>Two-Factor Authentication</a>
+            <a href="#ch18-pii"         class="sidebar-link"><span class="sidebar-link-number">13</span>PII &amp; Financial Data</a>
+            <a href="#ch18-summary"     class="sidebar-link"><span class="sidebar-link-number">14</span>Ch.18 Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 17 — Securing Modern Web Applications
+     ════════════════════════════════════════════════ -->
+<div id="chapter-17" class="chapter-header">
+    <div class="chapter-num ch17">Chapter 17</div>
+    <div class="chapter-title">Securing Modern Web Applications</div>
+    <div class="chapter-divider ch17"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch17">1</div>
+            <div class="objective-text"><strong>Explain</strong> the transition from offense (Part II) to defense (Part III) and why understanding attacks is essential for building defenses.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">2</div>
+            <div class="objective-text"><strong>Describe</strong> the "castle" metaphor for web application defense and what it reveals about prioritizing security resources.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">3</div>
+            <div class="objective-text"><strong>Identify</strong> the five defensive stages: architecture, code review, vulnerability discovery, vulnerability management, and regression testing.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">4</div>
+            <div class="objective-text"><strong>Understand</strong> the role of the security engineer as a "master defender" who combines recon, hacking, and engineering skills.</div>
+        </div>
+    </div>
+</div>
+
+<!-- The Castle Metaphor -->
+<div id="ch17-castle" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127984;</div>
+        <h2>The Castle Metaphor</h2>
+    </div>
+
+    <p>Defending a web application is <strong>somewhat akin to defending a medieval castle</strong>. This metaphor from the book gives us a practical way to understand how security resources must be prioritized.</p>
+
+    <div class="story ch17">
+        <div class="story-label ch17">&#128214; From the Book — The Castle Defender</div>
+        <p>A castle consists of a number of buildings and walls, which represent the <strong>core application code</strong>. Outside the castle are buildings that integrate with and support the castle's owner — these represent the application's <strong>dependencies and integrations</strong>.</p>
+        <p>In wartime, due to the large surface area, it is <em>essential for defenses to be prioritized</em>. It would be infeasible to maximize defensive fortifications at every potential entrance point.</p>
+        <div class="dialogue">
+            In web application security, such prioritization and vulnerability management is often the job of <strong>security engineers</strong> in large corporations — or more generalized software engineers in smaller companies. These professionals take on the role of <em>master defender</em>.
+        </div>
+    </div>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#127963;</div>
+            <div class="mc-title">Castle Walls</div>
+            <div class="mc-desc">Core application code — the primary perimeter to defend</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#127968;</div>
+            <div class="mc-title">Outer Buildings</div>
+            <div class="mc-desc">Third-party dependencies and integrations — wider attack surface</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128737;</div>
+            <div class="mc-title">Gatekeepers</div>
+            <div class="mc-desc">Authentication &amp; authorization — who gets in and what they can do</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128205;</div>
+            <div class="mc-title">Weak Points</div>
+            <div class="mc-desc">Unpatched vulnerabilities — entry points a hacker will seek out first</div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Key Insight — Why Offense Comes First</h4>
+        <p>The book deliberately covers recon and offense <em>before</em> defense. By understanding how hackers map and break into web applications, you can <strong>derive the best ways to prioritize your defenses</strong> and camouflage your application architecture from malicious eyes.</p>
+    </div>
+</div>
+
+<!-- Five Pillars of Defense -->
+<div id="ch17-pillars" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127961;</div>
+        <h2>The Five Pillars of Defense</h2>
+    </div>
+
+    <p>The book organizes the entire defense strategy into <strong>five sequential stages</strong>. Each stage builds on the previous one, forming a complete security lifecycle.</p>
+
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch17">1</div>
+            <div>
+                <strong>Defensive Software Architecture</strong><br>
+                <span style="color:var(--gray)">Security begins <em>before a single line of code is written</em>. Evaluate data flow, storage, and integration risks at the architecture phase. Fixing a security flaw here costs 30–60× less than fixing it in production (NIST).</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch17">2</div>
+            <div>
+                <strong>Comprehensive Code Reviews</strong><br>
+                <span style="color:var(--gray)">Every commit should be reviewed not just for quality, but for security. Key questions: How is data transmitted? How is it stored? How is it presented to users? How is it processed on the server?</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch17">3</div>
+            <div>
+                <strong>Vulnerability Discovery</strong><br>
+                <span style="color:var(--gray)">Proactively find vulnerabilities before customers or the public do. Methods include bug bounty programs, internal red/blue teams, third-party penetration testers, and corporate incentives for engineers to log known issues.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch17">4</div>
+            <div>
+                <strong>Vulnerability Management</strong><br>
+                <span style="color:var(--gray)">Not all vulnerabilities carry equal risk. Triage and prioritize based on: financial risk, difficulty of exploitation, type of data compromised, contractual agreements, and existing mitigations. Track fixes through to completion.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch17">5</div>
+            <div>
+                <strong>Regression Testing</strong><br>
+                <span style="color:var(--gray)">After deploying a fix, write a regression test to assert the vulnerability no longer exists. Approximately <strong>25% of security vulnerabilities are regressions</strong> — bugs previously closed that were re-opened.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="orange-box">
+        <h4>&#128202; The Cost of Finding Bugs Late</h4>
+        <p>NIST research shows: the cost of removing an application security vulnerability during the <strong>design phase</strong> is <strong>30–60× less</strong> than if removed during production. This is the single strongest argument for security-first architecture.</p>
+    </div>
+
+    <h3>Vulnerability Discovery Methods</h3>
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Who Finds It</th>
+                <th>Risk to Business</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Customer notification</strong></td>
+                <td>End users</td>
+                <td><span class="risk-badge high">High</span> — reputation already damaged</td>
+            </tr>
+            <tr>
+                <td><strong>Public disclosure</strong></td>
+                <td>External researchers / hackers</td>
+                <td><span class="risk-badge high">High</span> — worst case; mass exploitation possible</td>
+            </tr>
+            <tr>
+                <td><strong>Bug bounty programs</strong></td>
+                <td>External security researchers</td>
+                <td><span class="risk-badge medium">Medium</span> — controlled, incentivized disclosure</td>
+            </tr>
+            <tr>
+                <td><strong>Red / Blue teams</strong></td>
+                <td>Internal attackers &amp; defenders</td>
+                <td><span class="risk-badge low">Low</span> — found internally before production</td>
+            </tr>
+            <tr>
+                <td><strong>Penetration testing</strong></td>
+                <td>Third-party testers</td>
+                <td><span class="risk-badge low">Low</span> — structured, authorized testing</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; The Logging Trap</h4>
+        <p>Lack of logging for <em>known</em> vulnerabilities has led to the demise of several companies. If a vulnerability is known but not yet patched, <strong>additional logging must be put in place</strong> to detect any exploitation attempts while the fix is being developed.</p>
+    </div>
+</div>
+
+<!-- Mitigation Strategies -->
+<div id="ch17-mitigation" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#128736;</div>
+        <h2>Mitigation Strategies</h2>
+    </div>
+
+    <p>An overall best practice for any security-conscious organization is to <strong>actively mitigate the risk</strong> of vulnerabilities occurring in the codebase. This is not a single-phase activity — it happens from architecture all the way through regression testing.</p>
+
+    <div class="story ch17">
+        <div class="story-label ch17">&#128214; From the Book — Defense in Depth</div>
+        <p>Mitigation strategies should be <strong>widespread, like a net</strong> trying to catch as many fish as possible. In crucial areas of an application, mitigation should also run deep.</p>
+        <p>All the skills and techniques covered in recon, offense, and defense are <em>synergistic</em>. Improving your mastery of any one discipline will result in <strong>more efficient use of your time</strong> across all three.</p>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--red);">
+            <h4 style="color:var(--red);">&#10060; Penetrate-and-Patch</h4>
+            <p>React only when vulnerabilities are discovered or exploited. No proactive strategy. High cost, high risk.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--green);">
+            <h4 style="color:var(--green);">&#10003; Holistic Defense</h4>
+            <p>Security embedded at every stage — architecture, code review, discovery, management, and regression testing — from day one.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Chapter 17 Summary -->
+<div id="ch17-summary" class="summary-banner ch17">
+    <h3>&#10003; Chapter 17 Summary — Securing Modern Web Applications</h3>
+    <ul>
+        <li>Defense is the natural conclusion of recon and offense — <strong>you must understand attacks to build defenses</strong></li>
+        <li>The <strong>castle metaphor</strong>: prioritize defenses across a large surface area, just like a medieval fortress</li>
+        <li>Security engineering spans <strong>five stages</strong>: architecture → code review → discovery → management → regression testing</li>
+        <li>NIST: fixing a flaw in architecture costs <strong>30–60× less</strong> than fixing it in production</li>
+        <li>Approximately <strong>25% of vulnerabilities are regressions</strong> — write tests after every fix</li>
+        <li>Proactive discovery (bug bounties, red teams, pen testing) saves money and protects reputation</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 18 — Secure Application Architecture
+     ════════════════════════════════════════════════ -->
+<div id="chapter-18" class="chapter-header">
+    <div class="chapter-num ch18">Chapter 18</div>
+    <div class="chapter-title">Secure Application Architecture</div>
+    <div class="chapter-divider ch18"></div>
+</div>
+
+<!-- Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch18">1</div>
+            <div class="objective-text"><strong>Analyze</strong> feature requirements to identify authentication, authorization, and data-storage security risks before writing code.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">2</div>
+            <div class="objective-text"><strong>Explain</strong> the role of SSL/TLS in protecting credentials and user data in transit against man-in-the-middle attacks.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">3</div>
+            <div class="objective-text"><strong>Describe</strong> why passwords must be hashed (not encrypted) and compare BCrypt and PBKDF2 as hashing algorithms.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">4</div>
+            <div class="objective-text"><strong>Explain</strong> how two-factor authentication (2FA) eliminates remote login attacks and the trade-offs between SMS, app, and hardware token 2FA.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">5</div>
+            <div class="objective-text"><strong>Identify</strong> the compliance and storage risks associated with personally identifiable information (PII) and financial data.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Feature Requirements Analysis -->
+<div id="ch18-requirements" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128203;</div>
+        <h2>Analyzing Feature Requirements</h2>
+    </div>
+
+    <p>The <strong>first step in securing any web application is the architecture phase</strong>. Before writing code, a cross-functional team evaluates business requirements and derives security risks from them.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; Case Study — MegaMerch</div>
+        <p>MegaBank decides to launch a merchandise store: <strong>MegaMerch</strong>. The product team defines five business requirements:</p>
+        <ul class="clean-list ch18">
+            <li>Users can create accounts and sign in</li>
+            <li>User accounts contain full name, address, and date of birth</li>
+            <li>Users can browse the store and search for items</li>
+            <li>Users can save credit cards and bank accounts for later use</li>
+            <li>Authenticated users have different privileges than guests</li>
+        </ul>
+    </div>
+
+    <h3>Business Requirements → Security Risks</h3>
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>Requirement Detected</th>
+                <th>Security Risk Derived</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Storing credentials</td>
+                <td>How do we handle sessions, logins, and cookies?</td>
+                <td><span class="risk-badge high">Critical</span></td>
+            </tr>
+            <tr>
+                <td>Storing PII (name, address, DOB)</td>
+                <td>Are laws applicable? Is data encrypted at rest?</td>
+                <td><span class="risk-badge high">Critical</span></td>
+            </tr>
+            <tr>
+                <td>Elevated user privileges vs. guests</td>
+                <td>Authorization model — how are permission levels enforced?</td>
+                <td><span class="risk-badge high">Critical</span></td>
+            </tr>
+            <tr>
+                <td>Search engine functionality</td>
+                <td>Separate search DB vs. primary DB — permission sync risks</td>
+                <td><span class="risk-badge medium">Medium</span></td>
+            </tr>
+            <tr>
+                <td>Storing financial data (credit cards)</td>
+                <td>PCI-DSS compliance; consider outsourcing to specialists</td>
+                <td><span class="risk-badge high">Critical</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128161; Architecture-Phase Rule</h4>
+        <p>Any organization with separate security and R&amp;D teams must ensure <strong>communication pathways between the two are built into the development process</strong>. Features cannot be properly analyzed in a security silo.</p>
+    </div>
+</div>
+
+<!-- Authentication & Authorization -->
+<div id="ch18-authn" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128273;</div>
+        <h2>Authentication &amp; Authorization</h2>
+    </div>
+
+    <p>Because MegaMerch stores credentials and supports different user tiers, it has <strong>both an authentication system and an authorization system</strong>. These are distinct concepts that work together.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch18);">
+            <h4 style="color:var(--ch18);">&#128272; Authentication</h4>
+            <p><strong>"Who are you?"</strong> — Verifying the identity of a user. Involves login flows, credentials sent over the network, and sessions/cookies issued after a successful login.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch17);">
+            <h4 style="color:var(--ch17);">&#128737; Authorization</h4>
+            <p><strong>"What can you do?"</strong> — Enforcing what actions an authenticated user is allowed to take. Differentiates between guests, registered users, and administrators.</p>
+        </div>
+    </div>
+
+    <h3>Three Core Questions for Any Auth System</h3>
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch18">1</div>
+            <div>
+                <strong>How do we handle data in transit?</strong><br>
+                <span style="color:var(--gray)">Credentials sent over the network must be encrypted. An unencrypted login form is vulnerable to man-in-the-middle interception.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch18">2</div>
+            <div>
+                <strong>How do we handle the storage of credentials?</strong><br>
+                <span style="color:var(--gray)">Passwords must never be stored in plain text. Even database administrators should not be able to read user passwords.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch18">3</div>
+            <div>
+                <strong>How do we handle various authorization levels?</strong><br>
+                <span style="color:var(--gray)">The application must enforce what each tier of user (guest, customer, admin) is allowed to access and modify — at every API endpoint.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Access Control Failure</h4>
+        <p>Failing to enforce authorization on every endpoint — even internal or "hidden" endpoints — is a critical vulnerability. A guest who discovers an admin API URL must be <strong>rejected at the server side</strong>, never just hidden from the UI.</p>
+    </div>
+</div>
+
+<!-- SSL/TLS -->
+<div id="ch18-tls" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128274;</div>
+        <h2>SSL / TLS — Protecting Data in Transit</h2>
+    </div>
+
+    <p>One of the most important architectural decisions is <strong>how to handle data in transit</strong>. All data sent over the network — especially credentials — must be encrypted to prevent man-in-the-middle attacks.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; From the Book — SSL vs. TLS</div>
+        <p><strong>SSL (Secure Sockets Layer)</strong> was designed by Netscape in the mid-1990s. Multiple versions have been released, but several known architectural vulnerabilities have been found in SSL.</p>
+        <p><strong>TLS (Transport Layer Security)</strong> was defined by RFC 2246 in 1999, offering upgraded security in response to SSL's architectural issues. TLS cannot interoperate with older SSL due to the amount of architectural differences.</p>
+        <div class="dialogue">
+            TLS offers the most rigid security, while SSL has higher historical adoption but multiple vulnerabilities that reduce its integrity as a cryptographic protocol.
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: #f59e0b;">
+            <h4 style="color:#d97706;">SSL — Secure Sockets Layer</h4>
+            <p>Designed 1995 by Netscape. Wider adoption historically. Multiple known vulnerabilities (POODLE, BEAST). <strong>Not recommended</strong> for new applications.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--green);">
+            <h4 style="color:var(--green);">TLS — Transport Layer Security</h4>
+            <p>RFC 2246, 1999. Upgraded SSL architecture. Current standard: TLS 1.3 (2018). Used by HTTPS. <strong>Recommended</strong> for all modern web applications.</p>
+        </div>
+    </div>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128274;</div>
+            <div class="mc-title">HTTPS</div>
+            <div class="mc-desc">HTTP Secure — URI scheme requiring TLS/SSL before any data can flow</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128272;</div>
+            <div class="mc-title">Lock Icon</div>
+            <div class="mc-desc">All major browsers display a lock when TLS is active and valid</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128721;</div>
+            <div class="mc-title">Browser Warning</div>
+            <div class="mc-desc">Browsers warn users if a TLS/SSL connection is compromised on an HTTPS request</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128196;</div>
+            <div class="mc-title">Certificate</div>
+            <div class="mc-desc">TLS requires a certificate from a Certificate Authority (e.g., Let's Encrypt) to authenticate the server</div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; MegaMerch Decision</h4>
+        <p>For MegaMerch, <strong>all data must be encrypted via TLS</strong> prior to being sent over the network. This is the first and most fundamental architectural requirement — it protects credentials, PII, and financial data from interception.</p>
+    </div>
+</div>
+
+<!-- Secure Credentials -->
+<div id="ch18-credentials" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128187;</div>
+        <h2>Secure Credentials — Password Policy</h2>
+    </div>
+
+    <p>Most developers think password security is about length and special characters. The book teaches something more fundamental: security comes from <strong>entropy</strong> — the amount of randomness and unpredictability in a password.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; From the Book — Dictionary Attacks</div>
+        <p>When a hacker attempts to brute-force logins, the easiest route is a <strong>dictionary attack</strong>: use a list of the top most common passwords, then try combinations of common password structures.</p>
+        <p>It is not so much the <em>length</em> of the password that will protect you, but instead the <strong>lack of observable patterns</strong> and avoidance of common words and phrases.</p>
+    </div>
+
+    <h3>Three Attack Types on Passwords</h3>
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128213;</div>
+            <div class="mc-title">Dictionary Attack</div>
+            <div class="mc-desc">Try top 1,000–1,000,000 most common passwords from a wordlist</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128296;</div>
+            <div class="mc-title">Hybrid Attack</div>
+            <div class="mc-desc">Common passwords + variations + common structures (leet-speak, suffixes)</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128290;</div>
+            <div class="mc-title">Brute Force</div>
+            <div class="mc-desc">Iterate through all possible combinations — only viable on short passwords</div>
+        </div>
+    </div>
+
+    <h3>Enforcing High-Entropy Passwords at MegaMerch</h3>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#10060; Weak Password Policy</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>Minimum 8 characters only</li>
+                    <li>No restriction on common passwords</li>
+                    <li>User's name allowed in password</li>
+                    <li>Date of birth allowed in password</li>
+                    <li>No check against known breach lists</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#10003; Strong Password Policy</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>Reject any password in top 1,000 common list</li>
+                    <li>Prevent first name, last name in password</li>
+                    <li>Prevent birthdate &amp; address fragments</li>
+                    <li>No forced expiry (promotes reuse)</li>
+                    <li>Offer a password strength indicator</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="orange-box">
+        <h4>&#128161; Key Principle — Entropy Over Complexity Rules</h4>
+        <p>A 4-word passphrase like <em>"correct horse battery staple"</em> has higher entropy than <em>"P@ssw0rd!"</em>. Requiring special characters without restricting common patterns gives a <strong>false sense of security</strong>.</p>
+    </div>
+</div>
+
+<!-- Password Hashing -->
+<div id="ch18-hashing" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128281;</div>
+        <h2>Password Hashing — BCrypt &amp; PBKDF2</h2>
+    </div>
+
+    <p>Passwords must <strong>never be stored in plain text</strong>. When storing a password for the first time, it must be <em>hashed</em> — a one-way, irreversible transformation — before being written to the database.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; From the Book — Why Hash?</div>
+        <p>Hashing algorithms differ from encryption in a key way: they are <strong>not reversible</strong>. This means even your own staff cannot steal user passwords — protecting users from rogue employees and database breaches alike.</p>
+        <p>When a user logs in, you <strong>hash their submitted password</strong> and compare it to the stored hash. No decryption is ever needed.</p>
+    </div>
+
+    <h3>The Three Cases: What Happens After a Database Breach?</h3>
+    <div class="hash-grid">
+        <div class="hash-card plain">
+            <div class="h-icon">&#128274;</div>
+            <div class="h-name">Plain Text Storage</div>
+            <div class="h-result">Result: <strong>All passwords compromised immediately</strong></div>
+        </div>
+        <div class="hash-card md5">
+            <div class="h-icon">&#9888;&#65039;</div>
+            <div class="h-name">MD5 Hashing</div>
+            <div class="h-result">Result: <strong>Hacker cracks many passwords via rainbow tables</strong> (precomputed hash→password tables)</div>
+        </div>
+        <div class="hash-card bcrypt">
+            <div class="h-icon">&#128274;</div>
+            <div class="h-name">BCrypt Hashing</div>
+            <div class="h-result">Result: <strong>Unlikely any passwords will be cracked</strong> — years of compute time per password on modern hardware</div>
+        </div>
+    </div>
+
+    <h3>BCrypt vs. PBKDF2</h3>
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch18);">
+            <h4 style="color:var(--ch18);">BCrypt</h4>
+            <p>Based on <strong>Blowfish Cipher</strong> (1993) + Unix Crypt. Becomes <em>slower on faster hardware</em> — the more powerful the attacker's hardware, the more operations are required. Makes brute-forcing computationally infeasible.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch17);">
+            <h4 style="color:var(--ch17);">PBKDF2</h4>
+            <p>Based on <strong>key stretching</strong>. First hash is fast; each additional attempt becomes progressively slower. Configure with <em>maximum iterations your hardware can handle</em>. Good alternative when BCrypt is unavailable.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="c">// Example: BCrypt password hashing (Node.js)</span>
+<span class="k">const</span> bcrypt = require(<span class="s">'bcrypt'</span>);
+<span class="k">const</span> saltRounds = <span class="n">12</span>;  <span class="c">// Higher = slower to crack</span>
+
+<span class="c">// At registration — hash before storing</span>
+<span class="k">const</span> hash = <span class="k">await</span> bcrypt.hash(plainTextPassword, saltRounds);
+<span class="good">// ✓ Store hash in database, never the plain text</span>
+
+<span class="c">// At login — compare submitted password to stored hash</span>
+<span class="k">const</span> match = <span class="k">await</span> bcrypt.compare(submittedPassword, storedHash);
+<span class="good">// ✓ Returns true/false — no decryption ever needed</span>
+
+<span class="c">// NEVER do this:</span>
+<span class="bad">// ✗ db.store({ password: plainTextPassword })</span>
+<span class="bad">// ✗ db.store({ password: md5(plainTextPassword) })</span>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; The Core Rule</h4>
+        <p>Hashing algorithms for passwords should be <strong>intentionally slow on modern hardware</strong>. This limits the number of guesses an attacker can make per second, making brute force impractical for any well-hashed password.</p>
+    </div>
+</div>
+
+<!-- 2FA -->
+<div id="ch18-2fa" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128241;</div>
+        <h2>Two-Factor Authentication (2FA)</h2>
+    </div>
+
+    <p>In addition to requiring strong, hashed passwords over TLS, MegaMerch should offer <strong>two-factor authentication (2FA)</strong> to users who want to maximize their account security.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; From the Book — The 2FA Principle</div>
+        <p>2FA operates on a simple but powerful principle: <strong>require two independent secrets to log in</strong>. Even if a hacker obtains a user's password (via phishing, a data breach, or brute force), they still cannot access the account without the second factor.</p>
+        <div class="dialogue">
+            In the absence of any vulnerabilities in the 2FA app or messaging protocol, 2FA eliminates <em>all remote logins that were not initiated by the owner of the account</em>.
+        </div>
+    </div>
+
+    <h3>2FA Types — Comparing the Options</h3>
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>2FA Method</th>
+                <th>How It Works</th>
+                <th>Security Level</th>
+                <th>Best For</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>SMS / Text Message</strong></td>
+                <td>One-time code sent to registered phone number</td>
+                <td><span class="risk-badge medium">Moderate</span></td>
+                <td>Consumer web apps (easy UX)</td>
+            </tr>
+            <tr>
+                <td><strong>Authenticator App</strong> (e.g., Google Authenticator)</td>
+                <td>Time-based one-time passwords (TOTP) generated on device</td>
+                <td><span class="risk-badge low">Strong</span></td>
+                <td>Consumer &amp; business web apps</td>
+            </tr>
+            <tr>
+                <td><strong>Hardware Token</strong> (USB key)</td>
+                <td>Physical device plugs in and generates a one-time token</td>
+                <td><span class="risk-badge low">Strongest</span></td>
+                <td>Enterprise employees, high-value accounts</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="orange-box">
+        <h4>&#128161; MegaMerch Recommendation</h4>
+        <p>Distributing physical hardware tokens to all MegaMerch customers would be impractical. The recommended approach is to offer an <strong>authenticator app / SMS 2FA option</strong> that users can opt into. Even SMS-based 2FA is "<em>an order of magnitude safer</em> than application use without 2FA" (Hoffman).</p>
+    </div>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128272;</div>
+            <div class="mc-title">Something You Know</div>
+            <div class="mc-desc">Password — factor 1, potentially stolen remotely</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128241;</div>
+            <div class="mc-title">Something You Have</div>
+            <div class="mc-desc">Phone / hardware token — factor 2, requires physical access to steal</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128683;</div>
+            <div class="mc-title">Attack Blocked</div>
+            <div class="mc-desc">Remote attacker with only the password cannot complete login</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9989;</div>
+            <div class="mc-title">Legitimate User</div>
+            <div class="mc-desc">Knows password AND has physical device — login succeeds</div>
+        </div>
+    </div>
+</div>
+
+<!-- PII & Financial Data -->
+<div id="ch18-pii" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128196;</div>
+        <h2>PII &amp; Financial Data</h2>
+    </div>
+
+    <p>When storing <strong>Personally Identifiable Information (PII)</strong> — such as full name, address, date of birth — a web application must ensure storage is legal in the countries it operates in and that the data is protected against breach.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; From the Book — PII Obligations</div>
+        <p>Beyond legality, you want to ensure that in the case of a <strong>database breach or server compromise</strong>, PII is not exposed in a format that makes it easily abusable.</p>
+        <p>Similar rules apply to <strong>financial data</strong>, such as credit card numbers (also included under PII laws in some countries, e.g., GDPR in the EU, PCI-DSS for payment card data).</p>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch18);">
+            <h4 style="color:var(--ch18);">Store PII In-House</h4>
+            <p>Full control, but requires compliance expertise (GDPR, PDPA, PCI-DSS). Deep re-architecture required if compliance gaps found post-launch. High liability.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--green);">
+            <h4 style="color:var(--green);">Outsource PII / Financial Storage</h4>
+            <p>Smaller companies may find it more effective to outsource to a <strong>compliant specialist</strong> (e.g., Stripe for payments). Reduces liability and engineering burden significantly.</p>
+        </div>
+    </div>
+
+    <table class="verb-table">
+        <thead>
+            <tr>
+                <th>Data Type</th>
+                <th>Example</th>
+                <th>Key Requirement</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Credentials</strong></td>
+                <td>Passwords, tokens</td>
+                <td>Hash (BCrypt/PBKDF2), never store plain text</td>
+            </tr>
+            <tr>
+                <td><strong>PII</strong></td>
+                <td>Name, address, DOB, email</td>
+                <td>Encrypt at rest, GDPR/PDPA compliance, data minimization</td>
+            </tr>
+            <tr>
+                <td><strong>Financial</strong></td>
+                <td>Credit card numbers</td>
+                <td>PCI-DSS compliance; consider outsourcing to payment processor</td>
+            </tr>
+            <tr>
+                <td><strong>Session Tokens</strong></td>
+                <td>Cookies, JWT tokens</td>
+                <td>Rotate regularly, expire on logout, use HttpOnly &amp; Secure flags</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Session Management</h4>
+        <p>Session tokens issued after authentication must be treated like credentials. They must be transmitted over TLS, stored with <strong>HttpOnly and Secure cookie flags</strong>, invalidated on logout, and rotated after privilege changes (e.g., after login or 2FA completion) to prevent session fixation attacks.</p>
+    </div>
+</div>
+
+<!-- Chapter 18 Summary -->
+<div id="ch18-summary" class="summary-banner ch18">
+    <h3>&#10003; Chapter 18 Summary — Secure Application Architecture</h3>
+    <ul>
+        <li><strong>Architecture phase</strong> is the cheapest and most effective place to catch security flaws — before code is written</li>
+        <li>Business requirements must be analyzed for security risks: authentication, authorization, PII, search, financial data</li>
+        <li><strong>Authentication</strong> = "who are you?"; <strong>Authorization</strong> = "what can you do?" — both must be enforced server-side</li>
+        <li><strong>TLS (HTTPS)</strong> is mandatory for all data in transit — especially credentials and financial data</li>
+        <li>Passwords must be <strong>hashed with BCrypt or PBKDF2</strong> — never stored in plain text or with reversible encryption</li>
+        <li><strong>2FA</strong> eliminates remote account takeover; authenticator app or SMS are practical for consumer applications</li>
+        <li>PII and financial data require legal compliance (GDPR, PCI-DSS); <strong>outsourcing</strong> is often the safest option for smaller teams</li>
+        <li><strong>Session tokens</strong> must use HttpOnly + Secure flags, rotate after login, and expire on logout</li>
+    </ul>
+</div>
+
+</main>
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 — Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week4/index.html">Week 4</a>
+            <a href="#">Week 6 (Soon)</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Sidebar active link on scroll
+    const sections = document.querySelectorAll('[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + entry.target.id) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(section => observer.observe(section));
+</script>
+
 </body>
 </html>

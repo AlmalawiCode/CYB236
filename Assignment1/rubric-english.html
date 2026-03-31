@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 1 — Grading Rubric | CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --green:     #16a34a;
+            --yellow:    #d97706;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f2340, #1a3a5c);
+            color: white;
+            padding: 38px 40px 30px;
+            text-align: center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 18px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+        .header h1 { font-size: 1.8em; font-weight: 800; margin-bottom: 6px; }
+        .header .subtitle { opacity: 0.85; font-size: 1em; }
+        /* Summary bar */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: var(--accent);
+            color: white;
+        }
+        .sb-item {
+            text-align: center;
+            padding: 16px 10px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .sb-item:last-child { border-right: none; }
+        .sb-item .val { font-size: 1.6em; font-weight: 800; display: block; }
+        .sb-item .lbl { font-size: 0.8em; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        /* Content */
+        .content { padding: 40px; }
+        /* Part header */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            margin: 32px 0 18px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 3px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .part-title { font-size: 1.05em; font-weight: 700; }
+        .part-pts {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            font-weight: 700;
+        }
+        /* Rubric table */
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 0.92em;
+        }
+        .rubric-table thead tr {
+            background: var(--primary);
+            color: white;
+        }
+        .rubric-table thead th {
+            padding: 11px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        .rubric-table thead th:first-child { border-radius: 8px 0 0 0; }
+        .rubric-table thead th:last-child  { border-radius: 0 8px 0 0; }
+        .rubric-table tbody tr { border-bottom: 1px solid var(--border); }
+        .rubric-table tbody tr:last-child { border-bottom: none; }
+        .rubric-table tbody tr:nth-child(even) { background: var(--bg); }
+        .rubric-table tbody td { padding: 12px 14px; vertical-align: top; }
+        .rubric-table .q-col { font-weight: 700; color: var(--primary); width: 70px; }
+        .rubric-table .pts-col { text-align: center; font-weight: 700; color: var(--accent); width: 60px; }
+        /* Level badges */
+        .level {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .level.full   { background: #d1fae5; color: var(--green); }
+        .level.partial { background: #fef3c7; color: var(--yellow); }
+        .level.min    { background: #fee2e2; color: var(--red); }
+        .level.zero   { background: #f3f4f6; color: #6b7280; }
+        /* Screenshot rubric */
+        .ss-rubric {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+        }
+        .ss-rubric .ss-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        .ss-rubric table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+        .ss-rubric td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .ss-rubric tr:last-child td { border-bottom: none; }
+        .ss-rubric td:first-child { font-weight: 600; width: 70px; color: var(--accent); }
+        /* Grade bands */
+        .grade-bands {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 24px 0;
+        }
+        .grade-band {
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            border: 2px solid;
+        }
+        .grade-band .grade { font-size: 1.6em; font-weight: 800; display: block; margin-bottom: 2px; }
+        .grade-band .range { font-size: 0.8em; font-weight: 600; opacity: 0.8; }
+        .grade-band.a  { border-color: var(--green);  background: #f0fdf4; color: var(--green); }
+        .grade-band.b  { border-color: #16a34a99; background: #f0fdf4; color: #15803d; }
+        .grade-band.c  { border-color: var(--yellow); background: #fffbeb; color: var(--yellow); }
+        .grade-band.d  { border-color: #f97316;  background: #fff7ed; color: #ea580c; }
+        .grade-band.f  { border-color: var(--red);   background: #fef2f2; color: var(--red); }
+        /* Notes */
+        .note-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 10px 10px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 0.93em;
+        }
+        .note-box h4 { color: #1d4ed8; margin-bottom: 8px; }
+        .note-box ul { list-style: none; padding: 0; }
+        .note-box li { padding: 3px 0 3px 20px; position: relative; }
+        .note-box li::before { content: '›'; position: absolute; left: 0; color: #3b82f6; font-weight: 700; }
+        /* Score summary table */
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.93em;
+            margin: 20px 0;
+        }
+        .score-table th {
+            background: var(--primary);
+            color: white;
+            padding: 11px 16px;
+            text-align: left;
+        }
+        .score-table th:first-child { border-radius: 8px 0 0 0; }
+        .score-table th:last-child  { border-radius: 0 8px 0 0; border-right: none; }
+        .score-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); }
+        .score-table tr:nth-child(even) td { background: var(--bg); }
+        .score-table tfoot td {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            padding: 12px 16px;
+        }
+        .score-table tfoot td:first-child { border-radius: 0 0 0 8px; }
+        .score-table tfoot td:last-child  { border-radius: 0 0 8px 0; }
+        /* Footer */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 20px 40px;
+            font-size: 0.87em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-label">Grading Rubric — Instructor Copy</div>
+        <h1>Assignment 1: Web Security Foundations</h1>
+        <p class="subtitle">CYB 236 &mdash; Web Application Security &mdash; Spring 2026</p>
+    </div>
+
+    <!-- Summary bar -->
+    <div class="summary-bar">
+        <div class="sb-item"><span class="val">100</span><span class="lbl">Total Points</span></div>
+        <div class="sb-item"><span class="val">3</span><span class="lbl">Parts</span></div>
+        <div class="sb-item"><span class="val">12</span><span class="lbl">Questions</span></div>
+        <div class="sb-item"><span class="val">4</span><span class="lbl">Screenshots</span></div>
+    </div>
+
+    <div class="content">
+
+        <!-- Grade Bands -->
+        <h3 style="color:var(--primary); margin-bottom:14px;">Grade Bands</h3>
+        <div class="grade-bands">
+            <div class="grade-band a"><span class="grade">A</span><span class="range">90 – 100</span></div>
+            <div class="grade-band b"><span class="grade">B</span><span class="range">80 – 89</span></div>
+            <div class="grade-band c"><span class="grade">C</span><span class="range">70 – 79</span></div>
+            <div class="grade-band d"><span class="grade">D</span><span class="range">60 – 69</span></div>
+            <div class="grade-band f"><span class="grade">F</span><span class="range">Below 60</span></div>
+        </div>
+
+        <!-- Score Summary -->
+        <h3 style="color:var(--primary); margin-bottom:14px;">Score Summary</h3>
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Part</th>
+                    <th>Topic</th>
+                    <th>Questions</th>
+                    <th>Screenshots</th>
+                    <th style="text-align:right;">Max Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Part A</strong></td>
+                    <td>Environment Verification — Lab 1</td>
+                    <td>Q1, Q2, Q3</td>
+                    <td>SS-1</td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent);">20</td>
+                </tr>
+                <tr>
+                    <td><strong>Part B</strong></td>
+                    <td>Web Reconnaissance — Lab 2</td>
+                    <td>Q4, Q5, Q6, Q7</td>
+                    <td>SS-2</td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent);">35</td>
+                </tr>
+                <tr>
+                    <td><strong>Part C</strong></td>
+                    <td>XSS Attacks — Lab 3</td>
+                    <td>Q8, Q9, Q10, Q11, Q12</td>
+                    <td>SS-3, SS-4</td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent);">45</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align:right;">Total</td>
+                    <td style="text-align:right;">100</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- ══════════ PART A ══════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part A</div>
+            <div class="part-title">Environment Verification — Kali Linux Setup (Lab 1)</div>
+            <div class="part-pts">20 pts</div>
+        </div>
+
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th class="q-col">Item</th>
+                    <th>Criterion</th>
+                    <th>Full Credit</th>
+                    <th>Partial</th>
+                    <th>No Credit</th>
+                    <th class="pts-col">Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="q-col">Q1</td>
+                    <td><strong>uname -a output</strong><br>Run command in Kali and report full output</td>
+                    <td><span class="level full">4 pts</span><br>Full correct output including kernel version, hostname, architecture (x86_64)</td>
+                    <td><span class="level partial">2 pts</span><br>Partial output — missing architecture or hostname</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or clearly copied</td>
+                    <td class="pts-col">4</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q2</td>
+                    <td><strong>Nmap version</strong><br>Run <code>nmap --version</code> and record result</td>
+                    <td><span class="level full">3 pts</span><br>Correct Nmap version number reported (e.g., 7.93 or higher)</td>
+                    <td><span class="level partial">1 pt</span><br>Version reported but incomplete</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered</td>
+                    <td class="pts-col">3</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q3</td>
+                    <td><strong>Why use VMs?</strong><br>Give at least two specific reasons</td>
+                    <td><span class="level full">8 pts</span><br>Two or more clear reasons, e.g.: isolation from host OS, easy snapshot/rollback, safe malware analysis, portability, avoid exposing real system to malicious tools</td>
+                    <td><span class="level partial">4 pts</span><br>Only one valid reason given, OR two vague/generic reasons</td>
+                    <td><span class="level zero">0 pts</span><br>No relevant reason or off-topic</td>
+                    <td class="pts-col">8</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-1</td>
+                    <td><strong>Screenshot — Terminal</strong><br>Both <code>uname -a</code> and <code>nmap --version</code> visible</td>
+                    <td><span class="level full">5 pts</span><br>Both commands visible in the same Kali terminal window with clear output</td>
+                    <td><span class="level partial">2 pts</span><br>Only one command visible, or screenshot is blurry/unreadable</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided, or clearly not a Kali terminal</td>
+                    <td class="pts-col">5</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ══════════ PART B ══════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part B</div>
+            <div class="part-title">Web Application Reconnaissance (Lab 2)</div>
+            <div class="part-pts">35 pts</div>
+        </div>
+
+        <div class="note-box">
+            <h4>&#128161; Expected Answers — Juice Shop (Reference)</h4>
+            <ul>
+                <li><strong>Q4 — Web server:</strong> Express / Node.js (visible in <code>X-Powered-By: Express</code> response header)</li>
+                <li><strong>Q5 — Client framework:</strong> Angular (identified from page source or ng- attributes)</li>
+                <li><strong>Q6 — Sensitive data:</strong> Email addresses of other users exposed in product review endpoints (e.g., <code>/api/Products/1/reviews</code>)</li>
+                <li><strong>Q7 — Cookie flags:</strong> <code>token</code> cookie typically lacks <code>HttpOnly</code> (enables XSS cookie theft) and <code>Secure</code> (enables interception over HTTP)</li>
+            </ul>
+        </div>
+
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th class="q-col">Item</th>
+                    <th>Criterion</th>
+                    <th>Full Credit</th>
+                    <th>Partial</th>
+                    <th>No Credit</th>
+                    <th class="pts-col">Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="q-col">Q4</td>
+                    <td><strong>Server identification</strong><br>Identify web server and explain how</td>
+                    <td><span class="level full">5 pts</span><br>Correct server (Express/Node.js) AND explains method (response header <code>X-Powered-By</code> or <code>Server</code>)</td>
+                    <td><span class="level partial">2 pts</span><br>Correct answer but no explanation of method, OR correct method but wrong server name</td>
+                    <td><span class="level zero">0 pts</span><br>Incorrect or not answered</td>
+                    <td class="pts-col">5</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q5</td>
+                    <td><strong>Client framework</strong><br>Identify framework and explain method</td>
+                    <td><span class="level full">5 pts</span><br>Angular identified AND explains how (page source, ng-version attribute, or bundle filename)</td>
+                    <td><span class="level partial">2 pts</span><br>Correct framework name but no evidence of how identified</td>
+                    <td><span class="level zero">0 pts</span><br>Wrong framework or not answered</td>
+                    <td class="pts-col">5</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q6</td>
+                    <td><strong>Sensitive data exposure</strong><br>Specific example with endpoint + data type</td>
+                    <td><span class="level full">8 pts</span><br>Names a specific endpoint AND identifies the sensitive data (e.g., "email addresses in <code>/api/Products/1/reviews</code> response")</td>
+                    <td><span class="level partial">4 pts</span><br>Correct data type but no specific endpoint, OR correct endpoint but vague about what data was exposed</td>
+                    <td><span class="level zero">0 pts</span><br>No specific example, or "nothing found"</td>
+                    <td class="pts-col">8</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q7</td>
+                    <td><strong>Cookie security flags</strong><br>Missing flags and attack enabled by each</td>
+                    <td><span class="level full">12 pts</span><br>Identifies cookies found; correctly states which flags are missing; correctly links missing <code>HttpOnly</code> → XSS cookie theft; missing <code>Secure</code> → interception over HTTP/MITM</td>
+                    <td><span class="level partial">6 pts</span><br>Identifies missing flags but incorrectly or incompletely describes the associated attack; OR correct attacks but wrong flag names</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or entirely incorrect</td>
+                    <td class="pts-col">12</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-2</td>
+                    <td><strong>Screenshot — DevTools Network tab</strong><br>Juice Shop with API request selected</td>
+                    <td><span class="level full">5 pts</span><br>DevTools Network tab visible; at least one API/REST request selected with its response shown; Juice Shop URL visible</td>
+                    <td><span class="level partial">2 pts</span><br>DevTools open but no request selected, or Juice Shop not identifiable in screenshot</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided or irrelevant screenshot</td>
+                    <td class="pts-col">5</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ══════════ PART C ══════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part C</div>
+            <div class="part-title">Cross-Site Scripting (XSS) Attacks (Lab 3)</div>
+            <div class="part-pts">45 pts</div>
+        </div>
+
+        <div class="note-box">
+            <h4>&#128161; Expected Answers — DVWA XSS (Reference)</h4>
+            <ul>
+                <li><strong>Q8 — Payload:</strong> <code>&lt;script&gt;alert('XSS Works!')&lt;/script&gt;</code> (or any valid alert payload)</li>
+                <li><strong>Q9 — Reflected XSS flow:</strong> Payload travels in URL query string → server reflects it in response HTML → browser executes it. Not stored anywhere permanently.</li>
+                <li><strong>Q10 — Stored XSS reload:</strong> Payload was saved to the database on first submit. Every time the page loads, the server retrieves and outputs the script from DB, so the browser executes it again.</li>
+                <li><strong>Q11 — Comparison:</strong> Reflected: URL only / victim must click link / one victim at a time. Stored: database / any visitor triggers it automatically / potentially all users. Stored is more dangerous.</li>
+                <li><strong>Q12 — Bank scenario:</strong> All support agents who view that ticket are victims. Attacker receives their session cookies and can impersonate them (session hijacking), accessing customer data and admin functions.</li>
+            </ul>
+        </div>
+
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th class="q-col">Item</th>
+                    <th>Criterion</th>
+                    <th>Full Credit</th>
+                    <th>Partial</th>
+                    <th>No Credit</th>
+                    <th class="pts-col">Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="q-col">Q8</td>
+                    <td><strong>Reflected XSS payload</strong><br>Exact payload submitted</td>
+                    <td><span class="level full">4 pts</span><br>Any valid XSS payload using <code>&lt;script&gt;</code> tags that triggers an alert</td>
+                    <td><span class="level partial">2 pts</span><br>Correct concept but syntax incomplete or wrong</td>
+                    <td><span class="level zero">0 pts</span><br>No payload or completely wrong</td>
+                    <td class="pts-col">4</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q9</td>
+                    <td><strong>Reflected XSS data flow</strong><br>Where payload goes; is it stored?</td>
+                    <td><span class="level full">6 pts</span><br>Correctly explains: payload in URL → server reflects in HTML response → browser executes. Correctly states it is NOT stored permanently.</td>
+                    <td><span class="level partial">3 pts</span><br>Correct about not being stored but vague about the URL→server→browser flow, OR correct flow but wrong about storage</td>
+                    <td><span class="level zero">0 pts</span><br>No answer or claims payload is stored</td>
+                    <td class="pts-col">6</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q10</td>
+                    <td><strong>Stored XSS — reload behavior</strong><br>Why alert fires on reload</td>
+                    <td><span class="level full">8 pts</span><br>Correctly explains: payload saved to database on first submit → server fetches and outputs it on every page load → browser executes it again each time</td>
+                    <td><span class="level partial">4 pts</span><br>Understands "it's saved somewhere" but doesn't specifically mention the database, OR mentions database but doesn't explain the server-to-browser execution loop</td>
+                    <td><span class="level zero">0 pts</span><br>No answer or incorrect explanation</td>
+                    <td class="pts-col">8</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q11</td>
+                    <td><strong>Comparison table</strong><br>Storage, trigger, danger level</td>
+                    <td><span class="level full">10 pts</span><br>All three rows correct: storage (URL vs DB), trigger (victim clicks link vs automatic), which is more dangerous with valid reason (Stored, because all visitors are affected automatically)</td>
+                    <td><span class="level partial">5 pts</span><br>Two out of three rows correct, OR all three partially answered</td>
+                    <td><span class="level min">2 pts</span><br>Only one row correct</td>
+                    <td class="pts-col">10</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q12</td>
+                    <td><strong>Real-world scenario</strong><br>Who is at risk and impact of stolen cookie</td>
+                    <td><span class="level full">7 pts</span><br>Identifies correct victims (support agents / anyone viewing the ticket), AND correctly describes the impact: session hijacking → impersonate agents → access customer data / admin functions</td>
+                    <td><span class="level partial">3 pts</span><br>Identifies the right victims but vague about impact, OR correct impact but identifies wrong victims</td>
+                    <td><span class="level zero">0 pts</span><br>No answer or no understanding of session cookie theft</td>
+                    <td class="pts-col">7</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-3</td>
+                    <td><strong>Screenshot — Reflected XSS alert</strong><br>Alert box visible in DVWA browser</td>
+                    <td><span class="level full">5 pts</span><br>Alert box ("XSS Works!" or similar) clearly visible; DVWA URL with payload in query string visible</td>
+                    <td><span class="level partial">2 pts</span><br>Alert visible but URL not shown, or image is unclear</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided or alert not from DVWA</td>
+                    <td class="pts-col">5</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-4</td>
+                    <td><strong>Screenshot — Stored XSS guestbook</strong><br>Both normal entry and script entry visible</td>
+                    <td><span class="level full">5 pts</span><br>Guestbook page visible with at least one normal text entry AND the script entry (or re-triggered alert) clearly shown</td>
+                    <td><span class="level partial">2 pts</span><br>Only script entry visible (no normal entry), or screenshot is unclear</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided or not from the DVWA guestbook</td>
+                    <td class="pts-col">5</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- General Deductions -->
+        <h3 style="color:var(--primary); margin: 32px 0 14px;">General Deductions</h3>
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th>Issue</th>
+                    <th>Deduction</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Student name / ID missing from report</td>
+                    <td style="color:var(--red); font-weight:700;">−5 pts</td>
+                    <td>Report must include student name, ID, and email</td>
+                </tr>
+                <tr>
+                    <td>Screenshot submitted separately (not embedded in PDF)</td>
+                    <td style="color:var(--red); font-weight:700;">−3 pts each</td>
+                    <td>Screenshots must be embedded using the upload tool on the assignment page</td>
+                </tr>
+                <tr>
+                    <td>Identical screenshot as another student</td>
+                    <td style="color:var(--red); font-weight:700;">−50% of that part</td>
+                    <td>Flag for academic integrity review</td>
+                </tr>
+                <tr>
+                    <td>Late submission (per day)</td>
+                    <td style="color:var(--red); font-weight:700;">−10 pts/day</td>
+                    <td>As per course policy; max penalty 50 pts</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Grading Notes -->
+        <div class="note-box" style="margin-top:24px;">
+            <h4>&#128221; Grading Notes for Instructors</h4>
+            <ul>
+                <li>Accept any valid XSS payload in Q8 that correctly uses script tags, even if the alert message differs.</li>
+                <li>For Q3, Q6, Q9, Q10, Q12 — award partial credit generously if the student demonstrates understanding even with imprecise wording.</li>
+                <li>Screenshots need not be high-resolution; readability is the key criterion.</li>
+                <li>If a student's Kali VM shows a different Nmap version than expected in Q2, this is acceptable — award full marks as long as a valid version number is reported.</li>
+                <li>For Q7, accept any cookies the student found. The <code>token</code> cookie is the primary one but students may report others.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; Web Application Security &mdash; Instructor Rubric</p>
+        <p>Assignment 1: Web Security Foundations &nbsp;·&nbsp; Labs 1–3 &nbsp;·&nbsp; Spring 2026</p>
+    </div>
+
+</div>
+</body>
+</html>

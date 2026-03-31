@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 1 — CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --accent-d:  #d35400;
+            --green:     #16a34a;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #0f2340 0%, #1a3a5c 100%);
+            color: white;
+            padding: 44px 40px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80" opacity="0.04">🔐</text></svg>') center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 5px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .header .subtitle {
+            font-size: 1.05em;
+            opacity: 0.85;
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .header .chapter-ref {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* ── Info Bar ── */
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+            color: white;
+        }
+        .info-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+        }
+        .info-item strong {
+            display: block;
+            font-size: 0.78em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+        .info-item span { font-size: 1.02em; font-weight: 700; }
+
+        /* ── Content ── */
+        .content { padding: 40px; }
+
+        /* ── Instructions box ── */
+        .instructions {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 12px 12px 0;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+        }
+        .instructions h3 { color: #1d4ed8; margin-bottom: 10px; font-size: 1em; }
+        .instructions ul { padding-right: 0; list-style: none; }
+        .instructions li {
+            padding: 4px 0 4px 22px;
+            position: relative;
+            font-size: 0.97em;
+        }
+        .instructions li::before {
+            content: '›';
+            position: absolute; left: 0;
+            color: #3b82f6; font-weight: 700;
+        }
+
+        /* ── Part header ── */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            margin: 36px 0 22px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+        .part-title { font-size: 1.1em; font-weight: 700; }
+        .part-pts {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ── Question ── */
+        .question {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+        }
+        .question-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .q-num {
+            background: var(--primary);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 3px 11px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-pts {
+            color: var(--accent);
+            font-size: 0.82em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .q-text {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .q-hint {
+            font-size: 0.85em;
+            color: var(--muted);
+            margin: 6px 0 10px;
+            font-style: italic;
+        }
+
+        input[type="text"].task-answer, input[type="text"].fill-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.2s;
+        }
+        input[type="text"].task-answer:focus,
+        input[type="text"].fill-answer:focus,
+        textarea.task-answer:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        textarea.task-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            resize: vertical;
+            min-height: 90px;
+            transition: border-color 0.2s;
+        }
+
+        /* ── Screenshot upload ── */
+        .screenshot-box {
+            border: 2px dashed #94a3b8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            background: #f8fafc;
+            margin-top: 10px;
+        }
+        .screenshot-box label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .screenshot-box input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .screenshot-box img {
+            display: none;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        .screenshot-hint {
+            font-size: 0.8em;
+            color: var(--muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* ── Alert boxes ── */
+        .alert {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert.info  { background: #eff6ff; border: 1px solid #bfdbfe; }
+        .alert.warn  { background: #fffbeb; border: 1px solid #fde68a; }
+        .alert h4 { margin-bottom: 4px; }
+
+        /* ── Report section ── */
+        .report-section {
+            background: #fafbfc;
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 36px;
+        }
+        .report-section h2 {
+            color: var(--primary);
+            font-size: 1.25em;
+            margin-bottom: 6px;
+        }
+        .report-section p { color: var(--muted); font-size: 0.95em; margin-bottom: 20px; }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .field-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .field-group label span { color: var(--red); }
+        .field-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        .field-group input:focus { outline: none; border-color: var(--accent); }
+
+        .generate-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-d));
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.05em;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(26,58,92,0.4);
+            transition: opacity 0.2s;
+        }
+        .generate-btn:hover { opacity: 0.92; }
+
+        /* ── Checklist ── */
+        .checklist {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+        .checklist h4 { color: var(--primary); margin-bottom: 12px; font-size: 1em; }
+        .checklist ul { list-style: none; }
+        .checklist li {
+            padding: 6px 0 6px 28px;
+            position: relative;
+            font-size: 0.95em;
+            border-bottom: 1px solid var(--border);
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .checklist li::before { content: '☐'; position: absolute; left: 0; color: var(--accent); font-size: 1.1em; }
+
+        /* ── Footer ── */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 22px 40px;
+            font-size: 0.88em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        /* ── Language Switch ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; }
+            .generate-btn { display: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Language Switch -->
+<div class="lang-switch">
+    <a href="assignment1-arabic.html" class="lang-btn">
+        &#127760; عربي
+    </a>
+</div>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-label">Assignment 1</div>
+        <h1>Web Security Foundations</h1>
+        <p class="subtitle">Environment Setup &nbsp;·&nbsp; Web Reconnaissance &nbsp;·&nbsp; XSS Attacks</p>
+        <div class="chapter-ref">CYB 236 &mdash; Web Application Security &mdash; Spring 2026</div>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+        <div class="info-item"><strong>Coverage</strong><span>Labs 1 · 2 · 3</span></div>
+        <div class="info-item"><strong>Total Marks</strong><span>100 pts</span></div>
+        <div class="info-item"><strong>Submission</strong><span>PDF Report</span></div>
+        <div class="info-item"><strong>Screenshots</strong><span>4 Required</span></div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>&#128196; Instructions</h3>
+            <ul>
+                <li>Answer <strong>all questions</strong> in the fields provided on this page.</li>
+                <li>Upload each required screenshot using the file upload buttons. Screenshots will be embedded in your report.</li>
+                <li>When done, scroll to the bottom, enter your student information, and click <strong>Generate PDF Report</strong>.</li>
+                <li>A new window will open — use <strong>Ctrl+P → Save as PDF</strong> to save your submission.</li>
+                <li>Submit the generated PDF to the LMS by the deadline.</li>
+            </ul>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             PART A — Environment Verification
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part A</div>
+            <div class="part-title">Environment Verification &mdash; Kali Linux Setup</div>
+            <div class="part-pts">20 pts</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            Based on <strong>Lab 1</strong>. Open your Kali Linux VM and run the commands below to collect the answers.
+        </p>
+
+        <!-- Q1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q1</span>
+                <span class="q-text">Run <code>uname -a</code> in your Kali terminal. What operating system, kernel version, and architecture does it report?</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <p class="q-hint">Copy the full output of the command.</p>
+            <input type="text" class="task-answer" data-task="A" placeholder="e.g.  Linux kali 6.x.x-kali... x86_64 GNU/Linux">
+        </div>
+
+        <!-- Q2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q2</span>
+                <span class="q-text">Run <code>nmap --version</code>. What version of Nmap is installed on your system?</span>
+                <span class="q-pts">3 pts</span>
+            </div>
+            <input type="text" class="task-answer" data-task="A" placeholder="e.g.  Nmap version 7.x.x">
+        </div>
+
+        <!-- Q3 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q3</span>
+                <span class="q-text">Why do security professionals use a virtual machine (VM) instead of their physical host machine when performing penetration testing?</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <p class="q-hint">Give at least two specific reasons.</p>
+            <textarea class="task-answer" data-task="A" placeholder="Your answer here..."></textarea>
+        </div>
+
+        <!-- Screenshot A -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-1</span>
+                <span class="q-text">Screenshot — Kali Linux terminal showing both <code>uname -a</code> and <code>nmap --version</code> output</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">Both commands must be visible in the same terminal window.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-1</label>
+                <input type="file" id="ss-a" accept="image/*" onchange="previewImage(this,'prev-a')">
+                <img id="prev-a" alt="Screenshot A preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG &mdash; Max recommended size: 5 MB</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             PART B — Web Reconnaissance
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part B</div>
+            <div class="part-title">Web Application Reconnaissance</div>
+            <div class="part-pts">35 pts</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            Based on <strong>Lab 2</strong>. Start OWASP Juice Shop with Docker and use Firefox DevTools (F12) to answer the following.
+        </p>
+
+        <!-- Q4 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q4</span>
+                <span class="q-text">What web server software is running behind Juice Shop? How did you identify it?</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">Check the response headers in the Network tab.</p>
+            <input type="text" class="task-answer" data-task="B" placeholder="Server: ...   (found in: response headers / page source / ...)">
+        </div>
+
+        <!-- Q5 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q5</span>
+                <span class="q-text">What client-side JavaScript framework does Juice Shop use? Name the framework and explain how you identified it.</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <input type="text" class="task-answer" data-task="B" placeholder="Framework name and how you found it...">
+        </div>
+
+        <!-- Q6 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q6</span>
+                <span class="q-text">Look at the API responses in the Network tab. What sensitive data did you find exposed in the response body of any REST endpoint? Provide one specific example.</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <p class="q-hint">Hint: check product reviews or user data endpoints for email addresses or similar information.</p>
+            <textarea class="task-answer" data-task="B" placeholder="Describe the endpoint URL and the sensitive data visible in its response..."></textarea>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q7</span>
+                <span class="q-text">Inspect the cookies set by Juice Shop. List the cookies you found and identify which security flags (<code>HttpOnly</code>, <code>Secure</code>) are missing. What attack does each missing flag enable?</span>
+                <span class="q-pts">12 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="B" placeholder="Cookie name: ...&#10;HttpOnly flag: present / missing → if missing, enables: ...&#10;Secure flag: present / missing → if missing, enables: ..."></textarea>
+        </div>
+
+        <!-- Screenshot B -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-2</span>
+                <span class="q-text">Screenshot — Firefox DevTools Network tab showing REST API requests on the Juice Shop home page</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">The DevTools panel must be visible with at least one API call selected showing its response.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-2</label>
+                <input type="file" id="ss-b" accept="image/*" onchange="previewImage(this,'prev-b')">
+                <img id="prev-b" alt="Screenshot B preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             PART C — XSS Attacks
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part C</div>
+            <div class="part-title">Cross-Site Scripting (XSS) Attacks</div>
+            <div class="part-pts">45 pts</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            Based on <strong>Lab 3</strong>. Use DVWA with security set to <strong>Low</strong>. Answer the questions for both Reflected and Stored XSS.
+        </p>
+
+        <!-- Q8 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q8</span>
+                <span class="q-text">Write the exact XSS payload you submitted to trigger the alert box in the Reflected XSS exercise.</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <input type="text" class="task-answer" data-task="C" placeholder="<script>...</script>">
+        </div>
+
+        <!-- Q9 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q9</span>
+                <span class="q-text">In Reflected XSS, where does the payload travel after you click Submit? Is it stored anywhere permanently?</span>
+                <span class="q-pts">6 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="Describe the flow of the payload from input to browser response..."></textarea>
+        </div>
+
+        <!-- Q10 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q10</span>
+                <span class="q-text">In the Stored XSS exercise, you reloaded the guestbook page after submitting the script. What happened, and why did the alert fire again without you resubmitting anything?</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="Explain what the server did with your payload and why every page load re-triggers it..."></textarea>
+        </div>
+
+        <!-- Q11 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q11</span>
+                <span class="q-text">Complete this comparison table:</span>
+                <span class="q-pts">10 pts</span>
+            </div>
+            <p class="q-hint">Fill in the answer for each cell.</p>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:0.93em;">
+                <thead>
+                    <tr style="background:var(--primary); color:white;">
+                        <th style="padding:10px 14px; text-align:left; border-radius:8px 0 0 0;">Property</th>
+                        <th style="padding:10px 14px; text-align:left;">Reflected XSS</th>
+                        <th style="padding:10px 14px; text-align:left; border-radius:0 8px 0 0;">Stored XSS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">Where is the payload saved?</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">Who triggers the attack?</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                    </tr>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600;">Which is more dangerous?</td>
+                        <td colspan="2" style="padding:8px 10px;"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Which one and why..."></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Q12 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q12</span>
+                <span class="q-text">A bank's internal support ticket system allows agents to view customer-submitted messages. An attacker submits a ticket containing a stored XSS payload that steals the session cookie of anyone who views it. Who is at risk, and what can the attacker do with the stolen session cookie?</span>
+                <span class="q-pts">7 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="Identify the victims and describe the impact..."></textarea>
+        </div>
+
+        <!-- Screenshot C1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-3</span>
+                <span class="q-text">Screenshot — Reflected XSS alert box triggered in DVWA</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">The DVWA URL bar must be visible in the screenshot showing the payload in the query string.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-3</label>
+                <input type="file" id="ss-c1" accept="image/*" onchange="previewImage(this,'prev-c1')">
+                <img id="prev-c1" alt="Screenshot C1 preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- Screenshot C2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-4</span>
+                <span class="q-text">Screenshot — Stored XSS: guestbook page after reload, showing both the normal entry and the script entry</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">Both entries must be visible. If an alert box appeared on reload, capture it too.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-4</label>
+                <input type="file" id="ss-c2" accept="image/*" onchange="previewImage(this,'prev-c2')">
+                <img id="prev-c2" alt="Screenshot C2 preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             GENERATE PDF
+             ═══════════════════════════════════ -->
+        <div class="report-section">
+            <h2>&#128196; Generate Your Assignment Report</h2>
+            <p>Fill in your student information and click <strong>Generate PDF Report</strong>. A printable page will open — use <strong>Ctrl+P → Save as PDF</strong> to produce your submission file.</p>
+
+            <div class="student-grid">
+                <div class="field-group">
+                    <label>Student Name <span>*</span></label>
+                    <input type="text" id="student-name" placeholder="Full name (required)">
+                </div>
+                <div class="field-group">
+                    <label>Student ID <span>*</span></label>
+                    <input type="text" id="student-id" placeholder="Student ID (required)">
+                </div>
+            </div>
+            <div class="field-group" style="margin-bottom:6px;">
+                <label>University Email <span>*</span></label>
+                <input type="email" id="student-email" placeholder="Student email (required)">
+            </div>
+
+            <button class="generate-btn" onclick="generateReport()">
+                &#128196; &nbsp; Generate PDF Report
+            </button>
+        </div>
+
+        <!-- Checklist -->
+        <div class="checklist">
+            <h4>&#9989; Submission Checklist</h4>
+            <ul>
+                <li>PDF report generated from this page (includes name, ID, and all answers)</li>
+                <li>SS-1 — Kali terminal: <code>uname -a</code> + <code>nmap --version</code></li>
+                <li>SS-2 — Firefox DevTools Network tab on Juice Shop</li>
+                <li>SS-3 — Reflected XSS alert box in DVWA</li>
+                <li>SS-4 — Stored XSS guestbook (normal entry + script entry visible)</li>
+            </ul>
+        </div>
+
+        <div class="alert warn" style="margin-top:24px;">
+            <span class="alert-icon">&#9888;&#65039;</span>
+            <div>
+                <h4>Academic Integrity</h4>
+                <p style="margin:0; font-size:0.93em;">All work must be your own. Screenshots must show your own VM/browser. Identical screenshots across submissions will be flagged. Refer to the course academic integrity policy for consequences.</p>
+            </div>
+        </div>
+
+    </div><!-- end .content -->
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; Web Application Security &mdash; King Abdulaziz University</p>
+        <p>Assignment 1: Web Security Foundations &nbsp;·&nbsp; Labs 1–3 &nbsp;·&nbsp; Spring 2026</p>
+    </div>
+
+</div><!-- end .container -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('Student Name is required.'); return; }
+    if (!sid)   { alert('Student ID is required.'); return; }
+    if (!email) { alert('Email is required.'); return; }
+
+    // Collect answers per part
+    var parts = { A: [], B: [], C: [] };
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!parts[t]) parts[t] = [];
+        var lbl = '';
+        var el = f;
+        // walk up to find question label
+        while (el && !el.classList.contains('question')) el = el.parentElement;
+        if (el) {
+            var qt = el.querySelector('.q-text');
+            if (qt) lbl = qt.textContent.trim();
+        }
+        parts[t].push({ label: lbl || '—', value: f.value.trim() || '(not answered)' });
+    });
+
+    var partNames = {
+        A: 'Part A — Environment Verification (Lab 1)',
+        B: 'Part B — Web Application Reconnaissance (Lab 2)',
+        C: 'Part C — XSS Attacks (Lab 3)'
+    };
+    var ssMap = {
+        'prev-a':  'SS-1 — Kali Terminal (uname -a + nmap --version)',
+        'prev-b':  'SS-2 — Firefox DevTools on Juice Shop',
+        'prev-c1': 'SS-3 — Reflected XSS Alert Box',
+        'prev-c2': 'SS-4 — Stored XSS Guestbook'
+    };
+    var ssPerPart = { A: ['prev-a'], B: ['prev-b'], C: ['prev-c1','prev-c2'] };
+
+    var w = window.open('', '_blank');
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+    h += '<title>Assign1_' + name.replace(/\s+/g,'_') + '_' + sid + '</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6;font-size:14px}';
+    h += 'h1{color:#1a3a5c;font-size:1.45em;text-align:center;margin-bottom:4px}';
+    h += 'h2{color:#1a3a5c;font-size:1.05em;margin:24px 0 10px;padding:8px 14px;background:#eff6ff;border-left:4px solid #1a3a5c;border-radius:0 8px 8px 0}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:20px;font-size:.88em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#e8f0fe;padding:12px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #b8d0f7;font-size:.9em}';
+    h += '.ar{margin-bottom:10px;page-break-inside:avoid}';
+    h += '.al{font-weight:600;color:#4a5568;font-size:.85em;margin-bottom:3px}';
+    h += '.av{background:#f8fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word;font-size:.93em}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}';
+    h += '.ss{margin-top:14px;page-break-inside:avoid}';
+    h += '.ss-lbl{font-weight:600;color:#4a5568;font-size:.85em;margin-bottom:6px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.75em;margin-top:36px;border-top:1px solid #e2e8f0;padding-top:14px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 Assignment 1: Web Security Foundations</h1>';
+    h += '<p class="sub">Labs 1 \u00b7 2 \u00b7 3 &nbsp;\u2014&nbsp; Spring 2026 &nbsp;\u2014&nbsp; King Abdulaziz University</p>';
+    h += '<div class="si">';
+    h += '<div><strong>Name:</strong> ' + name + '</div>';
+    h += '<div><strong>ID:</strong> ' + sid + '</div>';
+    h += '<div><strong>Email:</strong> ' + email + '</div>';
+    h += '</div>';
+
+    ['A','B','C'].forEach(function(p) {
+        h += '<h2>' + partNames[p] + '</h2>';
+        if (parts[p]) {
+            parts[p].forEach(function(a) {
+                h += '<div class="ar"><div class="al">' + a.label.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+            });
+        }
+        if (ssPerPart[p]) {
+            ssPerPart[p].forEach(function(ssId) {
+                if (screenshotData[ssId]) {
+                    h += '<div class="ss"><div class="ss-lbl">' + ssMap[ssId] + '</div>';
+                    h += '<img src="' + screenshotData[ssId] + '"></div>';
+                }
+            });
+        }
+        h += '<hr>';
+    });
+
+    h += '<div class="fn">CYB 236 \u2014 Assignment 1 &nbsp;\u00b7&nbsp; ' + name + ' &nbsp;\u00b7&nbsp; ' + sid + '</div>';
+    h += '</body></html>';
+
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
+</body>
+</html>

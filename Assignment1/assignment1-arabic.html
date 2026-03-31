@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الواجب 1 — CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --accent-d:  #d35400;
+            --green:     #16a34a;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--text);
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+            direction: rtl;
+        }
+
+        /* مصطلح إنجليزي داخل النص العربي */
+        .term-en {
+            color: var(--accent);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* ── الترويسة ── */
+        .header {
+            background: linear-gradient(135deg, #0f2340 0%, #1a3a5c 100%);
+            color: white;
+            padding: 44px 40px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80" opacity="0.04">🔐</text></svg>') center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 5px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .header .subtitle {
+            font-size: 1.05em;
+            opacity: 0.85;
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .header .chapter-ref {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* ── شريط المعلومات ── */
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+            color: white;
+        }
+        .info-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+        }
+        .info-item strong {
+            display: block;
+            font-size: 0.78em;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+        .info-item span { font-size: 1.02em; font-weight: 700; }
+
+        /* ── المحتوى ── */
+        .content { padding: 40px; }
+
+        /* ── صندوق التعليمات ── */
+        .instructions {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-right: 5px solid #3b82f6;
+            border-left: none;
+            border-radius: 12px 0 0 12px;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+        }
+        .instructions h3 { color: #1d4ed8; margin-bottom: 10px; font-size: 1em; }
+        .instructions ul { padding-left: 0; list-style: none; }
+        .instructions li {
+            padding: 4px 22px 4px 0;
+            position: relative;
+            font-size: 0.97em;
+        }
+        .instructions li::before {
+            content: '›';
+            position: absolute; right: 0; left: auto;
+            color: #3b82f6; font-weight: 700;
+        }
+
+        /* ── رأس الجزء ── */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            margin: 36px 0 22px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .part-title { font-size: 1.1em; font-weight: 700; }
+        .part-pts {
+            margin-right: auto;
+            margin-left: 0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ── السؤال ── */
+        .question {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+        }
+        .question-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .q-num {
+            background: var(--primary);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 3px 11px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-pts {
+            color: var(--accent);
+            font-size: 0.82em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .q-text {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .q-hint {
+            font-size: 0.85em;
+            color: var(--muted);
+            margin: 6px 0 10px;
+            font-style: italic;
+        }
+
+        code {
+            background: #1a202c;
+            color: #68d391;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-family: 'Consolas','Monaco',monospace;
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        input[type="text"].task-answer, input[type="text"].fill-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.2s;
+        }
+        input[type="text"].task-answer:focus,
+        input[type="text"].fill-answer:focus,
+        textarea.task-answer:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        textarea.task-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            resize: vertical;
+            min-height: 90px;
+            transition: border-color 0.2s;
+        }
+
+        /* ── رفع لقطة الشاشة ── */
+        .screenshot-box {
+            border: 2px dashed #94a3b8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            background: #f8fafc;
+            margin-top: 10px;
+        }
+        .screenshot-box label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .screenshot-box input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .screenshot-box img {
+            display: none;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        .screenshot-hint {
+            font-size: 0.8em;
+            color: var(--muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* ── صناديق التنبيه ── */
+        .alert {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert.info  { background: #eff6ff; border: 1px solid #bfdbfe; }
+        .alert.warn  { background: #fffbeb; border: 1px solid #fde68a; }
+        .alert h4 { margin-bottom: 4px; }
+
+        /* ── قسم التقرير ── */
+        .report-section {
+            background: #fafbfc;
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 36px;
+        }
+        .report-section h2 {
+            color: var(--primary);
+            font-size: 1.25em;
+            margin-bottom: 6px;
+        }
+        .report-section p { color: var(--muted); font-size: 0.95em; margin-bottom: 20px; }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .field-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .field-group label span { color: var(--red); }
+        .field-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        .field-group input:focus { outline: none; border-color: var(--accent); }
+
+        .generate-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-d));
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.05em;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(26,58,92,0.4);
+            transition: opacity 0.2s;
+        }
+        .generate-btn:hover { opacity: 0.92; }
+
+        /* ── قائمة التحقق ── */
+        .checklist {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+        .checklist h4 { color: var(--primary); margin-bottom: 12px; font-size: 1em; }
+        .checklist ul { list-style: none; }
+        .checklist li {
+            padding: 6px 28px 6px 0;
+            position: relative;
+            font-size: 0.95em;
+            border-bottom: 1px solid var(--border);
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .checklist li::before { content: '☐'; position: absolute; right: 0; left: auto; color: var(--accent); font-size: 1.1em; }
+
+        /* ── التذييل ── */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 22px 40px;
+            font-size: 0.88em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        /* ── زر تبديل اللغة ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; }
+            .generate-btn { display: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- زر تبديل اللغة -->
+<div class="lang-switch">
+    <a href="assignment1-english.html" class="lang-btn">
+        &#127760; English
+    </a>
+</div>
+
+<div class="container">
+
+    <!-- الترويسة -->
+    <div class="header">
+        <div class="header-label">الواجب 1</div>
+        <h1>أسس أمن الويب</h1>
+        <p class="subtitle">إعداد البيئة &nbsp;·&nbsp; الاستطلاع على الويب &nbsp;·&nbsp; هجمات XSS</p>
+        <div class="chapter-ref">CYB 236 &mdash; أمن تطبيقات الويب &mdash; الفصل الدراسي الثاني 2026</div>
+    </div>
+
+    <!-- شريط المعلومات -->
+    <div class="info-bar">
+        <div class="info-item"><strong>التغطية</strong><span>المختبرات 1 · 2 · 3</span></div>
+        <div class="info-item"><strong>مجموع الدرجات</strong><span>100 درجة</span></div>
+        <div class="info-item"><strong>التسليم</strong><span>تقرير PDF</span></div>
+        <div class="info-item"><strong>لقطات الشاشة</strong><span>4 مطلوبة</span></div>
+    </div>
+
+    <!-- المحتوى -->
+    <div class="content">
+
+        <!-- التعليمات -->
+        <div class="instructions">
+            <h3>&#128196; التعليمات</h3>
+            <ul>
+                <li>أجب على <strong>جميع الأسئلة</strong> في الحقول المخصصة لها في هذه الصفحة.</li>
+                <li>ارفع كل لقطة شاشة مطلوبة باستخدام أزرار رفع الملفات. ستُضمَّن لقطات الشاشة في تقريرك.</li>
+                <li>عند الانتهاء، انتقل إلى الأسفل وأدخل بياناتك الطلابية، ثم انقر على <strong>إنشاء تقرير PDF</strong>.</li>
+                <li>ستفتح نافذة جديدة — استخدم <strong>Ctrl+P ← حفظ بصيغة PDF</strong> لحفظ ملف التسليم.</li>
+                <li>ارفع ملف PDF المُنشأ إلى نظام إدارة التعلم (LMS) قبل الموعد النهائي.</li>
+            </ul>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             الجزء أ — التحقق من البيئة
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">الجزء أ</div>
+            <div class="part-title">التحقق من البيئة &mdash; إعداد Kali Linux</div>
+            <div class="part-pts">20 درجة</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            بناءً على <strong>المختبر 1</strong>. افتح جهاز Kali Linux الافتراضي ونفّذ الأوامر أدناه لجمع الإجابات.
+        </p>
+
+        <!-- س1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س1</span>
+                <span class="q-text">شغّل <code>uname -a</code> في طرفية Kali الخاصة بك. ما نظام التشغيل وإصدار النواة والمعمارية التي يعرضها؟</span>
+                <span class="q-pts">4 درجات</span>
+            </div>
+            <p class="q-hint">انسخ الناتج الكامل للأمر.</p>
+            <input type="text" class="task-answer" data-task="A" placeholder="مثلاً:  Linux kali 6.x.x-kali... x86_64 GNU/Linux">
+        </div>
+
+        <!-- س2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س2</span>
+                <span class="q-text">شغّل <code>nmap --version</code>. ما إصدار Nmap المثبّت على نظامك؟</span>
+                <span class="q-pts">3 درجات</span>
+            </div>
+            <input type="text" class="task-answer" data-task="A" placeholder="مثلاً:  Nmap version 7.x.x">
+        </div>
+
+        <!-- س3 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س3</span>
+                <span class="q-text">لماذا يستخدم متخصصو الأمن جهازاً افتراضياً (<span class="term-en">VM</span>) بدلاً من جهازهم المادي عند إجراء اختبار الاختراق؟</span>
+                <span class="q-pts">8 درجات</span>
+            </div>
+            <p class="q-hint">اذكر سببين محددين على الأقل.</p>
+            <textarea class="task-answer" data-task="A" placeholder="إجابتك هنا..."></textarea>
+        </div>
+
+        <!-- لقطة الشاشة أ -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-1</span>
+                <span class="q-text">لقطة شاشة — طرفية Kali Linux تُظهر ناتج كلٍّ من <code>uname -a</code> و<code>nmap --version</code></span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن يظهر كلا الأمرين في نفس نافذة الطرفية.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-1</label>
+                <input type="file" id="ss-a" accept="image/*" onchange="previewImage(this,'prev-a')">
+                <img id="prev-a" alt="معاينة لقطة الشاشة أ">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG &mdash; الحجم الأقصى الموصى به: 5 ميغابايت</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             الجزء ب — الاستطلاع على تطبيق الويب
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">الجزء ب</div>
+            <div class="part-title">الاستطلاع على تطبيق الويب</div>
+            <div class="part-pts">35 درجة</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            بناءً على <strong>المختبر 2</strong>. شغّل <span class="term-en">OWASP Juice Shop</span> باستخدام Docker واستخدم أدوات المطور في Firefox (F12) للإجابة على ما يلي.
+        </p>
+
+        <!-- س4 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س4</span>
+                <span class="q-text">ما برنامج خادم الويب الذي يعمل خلف Juice Shop؟ كيف حددته؟</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">افحص ترويسات الاستجابة في تبويب Network.</p>
+            <input type="text" class="task-answer" data-task="B" placeholder="Server: ...   (وُجد في: ترويسات الاستجابة / مصدر الصفحة / ...)">
+        </div>
+
+        <!-- س5 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س5</span>
+                <span class="q-text">ما إطار عمل <span class="term-en">JavaScript</span> من جانب العميل الذي يستخدمه Juice Shop؟ اذكر الإطار واشرح كيف عرّفته.</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <input type="text" class="task-answer" data-task="B" placeholder="اسم الإطار وكيف عرّفته...">
+        </div>
+
+        <!-- س6 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س6</span>
+                <span class="q-text">انظر إلى استجابات <span class="term-en">API</span> في تبويب <span class="term-en">Network</span>. ما البيانات الحساسة التي وجدتها مكشوفة في جسم استجابة أي نقطة نهاية <span class="term-en">REST</span>؟ قدّم مثالاً واحداً محدداً.</span>
+                <span class="q-pts">8 درجات</span>
+            </div>
+            <p class="q-hint">تلميح: افحص نقاط نهاية التعليقات أو بيانات المستخدمين للعثور على عناوين البريد الإلكتروني أو معلومات مشابهة.</p>
+            <textarea class="task-answer" data-task="B" placeholder="صِف رابط نقطة النهاية والبيانات الحساسة المرئية في استجابتها..."></textarea>
+        </div>
+
+        <!-- س7 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س7</span>
+                <span class="q-text">افحص ملفات تعريف الارتباط (<span class="term-en">Cookies</span>) التي يضعها Juice Shop. أدرج الملفات التي وجدتها وحدّد أعلام الأمان المفقودة (<code>HttpOnly</code>، <code>Secure</code>). ما الهجوم الذي يُتيحه كل علَم مفقود؟</span>
+                <span class="q-pts">12 درجة</span>
+            </div>
+            <textarea class="task-answer" data-task="B" placeholder="اسم الملف: ...&#10;علَم HttpOnly: موجود / مفقود ← إن كان مفقوداً، يُتيح: ...&#10;علَم Secure: موجود / مفقود ← إن كان مفقوداً، يُتيح: ..."></textarea>
+        </div>
+
+        <!-- لقطة الشاشة ب -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-2</span>
+                <span class="q-text">لقطة شاشة — تبويب Network في Firefox DevTools يُظهر طلبات REST API على الصفحة الرئيسية لـ Juice Shop</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن تكون لوحة DevTools مرئية مع تحديد طلب API واحد على الأقل يُظهر استجابته.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-2</label>
+                <input type="file" id="ss-b" accept="image/*" onchange="previewImage(this,'prev-b')">
+                <img id="prev-b" alt="معاينة لقطة الشاشة ب">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             الجزء ج — هجمات XSS
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">الجزء ج</div>
+            <div class="part-title">هجمات البرمجة النصية العابرة للمواقع (XSS)</div>
+            <div class="part-pts">45 درجة</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            بناءً على <strong>المختبر 3</strong>. استخدم DVWA مع ضبط الأمان على <strong>Low</strong>. أجب على الأسئلة لكلٍّ من XSS المنعكس والمخزّن.
+        </p>
+
+        <!-- س8 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س8</span>
+                <span class="q-text">اكتب حمولة XSS الدقيقة التي أرسلتها لتشغيل مربع التنبيه في تمرين XSS المنعكس.</span>
+                <span class="q-pts">4 درجات</span>
+            </div>
+            <input type="text" class="task-answer" data-task="C" placeholder="<script>...</script>">
+        </div>
+
+        <!-- س9 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س9</span>
+                <span class="q-text">في XSS المنعكس، أين تسير الحمولة بعد نقرك على Submit؟ هل تُخزَّن في مكان ما بشكل دائم؟</span>
+                <span class="q-pts">6 درجات</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="صِف مسار الحمولة من المدخل إلى استجابة المتصفح..."></textarea>
+        </div>
+
+        <!-- س10 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س10</span>
+                <span class="q-text">في تمرين XSS المخزّن، أعدت تحميل صفحة سجل الزوار بعد إرسال السكريبت. ماذا حدث، ولماذا اُشتُعل التنبيه مجدداً دون إعادة الإرسال؟</span>
+                <span class="q-pts">8 درجات</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="اشرح ما فعله الخادم بحمولتك ولماذا يُعيد تشغيلها عند كل تحميل للصفحة..."></textarea>
+        </div>
+
+        <!-- س11 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س11</span>
+                <span class="q-text">أكمل جدول المقارنة هذا:</span>
+                <span class="q-pts">10 درجات</span>
+            </div>
+            <p class="q-hint">أدخل الإجابة لكل خلية.</p>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:0.93em;">
+                <thead>
+                    <tr style="background:var(--primary); color:white;">
+                        <th style="padding:10px 14px; text-align:right; border-radius:0 8px 0 0;">الخاصية</th>
+                        <th style="padding:10px 14px; text-align:right;">XSS المنعكس</th>
+                        <th style="padding:10px 14px; text-align:right; border-radius:8px 0 0 0;">XSS المخزّن</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">أين تُحفظ الحمولة البرمجية؟</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">من يُشغّل الهجوم؟</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                    </tr>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600;">أيهما أخطر؟</td>
+                        <td colspan="2" style="padding:8px 10px;"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="أيهما ولماذا..."></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- س12 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س12</span>
+                <span class="q-text">يسمح نظام تذاكر الدعم الداخلي لبنك ما للموظفين بعرض رسائل العملاء. يُرسل مهاجم تذكرة تحتوي على حمولة XSS مخزّن تسرق ملف تعريف جلسة كل من يعرضها. من هو المعرّض للخطر، وماذا يستطيع المهاجم فعله بملف تعريف الجلسة المسروق؟</span>
+                <span class="q-pts">7 درجات</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="حدّد الضحايا وصِف التأثير..."></textarea>
+        </div>
+
+        <!-- لقطة الشاشة ج-1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-3</span>
+                <span class="q-text">لقطة شاشة — نافذة تنبيه XSS المنعكس في DVWA</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن يظهر شريط الرابط في DVWA في لقطة الشاشة مُظهِراً الحمولة في سلسلة الاستعلام.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-3</label>
+                <input type="file" id="ss-c1" accept="image/*" onchange="previewImage(this,'prev-c1')">
+                <img id="prev-c1" alt="معاينة لقطة الشاشة ج-1">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- لقطة الشاشة ج-2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-4</span>
+                <span class="q-text">لقطة شاشة — XSS المخزّن: صفحة سجل الزوار بعد إعادة التحميل تُظهر الإدخال العادي وإدخال السكريبت</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن يظهر كلا الإدخالين. إن ظهر مربع التنبيه عند إعادة التحميل، التقطه أيضاً.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-4</label>
+                <input type="file" id="ss-c2" accept="image/*" onchange="previewImage(this,'prev-c2')">
+                <img id="prev-c2" alt="معاينة لقطة الشاشة ج-2">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             إنشاء PDF
+             ═══════════════════════════════════ -->
+        <div class="report-section">
+            <h2>&#128196; إنشاء تقرير الواجب</h2>
+            <p>أدخل بياناتك الطلابية وانقر على <strong>إنشاء تقرير PDF</strong>. ستفتح صفحة قابلة للطباعة — استخدم <strong>Ctrl+P ← حفظ بصيغة PDF</strong> لإنتاج ملف التسليم.</p>
+
+            <div class="student-grid">
+                <div class="field-group">
+                    <label>اسم الطالب <span>*</span></label>
+                    <input type="text" id="student-name" placeholder="الاسم الكامل (مطلوب)">
+                </div>
+                <div class="field-group">
+                    <label>الرقم الجامعي <span>*</span></label>
+                    <input type="text" id="student-id" placeholder="الرقم الجامعي (مطلوب)">
+                </div>
+            </div>
+            <div class="field-group" style="margin-bottom:6px;">
+                <label>البريد الإلكتروني الجامعي <span>*</span></label>
+                <input type="email" id="student-email" placeholder="البريد الإلكتروني (مطلوب)" dir="ltr">
+            </div>
+
+            <button class="generate-btn" onclick="generateReport()">
+                &#128196; &nbsp; إنشاء تقرير PDF
+            </button>
+        </div>
+
+        <!-- قائمة التحقق -->
+        <div class="checklist">
+            <h4>&#9989; قائمة التسليم</h4>
+            <ul>
+                <li>تقرير PDF مُنشأ من هذه الصفحة (يتضمن الاسم والرقم الجامعي وجميع الإجابات)</li>
+                <li>ص-1 — طرفية Kali: <code>uname -a</code> + <code>nmap --version</code></li>
+                <li>ص-2 — تبويب Network في Firefox DevTools على Juice Shop</li>
+                <li>ص-3 — نافذة تنبيه XSS المنعكس في DVWA</li>
+                <li>ص-4 — سجل زوار XSS المخزّن (الإدخال العادي + إدخال السكريبت مرئيان)</li>
+            </ul>
+        </div>
+
+        <div class="alert warn" style="margin-top:24px;">
+            <span class="alert-icon">&#9888;&#65039;</span>
+            <div>
+                <h4>النزاهة الأكاديمية</h4>
+                <p style="margin:0; font-size:0.93em;">يجب أن يكون جميع العمل من إنتاجك الخاص. يجب أن تُظهر لقطات الشاشة جهازك الافتراضي ومتصفحك أنت. ستُستشكَل لقطات الشاشة المتطابقة بين التسليمات. راجع سياسة النزاهة الأكاديمية للمقرر للاطلاع على التبعات.</p>
+            </div>
+        </div>
+
+    </div><!-- نهاية المحتوى -->
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; أمن تطبيقات الويب &mdash; جامعة الملك عبدالعزيز</p>
+        <p>الواجب 1: أسس أمن الويب &nbsp;·&nbsp; المختبرات 1–3 &nbsp;·&nbsp; الفصل الدراسي الثاني 2026</p>
+    </div>
+
+</div><!-- نهاية الحاوية -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('اسم الطالب مطلوب.'); return; }
+    if (!sid)   { alert('الرقم الجامعي مطلوب.'); return; }
+    if (!email) { alert('البريد الإلكتروني مطلوب.'); return; }
+
+    // جمع الإجابات لكل جزء
+    var parts = { A: [], B: [], C: [] };
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!parts[t]) parts[t] = [];
+        var lbl = '';
+        var el = f;
+        while (el && !el.classList.contains('question')) el = el.parentElement;
+        if (el) {
+            var qt = el.querySelector('.q-text');
+            if (qt) lbl = qt.textContent.trim();
+        }
+        parts[t].push({ label: lbl || '\u2014', value: f.value.trim() || '(\u0644\u0645 \u062a\u062a\u0645 \u0627\u0644\u0625\u062c\u0627\u0628\u0629)' });
+    });
+
+    var partNames = {
+        A: '\u0627\u0644\u062c\u0632\u0621 \u0623 \u2014 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0628\u064a\u0626\u0629 (\u0627\u0644\u0645\u062e\u062a\u0628\u0631 1)',
+        B: '\u0627\u0644\u062c\u0632\u0621 \u0628 \u2014 \u0627\u0644\u0627\u0633\u062a\u0637\u0644\u0627\u0639 \u0639\u0644\u0649 \u062a\u0637\u0628\u064a\u0642 \u0627\u0644\u0648\u064a\u0628 (\u0627\u0644\u0645\u062e\u062a\u0628\u0631 2)',
+        C: '\u0627\u0644\u062c\u0632\u0621 \u062c \u2014 \u0647\u062c\u0645\u0627\u062a XSS (\u0627\u0644\u0645\u062e\u062a\u0628\u0631 3)'
+    };
+    var ssMap = {
+        'prev-a':  '\u0635-1 \u2014 \u0637\u0631\u0641\u064a\u0629 Kali (uname -a + nmap --version)',
+        'prev-b':  '\u0635-2 \u2014 Firefox DevTools \u0639\u0644\u0649 Juice Shop',
+        'prev-c1': '\u0635-3 \u2014 \u0646\u0627\u0641\u0630\u0629 \u062a\u0646\u0628\u064a\u0647 XSS \u0627\u0644\u0645\u0646\u0639\u0643\u0633',
+        'prev-c2': '\u0635-4 \u2014 \u0633\u062c\u0644 \u0632\u0648\u0627\u0631 XSS \u0627\u0644\u0645\u062e\u0632\u0651\u0646'
+    };
+    var ssPerPart = { A: ['prev-a'], B: ['prev-b'], C: ['prev-c1','prev-c2'] };
+
+    var w = window.open('', '_blank');
+    var h = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">';
+    h += '<title>Assign1_' + name.replace(/\s+/g,'_') + '_' + sid + '</title><style>';
+    h += 'body{font-family:"Segoe UI","Arial",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.9;direction:rtl;font-size:14px}';
+    h += 'h1{color:#1a3a5c;font-size:1.45em;text-align:center;margin-bottom:4px}';
+    h += 'h2{color:#1a3a5c;font-size:1.05em;margin:24px 0 10px;padding:8px 14px;background:#eff6ff;border-right:4px solid #1a3a5c;border-left:none;border-radius:8px 0 0 8px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:20px;font-size:.88em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#e8f0fe;padding:12px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #b8d0f7;font-size:.9em}';
+    h += '.ar{margin-bottom:10px;page-break-inside:avoid}';
+    h += '.al{font-weight:600;color:#4a5568;font-size:.85em;margin-bottom:3px}';
+    h += '.av{background:#f8fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word;font-size:.93em}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}';
+    h += '.ss{margin-top:14px;page-break-inside:avoid}';
+    h += '.ss-lbl{font-weight:600;color:#4a5568;font-size:.85em;margin-bottom:6px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.75em;margin-top:36px;border-top:1px solid #e2e8f0;padding-top:14px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 \u0627\u0644\u0648\u0627\u062c\u0628 1: \u0623\u0633\u0633 \u0623\u0645\u0646 \u0627\u0644\u0648\u064a\u0628</h1>';
+    h += '<p class="sub">\u0627\u0644\u0645\u062e\u062a\u0628\u0631\u0627\u062a 1 \u00b7 2 \u00b7 3 &nbsp;\u2014&nbsp; \u0627\u0644\u0641\u0635\u0644 \u0627\u0644\u062f\u0631\u0627\u0633\u064a \u0627\u0644\u062b\u0627\u0646\u064a 2026 &nbsp;\u2014&nbsp; \u062c\u0627\u0645\u0639\u0629 \u0627\u0644\u0645\u0644\u0643 \u0639\u0628\u062f\u0627\u0644\u0639\u0632\u064a\u0632</p>';
+    h += '<div class="si">';
+    h += '<div><strong>\u0627\u0644\u0627\u0633\u0645:</strong> ' + name + '</div>';
+    h += '<div><strong>\u0627\u0644\u0631\u0642\u0645:</strong> ' + sid + '</div>';
+    h += '<div><strong>\u0627\u0644\u0628\u0631\u064a\u062f:</strong> ' + email + '</div>';
+    h += '</div>';
+
+    ['A','B','C'].forEach(function(p) {
+        h += '<h2>' + partNames[p] + '</h2>';
+        if (parts[p]) {
+            parts[p].forEach(function(a) {
+                h += '<div class="ar"><div class="al">' + a.label.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+            });
+        }
+        if (ssPerPart[p]) {
+            ssPerPart[p].forEach(function(ssId) {
+                if (screenshotData[ssId]) {
+                    h += '<div class="ss"><div class="ss-lbl">' + ssMap[ssId] + '</div>';
+                    h += '<img src="' + screenshotData[ssId] + '"></div>';
+                }
+            });
+        }
+        h += '<hr>';
+    });
+
+    h += '<div class="fn">CYB 236 \u2014 \u0627\u0644\u0648\u0627\u062c\u0628 1 &nbsp;\u00b7&nbsp; ' + name + ' &nbsp;\u00b7&nbsp; ' + sid + '</div>';
+    h += '</body></html>';
+
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
+</body>
+</html>
