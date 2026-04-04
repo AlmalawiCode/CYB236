@@ -762,9 +762,8 @@
                 <input type="email" id="student-email" placeholder="البريد الإلكتروني (مطلوب)" dir="ltr">
             </div>
 
-            <button class="generate-btn" onclick="generateReport()">
-                &#128196; &nbsp; إنشاء تقرير PDF
-            </button>
+            <button disabled style="width:100%; background:#9ca3af; color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:not-allowed; opacity:0.7;">&#128196; إنشاء تقرير PDF &mdash; غير متاح</button>
+            <p style="color:#e53e3e; font-size:0.87em; margin-top:10px; text-align:center; font-weight:600;">&#9888; إنشاء التقرير غير متاح في النسخة العربية &mdash; يجب تقديم التقارير باللغة الإنجليزية.<br><span style="color:#718096; font-weight:400;">Reports must be submitted in English. Please use the English version of this assignment.</span></p>
         </div>
 
         <!-- قائمة التحقق -->
@@ -812,6 +811,8 @@ function previewImage(input, previewId) {
 }
 
 function generateReport() {
+    alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من الواجب.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this assignment.');
+    return;
     var name  = document.getElementById('student-name').value.trim();
     var sid   = document.getElementById('student-id').value.trim();
     var email = document.getElementById('student-email').value.trim();

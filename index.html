@@ -1035,7 +1035,7 @@
                 </div>
 
                 <!-- Topic 6 -->
-                <div class="module-card coming-soon">
+                <div class="module-card">
                     <div class="module-header principles">
                         <div class="module-topic">Topic 6</div>
                         <div class="module-title">Security Principles II</div>
@@ -1043,17 +1043,17 @@
                     </div>
                     <div class="module-body">
                         <ul class="module-topics">
-                            <li>Browser Security</li>
-                            <li>Database Security</li>
-                            <li>File Security</li>
-                            <li>Content Security Policy (CSP)</li>
+                            <li>Denial of Service (DoS)</li>
+                            <li>Third-Party Dependencies</li>
+                            <li>Defending Against DoS</li>
+                            <li>Securing Dependencies</li>
                         </ul>
                         <div class="module-footer">
-                            <a class="module-btn book-btn disabled">
+                            <a href="week6/index.html" class="module-btn principles" style="background:#e67e22;color:white;">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                 Lecture
                             </a>
-                            <span class="status-badge coming-soon">Coming Soon</span>
+                            <span class="status-badge ready">&#9679; Available</span>
                         </div>
                     </div>
                 </div>
@@ -1233,38 +1233,40 @@
                 </div>
 
                 <!-- Lab 5 — recon (blue) -->
-                <div class="lab-card lab-disabled">
+                <div class="lab-card">
                     <div class="lab-card-header">
                         <div class="lab-number-badge recon">L5</div>
-                        <div class="lab-card-title">Burp Suite: HTTP Interception &amp; Recon</div>
+                        <div class="lab-card-title">Burp Suite &mdash; Proxy, FoxyProxy &amp; Traffic Interception</div>
                     </div>
                     <div class="lab-card-body">
-                        <p class="lab-card-desc">Configure Burp Suite as a proxy, intercept HTTP traffic, use the Repeater and Spider tools, and map a web application's attack surface.</p>
+                        <p class="lab-card-desc">Learn what Burp Suite is, how an intercepting proxy works, and how to configure FoxyProxy. Understand the browser &rarr; proxy &rarr; website flow, set up the IP configuration correctly, and intercept your first HTTP request.</p>
                         <div class="lab-tools">
                             <span class="lab-tool-tag recon">Burp Suite</span>
-                            <span class="lab-tool-tag recon">DVWA</span>
+                            <span class="lab-tool-tag recon">FoxyProxy</span>
+                            <span class="lab-tool-tag recon">Kali Linux</span>
                         </div>
                     </div>
                     <div class="lab-card-footer">
-                        <a class="lab-open-btn disabled">Coming Soon</a>
+                        <a href="Labs/lab5/lab05-english.html" class="lab-open-btn recon">Open Lab &rarr;</a>
                     </div>
                 </div>
 
-                <!-- Lab 6 — principles (orange) -->
-                <div class="lab-card lab-disabled">
+                <!-- Lab 6 — recon (blue) -->
+                <div class="lab-card">
                     <div class="lab-card-header">
-                        <div class="lab-number-badge principles">L6</div>
-                        <div class="lab-card-title">Authentication &amp; Session Attacks</div>
+                        <div class="lab-number-badge recon">L6</div>
+                        <div class="lab-card-title">Burp Suite with DVWA &mdash; HTTP Interception in Practice</div>
                     </div>
                     <div class="lab-card-body">
-                        <p class="lab-card-desc">Perform brute-force attacks with Burp Suite Intruder, test for weak session tokens, and explore privilege escalation in DVWA.</p>
+                        <p class="lab-card-desc">Apply your Burp Suite setup (from Lab 05) against DVWA. Capture and analyze raw HTTP traffic, identify session cookies and missing security headers, modify requests with Repeater, and map the attack surface with Site Map.</p>
                         <div class="lab-tools">
-                            <span class="lab-tool-tag principles">Burp Suite</span>
-                            <span class="lab-tool-tag principles">DVWA</span>
+                            <span class="lab-tool-tag recon">Burp Suite</span>
+                            <span class="lab-tool-tag recon">DVWA</span>
+                            <span class="lab-tool-tag recon">FoxyProxy</span>
                         </div>
                     </div>
                     <div class="lab-card-footer">
-                        <a class="lab-open-btn disabled">Coming Soon</a>
+                        <a href="Labs/lab6/lab06-english.html" class="lab-open-btn recon">Open Lab &rarr;</a>
                     </div>
                 </div>
 

@@ -3,64 +3,884 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 6: Authentication & Session Attacks | CYB 236</title>
+    <title>Lab 06: Burp Suite with DVWA &ndash; HTTP Interception in Practice</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f8f9fa; color: #2c3e50; }
-        .banner { background: linear-gradient(135deg, #e67e22, #d35400); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
-        .banner h1 { margin: 0 0 8px 0; font-size: 1.6em; }
-        .banner p { margin: 0; opacity: 0.9; }
-        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; margin-top: 10px; }
-        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-        .card h2 { color: #d35400; margin-top: 0; border-bottom: 2px solid #f0e0d0; padding-bottom: 10px; }
-        ul li { margin-bottom: 8px; line-height: 1.6; }
-        .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-        .tool-tag { background: #fef0e0; color: #d35400; padding: 5px 12px; border-radius: 6px; font-size: 0.9em; font-weight: 600; }
-        .note { background: #fff3cd; border-left: 4px solid #e67e22; padding: 15px 20px; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+        :root {
+            --primary-color: #2980b9;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a2744 0%, #1e3a5f 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">&#128202;</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .prereq-badge {
+            display: inline-block;
+            background: rgba(56,161,105,0.3);
+            border: 1px solid rgba(56,161,105,0.6);
+            color: #c6f6d5;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* Lab Info Bar */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.82em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* Content */
+        .content { padding: 40px; }
+
+        /* TOC */
+        .toc {
+            background: linear-gradient(135deg, #e8f4fd 0%, #bee3f8 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-left: 5px solid #2980b9;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-left: 20px; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #1a5276; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* Sections */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #2980b9; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* Alert Boxes */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-left: 5px solid var(--info-color); }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-left: 5px solid var(--warning-color); }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-left: 5px solid var(--danger-color); }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-left: 5px solid var(--accent-color); }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#1a2744,#1e3a5f); color: white; padding: 14px 18px; text-align: left; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* Code */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        pre code { background: none; color: #68d391; padding: 0; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+        .output-text { color: #fbd38d; }
+
+        /* Steps */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-left: 50px; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; width: 35px; height: 35px; background: linear-gradient(135deg,#1a365d,#2c5282); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(26,54,93,0.3); }
+
+        /* Checklist */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 0 9px 35px; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '&#9744;'; position: absolute; left: 0; font-size: 1.2em; color: #2980b9; }
+
+        /* Expected Output */
+        .expected-output { background: #f7fafc; border: 2px dashed #2980b9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #2980b9; margin-top: 0; margin-bottom: 8px; }
+
+        /* Answer Key */
+        .answer-key { background: linear-gradient(135deg,#e8f4fd,#bee3f8); border: 2px solid #2980b9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .answer-key h4 { color: #1a5276; margin-top: 0; margin-bottom: 10px; }
+        .answer-key ol { margin-left: 20px; margin-bottom: 0; }
+        .answer-key li { margin-bottom: 8px; }
+        .answer-key strong { color: #1a5276; }
+
+        /* Deliverable */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-left: 5px solid #805ad5; border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* Fill-in */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.93em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(41,128,185,0.1); }
+
+        /* Concept Banner */
+        .concept-banner { background: linear-gradient(135deg,#1a2744,#1e3a5f); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #90cdf4; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* Module Badge */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#1a365d,#2c5282); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* Troubleshooting */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* Footer */
+        .footer { background: linear-gradient(135deg,#1a2744,#1e3a5f); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+        }
     </style>
 </head>
 <body>
 
-<div class="banner">
-    <h1>Lab 6: Authentication & Session Management Attacks</h1>
-    <p>Topic 6 — Web Application Security Fundamentals II</p>
-    <span class="badge">DVWA + Burp Suite + Hydra (Kali)</span>
-</div>
+<div class="container">
 
-<div class="card">
-    <h2>Lab Purpose</h2>
-    <p>This lab demonstrates how authentication and session management weaknesses can be exploited. Students will perform a brute force attack on a login form, analyze weak session tokens, and observe the consequences of poor session handling — directly connecting to the theory of Authentication, Access Control, and Session Management from Topic 4.</p>
-</div>
+    <header class="header">
+        <h1>&#128202; Lab 06: Burp Suite with DVWA &mdash; HTTP Interception in Practice</h1>
+        <p class="subtitle">CYB236 &mdash; Web Application Security</p>
+        <div class="chapter-ref">Chapters 4 &amp; 5 &mdash; HTTP History &bull; Analyze Requests &bull; Repeater &bull; Site Map</div>
+        <br>
+        <span class="prereq-badge">&#9989; Prerequisite: Lab 05 (Burp Suite &amp; FoxyProxy configured)</span>
+    </header>
 
-<div class="card">
-    <h2>Tools Required</h2>
-    <div class="tools">
-        <span class="tool-tag">DVWA</span>
-        <span class="tool-tag">Burp Suite (Intruder)</span>
-        <span class="tool-tag">Hydra (Kali)</span>
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>Lab Number</strong><span>06</span></div>
+        <div class="lab-info-item"><strong>Difficulty</strong><span>Intermediate</span></div>
+        <div class="lab-info-item"><strong>Duration</strong><span>45&ndash;55 min</span></div>
+        <div class="lab-info-item"><strong>Environment</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>Next</strong><span>Lab 07</span></div>
     </div>
-</div>
 
-<div class="card">
-    <h2>Planned Tasks</h2>
-    <ul>
-        <li><strong>Task 1 — Brute Force Login:</strong> Use Burp Suite Intruder or Hydra to brute force the DVWA login page. Observe how a weak password policy allows an attacker to guess credentials automatically.</li>
-        <li><strong>Task 2 — Weak Session IDs:</strong> Use the DVWA "Weak Session IDs" module. Generate multiple session tokens and analyze their pattern. Demonstrate how a predictable session ID can be hijacked.</li>
-        <li><strong>Task 3 — Session Fixation Observation:</strong> Observe how session tokens behave before and after login. Discuss the concept of session fixation and why session regeneration on login is important.</li>
-    </ul>
-</div>
+    <div class="content">
 
-<div class="card">
-    <h2>Learning Outcomes</h2>
-    <ul>
-        <li>Understand how brute force attacks exploit weak authentication</li>
-        <li>Recognize the risk of predictable or weak session tokens</li>
-        <li>Connect these attacks to the defensive principles covered in Topic 4 (Input Validation, Defense-in-Depth)</li>
-    </ul>
-</div>
+        <nav class="toc">
+            <h2>&#128203; Table of Contents</h2>
+            <ol>
+                <li><a href="#intro">Introduction</a></li>
+                <li><a href="#setup">Setup: Start DVWA &amp; Confirm Burp</a></li>
+                <li><a href="#task1">Task 1: Capture HTTP Traffic</a></li>
+                <li><a href="#task2">Task 2: Analyze Requests &amp; Responses</a></li>
+                <li><a href="#task3">Task 3: Modify Requests with Repeater</a></li>
+                <li><a href="#task4">Task 4: Map the Attack Surface</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#report">Generate Your Report</a></li>
+            </ol>
+        </nav>
 
-<div class="note">
-    <strong>Instructor Note:</strong> Set DVWA security level to LOW for Tasks 1 and 2. For Task 3, compare LOW vs MEDIUM behavior to show how a simple fix (randomizing session IDs) mitigates the risk.
-</div>
+        <!-- Introduction -->
+        <section id="intro">
+            <h2>&#128161; Introduction</h2>
 
+            <p>In <strong>Lab 05</strong> you learned what Burp Suite is, how a proxy works, and how to configure FoxyProxy so your browser traffic flows through Burp. You intercepted your first HTTP request and verified the setup is working.</p>
+
+            <p>In this lab you will <strong>apply that knowledge</strong> against a real vulnerable web application: <strong>DVWA (Damn Vulnerable Web Application)</strong>. You will use Burp Suite to capture login traffic, analyze raw HTTP requests and responses, use the <strong>Repeater</strong> tool to manually test a parameter, and build an attack surface map using the <strong>Site Map</strong>.</p>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Authorized Use Only</h4>
+                    <p>All tasks are performed against DVWA <strong>running locally on your own machine</strong>. Using Burp Suite against any system you do not own or have written permission to test is illegal.</p>
+                </div>
+            </div>
+
+            <div class="concept-banner">
+                <span class="ci">&#128187;</span>
+                <div>
+                    <h4>What is DVWA?</h4>
+                    <p>DVWA (Damn Vulnerable Web Application) is a PHP/MySQL application intentionally built with security vulnerabilities. It is used by security students and professionals to practice web exploitation techniques in a safe, legal environment. It includes modules for SQL Injection, XSS, CSRF, File Upload, Brute Force, and more.</p>
+                </div>
+            </div>
+
+            <h3>Burp Suite Tools Used in This Lab</h3>
+            <table>
+                <tr><th>Tool</th><th>What It Does</th><th>Where to Find It</th></tr>
+                <tr><td><strong>Proxy &rarr; HTTP History</strong></td><td>Records every request/response passing through Burp</td><td>Proxy tab &rarr; HTTP history sub-tab</td></tr>
+                <tr><td><strong>Proxy &rarr; Intercept</strong></td><td>Pauses a request so you can read or modify it</td><td>Proxy tab &rarr; Intercept sub-tab</td></tr>
+                <tr><td><strong>Repeater</strong></td><td>Edit and resend any saved request as many times as needed</td><td>Repeater tab (or right-click &rarr; Send to Repeater)</td></tr>
+                <tr><td><strong>Target &rarr; Site Map</strong></td><td>Builds a tree of all discovered URLs and endpoints</td><td>Target tab &rarr; Site map sub-tab</td></tr>
+            </table>
+        </section>
+
+        <!-- Setup -->
+        <section id="setup">
+            <h2>&#9881;&#65039; Setup: Start DVWA &amp; Confirm Burp</h2>
+
+            <h3>Step 1: Start DVWA</h3>
+<pre><code><span class="command-label"># Start the DVWA Docker container (if already created)</span>
+sudo docker start dvwa
+
+<span class="command-label"># If not yet created, run this once:</span>
+sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
+
+<pre><code><span class="command-label"># Get your Kali machine IP address</span>
+hostname -I</code></pre>
+            <p>Note the IP shown (e.g., <code>10.0.2.15</code>). You will use this IP to access DVWA in your browser &mdash; not <code>localhost</code>.</p>
+
+            <h3>Step 2: Confirm Burp Suite is Running</h3>
+            <ul>
+                <li>If Burp is not open, launch it: <code>burpsuite</code> &rarr; Temporary project &rarr; Start Burp</li>
+                <li>Confirm the proxy listener is on <code>127.0.0.1:8080</code> and shows <strong>Running</strong> (Proxy &rarr; Proxy settings)</li>
+            </ul>
+
+            <h3>Step 3: Activate FoxyProxy</h3>
+            <ul>
+                <li>Click the <strong>FoxyProxy icon</strong> in Firefox and activate the <strong>Burp Proxy</strong> profile</li>
+                <li>If you haven't configured FoxyProxy yet, return to <strong>Lab 05</strong> and complete Parts 3 and 4 first</li>
+            </ul>
+
+            <h3>Step 4: Turn Intercept OFF &amp; Open DVWA</h3>
+            <ol class="steps">
+                <li>In Burp, go to <strong>Proxy &rarr; Intercept</strong> and ensure it reads <strong>"Intercept is off"</strong> (traffic should flow freely)</li>
+                <li>In Firefox, navigate to <code>http://&lt;your-ip&gt;</code> (e.g., <code>http://10.0.2.15</code>)</li>
+                <li>DVWA login page should appear</li>
+                <li>Log in: username <code>admin</code> / password <code>password</code></li>
+                <li>If prompted, click <strong>Setup / Reset DB</strong>, then log in again</li>
+                <li>Go to <strong>DVWA Security</strong> and set the security level to <strong>Low</strong></li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Checkpoint</h4>
+                    <p>If DVWA loads in Firefox and requests are appearing in Burp's HTTP History tab, the proxy setup is working. You are ready to start the tasks.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task 1 -->
+        <section id="task1">
+            <h2>&#128247; Task 1: Capture HTTP Traffic</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; HTTP History</h4>
+                    <p>Every action you take in the browser generates HTTP requests. Burp's HTTP History records all of them with full detail: the request line, headers, body, and the server's complete response. This gives you far more information than the browser's DevTools, and each entry can be saved, filtered, and replayed.</p>
+                </div>
+            </div>
+
+            <h3>1A: Generate Traffic by Browsing DVWA</h3>
+            <p>In Firefox (FoxyProxy active, Intercept OFF), perform these actions one at a time:</p>
+            <ol class="steps">
+                <li>Visit <code>http://&lt;your-ip&gt;</code> &mdash; the DVWA login page</li>
+                <li>Log in with <code>admin</code> / <code>password</code></li>
+                <li>Click <strong>SQL Injection</strong> in the left menu, type <code>1</code> in the User ID field, and click Submit</li>
+                <li>Click <strong>XSS (Reflected)</strong>, type your name, and click Submit</li>
+                <li>Click <strong>Brute Force</strong> in the left menu</li>
+            </ol>
+
+            <h3>1B: Explore the HTTP History</h3>
+            <ol class="steps">
+                <li>Switch to Burp Suite &rarr; <strong>Proxy</strong> &rarr; <strong>HTTP history</strong></li>
+                <li>You will see a list of captured requests. Each row shows:
+                    <ul>
+                        <li><strong>#</strong> &mdash; request number (order captured)</li>
+                        <li><strong>Host</strong> &mdash; the server address</li>
+                        <li><strong>Method</strong> &mdash; GET or POST</li>
+                        <li><strong>URL</strong> &mdash; the path requested</li>
+                        <li><strong>Status</strong> &mdash; HTTP response code (200, 302, 404&hellip;)</li>
+                        <li><strong>Length</strong> &mdash; size of the response in bytes</li>
+                    </ul>
+                </li>
+                <li>Click on the <strong>login POST request</strong> (look for <code>POST /login.php</code>)</li>
+                <li>In the bottom panel, read both the <strong>Request</strong> tab and the <strong>Response</strong> tab</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What You Should See in the Login Request:</h4>
+                <p>The <strong>Request</strong> tab will show something like:</p>
+<pre><code><span class="output-text">POST /login.php HTTP/1.1
+Host: 10.0.2.15
+Content-Type: application/x-www-form-urlencoded
+Cookie: PHPSESSID=abc123def456; security=low
+
+username=admin&password=password&Login=Login</span></code></pre>
+                <p>The <strong>Response</strong> tab will show a <code>302 Found</code> redirect to <code>/index.php</code> &mdash; meaning the login was successful.</p>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>What is the PHPSESSID Cookie?</h4>
+                    <p>After a successful login, the server sets a <code>PHPSESSID</code> cookie. This is the <strong>session token</strong> &mdash; it proves to the server who you are on every subsequent request. Any attacker who steals this value can impersonate you without knowing your password. This is called <strong>session hijacking</strong>.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 1 &mdash; Fill In Your Answers</h4></div>
+            <div class="fill-in">
+                <label>1. How many HTTP requests appeared in Burp's history after you completed the browsing steps?</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="e.g., around 15–30 requests depending on page resources loaded">
+
+                <label>2. What HTTP method did the login form use (GET or POST)? Why is POST more appropriate than GET for a login form?</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="POST. POST sends credentials in the request body, not visible in the URL or browser history. GET would embed the username and password in the URL, making them visible in server logs and browser history."></textarea>
+
+                <label>3. What is the name of the session cookie set by DVWA after login? Write its name and a few characters of its value.</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="Cookie name: PHPSESSID — Value: e.g., a1b2c3d4e5f6... (32-character random string)">
+
+                <label>4. What HTTP status code did the server return after a successful login, and what does that code mean?</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="302 Found — redirect. The browser is told to navigate to a different URL (the dashboard) after login.">
+
+                <label>5. Screenshot &mdash; Burp's HTTP history showing at least 10 captured requests:</label>
+                <input type="file" id="ss-task1" accept="image/*" onchange="previewImage(this,'prev-task1')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task1" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 1 screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 1</h4>
+                <ol>
+                    <li><strong>Q1:</strong> Typically 15&ndash;30+ requests. Each page load triggers multiple requests: the HTML page, CSS files, JavaScript, and images.</li>
+                    <li><strong>Q2:</strong> <strong>POST.</strong> POST sends credentials in the request body (not the URL). GET would expose the password in the address bar, browser history, server access logs, and any intermediate proxies.</li>
+                    <li><strong>Q3:</strong> <strong>PHPSESSID</strong> &mdash; a 32-character hexadecimal string generated by PHP to uniquely identify the user's session.</li>
+                    <li><strong>Q4:</strong> <strong>302 Found</strong> &mdash; an HTTP redirect. After verifying credentials, the server tells the browser to navigate to the dashboard. The browser follows this redirect automatically.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Task 2 -->
+        <section id="task2">
+            <h2>&#128202; Task 2: Analyze Requests &amp; Responses</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; Reading Raw HTTP</h4>
+                    <p>Every HTTP request has three parts: a <strong>request line</strong> (method + path + version), <strong>headers</strong> (metadata like cookies, content type, browser info), and optionally a <strong>body</strong> (data sent with POST requests). Burp shows you all of this in raw text, exactly as the browser sends it &mdash; more detail than any browser DevTools panel.</p>
+                </div>
+            </div>
+
+            <h3>2A: Find and Inspect the SQL Injection Request</h3>
+            <ol class="steps">
+                <li>In HTTP history, look for a <strong>GET</strong> request with a URL containing <code>/vulnerabilities/sqli/</code></li>
+                <li>Click on it to select it</li>
+                <li>In the <strong>Request</strong> tab (bottom panel), read the full raw request</li>
+                <li>Notice the <code>id=1</code> parameter in the URL &mdash; this is the SQL injection entry point</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What the SQL Injection Request Looks Like:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/sqli/?id=1&Submit=Submit HTTP/1.1
+Host: 10.0.2.15
+Cookie: PHPSESSID=abc123; security=low
+Referer: http://10.0.2.15/vulnerabilities/sqli/
+User-Agent: Mozilla/5.0 ...</span></code></pre>
+                <p>The <code>id=1</code> query parameter is sent directly to a SQL query on the server. This is the parameter a tester would manipulate to perform SQL injection.</p>
+            </div>
+
+            <h3>2B: Compare GET and POST Requests</h3>
+            <ol class="steps">
+                <li>Find the <strong>XSS (Reflected)</strong> request &mdash; a <code>GET</code> to <code>/vulnerabilities/xss_r/</code></li>
+                <li>Find the <strong>login</strong> request &mdash; a <code>POST</code> to <code>/login.php</code></li>
+                <li>Compare where the user's input appears: in the URL vs. in the body</li>
+            </ol>
+
+            <h3>2C: Check for Missing Security Headers</h3>
+            <ol class="steps">
+                <li>Click any response from DVWA in HTTP history</li>
+                <li>Switch to the <strong>Response</strong> tab</li>
+                <li>Look at the response headers &mdash; search for <code>X-Frame-Options</code>, <code>Content-Security-Policy</code>, and <code>X-XSS-Protection</code></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What You Should (Not) See:</h4>
+                <p>DVWA is intentionally insecure. Its responses will be <strong>missing</strong> most security headers. A properly hardened application would include:</p>
+<pre><code><span class="output-text">X-Frame-Options: DENY
+Content-Security-Policy: default-src 'self'
+X-Content-Type-Options: nosniff
+Strict-Transport-Security: max-age=31536000</span></code></pre>
+                <p>The absence of these headers means the application is vulnerable to clickjacking, XSS, and MIME-sniffing attacks.</p>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 2 &mdash; Fill In Your Answers</h4></div>
+            <div class="fill-in">
+                <label>1. In the SQL injection request, where does the user's input (id=1) appear &mdash; in the URL or in the request body? What HTTP method is used?</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="In the URL as a query parameter (?id=1&Submit=Submit). HTTP method: GET.">
+
+                <label>2. In the login request, where does the username and password appear? What HTTP method is used?</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="In the request body (username=admin&password=password&Login=Login). HTTP method: POST.">
+
+                <label>3. List at least two security headers that are MISSING from DVWA's responses and explain what each one protects against:</label>
+                <textarea class="task-answer" data-task="2" rows="4" placeholder="1. Content-Security-Policy — missing. Protects against XSS by restricting which scripts can run in the browser.&#10;2. X-Frame-Options — missing. Protects against clickjacking by preventing the page from being embedded in an iframe."></textarea>
+
+                <label>4. What is the value of the Cookie header sent with the SQL injection request? Why is this cookie important?</label>
+                <textarea class="task-answer" data-task="2" rows="2" placeholder="Cookie: PHPSESSID=<32-char-hex>; security=low. PHPSESSID proves the request comes from a logged-in user. If stolen, an attacker can hijack the session."></textarea>
+
+                <label>5. Screenshot &mdash; A raw HTTP request visible in Burp's Request tab (bottom panel):</label>
+                <input type="file" id="ss-task2" accept="image/*" onchange="previewImage(this,'prev-task2')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 2 screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 2</h4>
+                <ol>
+                    <li><strong>Q1:</strong> In the <strong>URL</strong> as a query parameter: <code>?id=1&amp;Submit=Submit</code>. Method: <strong>GET</strong>.</li>
+                    <li><strong>Q2:</strong> In the <strong>request body</strong>: <code>username=admin&amp;password=password&amp;Login=Login</code>. Method: <strong>POST</strong>.</li>
+                    <li><strong>Q3:</strong> <code>Content-Security-Policy</code> (prevents XSS), <code>X-Frame-Options</code> (prevents clickjacking), <code>X-Content-Type-Options</code> (prevents MIME sniffing), <code>Strict-Transport-Security</code> (forces HTTPS).</li>
+                    <li><strong>Q4:</strong> <code>PHPSESSID=&lt;value&gt;; security=low</code>. PHPSESSID authenticates the session. If stolen, an attacker can hijack the session without knowing the password.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Task 3 -->
+        <section id="task3">
+            <h2>&#9881;&#65039; Task 3: Modify Requests with Repeater</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; The Repeater Tool</h4>
+                    <p>Burp's <strong>Repeater</strong> lets you take any captured request, edit it, send it, and see the response &mdash; as many times as you like. This is essential for manually testing vulnerabilities: you can tweak a parameter, add an injection payload, change a header, or remove a cookie to see exactly how the server reacts, without touching the browser.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">Burp Suite: Repeater Tab</span>
+
+            <h3>3A: Send the SQL Injection Request to Repeater</h3>
+            <ol class="steps">
+                <li>In HTTP history, right-click on the <code>GET /vulnerabilities/sqli/?id=1</code> request</li>
+                <li>Select <strong>Send to Repeater</strong></li>
+                <li>Click the <strong>Repeater</strong> tab at the top of Burp Suite</li>
+                <li>You will see the raw request in the left panel</li>
+            </ol>
+
+            <h3>3B: Send the Original Request</h3>
+            <ol class="steps">
+                <li>Click <strong>Send</strong> (the orange button)</li>
+                <li>The server's response appears in the right panel</li>
+                <li>In the Response panel, click the <strong>Render</strong> tab to see the HTML output visually</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; Expected Response for id=1:</h4>
+<pre><code><span class="output-text">First name: admin
+Surname: admin</span></code></pre>
+                <p>The server looked up user ID 1 in the database and returned the name. This confirms the request is working correctly through Repeater.</p>
+            </div>
+
+            <h3>3C: Modify the Parameter and Resend</h3>
+            <ol class="steps">
+                <li>In the Repeater request panel, find <code>id=1</code> in the URL</li>
+                <li>Change it to <code>id=2</code> and click <strong>Send</strong> &mdash; observe the different user returned</li>
+                <li>Change it to <code>id=5</code> and click <strong>Send</strong> again</li>
+                <li>Now try <code>id=1'</code> (add a single quote) and click <strong>Send</strong></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What Happens with id=1&apos; (a single quote):</h4>
+<pre><code><span class="output-text">You have an error in your SQL syntax; check the manual that
+corresponds to your MySQL server version for the right syntax
+to use near ''1''' at line 1</span></code></pre>
+                <p>A SQL error message is returned &mdash; this confirms the parameter is vulnerable to SQL injection. The database is leaking internal error details, which is a serious security misconfiguration.</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Why Repeater is So Powerful</h4>
+                    <p>With Repeater you can test dozens of payloads in seconds without touching the browser. You have full control over every byte in the request &mdash; headers, cookies, method, and body. Professional testers use Repeater to confirm vulnerabilities, test bypass techniques, and understand exactly how the server processes input.</p>
+                </div>
+            </div>
+
+            <h3>3D: Intercept and Modify a Live Request</h3>
+            <ol class="steps">
+                <li>In Burp &rarr; Proxy &rarr; Intercept, click the button to turn <strong>Intercept ON</strong></li>
+                <li>In Firefox, submit the XSS Reflected form with the name <code>Test</code></li>
+                <li>Firefox freezes &mdash; Burp has caught the request mid-flight</li>
+                <li>In Burp's Intercept panel, change <code>name=Test</code> to <code>name=Burp</code></li>
+                <li>Click <strong>Forward</strong> &mdash; Firefox receives the modified response</li>
+                <li>The page now says <em>"Hello Burp"</em> even though you typed <em>"Test"</em></li>
+                <li>Turn Intercept <strong>OFF</strong> again when done</li>
+            </ol>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 3 &mdash; Fill In Your Answers</h4></div>
+            <div class="fill-in">
+                <label>1. When you sent id=2 in Repeater, what first name and surname were returned?</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="First name: Gordon — Surname: Brown (DVWA user ID 2)">
+
+                <label>2. When you sent id=1' (with a single quote), what did the server respond with?</label>
+                <textarea class="task-answer" data-task="3" rows="2" placeholder="A MySQL syntax error: 'You have an error in your SQL syntax...' — confirms the id parameter is injected directly into a SQL query without sanitization."></textarea>
+
+                <label>3. Explain in your own words why seeing a SQL error in a web response is a security problem:</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="SQL errors reveal internal information: the database engine (MySQL), query structure, and sometimes table/column names. An attacker uses these clues to craft more precise injection payloads. Error messages confirm the vulnerability exists and guide the next steps."></textarea>
+
+                <label>4. What is the main advantage of using Repeater over typing payloads directly in the browser address bar?</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="Repeater gives full control over every part of the request: headers, cookies, method, and body — not just the URL. You can modify POST body parameters not visible in the URL, iterate rapidly without browser navigation, and the session cookie is preserved automatically."></textarea>
+
+                <label>5. Screenshot &mdash; Repeater panel showing the modified request and the SQL error response:</label>
+                <input type="file" id="ss-task3" accept="image/*" onchange="previewImage(this,'prev-task3')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task3" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 3 screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 3</h4>
+                <ol>
+                    <li><strong>Q1:</strong> First name: <strong>Gordon</strong> &mdash; Surname: <strong>Brown</strong> (DVWA user ID 2 by default).</li>
+                    <li><strong>Q2:</strong> MySQL syntax error: <em>"You have an error in your SQL syntax; check the manual..."</em> &mdash; confirms the input is injected directly into a SQL query.</li>
+                    <li><strong>Q3:</strong> SQL errors leak internal information: the database engine (MySQL), query structure, and sometimes table/column names. This helps an attacker craft a working injection payload and confirms no input validation is in place.</li>
+                    <li><strong>Q4:</strong> Repeater allows editing <strong>any part</strong> of the request including headers and POST body, not just URL parameters. It sends requests instantly without page reloads, preserves cookies automatically, and shows the raw response &mdash; all in one view.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Task 4 -->
+        <section id="task4">
+            <h2>&#128506;&#65039; Task 4: Map the Attack Surface with Site Map</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; Attack Surface Mapping</h4>
+                    <p>Before testing an application, security professionals build a map of all reachable URLs, parameters, and endpoints. Burp's Site Map automatically organizes every URL your browser visited into a tree view, grouped by host and path. This is your application's <strong>attack surface</strong> &mdash; every entry is a potential test target.</p>
+                </div>
+            </div>
+
+            <h3>4A: Scope the Target</h3>
+            <ol class="steps">
+                <li>In Burp, click the <strong>Target</strong> tab</li>
+                <li>Click the <strong>Site map</strong> sub-tab</li>
+                <li>In the left panel, right-click on your DVWA host entry (e.g., <code>http://10.0.2.15</code>)</li>
+                <li>Select <strong>"Add to scope"</strong></li>
+                <li>If Burp asks whether to stop logging out-of-scope traffic, click <strong>Yes</strong></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Why Set a Scope?</h4>
+                    <p>Setting a scope tells Burp to focus only on your target. It prevents accidental testing of external sites (Google, CDN providers, etc.) that your browser loads in the background, and keeps the Site Map clean and focused on DVWA.</p>
+                </div>
+            </div>
+
+            <h3>4B: Browse All DVWA Modules</h3>
+            <p>In Firefox, click through <strong>every module</strong> in DVWA's left menu: Brute Force, Command Injection, CSRF, File Inclusion, File Upload, Insecure CAPTCHA, SQL Injection, SQL Injection (Blind), Weak Session IDs, XSS (DOM), XSS (Reflected), XSS (Stored).</p>
+
+            <ol class="steps">
+                <li>After visiting all modules, return to Burp &rarr; <strong>Target &rarr; Site map</strong></li>
+                <li>Expand the host tree (e.g., <code>http://10.0.2.15</code>)</li>
+                <li>Expand the <code>/vulnerabilities/</code> folder</li>
+                <li>You should see a separate entry for each DVWA module you visited</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What the Site Map Should Show:</h4>
+<pre><code><span class="output-text">http://10.0.2.15
+  &#9500;&#9472;&#9472; /
+  &#9500;&#9472;&#9472; /index.php
+  &#9500;&#9472;&#9472; /login.php
+  &#9500;&#9472;&#9472; /logout.php
+  &#9500;&#9472;&#9472; /dvwa/
+  &#9492;&#9472;&#9472; /vulnerabilities/
+        &#9500;&#9472;&#9472; /vulnerabilities/brute/
+        &#9500;&#9472;&#9472; /vulnerabilities/csrf/
+        &#9500;&#9472;&#9472; /vulnerabilities/exec/
+        &#9500;&#9472;&#9472; /vulnerabilities/fi/
+        &#9500;&#9472;&#9472; /vulnerabilities/sqli/
+        &#9500;&#9472;&#9472; /vulnerabilities/sqli_blind/
+        &#9500;&#9472;&#9472; /vulnerabilities/upload/
+        &#9500;&#9472;&#9472; /vulnerabilities/weak_id/
+        &#9500;&#9472;&#9472; /vulnerabilities/xss_d/
+        &#9500;&#9472;&#9472; /vulnerabilities/xss_r/
+        &#9492;&#9472;&#9472; /vulnerabilities/xss_s/</span></code></pre>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 4 &mdash; Fill In Your Answers</h4></div>
+            <div class="fill-in">
+                <label>1. How many unique paths did Burp's Site Map discover under /vulnerabilities/? List at least 6 of them:</label>
+                <textarea class="task-answer" data-task="4" rows="4" placeholder="12 unique modules. Examples:&#10;/vulnerabilities/sqli/ — SQL Injection&#10;/vulnerabilities/xss_r/ — Reflected XSS&#10;/vulnerabilities/xss_s/ — Stored XSS&#10;/vulnerabilities/exec/ — Command Injection&#10;/vulnerabilities/upload/ — File Upload&#10;/vulnerabilities/csrf/ — CSRF"></textarea>
+
+                <label>2. What is the purpose of setting a "scope" in Burp Suite before testing?</label>
+                <textarea class="task-answer" data-task="4" rows="2" placeholder="Scope limits Burp's activity to only the target application. It prevents accidental testing of external domains and keeps the Site Map clean and focused on the target."></textarea>
+
+                <label>3. How does Burp's Site Map help a penetration tester before they start attacking?</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="The Site Map gives a complete picture of all reachable URLs and endpoints — the application's attack surface. The tester has a structured list of all entry points found during browsing. Each entry is a potential injection or vulnerability test point."></textarea>
+
+                <label>4. Compare Burp's Site Map to a browser's DevTools Network tab. What can Burp show that DevTools cannot?</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="Burp's Site Map persists across the full session (DevTools clears on page refresh), organizes requests into a tree by URL path, allows editing and resending, and integrates with Repeater and Intruder. DevTools shows only the current page's requests and cannot modify or replay them."></textarea>
+
+                <label>5. Screenshot &mdash; Burp's Site Map showing the /vulnerabilities/ tree expanded:</label>
+                <input type="file" id="ss-task4" accept="image/*" onchange="previewImage(this,'prev-task4')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task4" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 4 screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 4</h4>
+                <ol>
+                    <li><strong>Q1:</strong> 12 vulnerability modules: <code>/brute/</code>, <code>/captcha/</code>, <code>/csrf/</code>, <code>/exec/</code>, <code>/fi/</code>, <code>/sqli/</code>, <code>/sqli_blind/</code>, <code>/upload/</code>, <code>/weak_id/</code>, <code>/xss_d/</code>, <code>/xss_r/</code>, <code>/xss_s/</code>.</li>
+                    <li><strong>Q2:</strong> Scope restricts Burp to the target (<code>10.0.2.15</code>), preventing accidental testing of external resources and keeping the map clean and focused.</li>
+                    <li><strong>Q3:</strong> The Site Map provides a complete structured list of all discovered application entry points. Testers use this to plan attack coverage &mdash; ensuring no endpoint is missed.</li>
+                    <li><strong>Q4:</strong> Burp persists the full session history, allows request editing and replay via Repeater, supports scoping and filtering, and integrates with attack tools. DevTools only shows the current page's requests, clears on refresh, and cannot modify or resend requests.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting">
+            <h2>&#128295; Troubleshooting</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; DVWA doesn't load in Firefox</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Check that the Docker container is running: <code>sudo docker ps</code>. If DVWA is not listed, start it: <code>sudo docker start dvwa</code>. Make sure you are using <code>http://&lt;your-ip&gt;</code> (from <code>hostname -I</code>), not <code>localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; No requests appearing in Burp's HTTP History</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Confirm FoxyProxy is enabled (Burp Proxy profile active). Confirm you are navigating to <code>http://&lt;your-ip&gt;</code> &mdash; not <code>localhost</code> or <code>127.0.0.1</code>. Confirm Burp's proxy listener is <code>127.0.0.1:8080</code> and status shows <strong>Running</strong>. Use <code>http://</code> not <code>https://</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Firefox is frozen and DVWA won't load</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Burp's Intercept is <strong>ON</strong>. Go to Burp &rarr; Proxy &rarr; Intercept and click <strong>Forward</strong> (repeat for each resource) or click the button to turn Intercept <strong>OFF</strong>. For Tasks 1 and 2 you want Intercept OFF so traffic flows freely.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Repeater shows "Connection refused"</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> DVWA stopped running. Check: <code>sudo docker ps</code>. If not listed: <code>sudo docker start dvwa</code>. Also confirm the Host header in Repeater matches your machine IP (<code>hostname -I</code>) &mdash; not <code>localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Site Map is empty or shows only one entry</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Browse DVWA more &mdash; click every module in the left menu. Ensure the host is in scope (right-click host &rarr; Add to scope). If the filter is set to "Show only in-scope items", make sure your host IP is added to scope first.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; After the lab, Firefox has no internet access</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> FoxyProxy is still active and routing traffic to Burp, which is no longer running. Click the <strong>FoxyProxy icon</strong> and select <strong>"Disable FoxyProxy"</strong>. Always do this at the end of every lab session.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Report -->
+        <section id="report">
+            <h2>&#128196; Generate Your Lab Report</h2>
+            <p>Enter your information and click <strong>Generate PDF Report</strong>. Your answers from all four tasks will be compiled into a printable page.</p>
+
+            <div style="border:2px solid #2980b9;border-radius:15px;padding:28px;margin:18px 0;background:#fafbfc;">
+                <div style="text-align:center;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #2980b9;">
+                    <h3 style="color:var(--secondary-color);margin:0;">CYB236 &mdash; Lab 06: Burp Suite with DVWA Report</h3>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student Name: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="Full name (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student ID: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="Student ID (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Email: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="Student email (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                </div>
+                <p style="font-size:0.85em;color:#e53e3e;margin-bottom:18px;text-align:center;">&#9432; All fields marked with <strong>*</strong> are required.</p>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#1a365d,#2c5282);color:white;border:none;padding:14px 38px;font-size:1.05em;font-weight:600;border-radius:10px;cursor:pointer;box-shadow:0 4px 15px rgba(26,54,93,0.4);">
+                        &#128196; Generate PDF Report
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Submission Checklist</h4>
+                    <ul>
+                        <li>PDF report (name + ID + all answers)</li>
+                        <li>Screenshot: Task 1 &mdash; Burp HTTP history (10+ requests)</li>
+                        <li>Screenshot: Task 2 &mdash; Raw HTTP request in Burp's Request panel</li>
+                        <li>Screenshot: Task 3 &mdash; Repeater showing SQL error response</li>
+                        <li>Screenshot: Task 4 &mdash; Site Map with /vulnerabilities/ tree expanded</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Grading Rubric</h3>
+            <table>
+                <tr><th>Task</th><th>Description</th><th>Points</th></tr>
+                <tr><td><strong>Task 1</strong></td><td>Capture traffic &mdash; HTTP history, cookies, status codes</td><td>20</td></tr>
+                <tr><td><strong>Task 2</strong></td><td>Analyze requests &mdash; GET vs POST, missing security headers</td><td>25</td></tr>
+                <tr><td><strong>Task 3</strong></td><td>Repeater &mdash; modify parameter, trigger SQL error, explain impact</td><td>30</td></tr>
+                <tr><td><strong>Task 4</strong></td><td>Site Map &mdash; attack surface mapping, scope, comparison with DevTools</td><td>20</td></tr>
+                <tr><td><strong>Quality</strong></td><td>Clear answers, screenshots labelled, report formatted</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:right;font-weight:bold;">Total</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>Cleanup</h3>
+<pre><code><span class="command-label"># Disable FoxyProxy: click the FoxyProxy icon → select "Disable FoxyProxy"</span>
+
+<span class="command-label"># Stop DVWA when finished</span>
+sudo docker stop dvwa</code></pre>
+        </section>
+
+    </div><!-- end content -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; Web Application Security</p>
+        <p>Lab 06: Burp Suite with DVWA &mdash; HTTP Interception in Practice &bull; Chapters 4 &amp; 5</p>
+    </div>
+
+</div><!-- end container -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('Student Name is required.'); return; }
+    if (!sid)   { alert('Student ID is required.'); return; }
+    if (!email) { alert('Email is required.'); return; }
+
+    var answers = {};
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!answers[t]) answers[t] = [];
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers[t].push({ label: lbl, value: f.value.trim() || '(not answered)' });
+    });
+
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g,'').replace(/\s+/g,'_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
+    var w = window.open('','_blank');
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lab06_'+safeName+'_'+safeSid+'</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
+    h += 'h1{color:#1a365d;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#e8f4fd;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #bee3f8}';
+    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-left:4px solid #1a365d;padding-left:14px}';
+    h += '.tt{color:#1a365d;font-size:1.15em;margin-bottom:10px;font-weight:700}';
+    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
+    h += '.ss{margin-top:16px;page-break-inside:avoid}.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 Lab 06: Burp Suite with DVWA</h1>';
+    h += '<p class="sub">HTTP Interception in Practice \u2014 HTTP History \u2022 Repeater \u2022 Site Map</p>';
+    h += '<div class="si"><div><strong>Student Name:</strong> '+name+'</div><div><strong>Student ID:</strong> '+sid+'</div><div><strong>Email:</strong> '+email+'</div></div>';
+
+    var tn = {
+        '1': 'Task 1: Capture HTTP Traffic',
+        '2': 'Task 2: Analyze Requests &amp; Responses',
+        '3': 'Task 3: Modify Requests with Repeater',
+        '4': 'Task 4: Map the Attack Surface'
+    };
+    var ssId  = {'1':'prev-task1','2':'prev-task2','3':'prev-task3','4':'prev-task4'};
+    var ssLbl = {
+        '1':'Screenshot \u2014 HTTP History',
+        '2':'Screenshot \u2014 Raw HTTP Request',
+        '3':'Screenshot \u2014 Repeater SQL Error',
+        '4':'Screenshot \u2014 Site Map'
+    };
+
+    for (var t = 1; t <= 4; t++) {
+        h += '<div class="ts"><div class="tt">'+tn[t]+'</div>';
+        if (answers[t]) {
+            answers[t].forEach(function(a) {
+                h += '<div class="ar"><div class="al">'+a.label+'</div><div class="av">'+a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div>';
+            });
+        }
+        if (screenshotData[ssId[t]]) {
+            h += '<div class="ss"><div class="ss-lbl">'+ssLbl[t]+'</div><img src="'+screenshotData[ssId[t]]+'"></div>';
+        }
+        h += '</div>';
+        if (t < 4) h += '<hr>';
+    }
+
+    h += '<div class="fn">CYB236 \u2014 Lab 06 \u2014 Web Application Security</div></body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
 </body>
 </html>

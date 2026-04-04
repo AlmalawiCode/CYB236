@@ -3,71 +3,1874 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 6: DoS & Third-Party Exploits | CYB236</title>
+    <title>CYB236 Handout - Chapters 14, 15, 26 &amp; 27</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #fef3e2;
+            --primary-600: #e67e22;
+            --primary-700: #d35400;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Colors ── */
+            --ch14: #c0392b;
+            --ch14-light: #fdecea;
+            --ch14-mid: #e57373;
+
+            --ch15: #7b2d8b;
+            --ch15-light: #f3e5f5;
+            --ch15-mid: #ce93d8;
+
+            --ch26: #1565c0;
+            --ch26-light: #e3f2fd;
+            --ch26-mid: #90caf9;
+
+            --ch27: #00695c;
+            --ch27-light: #e0f2f1;
+            --ch27-mid: #80cbc4;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #c0392b, #c0392bdd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .week-badge {
-            background: #c0392b;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #c0392b;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #c0392b;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--neutral-300);
+        }
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #90caf9;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: #1565c0; border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .cover-chip.ch14 { background: rgba(192,57,43,0.35); }
+        .cover-chip.ch15 { background: rgba(123,45,139,0.35); }
+        .cover-chip.ch26 { background: rgba(21,101,192,0.35); }
+        .cover-chip.ch27 { background: rgba(0,105,92,0.35); }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--neutral-200); }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .sidebar-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-ch-label {
+            padding: 8px 12px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--neutral-400);
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--primary-600); color: white; }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .chapter-num.ch14 { background: var(--ch14-light); color: var(--ch14); }
+        .chapter-num.ch15 { background: var(--ch15-light); color: var(--ch15); }
+        .chapter-num.ch26 { background: var(--ch26-light); color: var(--ch26); }
+        .chapter-num.ch27 { background: var(--ch27-light); color: var(--ch27); }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider { height: 4px; border-radius: 2px; margin: 10px auto 0; width: 80px; }
+        .chapter-divider.ch14 { background: var(--ch14); }
+        .chapter-divider.ch15 { background: var(--ch15); }
+        .chapter-divider.ch26 { background: var(--ch26); }
+        .chapter-divider.ch27 { background: var(--ch27); }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .topic-icon.ch14 { background: var(--ch14-light); }
+        .topic-icon.ch15 { background: var(--ch15-light); }
+        .topic-icon.ch26 { background: var(--ch26-light); }
+        .topic-icon.ch27 { background: var(--ch27-light); }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-number.ch14 { background: var(--ch14); }
+        .objective-number.ch15 { background: var(--ch15); }
+        .objective-number.ch26 { background: var(--ch26); }
+        .objective-number.ch27 { background: var(--ch27); }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--neutral-50);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+            border-left: 5px solid;
+        }
+
+        .story.ch14 { border-color: var(--ch14); }
+        .story.ch15 { border-color: var(--ch15); }
+        .story.ch26 { border-color: var(--ch26); }
+        .story.ch27 { border-color: var(--ch27); }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+        }
+
+        .story-label.ch14 { background: var(--ch14-light); color: var(--ch14); }
+        .story-label.ch15 { background: var(--ch15-light); color: var(--ch15); }
+        .story-label.ch26 { background: var(--ch26-light); color: var(--ch26); }
+        .story-label.ch27 { background: var(--ch27-light); color: var(--ch27); }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-left: 3px solid var(--border);
+        }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Orange Info Box ───── */
+        .orange-box {
+            background: linear-gradient(135deg, #fef3e2, #fdebd0);
+            border-left: 5px solid var(--ch14);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .orange-box h4 { color: var(--ch14); margin-bottom: 6px; font-size: 1em; }
+        .orange-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+        }
+
+        .clean-list.ch14 li::before { background: var(--ch14-light); }
+        .clean-list.ch15 li::before { background: var(--ch15-light); }
+        .clean-list.ch26 li::before { background: var(--ch26-light); }
+        .clean-list.ch27 li::before { background: var(--ch27-light); }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-num.ch14 { background: var(--ch14); }
+        .step-num.ch15 { background: var(--ch15); }
+        .step-num.ch26 { background: var(--ch26); }
+        .step-num.ch27 { background: var(--ch27); }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .good { color: #86efac; font-weight: bold; }
+        .code-box .bad  { color: #f87171; font-weight: bold; }
+
+        /* ───── Data Table ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .data-table tr td:last-child  { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── Risk Badge ───── */
+        .risk-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.82em;
+            color: white;
+        }
+        .risk-badge.high   { background: var(--red); }
+        .risk-badge.medium { background: #f59e0b; }
+        .risk-badge.low    { background: var(--green); }
+
+        /* ───── Secure vs Insecure ───── */
+        .secure-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .secure-side { border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-md); }
+
+        .secure-side-header {
+            padding: 14px 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .secure-side-header.bad  { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .secure-side-header.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .secure-side-body { padding: 20px; background: white; }
+        .secure-side-body ul { list-style: none; padding: 0; }
+        .secure-side-body li { padding: 8px 0 8px 28px; position: relative; font-size: 0.95em; }
+        .secure-side-body.bad  li::before { content: '✗'; position: absolute; left: 0; color: var(--red);   font-weight: 700; }
+        .secure-side-body.good li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner.ch14 { background: linear-gradient(135deg, #7f0000, #c0392b); }
+        .summary-banner.ch15 { background: linear-gradient(135deg, #4a0072, #7b2d8b); }
+        .summary-banner.ch26 { background: linear-gradient(135deg, #0d47a1, #1565c0); }
+        .summary-banner.ch27 { background: linear-gradient(135deg, #004d40, #00695c); }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; left: 0; font-weight: 700; }
+
+        /* ───── Page Break ───── */
+        .page-break {
+            height: 6px;
+            background: linear-gradient(90deg, var(--ch14), var(--ch15), var(--ch26), var(--ch27));
+            margin: 60px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Footer ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .secure-compare { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="week-badge">Week 6 - Offense</span>
-        <h1>DoS & Third-Party Exploits</h1>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="index-ar.html" class="lang-switch" style="font-family:'Noto Sans Arabic',sans-serif;">العربية</a>
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week5/index.html" class="nav-link">Week 5</a>
+            <a href="index.html" class="nav-link active">Week 6</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>Week 6</span>
+            <span>›</span>
+            <span>Part II &amp; III — DoS &amp; Third-Party Dependencies</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            Week 6 &nbsp;·&nbsp; Security Principles II
+        </div>
+        <h1>Security Principles II</h1>
+        <p class="sub">Denial of Service · Third-Party Exploits · Defense Strategies · Dependency Security</p>
+        <div class="cover-chips">
+            <div class="cover-chip ch14">Ch.14 DoS Attacks</div>
+            <div class="cover-chip ch15">Ch.15 Third-Party Exploits</div>
+            <div class="cover-chip ch26">Ch.26 Defending DoS</div>
+            <div class="cover-chip ch27">Ch.27 Securing Dependencies</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ BODY ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-ch-label">Ch. 14 — Denial of Service</div>
+            <a href="#chapter-14"        class="sidebar-link active"><span class="sidebar-link-number">1</span>Ch.14 Overview</a>
+            <a href="#ch14-redos"        class="sidebar-link"><span class="sidebar-link-number">2</span>Regex DoS (ReDoS)</a>
+            <a href="#ch14-logical"      class="sidebar-link"><span class="sidebar-link-number">3</span>Logical DoS</a>
+            <a href="#ch14-ddos"         class="sidebar-link"><span class="sidebar-link-number">4</span>Distributed DoS</a>
+            <a href="#ch14-summary"      class="sidebar-link"><span class="sidebar-link-number">5</span>Ch.14 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 15 — Third-Party Exploits</div>
+            <a href="#chapter-15"        class="sidebar-link"><span class="sidebar-link-number">6</span>Ch.15 Overview</a>
+            <a href="#ch15-integration"  class="sidebar-link"><span class="sidebar-link-number">7</span>Methods of Integration</a>
+            <a href="#ch15-packages"     class="sidebar-link"><span class="sidebar-link-number">8</span>Package Managers</a>
+            <a href="#ch15-cve"          class="sidebar-link"><span class="sidebar-link-number">9</span>CVE Database</a>
+            <a href="#ch15-summary"      class="sidebar-link"><span class="sidebar-link-number">10</span>Ch.15 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 26 — Defending Against DoS</div>
+            <a href="#chapter-26"        class="sidebar-link"><span class="sidebar-link-number">11</span>Ch.26 Overview</a>
+            <a href="#ch26-regex"        class="sidebar-link"><span class="sidebar-link-number">12</span>Protect: Regex DoS</a>
+            <a href="#ch26-logical"      class="sidebar-link"><span class="sidebar-link-number">13</span>Protect: Logical DoS</a>
+            <a href="#ch26-ddos"         class="sidebar-link"><span class="sidebar-link-number">14</span>Protect: DDoS</a>
+            <a href="#ch26-summary"      class="sidebar-link"><span class="sidebar-link-number">15</span>Ch.26 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 27 — Securing Dependencies</div>
+            <a href="#chapter-27"        class="sidebar-link"><span class="sidebar-link-number">16</span>Ch.27 Overview</a>
+            <a href="#ch27-trees"        class="sidebar-link"><span class="sidebar-link-number">17</span>Dependency Trees</a>
+            <a href="#ch27-automated"    class="sidebar-link"><span class="sidebar-link-number">18</span>Automated Evaluation</a>
+            <a href="#ch27-secure"       class="sidebar-link"><span class="sidebar-link-number">19</span>Secure Integration</a>
+            <a href="#ch27-packages"     class="sidebar-link"><span class="sidebar-link-number">20</span>Secure Package Mgmt</a>
+            <a href="#ch27-summary"      class="sidebar-link"><span class="sidebar-link-number">21</span>Ch.27 Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 14 — Denial of Service (DoS)
+     ════════════════════════════════════════════════ -->
+<div id="chapter-14" class="chapter-header">
+    <div class="chapter-num ch14">Chapter 14</div>
+    <div class="chapter-title">Denial of Service (DoS)</div>
+    <div class="chapter-divider ch14"></div>
+</div>
+
+<!-- Ch14 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch14">1</div>
+            <div class="objective-text"><strong>Explain</strong> the three main categories of DoS attacks — Regex DoS, Logical DoS, and Distributed DoS — and how each consumes server or client resources.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch14">2</div>
+            <div class="objective-text"><strong>Describe</strong> how malicious (evil) regex patterns cause exponential backtracking, and demonstrate why execution time doubles with each pair of characters added to a malicious input.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch14">3</div>
+            <div class="objective-text"><strong>Identify</strong> resource-intensive operations in web application APIs — database writes, SQL joins, file backups — that can be abused to perform logical DoS attacks.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch14">4</div>
+            <div class="objective-text"><strong>Understand</strong> how DDoS botnets work — networks of compromised devices flooding a target en masse — and why they are significantly harder to defend against than single-attacker DoS.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch14 What Is DoS -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#128683;</div>
+        <h2>What Is a Denial of Service Attack?</h2>
+    </div>
+
+    <p>Perhaps one of the most popular and widely publicized attack categories is <strong>Denial of Service (DoS)</strong> — a family of attacks designed to make a system unavailable or severely degraded for legitimate users by exhausting server or client resources.</p>
+
+    <div class="story ch14">
+        <div class="story-label ch14">&#128214; From the Book — The DoS Spectrum</div>
+        <p>DoS attacks come in many forms: from the well-known <strong>distributed version</strong> involving thousands of coordinated devices, to <strong>code-level DoS</strong> that affects a single user because of a faulty regex implementation causing unexpectedly long validation times.</p>
+        <p>DoS attacks also range in seriousness — from reducing an active server to a functionless electric bill, to causing a user's web page to load slightly slower than usual or pausing their video mid-buffer.</p>
+        <div class="dialogue">
+            Because of this wide range, it is very difficult to test for DoS attacks. Most bug bounty programs outright ban DoS submissions to prevent bounty hunters from interfering with regular application usage.
+        </div>
+    </div>
+
+    <p>Except for a few exceptions, DoS attacks usually do not cause permanent damage to an application, but they do <strong>interfere with usability</strong> for legitimate users. Three core goals drive every DoS attack:</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128187;</div>
+            <div class="mc-title">Exhaust Server Resources</div>
+            <div class="mc-desc">Overwhelm CPU, RAM, bandwidth, or database connections on the target server</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128241;</div>
+            <div class="mc-title">Exhaust Client Resources</div>
+            <div class="mc-desc">Trigger heavy computation on a user's browser or mobile device, freezing it</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128683;</div>
+            <div class="mc-title">Request Unavailable Resources</div>
+            <div class="mc-desc">Force the server to seek resources that are locked, missing, or deadlocked</div>
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Testing Best Practice</h4>
+        <p>Because DoS vulnerabilities interfere with real user traffic, always <strong>test for DoS vulnerabilities in a local development environment</strong> — never against a production system with active users.</p>
+    </div>
+</div>
+
+<!-- Regex DoS -->
+<div id="ch14-redos" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#128269;</div>
+        <h2>Regex DoS (ReDoS)</h2>
+    </div>
+
+    <p>Regular-expression-based DoS (<strong>ReDoS</strong>) vulnerabilities are among the most common forms of DoS in web applications today. Regular expressions are used to validate form fields — ensuring passwords contain only accepted characters, or that comments stay within a maximum length.</p>
+
+    <div class="story ch14">
+        <div class="story-label ch14">&#128214; From the Book — Malicious Regex</div>
+        <p>Regular expressions are generally parsed very fast. However, they can be <strong>specifically crafted to run slowly</strong> — these are called <em>malicious regex</em> (or evil regex). Most malicious regex are formed using the <code>+</code> operator, which makes the regex "greedy" — testing one or more matches rather than stopping at the first.</p>
+        <p>Malicious regex triggers <strong>exponential backtracking</strong> whenever it finds a failure case, trying every possible valid combination before returning a result.</p>
+    </div>
+
+    <h3>How Backtracking Works — The Evil Regex</h3>
+    <p>Consider the regex: <code>/^((ab)*)+$/</code></p>
+    <ul class="clean-list ch14">
+        <li><code>^</code> — match from start of line</li>
+        <li><code>(ab)*</code> — match zero or infinite combinations of "ab"</li>
+        <li><code>+</code> — find every possible match (greedy operation)</li>
+        <li><code>$</code> — match until end of string</li>
+    </ul>
+
+    <p>Testing with <code>ababababababab</code> runs quickly. But adding one extra character — <code>abababababababa</code> — forces the engine to backtrack through <em>every possible combination</em> before determining no match exists:</p>
+
+    <div class="code-box">
+<span class="c">// JavaScript — Malicious (Evil) Regex Pattern</span>
+<span class="k">const</span> evil = <span class="s">/^((ab)*)+$/</span>;
+
+<span class="c">// SAFE inputs — engine matches cleanly, stops early</span>
+evil.test(<span class="s">'ababababababab'</span>);     <span class="good">// &lt;1ms — valid match, no backtracking</span>
+
+<span class="c">// MALICIOUS inputs — trailing 'a' causes backtracking explosion</span>
+evil.test(<span class="s">'abababababababa'</span>);    <span class="bad">// slow — engine tries all combinations</span>
+evil.test(<span class="s">'abababababababababababababa'</span>);   <span class="bad">// ~31ms at 27 chars</span>
+evil.test(<span class="s">'ababababababababababababababa'</span>);  <span class="bad">// ~62ms at 29 chars (doubles!)</span>
+
+<span class="c">// Combinations the engine tries before reporting failure:</span>
+<span class="c">// (abababababababa)            → invalid</span>
+<span class="c">// (ababababababa)(ba)          → invalid</span>
+<span class="c">// (abababababa)(baba)          → invalid</span>
+<span class="c">// ... many iterations ...</span>
+<span class="c">// (ab)(ab)(ab)(ab)(ab)(ab)(a) → invalid → FAIL</span>
+    </div>
+
+    <h3>Execution Time Doubles With Each Pair of Characters Added</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Malicious Input</th>
+                <th>Length</th>
+                <th>Execution Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>abababababababababababa</code></td>
+                <td>23 chars</td>
+                <td><span class="risk-badge medium">~8 ms</span></td>
+            </tr>
+            <tr>
+                <td><code>ababababababababababababa</code></td>
+                <td>25 chars</td>
+                <td><span class="risk-badge medium">~15 ms</span></td>
+            </tr>
+            <tr>
+                <td><code>abababababababababababababa</code></td>
+                <td>27 chars</td>
+                <td><span class="risk-badge high">~31 ms</span></td>
+            </tr>
+            <tr>
+                <td><code>ababababababababababababababa</code></td>
+                <td>29 chars</td>
+                <td><span class="risk-badge high">~62 ms (doubling)</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128161; The Hidden Time Bomb</h4>
+        <p>A malicious regex used in a web application could <strong>lie dormant for years</strong> until a hacker finds an input that triggers backtracking. open-source libraries are especially vulnerable — few contributors are trained to spot evil regex patterns during code review.</p>
+    </div>
+</div>
+
+<!-- Logical DoS -->
+<div id="ch14-logical" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#9881;&#65039;</div>
+        <h2>Logical DoS Vulnerabilities</h2>
+    </div>
+
+    <p>With <strong>logical DoS</strong>, server resources are drained by an illegitimate user who exploits application logic — not a regex bug, but a resource-intensive API endpoint that can be abused. As a result, legitimate users experience performance degradation or loss of service.</p>
+
+    <p>To find logical DoS vulnerabilities, investigate which server operations are the most resource-intensive:</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128451;</div>
+            <div class="mc-title">Database Writes</div>
+            <div class="mc-desc">Each write locks rows or tables and consumes disk I/O</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128190;</div>
+            <div class="mc-title">Drive Writes / Logs</div>
+            <div class="mc-desc">File system writes are synchronous and block until completed</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128203;</div>
+            <div class="mc-title">SQL Joins</div>
+            <div class="mc-desc">Joining large tables grows in complexity with data size</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128260;</div>
+            <div class="mc-title">File Backups</div>
+            <div class="mc-desc">Backup jobs triggered through APIs can saturate disk I/O</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9201;&#65039;</div>
+            <div class="mc-title">Synchronous Operations</div>
+            <div class="mc-desc">Blocks the server thread entirely until the operation completes</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128290;</div>
+            <div class="mc-title">Iterative Queries</div>
+            <div class="mc-desc">Loops that scale with the size of user data — unbounded growth</div>
+        </div>
+    </div>
+
+    <div class="story ch14">
+        <div class="story-label ch14">&#128214; Case Study — Photo Sharing API</div>
+        <p>A photo-sharing application exposes <code>GET /metadata/:userid</code> — retrieving all metadata for every photo uploaded by a user. Internally, this performs a SQL join across <strong>users → albums → photos → metadata</strong> tables. Execution time scales dramatically with data volume:</p>
+        <table class="data-table">
+            <thead>
+                <tr><th>Account Type</th><th>Albums / Photos</th><th>Response Time</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>New account</td><td>1 album, 1 photo</td><td><span class="risk-badge low">120 ms</span></td></tr>
+                <tr><td>Average user</td><td>6 albums, 60 photos</td><td><span class="risk-badge medium">470 ms</span></td></tr>
+                <tr><td>Power user</td><td>28 albums, 490 photos</td><td><span class="risk-badge high">1,870 ms</span></td></tr>
+            </tbody>
+        </table>
+        <p>An attacker creates an account, scripts uploading thousands of photos into hundreds of albums, then hammers the endpoint repeatedly — forcing the server to execute massive joins that degrade performance for all other users.</p>
+    </div>
+
+    <div class="orange-box">
+        <h4>&#128161; How to Find Logical DoS</h4>
+        <p>Time API calls using browser developer tools. Make the same call ~100 times and average the response time — this filters out random traffic spikes. Look for endpoints that respond progressively slower as user data grows. Those are your logical DoS candidates.</p>
+    </div>
+</div>
+
+<!-- Distributed DoS -->
+<div id="ch14-ddos" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch14">&#127760;</div>
+        <h2>Distributed Denial of Service (DDoS)</h2>
+    </div>
+
+    <p>With <strong>Distributed DoS (DDoS)</strong>, server resources are drained not by a single attacker, but by a <em>large network of illegitimate users</em> making requests simultaneously. At scale, this overwhelms server resources so that legitimate users are completely locked out.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch14);">
+            <h4 style="color:var(--ch14);">&#128683; Single-Attacker DoS</h4>
+            <p>One hacker exploiting a specific bug in code — regex, logical, or otherwise. Targets specific API endpoints or client operations. Easier to mitigate once the vulnerability is identified and patched.</p>
+        </div>
+        <div class="compare-card" style="border-color: #7f0000;">
+            <h4 style="color:#7f0000;">&#128683;&#128683; Distributed DDoS</h4>
+            <p>Thousands of devices flooding a target simultaneously. Usually attacks at the network layer (UDP flooding of the server's IP), not application logic. Much harder to defend because traffic appears legitimate.</p>
+        </div>
+    </div>
+
+    <h3>How DDoS Botnets Work</h3>
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch14">1</div>
+            <div>
+                <strong>Malware Distribution</strong><br>
+                <span style="color:var(--gray)">A hacker distributes malware through legitimate-looking software, email attachments, or compromised websites. The malware silently installs on victims' devices without their knowledge.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch14">2</div>
+            <div>
+                <strong>Botnet Assembly</strong><br>
+                <span style="color:var(--gray)">Infected devices — PCs, smartphones, IoT devices (routers, smart appliances) — become "bots" controlled remotely. Together they form a <em>botnet</em> (robot network), ready to act on command.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch14">3</div>
+            <div>
+                <strong>Coordinated Attack</strong><br>
+                <span style="color:var(--gray)">The attacker commands the botnet to flood a target IP address with UDP traffic simultaneously. Each packet appears to come from a different legitimate device, making filtering extremely difficult.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch14">4</div>
+            <div>
+                <strong>Service Disruption</strong><br>
+                <span style="color:var(--gray)">The server's available bandwidth is fully consumed by illegitimate traffic. Legitimate users cannot connect — the service appears offline entirely.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; IoT Devices Are Easy Targets</h4>
+        <p>Both mobile devices and IoT devices (routers, hotspots, smart appliances) can be compromised and recruited into botnets, <strong>often more easily than desktop computers</strong> due to weak default security configurations and infrequent firmware updates.</p>
+    </div>
+</div>
+
+<!-- Chapter 14 Summary -->
+<div id="ch14-summary" class="summary-banner ch14">
+    <h3>&#10003; Chapter 14 Summary — Denial of Service (DoS)</h3>
+    <ul>
+        <li>DoS attacks aim to <strong>exhaust server resources, exhaust client resources, or request unavailable resources</strong></li>
+        <li><strong>ReDoS</strong> exploits malicious regex patterns that cause exponential backtracking — execution time doubles with each pair of characters added to a malicious input</li>
+        <li><strong>Logical DoS</strong> abuses resource-intensive API endpoints (SQL joins, file backups, database writes) that scale with user data volume</li>
+        <li><strong>DDoS</strong> uses botnets — networks of compromised devices — to flood a target with traffic that exceeds its capacity</li>
+        <li>Most DDoS attacks target the <strong>network layer</strong> (UDP flooding), not application-level logic — making them harder to filter</li>
+        <li>Always test DoS vulnerabilities in <strong>isolated development environments</strong>, never against production systems with real users</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 15 — Exploiting Third-Party Dependencies
+     ════════════════════════════════════════════════ -->
+<div id="chapter-15" class="chapter-header">
+    <div class="chapter-num ch15">Chapter 15</div>
+    <div class="chapter-title">Exploiting Third-Party Dependencies</div>
+    <div class="chapter-divider ch15"></div>
+</div>
+
+<!-- Ch15 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch15">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch15">1</div>
+            <div class="objective-text"><strong>Explain</strong> why open-source software dependencies create significant security risks — especially the difficulty of auditing third-party code that is constantly being updated.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch15">2</div>
+            <div class="objective-text"><strong>Describe</strong> the four main methods of integrating open-source software — branches/forks, self-hosted installs, direct source code, and package managers — and the unique security risk each brings.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch15">3</div>
+            <div class="objective-text"><strong>Identify</strong> real-world attacks where package managers (npm) were weaponized — left-pad, eslint-scope, and event-stream — and the mechanism behind each compromise.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch15">4</div>
+            <div class="objective-text"><strong>Use</strong> CVE databases (NVD, Mitre) to find known vulnerabilities in third-party dependencies and understand how reconnaissance data enables exploitation of specific package versions.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch15 open-source software Risks -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch15">&#128279;</div>
+        <h2>Open-Source Software Dependencies — The Hidden Attack Surface</h2>
+    </div>
+
+    <p>The software of today is <strong>built on top of open-source software</strong>. Even the largest commercial products rely heavily on third-party packages contributed by developers worldwide.</p>
+
+    <div class="story ch15">
+        <div class="story-label ch15">&#128214; From the Book — Who Relies on open-source software?</div>
+        <p>Some of the most recognized products built on open-source software:</p>
+        <ul class="clean-list ch15">
+            <li><strong>Reddit</strong> — BackBoneJS, Bootstrap</li>
+            <li><strong>Twitch</strong> — Webpack, Nginx</li>
+            <li><strong>YouTube</strong> — Polymer</li>
+            <li><strong>LinkedIn</strong> — EmberJS</li>
+            <li><strong>Microsoft Office Web</strong> — AngularJS</li>
+            <li><strong>Amazon DocumentDB</strong> — MongoDB</li>
+        </ul>
+        <div class="dialogue">
+            A chain is only as strong as its weakest link — and often the weakest link is the one that was subjected to the least-rigid quality assurance.
+        </div>
+    </div>
+
+    <p>Relying on open-source software means relying on a codebase that <strong>probably has not been audited</strong> to the same stringent lengths as first-party code. A point-in-time security assessment of a large open-source codebase is expensive — and it becomes outdated the moment the open-source software receives its next commit.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch15);">
+            <h4 style="color:var(--ch15);">&#9989; Why Developers Use open-source software</h4>
+            <p>Speed, cost savings, proven functionality, community support. A package manager command installs in seconds what would take weeks to build. Time-to-market pressure makes open-source software the default choice.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--red);">
+            <h4 style="color:var(--red);">&#128683; Why Hackers Target open-source software</h4>
+            <p>Open-source software is widely deployed, often outdated, and rarely fully reviewed. One vulnerability in a popular package can affect <em>millions</em> of applications simultaneously — an extremely high attack-to-impact ratio.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Ch15 Methods of Integration -->
+<div id="ch15-integration" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch15">&#9881;&#65039;</div>
+        <h2>Methods of Integrating open-source software</h2>
+    </div>
+
+    <p>Understanding <em>how</em> a web application integrates with open-source software is critical — the integration method determines what data flows between them, how it moves, and what level of privilege the open-source software code is granted by the main application.</p>
+
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch15">1</div>
+            <div>
+                <strong>Branches and Forks (Git-Based)</strong><br>
+                <span style="color:var(--gray)">A developer creates a branch or fork of the open-source repository and runs their version of it. <em>Risk:</em> Branches make it easy to accidentally pull unreviewed upstream code from the master branch into a production build. Forks offer better separation but complicate future merges.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch15">2</div>
+            <div>
+                <strong>Self-Hosted Application Integrations</strong><br>
+                <span style="color:var(--gray)">Some open-source software (e.g., WordPress) ships with a one-click installer script. <em>Risk:</em> These scripts run as admin/elevated users on your server. A compromised installer could install a backdoor with full Remote Code Execution (RCE) capability.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch15">3</div>
+            <div>
+                <strong>Direct Source Code Integration (Copy/Paste)</strong><br>
+                <span style="color:var(--gray)">Simple for small utilities (50–100 lines), complex for large libraries with their own dependencies. <em>Risk:</em> An upstream vulnerability may be patched, but you have no automated notification mechanism — the vulnerable copy stays in your codebase indefinitely.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch15">4</div>
+            <div>
+                <strong>Package Managers (npm, Maven, etc.)</strong><br>
+                <span style="color:var(--gray)">The most common modern approach. Package managers pull in dependencies — and their sub-dependencies recursively — at build time. <em>Risk:</em> A single malicious or compromised package in the public registry can cascade to millions of applications automatically.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Self-Hosted Installers Are Especially Dangerous</h4>
+        <p>Self-hosted packages with one-click installers require <strong>elevated privileges</strong>. A compromised installer script running as an admin user can fully own your web server — installing backdoors, exfiltrating credentials, or enabling persistent Remote Code Execution.</p>
+    </div>
+</div>
+
+<!-- Ch15 Package Managers -->
+<div id="ch15-packages" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch15">&#128230;</div>
+        <h2>Package Managers as Attack Vectors</h2>
+    </div>
+
+    <p>In today's world, most open-source software integrations happen through <strong>package managers</strong> — applications that download the correct dependencies and set them up automatically. npm powers the JavaScript ecosystem; Maven powers Java.</p>
+
+    <div class="story ch15">
+        <div class="story-label ch15">&#128214; From the Book — Real-World npm Attacks</div>
+        <p><strong>left-pad (2016):</strong> A simple one-page utility library maintained by one person was pulled from npm. This <strong>broke the build pipeline for millions of applications</strong> globally. npm now prevents packages from being removed after a certain period.</p>
+        <p><strong>eslint-scope (2018):</strong> Credentials of the package owner were compromised. A hacker published a new version that <strong>stole local credentials</strong> from every machine it was installed on.</p>
+        <p><strong>event-stream (2018):</strong> A malicious sub-dependency (flatmap-stream) was secretly added, containing code to <strong>steal Bitcoin wallets</strong> from any computer with the package installed.</p>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch15);">
+            <h4 style="color:var(--ch15);">npm (JavaScript / Node.js)</h4>
+            <p>The largest package registry in existence. Identified by <code>package.json</code> and <code>package-lock.json</code>. Resolves top-level <em>and</em> all recursive child dependencies automatically. Historically loose security mechanisms made it a frequent target.</p>
+        </div>
+        <div class="compare-card" style="border-color: #4a0072;">
+            <h4 style="color:#4a0072;">Maven (Java)</h4>
+            <p>Oldest and most popular Java package manager, supported by the Apache Software Foundation. Predates Git — custom dependency management code. Also been targeted by attackers, though with less media coverage than npm.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; The Recursive Sub-Dependency Risk</h4>
+        <p>Like most modern package managers, npm resolves not only top-level dependencies but also <strong>recursive child dependencies</strong>. A vulnerability buried four levels deep in a sub-sub-sub-dependency can compromise your application — even if you never knowingly imported that package.</p>
+    </div>
+</div>
+
+<!-- Ch15 CVE Database -->
+<div id="ch15-cve" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch15">&#128203;</div>
+        <h2>CVE Databases — Finding Known Vulnerabilities</h2>
+    </div>
+
+    <p>The most practical way to exploit third-party dependencies quickly is by searching for <strong>already-documented, unpatched vulnerabilities</strong> in packages the target application uses — vulnerabilities that have been fixed in newer versions but not yet updated in the running application.</p>
+
+    <div class="story ch15">
+        <div class="story-label ch15">&#128214; From the Book — CVE Databases</div>
+        <p>Vulnerabilities in popular packages are publicly disclosed and catalogued in databases such as:</p>
+        <ul class="clean-list ch15">
+            <li><strong>NVD (National Vulnerability Database)</strong> — maintained by the US Department of Commerce; scores vulnerabilities by severity using CVSS scoring</li>
+            <li><strong>Mitre CVE (Common Vulnerabilities and Exposures)</strong> — sponsored by the US Department of Homeland Security; the global standard for vulnerability IDs</li>
+        </ul>
+        <div class="dialogue">
+            CVE databases make finding and exploiting known vulnerabilities straightforward — but you must still use reconnaissance to identify the target's exact dependency versions before you can exploit them.
+        </div>
+    </div>
+
+    <p>JQuery — used on over <strong>10 million websites</strong> — is an ideal example. A CVE database search reveals dozens of documented JQuery vulnerabilities over the years, complete with reproduction steps, affected versions, and severity ratings.</p>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#10060; Without CVE Awareness</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>Running JQuery v1.x (known XSS vulnerabilities)</li>
+                    <li>No automated scanning of dependency tree</li>
+                    <li>Package versions never updated after initial launch</li>
+                    <li>No process to monitor CVE disclosures</li>
+                    <li>Known vulnerabilities sit unpatched for months or years</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#10003; With CVE Awareness</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>Regularly check NVD / Mitre for all dependency CVEs</li>
+                    <li>Run automated tools (Snyk, npm audit) in CI pipeline</li>
+                    <li>Patch or replace vulnerable packages immediately</li>
+                    <li>Track dependency versions across the full tree</li>
+                    <li>Subscribe to security advisories for critical packages</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chapter 15 Summary -->
+<div id="ch15-summary" class="summary-banner ch15">
+    <h3>&#10003; Chapter 15 Summary — Exploiting Third-Party Dependencies</h3>
+    <ul>
+        <li>Modern web applications depend heavily on open-source software — each dependency is a <strong>potential attack vector</strong> that hasn't been reviewed as rigorously as first-party code</li>
+        <li>Open-source software integrates four ways: <strong>branches/forks, self-hosted installs, source code copy, package managers</strong> — each carries distinct risks</li>
+        <li>Package managers (npm, Maven) are high-value targets — one compromised package can cascade to <strong>millions of applications</strong> simultaneously</li>
+        <li>Real-world attacks (left-pad, eslint-scope, event-stream) prove <strong>package maintainer credential compromise</strong> is a viable and recurring attack vector</li>
+        <li>CVE databases (NVD, Mitre) catalogue known vulnerabilities — combine with recon to <strong>identify exploitable package versions</strong> in target applications</li>
+        <li>Recursive sub-dependencies mean your application may run thousands of packages <strong>you never directly chose to install</strong></li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 26 — Defending Against DoS
+     ════════════════════════════════════════════════ -->
+<div id="chapter-26" class="chapter-header">
+    <div class="chapter-num ch26">Chapter 26</div>
+    <div class="chapter-title">Defending Against DoS</div>
+    <div class="chapter-divider ch26"></div>
+</div>
+
+<!-- Ch26 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch26">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch26">1</div>
+            <div class="objective-text"><strong>Build</strong> comprehensive logging systems that record request timing and async job performance to enable detection and investigation of past DoS attempts.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch26">2</div>
+            <div class="objective-text"><strong>Use</strong> static analysis tools (linters) and regex performance testers to detect and prevent evil regex patterns from entering the codebase before they cause harm.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch26">3</div>
+            <div class="objective-text"><strong>Classify</strong> API endpoints by DoS risk level (high/medium/low) and design appropriate mitigations — rate limiting, resource quotas, pagination, and caching — for each tier.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch26">4</div>
+            <div class="objective-text"><strong>Evaluate</strong> DDoS mitigation strategies — bandwidth management services and blackholing — and understand the trade-off between blocking malicious traffic and blocking legitimate users.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch26 Logging -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch26">&#128196;</div>
+        <h2>Logging — The First Line of Defense</h2>
+    </div>
+
+    <p>DoS attacks usually involve the use of server resources, which makes detecting them <strong>difficult without comprehensive logging</strong>. A past DoS attack that came through legitimate API channels may be nearly impossible to diagnose after the fact without proper records.</p>
+
+    <div class="story ch26">
+        <div class="story-label ch26">&#128214; From the Book — Logging Strategy</div>
+        <p>A first measure against DoS-style attacks should be building a comprehensive logging system that records:</p>
+        <ul class="clean-list ch26">
+            <li>Every request alongside its time to respond</li>
+            <li>The performance of any async "job"-style functions (e.g., backups triggered via API that run in the background and don't return a response)</li>
+            <li>Resource consumption metrics (CPU, RAM, DB connection pool usage) per endpoint over time</li>
+        </ul>
+        <div class="dialogue">
+            Doing this will allow you to find any attempts — accidental or malicious — at exploiting a DoS vulnerability that would have otherwise been difficult and time-consuming to diagnose.
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; DoS Risk Is a Spectrum — Not Binary</h4>
+        <p>Unlike XSS (either you have an exploit or you don't), DoS is measured on a scale: <strong>high / medium / low</strong>. Even well-written code can fall prey to logical DoS if the attacker has enough resources to overwhelm it. Classify endpoints by risk level and prioritize defenses accordingly.</p>
+    </div>
+</div>
+
+<!-- Ch26 Regex Defense -->
+<div id="ch26-regex" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch26">&#128269;</div>
+        <h2>Protecting Against Regex DoS</h2>
+    </div>
+
+    <p>Regex DoS is likely the <strong>easiest form of DoS to defend against</strong>, but requires prior knowledge of how evil regex patterns are constructed. There are two key defensive steps:</p>
+
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch26">1</div>
+            <div>
+                <strong>Scan Your Codebase for Evil Regex</strong><br>
+                <span style="color:var(--gray)">Look for regex containing greedy operators (<code>+</code>) applied to repeated groups — patterns similar to <code>(a[ab]*)+</code>. Use an open-source linting tool (e.g., safe-regex, vuln-regex-detector) to automatically flag evil regex in your codebase during CI/CD. A regex performance tester can also manually verify specific patterns.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch26">2</div>
+            <div>
+                <strong>Never Allow User-Supplied Regex</strong><br>
+                <span style="color:var(--gray)">If any feature allows users to provide their own regex expressions (e.g., a search filter), this is an unacceptable risk. Allowing user-uploaded regex requires a huge coordinated effort to maintain safely and is generally an all-around bad idea from a security perspective.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="code-box">
+<span class="c">// DANGEROUS — user-supplied regex (never allow this)</span>
+<span class="k">app</span>.post(<span class="s">'/search'</span>, (req, res) =&gt; {
+  <span class="k">const</span> pattern = <span class="k">new</span> RegExp(req.body.userPattern);   <span class="bad">// ✗ ReDoS risk!</span>
+  <span class="k">const</span> results = items.filter(i =&gt; pattern.test(i));   <span class="bad">// ✗ Server can be DoS'd</span>
+});
+
+<span class="c">// SAFE — only allow server-defined, pre-audited patterns</span>
+<span class="k">const</span> SAFE_PATTERNS = {
+  email:    <span class="s">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span>,
+  username: <span class="s">/^[a-zA-Z0-9_]{3,20}$/</span>,
+  phone:    <span class="s">/^\+?[0-9]{7,15}$/</span>
+};
+<span class="good">// ✓ Validate user's choice against the safe map — never eval raw input</span>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128736; Also Audit Your Dependencies</h4>
+        <p>Ensure that <strong>no third-party packages you integrate with</strong> utilize user-supplied regex or contain poorly written regular expressions. An evil regex inside an npm dependency is just as dangerous as one you wrote yourself.</p>
+    </div>
+</div>
+
+<!-- Ch26 Logical DoS Defense -->
+<div id="ch26-logical" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch26">&#9881;&#65039;</div>
+        <h2>Protecting Against Logical DoS</h2>
+    </div>
+
+    <p>Logical DoS is <strong>much more difficult to detect and prevent</strong> than regex DoS — it is embedded in business logic, not a pattern that can be statically scanned. The key strategy is to classify exposed API functionality by DoS risk level, then apply appropriate mitigations.</p>
+
+    <div class="story ch26">
+        <div class="story-label ch26">&#128214; From the Book — The Risk Spectrum</div>
+        <p>DoS risk should be measured as <strong>High / Medium / Low</strong> — not as a binary vulnerable/secure judgment. A user on a powerful desktop might not notice an exploitable client-side function, but a user on an older mobile device would. An attacker with many resources could overwhelm even efficient, well-written code.</p>
+        <div class="dialogue">
+            We should think of exposed functionality in terms of DoS risk: high/medium/low. This makes more sense than vulnerable/secure, as DoS relies on consumption of resources that is difficult to categorize compared to other attacks like XSS, which is completely binary.
+        </div>
+    </div>
+
+    <h3>Mitigation Strategies for High-Risk Endpoints</h3>
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128200;</div>
+            <div class="mc-title">Rate Limiting</div>
+            <div class="mc-desc">Cap requests per user per minute on resource-intensive endpoints to prevent abuse</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128203;</div>
+            <div class="mc-title">Resource Quotas</div>
+            <div class="mc-desc">Limit how much data a user can accumulate — e.g., max albums, max photos — that affects expensive queries</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128336;</div>
+            <div class="mc-title">Request Timeouts</div>
+            <div class="mc-desc">Set a hard time limit on expensive operations — fail fast rather than blocking the server thread indefinitely</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128280;</div>
+            <div class="mc-title">Pagination</div>
+            <div class="mc-desc">Never return all records in one query — bound response size so no single call can consume unlimited resources</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#127381;</div>
+            <div class="mc-title">Response Caching</div>
+            <div class="mc-desc">Cache results of expensive queries — repeated calls return the cache, not a fresh DB hit</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128190;</div>
+            <div class="mc-title">Async Job Queues</div>
+            <div class="mc-desc">Move heavy operations (backups, bulk processing) to background queues — decouple from the HTTP request cycle</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch26 DDoS Defense -->
+<div id="ch26-ddos" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch26">&#127960;&#65039;</div>
+        <h2>Protecting Against DDoS</h2>
+    </div>
+
+    <p><strong>DDoS attacks cannot be prevented — only mitigated.</strong> Because DDoS attacks target bandwidth with high volumes of legitimate-looking traffic rather than exploiting specific bugs, traditional patch-and-fix strategies do not apply.</p>
+
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch26">1</div>
+            <div>
+                <strong>Bandwidth Management Services</strong><br>
+                <span style="color:var(--gray)">Third-party services intercept all incoming traffic and analyze each packet before forwarding it to your server. Packets identified as malicious (by pattern, origin, or frequency) are dropped before reaching your infrastructure. These services are effective because they have far greater capacity than your own server to absorb high traffic volumes.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch26">2</div>
+            <div>
+                <strong>Blackholing</strong><br>
+                <span style="color:var(--gray)">Set up additional "decoy" servers alongside your main application server. Suspicious or repeated traffic is routed to a blackhole server — one that appears to function normally but performs no real operations. Legitimate traffic continues to your real server. Effective for small DDoS attacks but can inadvertently block legitimate users if targeting is inaccurate.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch26">3</div>
+            <div>
+                <strong>Traffic Baselining</strong><br>
+                <span style="color:var(--gray)">Before deploying aggressive DDoS filters, build deep metrics on legitimate user traffic patterns. Oversensitive filters will block real users if you don't know what "normal" looks like. Baseline first, then tune your mitigation to match actual usage patterns.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--ch26);">
+            <h4 style="color:var(--ch26);">Bandwidth Management Service</h4>
+            <p>External service sits in front of your infrastructure. Higher cost but highly effective at scale. Vendor infrastructure absorbs large attacks. Best option for production web applications facing real DDoS risk.</p>
+        </div>
+        <div class="compare-card" style="border-color: #0d47a1;">
+            <h4 style="color:#0d47a1;">Blackholing</h4>
+            <p>Custom decoy server routing. Lower cost but requires additional infrastructure and routing logic. Works well for small-scale attacks. May divert legitimate traffic if not accurately targeted. Good as a complementary layer.</p>
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Over-Filtering Is a Real Risk</h4>
+        <p>Every DDoS mitigation technique risks <strong>blocking legitimate users</strong> if filters are too aggressive. This is why traffic baselining — knowing your normal usage patterns in advance — is essential before deploying any countermeasures.</p>
+    </div>
+</div>
+
+<!-- Chapter 26 Summary -->
+<div id="ch26-summary" class="summary-banner ch26">
+    <h3>&#10003; Chapter 26 Summary — Defending Against DoS</h3>
+    <ul>
+        <li><strong>Comprehensive logging</strong> is the foundation — record every request with timing to enable post-hoc DoS investigation</li>
+        <li><strong>Regex DoS</strong>: scan codebase with linting tools for evil patterns; <em>never</em> allow user-supplied regex in any application feature</li>
+        <li><strong>Logical DoS</strong>: classify endpoints as High/Medium/Low risk; apply rate limiting, quotas, pagination, timeouts, caching, and async queues</li>
+        <li><strong>DDoS cannot be prevented</strong> — mitigate with bandwidth management services and blackholing as layered defenses</li>
+        <li>Build <strong>traffic baselines</strong> of legitimate usage patterns before deploying aggressive DDoS filters, to avoid blocking real users</li>
+        <li>Even if you don't expect to be targeted today, <strong>implement anti-DoS measures proactively</strong> before you need them</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 27 — Securing Third-Party Dependencies
+     ════════════════════════════════════════════════ -->
+<div id="chapter-27" class="chapter-header">
+    <div class="chapter-num ch27">Chapter 27</div>
+    <div class="chapter-title">Securing Third-Party Dependencies</div>
+    <div class="chapter-divider ch27"></div>
+</div>
+
+<!-- Ch27 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch27">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch27">1</div>
+            <div class="objective-text"><strong>Model</strong> an application's full dependency tree — including transitive (fourth-party) dependencies — using <code>npm ls</code> and similar commands to understand the true scope of third-party code in use.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch27">2</div>
+            <div class="objective-text"><strong>Use</strong> automated scanning tools (Snyk, npm audit, NIST NVD) to compare a dependency tree against CVE databases and identify vulnerable packages requiring updates.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch27">3</div>
+            <div class="objective-text"><strong>Apply</strong> separation of concerns by isolating risky third-party code on separate servers and communicating via JSON over HTTP — limiting blast radius if the package is compromised.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch27">4</div>
+            <div class="objective-text"><strong>Implement</strong> secure package management using version pinning, npm shrinkwrap, and Git SHA referencing to prevent unauthorized silent dependency updates.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch27 Dependency Trees -->
+<div id="ch27-trees" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch27">&#127809;</div>
+        <h2>Understanding Dependency Trees</h2>
+    </div>
+
+    <p>One of the most important concepts in third-party security is the <strong>dependency tree</strong> — the hierarchical graph of every package your application relies on, including the packages your packages rely on (fourth-party dependencies), and so on recursively.</p>
+
+    <div class="story ch27">
+        <div class="story-label ch27">&#128214; From the Book — Version Conflicts in the Real World</div>
+        <p>In an ideal world, all components relying on JQuery would use the same version. In practice:</p>
+        <div class="code-box">
+<span class="c">// A real-world dependency tree — version conflicts are common</span>
+Primary App v1.6  →  JQuery <span class="good">3.4.0</span>          <span class="c">// direct dependency: patched</span>
+Primary App v1.6  →  SPA Framework v1.3.2  →  JQuery <span class="bad">2.2.1</span>  <span class="c">// sub-dep: vulnerable!</span>
+Primary App v1.6  →  UI Component Library  →  JQuery <span class="bad">2.2.1</span>  <span class="c">// sub-dep: vulnerable!</span>
+
+<span class="c">// Use npm ls to inspect the full tree</span>
+$ npm ls --depth=3
+
+@fortawesome/ember-fontawesome@0.1.14
+  @fortawesome/fontawesome-svg-core@1.2.19
+    @fortawesome/fontawesome-common-types@0.2.19
+    broccoli-file-creator@1.2.0
+      broccoli-plugin@1.3.1
+      mkdirp@0.5.1
+        </div>
+        <p>JQuery v2.2.1 may contain critical vulnerabilities already fixed in v3.4.0. Each unique version in the tree must be evaluated independently — a large application can easily have <strong>thousands of unique dependency versions</strong>.</p>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Version Conflicts Are Normal — And Dangerous</h4>
+        <p>Different parts of your dependency chain will standardize on different versions of shared packages. As a result, <strong>multiple vulnerable and non-vulnerable versions of the same library may coexist</strong> in your running application without you realizing it.</p>
+    </div>
+
+    <h3>Why Dependency Tree Modeling Matters</h3>
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128269;</div>
+            <div class="mc-title">Security Visibility</div>
+            <div class="mc-desc">Without a model, evaluating all dependencies in a large app is nearly impossible manually</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128190;</div>
+            <div class="mc-title">Size Reduction</div>
+            <div class="mc-desc">Identify duplicate packages and consolidate to one import — saving build time and memory</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9989;</div>
+            <div class="mc-title">Patch Tracking</div>
+            <div class="mc-desc">Know exactly which version you're running so you can verify a security patch has actually been applied</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128736;</div>
+            <div class="mc-title">Compliance</div>
+            <div class="mc-desc">Some regulations require knowing and attesting to every third-party component in your software supply chain</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch27 Automated Evaluation -->
+<div id="ch27-automated" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch27">&#129302;</div>
+        <h2>Automated Dependency Evaluation</h2>
+    </div>
+
+    <p>Manually reviewing a dependency tree with thousands of packages is practically impossible. <strong>Automated evaluation is the only scalable approach</strong> to assessing the security of a large application's full dependency tree.</p>
+
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch27">1</div>
+            <div>
+                <strong>List Your Full Dependency Tree</strong><br>
+                <span style="color:var(--gray)">Use <code>npm ls --depth=[depth]</code> or <code>npm list</code> to produce the full dependency tree as a structured list. This becomes the input for your vulnerability scan. In other ecosystems, Maven, Gradle, and pip offer equivalent commands.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch27">2</div>
+            <div>
+                <strong>Scan Against CVE Databases</strong><br>
+                <span style="color:var(--gray)">Compare each package+version in your dependency tree against the NIST NVD or the npm advisory database. Tools like <strong>Snyk</strong> or <strong>npm audit</strong> automate this comparison and report vulnerabilities with remediation suggestions.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch27">3</div>
+            <div>
+                <strong>Evaluate Every New Dependency at Intake</strong><br>
+                <span style="color:var(--gray)">Upon adding any new third-party dependency, its full sub-dependency tree should be evaluated automatically — ideally as a CI/CD pipeline gate that blocks deployment if high-severity vulnerabilities are detected.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch27">4</div>
+            <div>
+                <strong>Prefer NIST NVD for Long-Term Projects</strong><br>
+                <span style="color:var(--gray)">The NIST NVD is funded by the US government and has high longevity. For applications that must operate for many years, NIST is a more stable and authoritative reference than vendor-specific advisory databases.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="code-box">
+<span class="c">// npm — built-in vulnerability scanning</span>
+$ npm audit
+
+<span class="c"># Example output:</span>
+<span class="bad">found 3 vulnerabilities (1 moderate, 2 high)</span>
+  <span class="bad">high</span>     Prototype Pollution in lodash &lt;4.17.21
+  <span class="bad">high</span>     Remote Code Execution in serialize-javascript
+  <span class="n">moderate</span> ReDoS in acorn
+
+<span class="c">// Auto-fix where possible</span>
+$ npm audit fix
+
+<span class="c">// Snyk — advanced scanning with remediation guidance</span>
+$ snyk test            <span class="c">// one-time scan</span>
+$ snyk monitor         <span class="c">// continuous monitoring in CI/CD pipeline</span>
+    </div>
+</div>
+
+<!-- Ch27 Secure Integration -->
+<div id="ch27-secure" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch27">&#128274;</div>
+        <h2>Secure Integration Techniques</h2>
+    </div>
+
+    <p>How you architect the integration with a third-party package directly affects the <strong>blast radius</strong> of a security incident. The key principle is <em>separation of concerns</em> — isolating risky code so that a compromise cannot spread to the rest of your application.</p>
+
+    <div class="story ch27">
+        <div class="story-label ch27">&#128214; From the Book — Separation of Concerns</div>
+        <p>One major risk of integrating third-party code on your main application server is that the code may have <strong>side effects</strong>, or — if compromised — may be able to take over system resources if the principle of least authority is not correctly implemented.</p>
+        <div class="dialogue">
+            The mitigation: run the third-party integration on its own server. Have your server communicate with it via HTTP, sending and receiving JSON payloads. The JSON format ensures that script execution on the application server is not possible without additional vulnerability chaining.
+        </div>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-color: var(--red);">
+            <h4 style="color:var(--red);">&#10060; Tightly Coupled Integration</h4>
+            <p>Third-party code runs directly inside the main application process. A compromised package can access all server memory, environment variables, secrets, and the file system. Full application compromise is possible from a single package exploit.</p>
+        </div>
+        <div class="compare-card" style="border-color: var(--ch27);">
+            <h4 style="color:var(--ch27);">&#10003; Isolated Microservice Integration</h4>
+            <p>Third-party code runs on its own isolated server. Communication happens via HTTP/JSON. A compromised package is contained within its server boundary — it cannot directly access the main application's credentials, data, or memory.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Trade-Offs of Isolation</h4>
+        <p>While isolation reduces the risk to the main application server, <strong>confidential data sent to the dependency server could still be exposed</strong> if that server is compromised. This technique also introduces a small performance penalty from HTTP round-trips. Isolation is ideal for high-risk packages, but may not always be feasible for tightly integrated dependencies.</p>
+    </div>
+</div>
+
+<!-- Ch27 Secure Package Management -->
+<div id="ch27-packages" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch27">&#128230;</div>
+        <h2>Secure Package Management</h2>
+    </div>
+
+    <p>When using package managers like npm, there is accepted risk that comes with each installed package. <strong>Version locking and shrinkwrapping</strong> are techniques that significantly reduce the risk of silent, unauthorized dependency version changes introducing vulnerabilities.</p>
+
+    <div class="story ch27">
+        <div class="story-label ch27">&#128214; From the Book — Semantic Versioning Risk</div>
+        <p>Semantic versioning uses three numbers: <strong>major.minor.patch</strong> (e.g., 1.0.24). By default, npm adds a caret (<code>^</code>) before each version, which means <em>automatically upgrade to the latest patch</em> — so <code>myLib@^1.0.23</code> could become <code>myLib@1.0.24</code> without you knowing.</p>
+        <p>If that new patch was compromised or contains a regression, <strong>your application is now affected with no explicit action on your part</strong>.</p>
+    </div>
+
+    <ul class="step-list">
+        <li>
+            <div class="step-num ch27">1</div>
+            <div>
+                <strong>Remove the Caret — Pin to Exact Version</strong><br>
+                <span style="color:var(--gray)">In <code>package.json</code>, remove the <code>^</code> prefix from dependency versions. This forces npm to use exactly the audited version rather than auto-upgrading to the latest patch. Manual, intentional upgrades only.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch27">2</div>
+            <div>
+                <strong>Shrinkwrap the Full Dependency Tree</strong><br>
+                <span style="color:var(--gray)">Run <code>npm shrinkwrap</code> to generate an <code>npm-shrinkwrap.json</code> file. This locks the exact version of every dependency <em>and</em> every sub-dependency in the full tree — not just top-level packages. Commit this file to your repository.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch27">3</div>
+            <div>
+                <strong>Reference Git SHAs for Maximum Safety</strong><br>
+                <span style="color:var(--gray)">Modify the shrinkwrap file to reference <strong>Git commit SHAs</strong> rather than version numbers alone. This eliminates the rare but real risk of a package maintainer publishing new code under an existing version number.</span>
+            </div>
+        </li>
+        <li>
+            <div class="step-num ch27">4</div>
+            <div>
+                <strong>Deploy Your Own Package Mirror</strong><br>
+                <span style="color:var(--gray)">For the highest level of security, host a private npm mirror containing only the vetted, approved versions of each dependency. Your CI/CD pipeline pulls from your mirror, never from the public registry.</span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="code-box">
+<span class="c">// package.json — version pinning comparison</span>
+
+<span class="c">// INSECURE — caret allows silent auto-upgrade</span>
+{
+  <span class="s">"dependencies"</span>: {
+    <span class="s">"express"</span>: <span class="bad">"^4.18.2"</span>,   <span class="c">// ✗ may silently become 4.18.3</span>
+    <span class="s">"lodash"</span>:  <span class="bad">"^4.17.21"</span>  <span class="c">// ✗ same risk</span>
+  }
+}
+
+<span class="c">// SECURE — exact pinned version, no caret</span>
+{
+  <span class="s">"dependencies"</span>: {
+    <span class="s">"express"</span>: <span class="good">"4.18.2"</span>,    <span class="c">// ✓ exactly this audited version</span>
+    <span class="s">"lodash"</span>:  <span class="good">"4.17.21"</span>   <span class="c">// ✓ exactly this audited version</span>
+  }
+}
+
+<span class="c">// Generate shrinkwrap — locks the entire dependency tree</span>
+$ npm shrinkwrap
+<span class="c">// Creates npm-shrinkwrap.json — commit this to your repository!</span>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128736; Shrinkwrap Limitation</h4>
+        <p>Shrinkwrapping forces exact versions but does <strong>not fully protect against a package maintainer reusing a version number</strong> for new code — this is technically possible in npm. To eliminate this risk, modify your shrinkwrap to reference Git SHAs or deploy your own private npm mirror containing only vetted package versions.</p>
+    </div>
+</div>
+
+<!-- Chapter 27 Summary -->
+<div id="ch27-summary" class="summary-banner ch27">
+    <h3>&#10003; Chapter 27 Summary — Securing Third-Party Dependencies</h3>
+    <ul>
+        <li>Every third-party integration carries <strong>expected risk</strong> — the goal is to minimize and contain it through layered controls, not to eliminate dependencies entirely</li>
+        <li><strong>Model your full dependency tree</strong> (using <code>npm ls</code>) — large applications can have thousands of transitive sub-dependencies you never directly chose</li>
+        <li>Use <strong>automated CVE scanning</strong> (Snyk, npm audit, NIST NVD) in your CI/CD pipeline — manual review of large dependency trees does not scale</li>
+        <li><strong>Isolate high-risk dependencies</strong> on separate servers; communicate via JSON over HTTP to limit blast radius if the package is compromised</li>
+        <li><strong>Pin dependency versions</strong>: remove the caret from <code>package.json</code>, run <code>npm shrinkwrap</code>, and consider referencing Git SHAs for critical packages</li>
+        <li>Third-party dependencies always introduce some risk — a <strong>defense-in-depth approach</strong> accepts this and layers controls to minimize exposure</li>
+    </ul>
+</div>
+
+</main>
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 — Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week5/index.html">Week 5</a>
+            <a href="index.html">Week 6</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Sidebar active link on scroll
+    const sections = document.querySelectorAll('[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + entry.target.id) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(section => observer.observe(section));
+</script>
+
 </body>
 </html>

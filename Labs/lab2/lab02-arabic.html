@@ -909,7 +909,8 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
                 </div>
 
                 <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="generateReport()" style="background: linear-gradient(135deg, var(--kali-blue) 0%, #1a5276 100%); color: white; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(54, 123, 240, 0.4); transition: transform 0.2s ease;">إنشاء تقرير PDF</button>
+                    <button disabled style="background:#9ca3af; color:white; border:none; padding:15px 40px; font-size:1.1em; font-weight:600; border-radius:10px; cursor:not-allowed; opacity:0.7;">&#128196; إنشاء تقرير PDF &mdash; غير متاح</button>
+                    <p style="color:#e53e3e; font-size:0.87em; margin-top:10px; text-align:center; font-weight:600;">&#9888; إنشاء التقرير غير متاح في النسخة العربية &mdash; يجب تقديم التقارير باللغة الإنجليزية.<br><span style="color:#718096; font-weight:400;">Reports must be submitted in English. Please use the English version of this lab.</span></p>
                 </div>
             </div>
         </section>
@@ -926,71 +927,7 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
 
 <script>
 function generateReport() {
-    var name = document.getElementById('student-name').value.trim();
-    var sid = document.getElementById('student-id').value.trim();
-    if (!name || !sid) {
-        alert('الرجاء إدخال اسم الطالب والرقم الجامعي قبل إنشاء التقرير.');
-        return;
-    }
-
-    // Collect all task answers
-    var answers = {};
-    var allInputs = document.querySelectorAll('.task-answer');
-    allInputs.forEach(function(input) {
-        var task = input.getAttribute('data-task');
-        if (!answers[task]) answers[task] = [];
-        answers[task].push({
-            label: input.previousElementSibling ? input.previousElementSibling.textContent : '',
-            value: input.value.trim() || '(لم تتم الإجابة)'
-        });
-    });
-
-    // Build print content
-    var printWindow = window.open('', '_blank');
-    var html = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير المختبر 02 - ' + name + '</title>';
-    html += '<style>';
-    html += 'body { font-family: "Segoe UI", "Arial", Tahoma, sans-serif; padding: 40px; color: #2d3748; line-height: 1.8; direction: rtl; }';
-    html += 'h1 { color: #1a365d; font-size: 1.6em; text-align: center; margin-bottom: 5px; }';
-    html += '.subtitle { text-align: center; color: #718096; margin-bottom: 25px; }';
-    html += '.student-info { display: flex; justify-content: space-between; background: #f7fafc; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0; }';
-    html += '.task-section { margin-bottom: 25px; page-break-inside: avoid; }';
-    html += '.task-title { color: #2b5797; font-size: 1.2em; border-bottom: 2px solid #367bf0; padding-bottom: 5px; margin-bottom: 12px; }';
-    html += '.answer-row { margin-bottom: 10px; }';
-    html += '.answer-label { font-weight: 600; color: #4a5568; font-size: 0.9em; }';
-    html += '.answer-value { background: #f7fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 3px; min-height: 20px; }';
-    html += '@media print { body { padding: 20px; } }';
-    html += '</style></head><body>';
-    html += '<h1>CYB236 &mdash; المختبر 02: تقرير ملخص الاستطلاع</h1>';
-    html += '<p class="subtitle">استطلاع تطبيقات الويب &mdash; OWASP Juice Shop</p>';
-    html += '<div class="student-info"><div><strong>اسم الطالب:</strong> ' + name + '</div><div><strong>الرقم الجامعي:</strong> ' + sid + '</div></div>';
-
-    var taskNames = {
-        '1': 'المهمة 1: تحديد التقنيات المستخدمة',
-        '2': 'المهمة 2: استكشاف طلبات REST API',
-        '3': 'المهمة 3: قراءة بيانات JSON',
-        '4': 'المهمة 4: فحص التخزين في المتصفح'
-    };
-
-    for (var t = 1; t <= 4; t++) {
-        html += '<div class="task-section">';
-        html += '<div class="task-title">' + taskNames[t] + '</div>';
-        if (answers[t]) {
-            answers[t].forEach(function(a) {
-                html += '<div class="answer-row">';
-                html += '<div class="answer-label">' + a.label + '</div>';
-                html += '<div class="answer-value">' + a.value + '</div>';
-                html += '</div>';
-            });
-        }
-        html += '</div>';
-    }
-
-    html += '</body></html>';
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.onload = function() {
-        printWindow.print();
-    };
+    alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من المختبر.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this lab.');
 }
 </script>
 

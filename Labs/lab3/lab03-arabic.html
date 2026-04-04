@@ -626,9 +626,8 @@ sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
                 </div>
                 <p style="font-size:0.85em; color:#e53e3e; margin-bottom:18px; text-align:center;">&#9432; جميع الحقول المحددة بـ <strong>*</strong> إلزامية ولا يمكن إنشاء التقرير دون تعبئتها.</p>
                 <div style="text-align:center;">
-                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#8e44ad,#6c3483); color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:pointer; box-shadow:0 4px 15px rgba(142,68,173,0.4);">
-                        &#128196; إنشاء تقرير PDF
-                    </button>
+                    <button disabled style="background:#9ca3af; color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:not-allowed; opacity:0.7;">&#128196; إنشاء تقرير PDF &mdash; غير متاح</button>
+                    <p style="color:#e53e3e; font-size:0.87em; margin-top:10px; text-align:center; font-weight:600;">&#9888; إنشاء التقرير غير متاح في النسخة العربية &mdash; يجب تقديم التقارير باللغة الإنجليزية.<br><span style="color:#718096; font-weight:400;">Reports must be submitted in English. Please use the English version of this lab.</span></p>
                 </div>
             </div>
 
@@ -683,67 +682,7 @@ function previewImage(input, previewId) {
 }
 
 function generateReport() {
-    var name  = document.getElementById('student-name').value.trim();
-    var sid   = document.getElementById('student-id').value.trim();
-    var email = document.getElementById('student-email').value.trim();
-    if (!name)  { alert('اسم الطالب مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
-    if (!sid)   { alert('الرقم الجامعي مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
-    if (!email) { alert('البريد الإلكتروني مطلوب. يرجى تعبئة الحقل قبل إنشاء التقرير.'); return; }
-
-    var answers = {};
-    document.querySelectorAll('.task-answer').forEach(function(f) {
-        var t = f.getAttribute('data-task');
-        if (!answers[t]) answers[t] = [];
-        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
-        answers[t].push({ label: lbl, value: f.value.trim() || '(لم تتم الإجابة)' });
-    });
-
-    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g, '').replace(/\s+/g, '_');
-    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g, '');
-    var w = window.open('', '_blank');
-    var h = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">';
-    h += '<title>Lab03_' + safeName + '_' + safeSid + '</title><style>';
-    h += 'body{font-family:"Segoe UI","Arial",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.9;direction:rtl}';
-    h += 'h1{color:#8e44ad;font-size:1.5em;text-align:center;margin-bottom:4px}';
-    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
-    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#f0e6f6;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #d7a8e8}';
-    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-right:4px solid #8e44ad;border-left:none;padding-right:14px;padding-left:0}';
-    h += '.tt{color:#6c3483;font-size:1.15em;margin-bottom:10px;font-weight:700}';
-    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
-    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
-    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
-    h += '.ss{margin-top:16px;page-break-inside:avoid}';
-    h += '.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
-    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
-    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
-    h += '@media print{body{padding:20px}}</style></head><body>';
-    h += '<h1>CYB236 \u2014 المختبر 03: البرمجة النصية العابرة للمواقع (XSS)</h1>';
-    h += '<p class="sub">DVWA \u2014 XSS المنعكس و XSS المخزّن \u2014 الفصل 10</p>';
-    h += '<div class="si"><div><strong>اسم الطالب:</strong> ' + name + '</div><div><strong>الرقم الجامعي:</strong> ' + sid + '</div><div><strong>البريد الإلكتروني:</strong> ' + email + '</div></div>';
-
-    var tn    = { '1': 'المهمة 1: XSS المنعكس', '2': 'المهمة 2: XSS المخزّن' };
-    var ssId  = { '1': 'preview-task1',          '2': 'preview-task2' };
-    var ssLbl = { '1': 'لقطة الشاشة \u2014 نافذة تنبيه XSS المنعكس', '2': 'لقطة الشاشة \u2014 سجل الزوار مع سكريبت XSS المخزّن' };
-
-    for (var t = 1; t <= 2; t++) {
-        h += '<div class="ts"><div class="tt">' + tn[t] + '</div>';
-        if (answers[t]) {
-            answers[t].forEach(function(a) {
-                h += '<div class="ar"><div class="al">' + a.label + '</div>';
-                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
-            });
-        }
-        if (screenshotData[ssId[t]]) {
-            h += '<div class="ss"><div class="ss-lbl">' + ssLbl[t] + '</div><img src="' + screenshotData[ssId[t]] + '"></div>';
-        }
-        h += '</div>';
-        if (t < 2) h += '<hr>';
-    }
-
-    h += '<div class="fn">CYB236 \u2014 المختبر 03 \u2014 أمن تطبيقات الويب</div></body></html>';
-    w.document.write(h);
-    w.document.close();
-    w.onload = function() { w.print(); };
+    alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من المختبر.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this lab.');
 }
 </script>
 </body>
