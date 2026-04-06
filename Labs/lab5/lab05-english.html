@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab 05: Burp Suite &ndash; Proxy, FoxyProxy &amp; Traffic Interception</title>
     <style>
@@ -19,7 +20,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.7;
             color: var(--dark-text);
             background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
@@ -260,13 +261,50 @@
             .flow-node { min-width: 80px; padding: 10px 10px; }
         }
 
+        /* ── Language Switch ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; }
+            .lang-switch { display: none; }
         }
     </style>
 </head>
 <body>
+
+<!-- Language Switch -->
+<div class="lang-switch">
+    <a href="lab05-arabic.html" class="lang-btn">
+        &#127760; عربي
+    </a>
+</div>
 
 <div class="container">
 
@@ -661,7 +699,7 @@ hostname -I</code></pre>
                 <p style="margin:0;">Firefox types: &nbsp;<strong style="color:#2980b9;">http://10.0.2.15</strong> &nbsp;&larr; your machine IP (target app)</p>
                 <p style="margin:0;">FoxyProxy routes to: &nbsp;<strong style="color:#d69e2e;">127.0.0.1:8080</strong> &nbsp;&larr; Burp listener</p>
                 <p style="margin:0;">Burp forwards to: &nbsp;<strong style="color:#38a169;">http://10.0.2.15</strong> &nbsp;&larr; the actual target</p>
-                <p style="margin:0; margin-top:8px; font-family:'Segoe UI',sans-serif; font-size:0.95em; color:#4a5568;">Result: Burp sits in the middle and sees everything &#9989;</p>
+                <p style="margin:0; margin-top:8px; font-family:'Tajawal', 'Amiri', 'Segoe UI',sans-serif; font-size:0.95em; color:#4a5568;">Result: Burp sits in the middle and sees everything &#9989;</p>
             </div>
         </section>
 
@@ -915,7 +953,8 @@ function generateReport() {
     var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g,'').replace(/\s+/g,'_');
     var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
     var w = window.open('','_blank');
-    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lab05_'+safeName+'_'+safeSid+'</title><style>';
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab05_'+safeName+'_'+safeSid+'</title><style>';
     h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
     h += 'h1{color:#2980b9;font-size:1.5em;text-align:center;margin-bottom:4px}';
     h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
