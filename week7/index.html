@@ -3,71 +3,1639 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 7: Secure Architecture & Vuln Mgmt | CYB236</title>
+    <title>CYB236 Handout - Chapters 17, 18, 19 &amp; 20</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #f0fdfa;
+            --primary-600: #0d9488;
+            --primary-700: #0f766e;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Colors ── */
+            --ch17: #0f766e;
+            --ch17-light: #f0fdfa;
+            --ch17-mid: #5eead4;
+
+            --ch18: #1d4ed8;
+            --ch18-light: #eff6ff;
+            --ch18-mid: #93c5fd;
+
+            --ch19: #7c3aed;
+            --ch19-light: #f5f3ff;
+            --ch19-mid: #c4b5fd;
+
+            --ch20: #c2410c;
+            --ch20-light: #fff7ed;
+            --ch20-mid: #fdba74;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #1b998b, #1b998bdd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .week-badge {
-            background: #1b998b;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #1b998b;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #1b998b;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--neutral-300);
+        }
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #0d1117 0%, #0f2027 50%, #1a2a3a 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5eead4;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: #0f766e; border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .cover-chip.ch17 { background: rgba(15,118,110,0.35); }
+        .cover-chip.ch18 { background: rgba(29,78,216,0.35); }
+        .cover-chip.ch19 { background: rgba(124,58,237,0.35); }
+        .cover-chip.ch20 { background: rgba(194,65,12,0.35); }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--neutral-200); }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .sidebar-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-ch-label {
+            padding: 8px 12px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--neutral-400);
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--primary-600); color: white; }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+
+        .chapter-num.ch17 { background: var(--ch17-light); color: var(--ch17); }
+        .chapter-num.ch18 { background: var(--ch18-light); color: var(--ch18); }
+        .chapter-num.ch19 { background: var(--ch19-light); color: var(--ch19); }
+        .chapter-num.ch20 { background: var(--ch20-light); color: var(--ch20); }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider { height: 4px; border-radius: 2px; margin: 10px auto 0; width: 80px; }
+        .chapter-divider.ch17 { background: var(--ch17); }
+        .chapter-divider.ch18 { background: var(--ch18); }
+        .chapter-divider.ch19 { background: var(--ch19); }
+        .chapter-divider.ch20 { background: var(--ch20); }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .topic-icon.ch17 { background: var(--ch17-light); }
+        .topic-icon.ch18 { background: var(--ch18-light); }
+        .topic-icon.ch19 { background: var(--ch19-light); }
+        .topic-icon.ch20 { background: var(--ch20-light); }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-number.ch17 { background: var(--ch17); }
+        .objective-number.ch18 { background: var(--ch18); }
+        .objective-number.ch19 { background: var(--ch19); }
+        .objective-number.ch20 { background: var(--ch20); }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--neutral-50);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+            border-left: 5px solid;
+        }
+
+        .story.ch17 { border-color: var(--ch17); }
+        .story.ch18 { border-color: var(--ch18); }
+        .story.ch19 { border-color: var(--ch19); }
+        .story.ch20 { border-color: var(--ch20); }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+        }
+
+        .story-label.ch17 { background: var(--ch17-light); color: var(--ch17); }
+        .story-label.ch18 { background: var(--ch18-light); color: var(--ch18); }
+        .story-label.ch19 { background: var(--ch19-light); color: var(--ch19); }
+        .story-label.ch20 { background: var(--ch20-light); color: var(--ch20); }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-left: 3px solid var(--border);
+        }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Teal Info Box ───── */
+        .teal-box {
+            background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+            border-left: 5px solid var(--ch17);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .teal-box h4 { color: var(--ch17); margin-bottom: 6px; font-size: 1em; }
+        .teal-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+        }
+
+        .clean-list.ch17 li::before { background: var(--ch17-light); }
+        .clean-list.ch18 li::before { background: var(--ch18-light); }
+        .clean-list.ch19 li::before { background: var(--ch19-light); }
+        .clean-list.ch20 li::before { background: var(--ch20-light); }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-num.ch17 { background: var(--ch17); }
+        .step-num.ch18 { background: var(--ch18); }
+        .step-num.ch19 { background: var(--ch19); }
+        .step-num.ch20 { background: var(--ch20); }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .good { color: #86efac; font-weight: bold; }
+        .code-box .bad  { color: #f87171; font-weight: bold; }
+
+        /* ───── Data Table ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .data-table tr td:last-child  { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── Risk Badge ───── */
+        .risk-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.82em;
+            color: white;
+        }
+        .risk-badge.high   { background: var(--red); }
+        .risk-badge.medium { background: #f59e0b; }
+        .risk-badge.low    { background: var(--green); }
+
+        /* ───── Secure vs Insecure ───── */
+        .secure-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .secure-side { border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-md); }
+
+        .secure-side-header {
+            padding: 14px 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .secure-side-header.bad  { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .secure-side-header.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .secure-side-body { padding: 20px; background: white; }
+        .secure-side-body ul { list-style: none; padding: 0; }
+        .secure-side-body li { padding: 8px 0 8px 28px; position: relative; font-size: 0.95em; }
+        .secure-side-body.bad  li::before { content: '✗'; position: absolute; left: 0; color: var(--red);   font-weight: 700; }
+        .secure-side-body.good li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner.ch17 { background: linear-gradient(135deg, #134e4a, #0f766e); }
+        .summary-banner.ch18 { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); }
+        .summary-banner.ch19 { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+        .summary-banner.ch20 { background: linear-gradient(135deg, #7c2d12, #c2410c); }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; left: 0; font-weight: 700; }
+
+        /* ───── Page Break ───── */
+        .page-break {
+            height: 6px;
+            background: linear-gradient(90deg, var(--ch17), var(--ch18), var(--ch19), var(--ch20));
+            margin: 60px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Footer ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .secure-compare { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="week-badge">Week 7 - Defense</span>
-        <h1>Secure Architecture & Vuln Mgmt</h1>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="index-ar.html" class="lang-switch" style="font-family:'Noto Sans Arabic',sans-serif;">العربية</a>
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week6/index.html" class="nav-link">Week 6</a>
+            <a href="index.html" class="nav-link active">Week 7</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>Week 7</span>
+            <span>›</span>
+            <span>Part III — Secure Development Methodologies I</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            Week 7 &nbsp;·&nbsp; Secure Development Methodologies I
+        </div>
+        <h1>Secure Development Methodologies I</h1>
+        <p class="sub">Defense Mindset · Secure Architecture · Code Review · Vulnerability Discovery</p>
+        <div class="cover-chips">
+            <div class="cover-chip ch17">Ch.17 Securing Web Apps</div>
+            <div class="cover-chip ch18">Ch.18 Secure Architecture</div>
+            <div class="cover-chip ch19">Ch.19 Code Review</div>
+            <div class="cover-chip ch20">Ch.20 Vuln Discovery</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ BODY ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-ch-label">Ch. 17 — Securing Web Apps</div>
+            <a href="#chapter-17"        class="sidebar-link active"><span class="sidebar-link-number">1</span>Ch.17 Overview</a>
+            <a href="#ch17-defense"      class="sidebar-link"><span class="sidebar-link-number">2</span>Defense Mindset</a>
+            <a href="#ch17-pillars"      class="sidebar-link"><span class="sidebar-link-number">3</span>Three Pillars</a>
+            <a href="#ch17-vuln-mgmt"    class="sidebar-link"><span class="sidebar-link-number">4</span>Vulnerability Management</a>
+            <a href="#ch17-summary"      class="sidebar-link"><span class="sidebar-link-number">5</span>Ch.17 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 18 — Secure Architecture</div>
+            <a href="#chapter-18"        class="sidebar-link"><span class="sidebar-link-number">6</span>Ch.18 Overview</a>
+            <a href="#ch18-requirements" class="sidebar-link"><span class="sidebar-link-number">7</span>Analyzing Requirements</a>
+            <a href="#ch18-ssl"          class="sidebar-link"><span class="sidebar-link-number">8</span>SSL/TLS &amp; Data in Transit</a>
+            <a href="#ch18-credentials"  class="sidebar-link"><span class="sidebar-link-number">9</span>Secure Credentials</a>
+            <a href="#ch18-summary"      class="sidebar-link"><span class="sidebar-link-number">10</span>Ch.18 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 19 — Code Review</div>
+            <a href="#chapter-19"        class="sidebar-link"><span class="sidebar-link-number">11</span>Ch.19 Overview</a>
+            <a href="#ch19-howto"        class="sidebar-link"><span class="sidebar-link-number">12</span>How to Start</a>
+            <a href="#ch19-where"        class="sidebar-link"><span class="sidebar-link-number">13</span>Where to Start</a>
+            <a href="#ch19-antipatterns" class="sidebar-link"><span class="sidebar-link-number">14</span>Anti-Patterns</a>
+            <a href="#ch19-summary"      class="sidebar-link"><span class="sidebar-link-number">15</span>Ch.19 Summary</a>
+
+            <div class="sidebar-ch-label">Ch. 20 — Vulnerability Discovery</div>
+            <a href="#chapter-20"        class="sidebar-link"><span class="sidebar-link-number">16</span>Ch.20 Overview</a>
+            <a href="#ch20-static"       class="sidebar-link"><span class="sidebar-link-number">17</span>Static Analysis</a>
+            <a href="#ch20-dynamic"      class="sidebar-link"><span class="sidebar-link-number">18</span>Dynamic Analysis</a>
+            <a href="#ch20-regression"   class="sidebar-link"><span class="sidebar-link-number">19</span>Regression Testing</a>
+            <a href="#ch20-bounty"       class="sidebar-link"><span class="sidebar-link-number">20</span>Bug Bounty Programs</a>
+            <a href="#ch20-summary"      class="sidebar-link"><span class="sidebar-link-number">21</span>Ch.20 Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 17 — Securing Modern Web Applications
+     ════════════════════════════════════════════════ -->
+<div id="chapter-17" class="chapter-header">
+    <div class="chapter-num ch17">Chapter 17</div>
+    <div class="chapter-title">Securing Modern Web Applications</div>
+    <div class="chapter-divider ch17"></div>
+</div>
+
+<!-- Ch17 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch17">1</div>
+            <div class="objective-text"><strong>Explain</strong> why the "penetrate-and-patch" approach is insufficient and how a holistic, architecture-first defense strategy produces more secure applications from the ground up.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">2</div>
+            <div class="objective-text"><strong>Identify</strong> the three sequential pillars of secure software development — secure architecture, comprehensive code reviews, and vulnerability discovery — and explain why order matters.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">3</div>
+            <div class="objective-text"><strong>Describe</strong> the full vulnerability lifecycle: risk assessment, prioritization, tracking, patching, and regression testing — and explain how each step prevents future harm.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">4</div>
+            <div class="objective-text"><strong>Understand</strong> how knowledge of recon and offensive techniques from Parts I and II makes a defender more effective at prioritizing and building defenses.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch17 Defense Mindset -->
+<div id="ch17-defense" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127965;</div>
+        <h2>The Defense Mindset</h2>
+    </div>
+
+    <p>Modern web applications are far more complex and distributed than their predecessors. This expanded complexity increases the attack surface — meaning more entry points that a hacker can try to exploit. Defending a web application starts not at the keyboard, but in the mind of the developer.</p>
+
+    <div class="story ch17">
+        <div class="story-label ch17">&#128214; From the Book — The Castle Analogy</div>
+        <p>Defending a web application is somewhat akin to defending a <strong>medieval castle</strong>. A castle consists of buildings and walls — representing the core application code. Outside are buildings that integrate with and support the castle, just like an application's dependencies and integrations.</p>
+        <p>In wartime, it is impossible to fortify every entrance equally. Smart defenders prioritize. The same is true in web application security — defenses must be prioritized based on risk, not applied uniformly at maximum strength everywhere.</p>
+        <div class="dialogue">
+            These professionals take on the role of master defender, using software engineering skills combined with recon and hacking skills to reduce the probability of a successful attack, mitigate potential damages, and manage active or past damages.
+        </div>
+    </div>
+
+    <h3>Penetrate-and-Patch vs. Holistic Approach</h3>
+    <p>The old-fashioned approach to security — "penetrate-and-patch" — waits until a vulnerability is discovered (by a hacker, a customer, or a security scanner) and only then fixes it. This reactive approach is expensive, slow, and dangerous.</p>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#10007; Penetrate-and-Patch (Reactive)</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>Security reviewed only after code ships</li>
+                    <li>Vulnerabilities discovered by attackers first</li>
+                    <li>Re-architecture is costly once users depend on it</li>
+                    <li>Each bug is fixed in isolation — root cause ignored</li>
+                    <li>No proactive culture of security in engineering</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#10003; Holistic Approach (Proactive)</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>Security designed before writing a single line of code</li>
+                    <li>Architecture reviewed for risk at the design stage</li>
+                    <li>Code reviewed for security on every merge request</li>
+                    <li>Automated testing catches regressions before release</li>
+                    <li>Security culture is embedded in the development process</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; Key Insight</h4>
+        <p>All skills — recon, offense, and defense — are synergistic. Understanding how a hacker would map and exploit your application gives you insight into how to prioritize defenses and hide architectural details from malicious eyes.</p>
+    </div>
+</div>
+
+<!-- Ch17 Three Pillars -->
+<div id="ch17-pillars" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127963;</div>
+        <h2>Three Pillars of Secure Development</h2>
+    </div>
+
+    <p>A holistic approach to web application security follows three sequential, interdependent pillars. Each builds on the previous one — skipping or weakening any pillar increases overall risk.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#129516;</div>
+            <div class="mc-title">Pillar 1: Architecture</div>
+            <div class="mc-desc">Design security into the system before writing code. Evaluate data flow, trust boundaries, and threat models.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128270;</div>
+            <div class="mc-title">Pillar 2: Code Review</div>
+            <div class="mc-desc">Review every commit for common vulnerabilities and logic bugs. Cross-team review reduces conflict of interest.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128202;</div>
+            <div class="mc-title">Pillar 3: Vuln Discovery</div>
+            <div class="mc-desc">Use automation, penetration testing, and bug bounties to catch what slipped through architecture and review.</div>
+        </div>
+    </div>
+
+    <div class="story ch17">
+        <div class="story-label ch17">&#128214; From the Book — Code Review Checklist</div>
+        <p>Catching security holes at the code review level on a per-commit basis is easier than one would think. The major questions to ask are:</p>
+        <ul class="clean-list ch17">
+            <li>How is data being transmitted from point A to point B (format, encryption)?</li>
+            <li>How is data being stored (plain text, hashed, encrypted)?</li>
+            <li>When data reaches the client, how is it presented to the user (DOM injection risks)?</li>
+            <li>When data reaches the server, what operations occur on it and how is it persisted?</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Ch17 Vulnerability Management -->
+<div id="ch17-vuln-mgmt" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#128203;</div>
+        <h2>Vulnerability Management &amp; Regression Testing</h2>
+    </div>
+
+    <p>Not all vulnerabilities carry equal risk. The priority of a fix must be derived from a structured risk assessment before any engineering effort begins.</p>
+
+    <h3>Risk Assessment Factors</h3>
+    <ul class="clean-list ch17">
+        <li><strong>Financial risk</strong> — what is the potential monetary loss if exploited?</li>
+        <li><strong>Difficulty of exploitation</strong> — how easy is it for an attacker to trigger?</li>
+        <li><strong>Type of data compromised</strong> — PII, financial data, credentials, or public data?</li>
+        <li><strong>Existing contractual obligations</strong> — does the vulnerability violate customer SLAs?</li>
+        <li><strong>Mitigation measures already in place</strong> — are there compensating controls reducing risk?</li>
+    </ul>
+
+    <div class="info-box">
+        <h4>&#128202; Regression Statistics</h4>
+        <p>A security engineer from a large software company (10,000+ employees) reported that approximately <strong>25% of their security vulnerabilities were regressions</strong> — previously fixed bugs that reopened. Regression tests are the most effective and cheapest defense against this pattern.</p>
+    </div>
+
+    <p>After patching a vulnerability, always write a <strong>regression test</strong> — a test that will fail if the vulnerability is ever reintroduced. This small upfront investment can prevent a vulnerability from silently returning in a future refactor or rollback.</p>
+</div>
+
+<!-- Ch17 Summary -->
+<div id="ch17-summary" class="summary-banner ch17">
+    <h3>&#128273; Chapter 17 Summary</h3>
+    <ul>
+        <li>Modern web apps have large attack surfaces requiring prioritized, not exhaustive, defenses</li>
+        <li>The holistic approach (architecture → code review → discovery) outperforms penetrate-and-patch</li>
+        <li>Risk assessment determines the order and urgency of vulnerability fixes</li>
+        <li>Regression testing prevents fixed vulnerabilities from silently reopening</li>
+        <li>Recon and offensive knowledge make defenders significantly more effective</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 18 — Secure Application Architecture
+     ════════════════════════════════════════════════ -->
+<div id="chapter-18" class="chapter-header">
+    <div class="chapter-num ch18">Chapter 18</div>
+    <div class="chapter-title">Secure Application Architecture</div>
+    <div class="chapter-divider ch18"></div>
+</div>
+
+<!-- Ch18 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch18">1</div>
+            <div class="objective-text"><strong>Analyze</strong> a set of business requirements and derive the security implications — authentication, authorization, PII handling, and data-in-transit risks — before writing any code.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">2</div>
+            <div class="objective-text"><strong>Explain</strong> the difference between SSL and TLS, why all data in transit must be encrypted, and how HTTPS enforces TLS/SSL at the browser level.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">3</div>
+            <div class="objective-text"><strong>Compare</strong> password storage approaches (plain text, MD5, BCrypt, PBKDF2) and explain why slow hashing algorithms are essential for protecting credentials against brute-force attacks.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">4</div>
+            <div class="objective-text"><strong>Understand</strong> the NIST finding that fixing a security flaw in the architecture phase costs 30–60× less than fixing the same flaw in production — and why this justifies upfront investment.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch18 Requirements -->
+<div id="ch18-requirements" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128196;</div>
+        <h2>Analyzing Feature Requirements for Security Risk</h2>
+    </div>
+
+    <p>The first step in securing any application is the <strong>architecture phase</strong> — before a single line of code is written. This phase is a cross-functional exercise where engineers, product managers, and security architects work together to evaluate data flow, trust boundaries, and potential attack surfaces.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; From the Book — The MegaMerch Case Study</div>
+        <p>Consider MegaBank, which is launching a new e-commerce platform called <strong>MegaMerch</strong>. The business requirements seem simple at first glance:</p>
+        <ul class="clean-list ch18">
+            <li>Users can create accounts and sign in</li>
+            <li>User accounts contain full name, address, and date of birth</li>
+            <li>Users can browse and search for items</li>
+            <li>Users can save credit cards and bank accounts for later use</li>
+        </ul>
+        <p>But a high-level security analysis immediately reveals significant risk areas hidden inside these simple requirements:</p>
+        <ul class="clean-list ch18">
+            <li>We are storing <strong>credentials</strong> — authentication system needed</li>
+            <li>We are storing <strong>personally identifiable information (PII)</strong> — legal and privacy obligations</li>
+            <li>Users have <strong>elevated privileges</strong> compared to guests — authorization model needed</li>
+            <li>Users can <strong>search</strong> — a secondary database may be required (sync complexity)</li>
+            <li>We are storing <strong>financial data</strong> — highest risk category, strict compliance rules</li>
+        </ul>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Architecture-First Principle</h4>
+        <p>Any organization with separate security and R&amp;D teams must build communication pathways between them into the development process. Features cannot be properly analyzed in a silo — stakeholders from both engineering and product development must be involved.</p>
+    </div>
+
+    <div class="teal-box">
+        <h4>&#128202; The NIST Finding</h4>
+        <p>Based on a study of popular web applications, NIST concluded: <em>"The cost of removing an application security vulnerability during the design phase ranges from <strong>30–60 times less</strong> than if removed during production."</em> Upfront security architecture is not overhead — it is an investment with massive returns.</p>
+    </div>
+</div>
+
+<!-- Ch18 SSL/TLS -->
+<div id="ch18-ssl" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128274;</div>
+        <h2>SSL/TLS &amp; Secure Data in Transit</h2>
+    </div>
+
+    <p>One of the most critical architectural decisions is how to handle data moving across the network. All data transmitted over the internet must be encrypted to prevent <strong>man-in-the-middle (MitM) attacks</strong> — where an attacker intercepts communication between the client and server to steal credentials, session tokens, or financial data.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: #ef4444;">
+            <h4 style="color:#dc2626;">SSL — Secure Sockets Layer</h4>
+            <p>Designed by Netscape in the mid-1990s. Multiple versions released since. Has several known architectural vulnerabilities (e.g., POODLE, BEAST). Widely adopted but considered <strong>deprecated for security use</strong>.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #16a34a;">
+            <h4 style="color:#15803d;">TLS — Transport Layer Security</h4>
+            <p>Defined by RFC 2246 in 1999. Offers significantly improved security over SSL. Cannot interoperate with older SSL versions due to architectural differences. <strong>Recommended for all modern web applications</strong>.</p>
+        </div>
+    </div>
+
+    <p>The HTTP specification provides <strong>HTTPS</strong> ("HTTP Secure") — a URI scheme that requires TLS/SSL before any data is transmitted. Browsers display a lock icon when HTTPS is active and warn users when a connection is compromised.</p>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Production Requirement</h4>
+        <p>All data sent over the network — including login forms, API payloads, and cookies — must travel over HTTPS/TLS. Any plaintext HTTP endpoint in a production application is an immediate security risk.</p>
+    </div>
+</div>
+
+<!-- Ch18 Credentials -->
+<div id="ch18-credentials" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128272;</div>
+        <h2>Secure Credentials &amp; Password Hashing</h2>
+    </div>
+
+    <p>Storing credentials securely is one of the most impactful architectural decisions. The wrong approach — storing passwords in plain text — can cause total credential compromise in any database breach. The right approach uses <strong>one-way hashing algorithms</strong> designed specifically to resist brute-force attacks.</p>
+
+    <h3>Why Hashing Works</h3>
+    <p>Hashing algorithms are irreversible — you cannot recover the original password from a hash. When a user logs in, their input is hashed and compared to the stored hash. Even MegaMerch staff cannot recover user passwords.</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Scenario</th>
+                <th>Storage Method</th>
+                <th>Result After Breach</th>
+                <th>Risk</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Case #1</strong></td>
+                <td>Plain text</td>
+                <td>All passwords immediately compromised</td>
+                <td><span class="risk-badge high">Critical</span></td>
+            </tr>
+            <tr>
+                <td><strong>Case #2</strong></td>
+                <td>MD5 hash</td>
+                <td>Many passwords cracked via rainbow tables</td>
+                <td><span class="risk-badge medium">High</span></td>
+            </tr>
+            <tr>
+                <td><strong>Case #3</strong></td>
+                <td>BCrypt hash</td>
+                <td>Unlikely any passwords are cracked</td>
+                <td><span class="risk-badge low">Low</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Recommended Algorithms</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch18);">
+            <h4>BCrypt</h4>
+            <p>Derived from Blowfish Cipher + Unix Crypt. Uniquely designed to <strong>become slower as hardware improves</strong> — making brute-force attacks computationally infeasible on modern hardware. The gold standard for password hashing.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch19);">
+            <h4>PBKDF2</h4>
+            <p>Based on <strong>key stretching</strong> — each additional hashing attempt becomes slower. Takes a configurable minimum iteration count — always set to your hardware's maximum. A strong alternative when BCrypt is unavailable.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; The Slow Hashing Principle</h4>
+        <p>When a hacker brute-forces passwords, they automate millions of guesses per second. A <strong>slow hashing algorithm</strong> like BCrypt can make cracking a single complex password take years on modern hardware — making it practically unbreakable.</p>
+    </div>
+
+    <h3>Two-Factor Authentication (2FA)</h3>
+    <p>Beyond strong hashing, well-architected applications should <strong>offer 2FA</strong> to users who want an extra layer of protection. Phone app/SMS-based 2FA may not be as secure as hardware tokens, but it eliminates the vast majority of remote account compromise attempts — a hacker would need both the account password and the user's physical device.</p>
+</div>
+
+<!-- Ch18 Summary -->
+<div id="ch18-summary" class="summary-banner ch18">
+    <h3>&#128274; Chapter 18 Summary</h3>
+    <ul>
+        <li>Security architecture must happen before coding — retrofitting security into production is 30–60× more expensive</li>
+        <li>Business requirements always contain hidden security risks — analyze them proactively</li>
+        <li>All data in transit must be encrypted via TLS; HTTP in production is unacceptable</li>
+        <li>Passwords must be hashed with slow algorithms (BCrypt, PBKDF2) — never stored as plain text</li>
+        <li>Offering 2FA significantly reduces account compromise risk for users who opt in</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 19 — Reviewing Code for Security
+     ════════════════════════════════════════════════ -->
+<div id="chapter-19" class="chapter-header">
+    <div class="chapter-num ch19">Chapter 19</div>
+    <div class="chapter-title">Reviewing Code for Security</div>
+    <div class="chapter-divider ch19"></div>
+</div>
+
+<!-- Ch19 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch19">1</div>
+            <div class="objective-text"><strong>Distinguish</strong> between archetypical vulnerabilities (XSS, CSRF, injection) and custom logic vulnerabilities that require deep application context — and explain why automated tools cannot find logic bugs.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch19">2</div>
+            <div class="objective-text"><strong>Apply</strong> the 5-step security code review framework — starting from client-side code, tracing API calls to the server, following dependencies, and covering the remaining codebase.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch19">3</div>
+            <div class="objective-text"><strong>Identify</strong> the four major secure-coding anti-patterns — blacklists, boilerplate code, trust-by-default, and client/server coupling — and explain the risk each introduces.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch19">4</div>
+            <div class="objective-text"><strong>Explain</strong> why whitelists are always preferable to blacklists in security contexts, and demonstrate the practical difference between both approaches in code.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch19 How to Start -->
+<div id="ch19-howto" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#128270;</div>
+        <h2>How to Start a Security Code Review</h2>
+    </div>
+
+    <p>A security code review follows the same starting workflow as a functional code review — the differences emerge in what you look for, not how you begin. The review should always take place <strong>after</strong> the architecture has been reviewed and approved.</p>
+
+    <div class="story ch19">
+        <div class="story-label ch19">&#128214; From the Book — The Standard Git Review Flow</div>
+        <p>A common local review flow that can be performed from the terminal:</p>
+    </div>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num ch19">1</div>
+            <div><strong>Check out master</strong><br><code>git checkout master</code> — ensure you are starting from the stable base branch.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">2</div>
+            <div><strong>Pull the latest changes</strong><br><code>git pull origin master</code> — fetch and merge the most recent production code.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">3</div>
+            <div><strong>Check out the feature branch</strong><br><code>git checkout &lt;username&gt;/feature</code> — switch to the branch under review.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">4</div>
+            <div><strong>Run a diff against master</strong><br><code>git diff origin/master...</code> — see every changed file and every line that changed.</div>
+        </li>
+    </ol>
+
+    <h3>Archetypical vs. Logic Vulnerabilities</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch19);">
+            <h4>Archetypical Vulnerabilities</h4>
+            <p>Well-known categories: XSS, CSRF, SQL injection, XXE. Can be found with automated tools and security scanners. Covered by OWASP Top 10 checklists.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4>Custom Logic Vulnerabilities</h4>
+            <p>Require deep understanding of the application's business logic, user roles, and intended behavior. Cannot be found by automated scanners. Example: an API endpoint that lets a regular user set <code>isMember: true</code> to bypass the moderator approval process.</p>
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Logic Bugs Are Invisible to Scanners</h4>
+        <p>Automated security tools cannot detect logic vulnerabilities. They require a human reviewer who understands the <strong>users, functionality, and business impact</strong> of the feature being reviewed. This is why human code review cannot be replaced by automation alone.</p>
+    </div>
+</div>
+
+<!-- Ch19 Where to Start -->
+<div id="ch19-where" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#128205;</div>
+        <h2>Where to Start: The 5-Step Review Framework</h2>
+    </div>
+
+    <p>When reviewing an unfamiliar codebase, the order in which you read the code determines how quickly you can prioritize risk. A logical entry path is to start where users interact with the application and trace inward.</p>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num ch19">1</div>
+            <div><strong>Review client-side code first</strong><br>Gain an understanding of the business logic and user-facing functionality. This tells you what users can do and what data flows to the server.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">2</div>
+            <div><strong>Evaluate the API layer</strong><br>Using knowledge from the client review, audit the specific API endpoints users call. Understand what dependencies the API layer relies on.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">3</div>
+            <div><strong>Trace dependencies in the API layer</strong><br>Carefully review databases, helper libraries, logging functions, and file operations. This covers the majority of user-facing functionality.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">4</div>
+            <div><strong>Look for unintentionally exposed APIs</strong><br>Find public-facing API endpoints that may be accidentally exposed or intended for future features but accessible now.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">5</div>
+            <div><strong>Review the remainder of the codebase</strong><br>By now you understand the application architecture organically. Cover remaining code in descending order of risk.</div>
+        </li>
+    </ol>
+</div>
+
+<!-- Ch19 Anti-Patterns -->
+<div id="ch19-antipatterns" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#128683;</div>
+        <h2>Secure-Coding Anti-Patterns</h2>
+    </div>
+
+    <p>Security anti-patterns are solutions that look correct but are fundamentally incomplete or unsafe. Recognizing them quickly accelerates the review process and prevents dangerous bugs from reaching production.</p>
+
+    <h3>Anti-Pattern 1: Blacklists</h3>
+    <p>A blacklist blocks a specific set of known-bad inputs. The problem: it can never be complete. New bad inputs will always emerge that were not anticipated when the list was created.</p>
+
+    <div class="code-box">
+<span class="c">// ✗ INSECURE — Blacklist approach</span>
+<span class="k">const</span> blacklist = [<span class="s">'http://www.evil.com'</span>, <span class="s">'http://www.badguys.net'</span>];
+<span class="k">const</span> <span class="n">isDomainAccepted</span> = <span class="k">function</span>(domain) {
+    <span class="k">return</span> !blacklist.includes(domain); <span class="c">// attacker just buys a new domain</span>
+};
+
+<span class="c">// ✓ SECURE — Whitelist approach</span>
+<span class="k">const</span> whitelist = [<span class="s">'https://happy-site.com'</span>, <span class="s">'https://www.my-friends.com'</span>];
+<span class="k">const</span> <span class="n">isDomainAccepted</span> = <span class="k">function</span>(domain) {
+    <span class="k">return</span> whitelist.includes(domain); <span class="c">// only known-good domains pass</span>
+};
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; Whitelists Over Blacklists — Always</h4>
+        <p>A whitelist only allows explicitly approved inputs. An attacker cannot bypass a whitelist by registering a new domain or crafting a new payload — they must be on the approved list. Whitelists require more maintenance but offer fundamentally stronger security guarantees.</p>
+    </div>
+
+    <h3>Anti-Pattern 2: Boilerplate Code in Production</h3>
+    <p>Frameworks and libraries ship with default configurations designed for ease of development, not security. Launching default/boilerplate code into production without evaluation exposes the application to known misconfigurations.</p>
+
+    <div class="story ch19">
+        <div class="story-label ch19">&#128214; From the Book — The MongoDB Incident</div>
+        <p>A configuration mistake in older versions of MongoDB made databases <strong>accessible over the internet by default</strong> when installed on a web server — with <strong>no mandatory authentication</strong>. The result: tens of thousands of MongoDB databases were hijacked by automated scripts demanding Bitcoin ransoms.</p>
+        <p>Two configuration lines — preventing external accessibility — would have prevented the entire incident.</p>
+    </div>
+
+    <h3>Anti-Pattern 3: Trust-By-Default</h3>
+    <p>Many applications run all server-side modules under a single user account with broad permissions. If one module is compromised, the attacker inherits permissions for all other modules — logging, file system, database, and more.</p>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#10007; Trust-By-Default (Insecure)</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>One server user account with all permissions</li>
+                    <li>SQL injection in one module = full server access</li>
+                    <li>Log files, disk, and database all exposed</li>
+                    <li>No isolation between modules</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#10003; Least-Privilege (Secure)</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>Each module runs under its own user account</li>
+                    <li>Permissions scoped to only what the module needs</li>
+                    <li>SQL injection in one module = only DB access compromised</li>
+                    <li>Failure in one module does not cascade to others</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h3>Anti-Pattern 4: Client/Server Coupling</h3>
+    <p>When client and server code are tightly bound — for example, PHP templates embedding authentication logic — the attack surface multiplies. The server must handle and sanitize HTML structures, form data, and authentication payloads simultaneously, making security mechanisms overlap and become difficult to manage.</p>
+
+    <div class="info-box">
+        <h4>&#128161; Separation of Concerns = Security</h4>
+        <p>A properly separated client/server application communicates over a <strong>predefined, typed data format</strong> (e.g., JSON over HTTPS). The server only accepts structured payloads — not raw HTML. This eliminates an entire class of injection vulnerabilities and makes security mechanisms simpler and more consistent.</p>
+    </div>
+</div>
+
+<!-- Ch19 Summary -->
+<div id="ch19-summary" class="summary-banner ch19">
+    <h3>&#128270; Chapter 19 Summary</h3>
+    <ul>
+        <li>Security code review must follow architecture review — never precede it</li>
+        <li>Human review is irreplaceable for detecting custom logic vulnerabilities</li>
+        <li>Start reviews at the client and trace inward through APIs, dependencies, and remaining code</li>
+        <li>Whitelists always outperform blacklists — incomplete security is dangerous security</li>
+        <li>Avoid boilerplate in production, trust-by-default permissions, and tight client/server coupling</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     CHAPTER 20 — Vulnerability Discovery
+     ════════════════════════════════════════════════ -->
+<div id="chapter-20" class="chapter-header">
+    <div class="chapter-num ch20">Chapter 20</div>
+    <div class="chapter-title">Vulnerability Discovery</div>
+    <div class="chapter-divider ch20"></div>
+</div>
+
+<!-- Ch20 Learning Objectives -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch20">1</div>
+            <div class="objective-text"><strong>Differentiate</strong> between the three forms of security automation — static analysis, dynamic analysis, and vulnerability regression testing — and explain what each can and cannot detect.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch20">2</div>
+            <div class="objective-text"><strong>Identify</strong> common static analysis tools (Checkmarx, PMD, Bandit, Brakeman) and the types of vulnerabilities they can detect — and explain why static analysis struggles with dynamically typed languages.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch20">3</div>
+            <div class="objective-text"><strong>Explain</strong> why vulnerability regression tests are essential and demonstrate how a simple regression test can prevent a fixed vulnerability from silently reopening in a future code change.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch20">4</div>
+            <div class="objective-text"><strong>Describe</strong> responsible disclosure programs and bug bounty platforms (HackerOne, BugCrowd) — and explain why incentivizing external researchers to report vulnerabilities protects organizations from public disclosure incidents.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch20 Overview -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128202;</div>
+        <h2>Why Vulnerability Discovery Is Still Needed</h2>
+    </div>
+
+    <p>Even with secure architecture and thorough code review, vulnerabilities still slip through. They may emerge from unexpected behavior in different environments, third-party library updates, or edge cases no reviewer anticipated. Vulnerability discovery processes target <strong>production code</strong> and catch what the earlier phases missed.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128269;</div>
+            <div class="mc-title">Static Analysis</div>
+            <div class="mc-desc">Scans source code without executing it. Fast and cheap. Best for common vulnerabilities in statically typed languages.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9881;&#65039;</div>
+            <div class="mc-title">Dynamic Analysis</div>
+            <div class="mc-desc">Executes the application and analyzes outputs at runtime. Slower but confirms actual vulnerabilities rather than hypothetical ones.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128203;</div>
+            <div class="mc-title">Regression Testing</div>
+            <div class="mc-desc">Tests previously fixed vulnerabilities to ensure they never reopen. Simple, cheap, and extremely effective at blocking repeat bugs.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ch20 Static Analysis -->
+<div id="ch20-static" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128269;</div>
+        <h2>Static Analysis</h2>
+    </div>
+
+    <p>Static analysis tools read source code — without executing it — and evaluate it for syntax errors, common misconfigurations, and known vulnerability patterns. They run locally during development (as linters) or on every push to the repository in a CI/CD pipeline.</p>
+
+    <h3>Common Static Analysis Tools</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Tool</th>
+                <th>Languages</th>
+                <th>Cost</th>
+                <th>Best For</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Checkmarx</strong></td>
+                <td>Most major languages</td>
+                <td><span class="risk-badge medium">Paid</span></td>
+                <td>Enterprise-grade, full OWASP Top 10 coverage</td>
+            </tr>
+            <tr>
+                <td><strong>PMD</strong></td>
+                <td>Java</td>
+                <td><span class="risk-badge low">Free</span></td>
+                <td>Java-specific code quality and security checks</td>
+            </tr>
+            <tr>
+                <td><strong>Bandit</strong></td>
+                <td>Python</td>
+                <td><span class="risk-badge low">Free</span></td>
+                <td>Python security issues — hardcoded secrets, injection risks</td>
+            </tr>
+            <tr>
+                <td><strong>Brakeman</strong></td>
+                <td>Ruby</td>
+                <td><span class="risk-badge low">Free</span></td>
+                <td>Ruby on Rails security scanning</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>What Static Analysis Can Detect</h3>
+    <ul class="clean-list ch20">
+        <li><strong>General XSS</strong> — look for DOM manipulation via <code>innerHTML</code></li>
+        <li><strong>Reflected XSS</strong> — look for variables pulled directly from URL parameters</li>
+        <li><strong>DOM XSS</strong> — look for dangerous sinks like <code>setInterval()</code> receiving user input</li>
+        <li><strong>SQL Injection</strong> — look for user-provided strings concatenated into queries</li>
+        <li><strong>CSRF</strong> — look for state-changing HTTP GET requests</li>
+        <li><strong>ReDoS</strong> — look for improperly written regular expressions</li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Static Analysis Limitation — Dynamic Languages</h4>
+        <p>Static analysis works best on <strong>statically typed languages</strong> (Java, C#) where variable types are known at parse time. In dynamically typed languages like <strong>JavaScript</strong>, variables are mutable and change type at runtime — making it very difficult for a static tool to determine what data flows where, leading to many false positives and missed vulnerabilities.</p>
+    </div>
+</div>
+
+<!-- Ch20 Dynamic Analysis -->
+<div id="ch20-dynamic" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#9881;&#65039;</div>
+        <h2>Dynamic Analysis</h2>
+    </div>
+
+    <p>Dynamic analysis executes the application in a production-like environment and analyzes outputs at runtime. Unlike static analysis, dynamic analysis can <strong>confirm actual vulnerabilities</strong> rather than hypothetical ones — because it observes what the application actually does, not what the code suggests it might do.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4>IBM AppScan (Paid)</h4>
+            <p>Enterprise-grade dynamic analysis tool with broad framework support. High accuracy with deep configuration.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4>Veracode (Paid)</h4>
+            <p>Cloud-based dynamic and static analysis. Integrates into CI/CD pipelines. Known for low false-positive rate.</p>
+        </div>
+    </div>
+
+    <div class="story ch20">
+        <div class="story-label ch20">&#128214; From the Book — Static vs Dynamic Trade-offs</div>
+        <p>Dynamic analysis is <strong>fantastic at picking up actual vulnerabilities</strong>, whereas static analysis picks up many <em>potential</em> vulnerabilities but has limited ways of confirming them.</p>
+        <p>Dynamic tools can detect vulnerabilities that only manifest at runtime — for example, sensitive data improperly stored in memory, or side-channel attacks that depend on real execution timing. These are completely invisible to static analysis.</p>
+        <div class="dialogue">
+            The trade-off is in maintenance, cost, and performance: dynamic analysis requires a full production-like environment and is significantly slower than static analysis. But its results are more accurate and actionable.
+        </div>
+    </div>
+</div>
+
+<!-- Ch20 Regression Testing -->
+<div id="ch20-regression" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128203;</div>
+        <h2>Vulnerability Regression Testing</h2>
+    </div>
+
+    <p>Regression tests are written after a vulnerability is fixed to ensure it never returns. They are simple to write, easy to integrate into existing test suites, and offer long-lasting protection against repeat vulnerabilities.</p>
+
+    <div class="story ch20">
+        <div class="story-label ch20">&#128214; From the Book — Steve and Jed's CSRF Story</div>
+        <p>Software engineer <strong>Steve</strong> builds a subscription management endpoint that accepts HTTP GET requests:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ VULNERABLE — State-changing GET endpoint (CSRF risk)</span>
+app.get(<span class="s">'/changeSubscriptionTier'</span>, <span class="k">function</span>(req, res) {
+    <span class="k">if</span> (!currentUser.isAuthenticated) { <span class="k">return</span> res.sendStatus(<span class="n">401</span>); }
+    <span class="k">if</span> (!req.params.newTier) { <span class="k">return</span> res.sendStatus(<span class="n">400</span>); }
+    modifySubscription(currentUser, req.params.newTier)
+    .then(() =&gt; res.sendStatus(<span class="n">200</span>))
+    .catch(() =&gt; res.sendStatus(<span class="n">400</span>));
+});
+    </div>
+
+    <p>Steve's friend <strong>Jed</strong> notices that a link like <code>GET /api/changeSubscriptionTier?newTier=corporation</code> can be sent to Steve — and when Steve clicks it, his subscription is silently changed on his behalf. This is a <strong>CSRF vulnerability</strong>. The fix: switch to HTTP POST. Then Steve writes a regression test:</p>
+
+    <div class="code-box">
+<span class="c">// ✓ Regression test — ensures the endpoint only accepts POST</span>
+<span class="k">const</span> testTierChange = <span class="k">function</span>() {
+    requester.options(<span class="s">'http://app.com/api/changeSubscriptionTier'</span>)
+        .on(<span class="s">'response'</span>, <span class="k">function</span>(res) {
+            <span class="k">const</span> verbs = res.headers[<span class="s">'Allow'</span>].split(<span class="s">','</span>);
+            <span class="k">if</span> (verbs.length &gt; <span class="n">1</span>) { <span class="k">return</span> tester.fail(); }      <span class="c">// only one verb allowed</span>
+            <span class="k">if</span> (verbs[<span class="n">0</span>] !== <span class="s">'POST'</span>) { <span class="k">return</span> tester.fail(); }   <span class="c">// must be POST</span>
+        });
+};
+    </div>
+
+    <p>If a future change reintroduces a GET version of this endpoint — even accidentally — the regression test will immediately fail, blocking the change from being merged.</p>
+
+    <div class="key-point">
+        <h4>&#128273; When to Run Regression Tests</h4>
+        <p>Vulnerability regression tests should be run on <strong>commit or push hooks</strong> — rejecting the commit or push if any test fails. Regularly scheduled daily runs are a strong secondary option for complex version control environments.</p>
+    </div>
+</div>
+
+<!-- Ch20 Bug Bounty -->
+<div id="ch20-bounty" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128176;</div>
+        <h2>Responsible Disclosure &amp; Bug Bounty Programs</h2>
+    </div>
+
+    <p>Even with strong internal automation, some vulnerabilities are only found by the application's own users. A well-defined responsible disclosure program gives tech-savvy users a safe, legal path to report what they find — instead of going public or staying silent.</p>
+
+    <h3>Responsible Disclosure</h3>
+    <p>A good responsible disclosure program includes:</p>
+    <ul class="clean-list ch20">
+        <li>A clear list of how users can test the application without legal risk</li>
+        <li>A defined submission template for vulnerability reports</li>
+        <li>A time window (weeks or months) where the reporter agrees not to publish while the fix is being developed</li>
+        <li>A commitment from the organization to investigate and respond within a defined time frame</li>
+    </ul>
+
+    <h3>Bug Bounty Programs</h3>
+    <p>Bug bounty programs go further — they <strong>pay cash rewards</strong> for properly documented, verified vulnerability reports. Platforms like <strong>HackerOne</strong> and <strong>BugCrowd</strong> provide customizable legal templates, submission interfaces, and triage workflows.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4>Third-Party Pen Testers</h4>
+            <p>Can be assigned specific application areas to test in depth. Can be provided with source code under legal agreement for more accurate results. Best used on high-risk or newly written areas before release to production.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #7c3aed;">
+            <h4>Bug Bounty Hunters</h4>
+            <p>Freelance security researchers who test when and where they choose. Provide broad, unsystematic coverage across the application. Top hunters are highly skilled and motivated by financial reward.</p>
+        </div>
+    </div>
+
+    <div class="teal-box">
+        <h4>&#128202; The SSDL Outcome</h4>
+        <p>By combining architecture review, security code review, static analysis, dynamic analysis, regression testing, responsible disclosure, and bug bounty programs into a <strong>Secure Software Development Life Cycle (SSDL)</strong>, an organization can release production web applications with high confidence and minimal fear of serious security holes being discovered or exploited.</p>
+    </div>
+</div>
+
+<!-- Ch20 Summary -->
+<div id="ch20-summary" class="summary-banner ch20">
+    <h3>&#128202; Chapter 20 Summary</h3>
+    <ul>
+        <li>Secure architecture and code review still leave gaps — production-targeting discovery processes are essential</li>
+        <li>Static analysis is fast and cheap but produces false positives and misses runtime and logic vulnerabilities</li>
+        <li>Dynamic analysis confirms real vulnerabilities at runtime — more accurate but slower and costlier</li>
+        <li>Vulnerability regression tests are simple, cheap, and prevent fixed bugs from silently returning</li>
+        <li>Responsible disclosure programs and bug bounties extend discovery coverage beyond internal teams</li>
+        <li>Combining all techniques into an SSDL gives organizations the highest level of security assurance</li>
+    </ul>
+</div>
+
+</main>
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 &mdash; Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week6/index.html">Week 6</a>
+            <a href="../syllabus.html">Syllabus</a>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>
