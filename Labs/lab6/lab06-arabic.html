@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المختبر 06: Burp Suite مع DVWA &ndash; اعتراض HTTP في التطبيق العملي</title>
+    <style>
+        :root {
+            --primary-color: #2980b9;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        /* مصطلح إنجليزي داخل النص العربي */
+        .term-en {
+            color: var(--primary-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* ── الترويسة ── */
+        .header {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">&#128202;</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.15em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .prereq-badge {
+            display: inline-block;
+            background: rgba(56,161,105,0.3);
+            border: 1px solid rgba(56,161,105,0.6);
+            color: #c6f6d5;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* ── شريط معلومات المختبر ── */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.85em; letter-spacing: 0.5px; margin-bottom: 5px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* ── المحتوى ── */
+        .content { padding: 40px; }
+
+        /* ── فهرس المحتويات ── */
+        .toc {
+            background: linear-gradient(135deg, #e8f4fd 0%, #bee3f8 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-right: 5px solid #2980b9;
+            border-left: none;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-right: 20px; padding-left: 0; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #1a5276; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* ── الأقسام ── */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #2980b9; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-right: 25px; margin-left: 0; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* ── صناديق التنبيه ── */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-right: 5px solid var(--info-color); border-left: none; }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-right: 5px solid var(--warning-color); border-left: none; }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-right: 5px solid var(--danger-color); border-left: none; }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-right: 5px solid var(--accent-color); border-left: none; }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* ── الجداول ── */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 14px 18px; text-align: right; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* ── الكود ── */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; direction: ltr; display: inline-block; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); direction: ltr; text-align: left; }
+        pre code { background: none; color: #68d391; padding: 0; display: inline; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+        .output-text { color: #fbd38d; }
+
+        /* ── الخطوات المرقّمة ── */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-right: 50px; padding-left: 0; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; right: 0; top: 0; left: auto; width: 35px; height: 35px; background: linear-gradient(135deg,#2980b9,#1a5276); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(41,128,185,0.3); }
+
+        /* ── قائمة التحقق ── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 35px 9px 0; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '☐'; position: absolute; right: 0; left: auto; font-size: 1.2em; color: #2980b9; }
+
+        /* ── المخرجات المتوقعة ── */
+        .expected-output { background: #f7fafc; border: 2px dashed #2980b9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #2980b9; margin-top: 0; margin-bottom: 8px; }
+
+        /* ── مفتاح الإجابات ── */
+        .answer-key { background: linear-gradient(135deg,#e8f4fd,#bee3f8); border: 2px solid #2980b9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .answer-key h4 { color: #1a5276; margin-top: 0; margin-bottom: 10px; }
+        .answer-key ol { margin-right: 20px; margin-left: 0; margin-bottom: 0; }
+        .answer-key li { margin-bottom: 8px; }
+        .answer-key strong { color: #1a5276; }
+
+        /* ── شارة الوحدة ── */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#2980b9,#1a5276); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* ── بانر المفهوم ── */
+        .concept-banner { background: linear-gradient(135deg,#1c1917,#292524); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #90cdf4; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* ── صندوق التسليم ── */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-right: 5px solid #805ad5; border-left: none; border-radius: 12px 0 0 12px; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* ── حقول الإجابة ── */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.95em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(41,128,185,0.1); }
+
+        /* ── استكشاف الأخطاء ── */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* ── صندوق الملخص ── */
+        .summary-box { background: linear-gradient(135deg,#1c1917,#292524); color: white; border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+        .summary-box h3 { color: #90cdf4; margin-top: 0; border: none; }
+        .summary-box table { box-shadow: none; border-radius: 8px; overflow: hidden; }
+        .summary-box th { background: rgba(255,255,255,0.1); color: #e2e8f0; text-align: right; }
+        .summary-box td { color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; }
+        .summary-box tr:nth-child(even) td { background: rgba(255,255,255,0.05); }
+
+        /* ── التذييل ── */
+        .footer { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        /* ── زر تبديل اللغة ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- زر تبديل اللغة -->
+<div class="lang-switch">
+    <a href="lab06-english.html" class="lang-btn">
+        &#127760; English
+    </a>
+</div>
+
+<div class="container">
+
+    <header class="header">
+        <h1>&#128202; المختبر 06: <span style="font-family:'Consolas',monospace;">Burp Suite</span> مع <span style="font-family:'Consolas',monospace;">DVWA</span> &mdash; اعتراض <span style="font-family:'Consolas',monospace;">HTTP</span> في التطبيق العملي</h1>
+        <p class="subtitle">CYB236 &mdash; أمن تطبيقات الويب</p>
+        <div class="chapter-ref">الفصلان 4 و5 &mdash; سجل <span class="term-en">HTTP</span> &bull; تحليل الطلبات &bull; <span class="term-en">Repeater</span> &bull; خريطة الموقع</div>
+        <br>
+        <span class="prereq-badge">&#9989; المتطلب السابق: المختبر 05 (<span style="font-family:'Consolas',monospace;">Burp Suite</span> و<span style="font-family:'Consolas',monospace;">FoxyProxy</span> مهيآن)</span>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>رقم المختبر</strong><span>06</span></div>
+        <div class="lab-info-item"><strong>المستوى</strong><span>متوسط</span></div>
+        <div class="lab-info-item"><strong>المدة</strong><span>45&ndash;55 دقيقة</span></div>
+        <div class="lab-info-item"><strong>البيئة</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>التالي</strong><span>المختبر 07</span></div>
+    </div>
+
+    <div class="content">
+
+        <nav class="toc">
+            <h2>&#128203; فهرس المحتويات</h2>
+            <ol>
+                <li><a href="#intro">مقدمة</a></li>
+                <li><a href="#setup">الإعداد: تشغيل DVWA والتأكد من Burp</a></li>
+                <li><a href="#task1">المهمة 1: التقاط حركة HTTP</a></li>
+                <li><a href="#task2">المهمة 2: تحليل الطلبات والاستجابات</a></li>
+                <li><a href="#task3">المهمة 3: تعديل الطلبات باستخدام Repeater</a></li>
+                <li><a href="#task4">المهمة 4: رسم خريطة سطح الهجوم</a></li>
+                <li><a href="#troubleshooting">استكشاف الأخطاء</a></li>
+                <li><a href="#report">إنشاء التقرير</a></li>
+            </ol>
+        </nav>
+
+        <!-- مقدمة -->
+        <section id="intro">
+            <h2>&#128161; مقدمة</h2>
+
+            <p>في <strong>المختبر 05</strong> تعلّمت ما هو <span class="term-en">Burp Suite</span>، وكيف يعمل البروكسي، وكيف تُهيئ <span class="term-en">FoxyProxy</span> لتمر حركة مرور المتصفح عبر <span class="term-en">Burp</span>. اعترضت أول طلب <span class="term-en">HTTP</span> وتأكدت من أن الإعداد يعمل بشكل صحيح.</p>
+
+            <p>في هذا المختبر ستُطبّق تلك المعرفة على تطبيق ويب ضعيف حقيقي: <strong><span class="term-en">DVWA (Damn Vulnerable Web Application)</span></strong>. ستستخدم <span class="term-en">Burp Suite</span> لالتقاط حركة تسجيل الدخول، وتحليل طلبات واستجابات <span class="term-en">HTTP</span> الخام، واستخدام أداة <strong><span class="term-en">Repeater</span></strong> لاختبار معامل يدوياً، وبناء خريطة سطح هجوم باستخدام <strong><span class="term-en">Site Map</span></strong>.</p>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>للاستخدام المصرّح به فقط</h4>
+                    <p>تُنفَّذ جميع المهام ضد <span class="term-en">DVWA</span> <strong>العامل محلياً على جهازك الخاص</strong>. استخدام <span class="term-en">Burp Suite</span> ضد أي نظام لا تملكه أو لا تحمل إذناً كتابياً باختباره هو أمر غير قانوني.</p>
+                </div>
+            </div>
+
+            <div class="concept-banner">
+                <span class="ci">&#128187;</span>
+                <div>
+                    <h4>ما هو DVWA؟</h4>
+                    <p><span class="term-en">DVWA (Damn Vulnerable Web Application)</span> هو تطبيق <span class="term-en">PHP/MySQL</span> مبني عن قصد بثغرات أمنية. يستخدمه طلاب الأمن والمحترفون لممارسة تقنيات استغلال الويب في بيئة آمنة وقانونية. يتضمن وحدات لـ <span class="term-en">SQL Injection</span> و<span class="term-en">XSS</span> و<span class="term-en">CSRF</span> ورفع الملفات والقوة الغاشمة والمزيد.</p>
+                </div>
+            </div>
+
+            <h3>أدوات <span class="term-en">Burp Suite</span> المستخدمة في هذا المختبر</h3>
+            <table>
+                <tr><th>الأداة</th><th>ما تفعله</th><th>أين تجدها</th></tr>
+                <tr><td><strong><span class="term-en">Proxy &rarr; HTTP History</span></strong></td><td>تسجّل كل طلب/استجابة يمر عبر <span class="term-en">Burp</span></td><td>تبويب <span class="term-en">Proxy</span> &rarr; التبويب الفرعي <span class="term-en">HTTP history</span></td></tr>
+                <tr><td><strong><span class="term-en">Proxy &rarr; Intercept</span></strong></td><td>توقف الطلب لتتمكن من قراءته أو تعديله</td><td>تبويب <span class="term-en">Proxy</span> &rarr; التبويب الفرعي <span class="term-en">Intercept</span></td></tr>
+                <tr><td><strong><span class="term-en">Repeater</span></strong></td><td>عدّل وأعد إرسال أي طلب محفوظ بالعدد الذي تريد</td><td>تبويب <span class="term-en">Repeater</span> (أو انقر بزر الأيمن &rarr; <span class="term-en">Send to Repeater</span>)</td></tr>
+                <tr><td><strong><span class="term-en">Target &rarr; Site Map</span></strong></td><td>يبني شجرة بجميع الروابط والنقاط النهائية المكتشفة</td><td>تبويب <span class="term-en">Target</span> &rarr; التبويب الفرعي <span class="term-en">Site map</span></td></tr>
+            </table>
+        </section>
+
+        <!-- الإعداد -->
+        <section id="setup">
+            <h2>&#9881;&#65039; الإعداد: تشغيل <span class="term-en">DVWA</span> والتأكد من <span class="term-en">Burp</span></h2>
+
+            <h3>الخطوة 1: تشغيل DVWA</h3>
+<pre><code><span class="command-label"># تشغيل حاوية DVWA Docker (إن كانت مُنشأة مسبقاً)</span>
+sudo docker start dvwa
+
+<span class="command-label"># إن لم تكن مُنشأة بعد، نفّذ هذا مرة واحدة:</span>
+sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
+
+<pre><code><span class="command-label"># احصل على عنوان IP لجهاز Kali</span>
+hostname -I</code></pre>
+            <p>دوّن العنوان الظاهر (مثلاً: <code>10.0.2.15</code>). ستستخدم هذا العنوان للوصول إلى <span class="term-en">DVWA</span> في المتصفح &mdash; وليس <code>localhost</code>.</p>
+
+            <h3>الخطوة 2: التأكد من تشغيل Burp Suite</h3>
+            <ul>
+                <li>إن لم يكن <span class="term-en">Burp</span> مفتوحاً، شغّله: <code>burpsuite</code> &rarr; <span class="term-en">Temporary project</span> &rarr; <span class="term-en">Start Burp</span></li>
+                <li>تأكد من أن مستمع البروكسي على <code>127.0.0.1:8080</code> ويُظهر <strong>Running</strong> (<span class="term-en">Proxy &rarr; Proxy settings</span>)</li>
+            </ul>
+
+            <h3>الخطوة 3: تفعيل FoxyProxy</h3>
+            <ul>
+                <li>انقر <strong>أيقونة <span class="term-en">FoxyProxy</span></strong> في <span class="term-en">Firefox</span> وفعّل ملف تعريف <strong><span class="term-en">Burp Proxy</span></strong></li>
+                <li>إن لم تكن قد هيّأت <span class="term-en">FoxyProxy</span> بعد، ارجع إلى <strong>المختبر 05</strong> وأكمل الجزأين 3 و4 أولاً</li>
+            </ul>
+
+            <h3>الخطوة 4: إيقاف الاعتراض وفتح DVWA</h3>
+            <ol class="steps">
+                <li>في <span class="term-en">Burp</span>، انتقل إلى <strong><span class="term-en">Proxy &rarr; Intercept</span></strong> وتأكد من أنه يقرأ <strong>"<span class="term-en">Intercept is off</span>"</strong> (يجب أن تتدفق حركة المرور بحرية)</li>
+                <li>في <span class="term-en">Firefox</span>، انتقل إلى <code>http://&lt;عنوان-ip-جهازك&gt;</code> (مثلاً: <code>http://10.0.2.15</code>)</li>
+                <li>يجب أن تظهر صفحة تسجيل دخول <span class="term-en">DVWA</span></li>
+                <li>سجّل الدخول: اسم المستخدم <code>admin</code> / كلمة المرور <code>password</code></li>
+                <li>إن طُلب منك ذلك، انقر <strong><span class="term-en">Setup / Reset DB</span></strong>، ثم سجّل الدخول مجدداً</li>
+                <li>انتقل إلى <strong><span class="term-en">DVWA Security</span></strong> واضبط مستوى الأمان على <strong><span class="term-en">Low</span></strong></li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>نقطة تحقق</h4>
+                    <p>إن تحمَّل <span class="term-en">DVWA</span> في <span class="term-en">Firefox</span> وظهرت الطلبات في تبويب <span class="term-en">HTTP History</span> الخاص بـ <span class="term-en">Burp</span>، فإعداد البروكسي يعمل. أنت جاهز لبدء المهام.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- المهمة 1 -->
+        <section id="task1">
+            <h2>&#128247; المهمة 1: التقاط حركة <span class="term-en">HTTP</span></h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>المفهوم &mdash; سجل HTTP</h4>
+                    <p>كل إجراء تتخذه في المتصفح يُولّد طلبات <span class="term-en">HTTP</span>. يسجّل سجل <span class="term-en">HTTP History</span> الخاص بـ <span class="term-en">Burp</span> جميعها بتفاصيل كاملة: سطر الطلب، والترويسات، والجسم، والاستجابة الكاملة للخادم. يمنحك هذا معلومات أكثر بكثير مما توفره أدوات <span class="term-en">DevTools</span> في المتصفح، ويمكن حفظ كل إدخال وتصفيته وإعادة تشغيله.</p>
+                </div>
+            </div>
+
+            <h3>1أ: توليد حركة المرور بالتصفح في DVWA</h3>
+            <p>في <span class="term-en">Firefox</span> (<span class="term-en">FoxyProxy</span> مفعّل، الاعتراض متوقف)، نفّذ هذه الإجراءات واحداً تلو الآخر:</p>
+            <ol class="steps">
+                <li>زيارة <code>http://&lt;عنوان-ip-جهازك&gt;</code> &mdash; صفحة تسجيل دخول <span class="term-en">DVWA</span></li>
+                <li>تسجيل الدخول بـ <code>admin</code> / <code>password</code></li>
+                <li>النقر على <strong><span class="term-en">SQL Injection</span></strong> في القائمة اليسرى، كتابة <code>1</code> في حقل <span class="term-en">User ID</span> والنقر على <span class="term-en">Submit</span></li>
+                <li>النقر على <strong><span class="term-en">XSS (Reflected)</span></strong>، كتابة اسمك، والنقر على <span class="term-en">Submit</span></li>
+                <li>النقر على <strong><span class="term-en">Brute Force</span></strong> في القائمة اليسرى</li>
+            </ol>
+
+            <h3>1ب: استكشاف سجل HTTP</h3>
+            <ol class="steps">
+                <li>انتقل إلى <span class="term-en">Burp Suite &rarr; Proxy &rarr; HTTP history</span></li>
+                <li>ستجد قائمة بالطلبات الملتقطة. كل صف يُظهر:
+                    <ul>
+                        <li><strong>#</strong> &mdash; رقم الطلب (ترتيب الالتقاط)</li>
+                        <li><strong><span class="term-en">Host</span></strong> &mdash; عنوان الخادم</li>
+                        <li><strong><span class="term-en">Method</span></strong> &mdash; <span class="term-en">GET</span> أو <span class="term-en">POST</span></li>
+                        <li><strong><span class="term-en">URL</span></strong> &mdash; المسار المطلوب</li>
+                        <li><strong><span class="term-en">Status</span></strong> &mdash; رمز استجابة <span class="term-en">HTTP</span> (200، 302، 404&hellip;)</li>
+                        <li><strong><span class="term-en">Length</span></strong> &mdash; حجم الاستجابة بالبايت</li>
+                    </ul>
+                </li>
+                <li>انقر على <strong>طلب <span class="term-en">POST</span> الخاص بتسجيل الدخول</strong> (ابحث عن <code>POST /login.php</code>)</li>
+                <li>في اللوحة السفلية، اقرأ تبويبَي <strong><span class="term-en">Request</span></strong> و<strong><span class="term-en">Response</span></strong></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; ما يجب أن تراه في طلب تسجيل الدخول:</h4>
+                <p>سيُظهر تبويب <strong><span class="term-en">Request</span></strong> شيئاً مثل:</p>
+<pre><code><span class="output-text">POST /login.php HTTP/1.1
+Host: 10.0.2.15
+Content-Type: application/x-www-form-urlencoded
+Cookie: PHPSESSID=abc123def456; security=low
+
+username=admin&password=password&Login=Login</span></code></pre>
+                <p>سيُظهر تبويب <strong><span class="term-en">Response</span></strong> إعادة توجيه <code>302 Found</code> إلى <code>/index.php</code> &mdash; مما يعني نجاح تسجيل الدخول.</p>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>ما هي كوكي PHPSESSID؟</h4>
+                    <p>بعد تسجيل الدخول بنجاح، يضع الخادم كوكي <code>PHPSESSID</code>. هذا هو <strong>رمز الجلسة (<span class="term-en">Session Token</span>)</strong> &mdash; يُثبت للخادم من أنت في كل طلب لاحق. أي مهاجم يسرق هذه القيمة يمكنه انتحال هويتك دون معرفة كلمة مرورك. يُسمى هذا <strong>اختطاف الجلسة (<span class="term-en">Session Hijacking</span>)</strong>.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 1 &mdash; أجب على الأسئلة التالية</h4></div>
+            <div class="fill-in">
+                <label>1. كم طلب HTTP ظهر في سجل Burp بعد إتمام خطوات التصفح؟</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="مثلاً: حوالي 15-30 طلباً بحسب الموارد المحمّلة لكل صفحة">
+
+                <label>2. ما طريقة HTTP التي استخدمها نموذج تسجيل الدخول (GET أو POST)؟ لماذا يُعدّ POST أكثر ملاءمة من GET لنموذج تسجيل الدخول؟</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="POST. يرسل POST بيانات الاعتماد في جسم الطلب، غير مرئية في الرابط أو سجل التصفح. كان GET سيضع اسم المستخدم وكلمة المرور في الرابط، مما يُظهرها في لوجات الخادم وسجل المتصفح."></textarea>
+
+                <label>3. ما اسم كوكي الجلسة التي يضعها DVWA بعد تسجيل الدخول؟ اكتب اسمها وبعض أحرف قيمتها.</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="اسم الكوكي: PHPSESSID — القيمة: مثلاً a1b2c3d4e5f6... (سلسلة عشوائية من 32 حرفاً)">
+
+                <label>4. ما رمز حالة HTTP الذي أعاده الخادم بعد تسجيل الدخول الناجح، وماذا يعني ذلك الرمز؟</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="302 Found — إعادة توجيه. يُخبر الخادم المتصفح بالانتقال إلى رابط مختلف (لوحة التحكم) بعد تسجيل الدخول.">
+
+                <label>5. لقطة الشاشة &mdash; سجل HTTP الخاص بـ Burp يُظهر أكثر من 10 طلبات ملتقطة:</label>
+                <input type="file" id="ss-task1" accept="image/*" onchange="previewImage(this,'prev-task1')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="prev-task1" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="لقطة المهمة 1">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 1</h4>
+                <ol>
+                    <li><strong>س1:</strong> عادةً 15&ndash;30+ طلباً. كل تحميل صفحة يُطلق طلبات متعددة: صفحة <span class="term-en">HTML</span>، وملفات <span class="term-en">CSS</span>، و<span class="term-en">JavaScript</span>، والصور.</li>
+                    <li><strong>س2:</strong> <strong>POST.</strong> يرسل <span class="term-en">POST</span> بيانات الاعتماد في جسم الطلب (وليس في الرابط). كان <span class="term-en">GET</span> سيُظهر كلمة المرور في شريط العنوان وسجل المتصفح ولوجات الخادم وأي بروكسيات وسيطة.</li>
+                    <li><strong>س3:</strong> <strong>PHPSESSID</strong> &mdash; سلسلة سداسية عشرية من 32 حرفاً تُولّدها <span class="term-en">PHP</span> لتعريف جلسة المستخدم بشكل فريد.</li>
+                    <li><strong>س4:</strong> <strong>302 Found</strong> &mdash; إعادة توجيه <span class="term-en">HTTP</span>. بعد التحقق من بيانات الاعتماد، يُخبر الخادم المتصفح بالانتقال إلى لوحة التحكم. يتبع المتصفح هذه الإعادة تلقائياً.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- المهمة 2 -->
+        <section id="task2">
+            <h2>&#128202; المهمة 2: تحليل الطلبات والاستجابات</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>المفهوم &mdash; قراءة HTTP الخام</h4>
+                    <p>كل طلب <span class="term-en">HTTP</span> له ثلاثة أجزاء: <strong>سطر الطلب</strong> (الطريقة + المسار + الإصدار)، و<strong>الترويسات</strong> (البيانات الوصفية كالكوكيز ونوع المحتوى ومعلومات المتصفح)، وبشكل اختياري <strong>الجسم</strong> (البيانات المرسلة مع طلبات <span class="term-en">POST</span>). يُظهر <span class="term-en">Burp</span> كل هذا كنص خام، تماماً كما يرسله المتصفح &mdash; بمزيد من التفاصيل مما توفره أي لوحة <span class="term-en">DevTools</span>.</p>
+                </div>
+            </div>
+
+            <h3>2أ: إيجاد وفحص طلب SQL Injection</h3>
+            <ol class="steps">
+                <li>في سجل <span class="term-en">HTTP History</span>، ابحث عن طلب <strong>GET</strong> يحتوي رابطه على <code>/vulnerabilities/sqli/</code></li>
+                <li>انقر عليه لتحديده</li>
+                <li>في تبويب <strong><span class="term-en">Request</span></strong> (اللوحة السفلية)، اقرأ الطلب الخام كاملاً</li>
+                <li>لاحظ المعامل <code>id=1</code> في الرابط &mdash; هذه هي نقطة دخول حقن <span class="term-en">SQL</span></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; شكل طلب SQL Injection:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/sqli/?id=1&Submit=Submit HTTP/1.1
+Host: 10.0.2.15
+Cookie: PHPSESSID=abc123; security=low
+Referer: http://10.0.2.15/vulnerabilities/sqli/
+User-Agent: Mozilla/5.0 ...</span></code></pre>
+                <p>يُرسَل معامل <code>id=1</code> مباشرةً إلى استعلام <span class="term-en">SQL</span> على الخادم. هذا هو المعامل الذي يُعدّله المختبر لتنفيذ حقن <span class="term-en">SQL</span>.</p>
+            </div>
+
+            <h3>2ب: مقارنة طلبات GET و POST</h3>
+            <ol class="steps">
+                <li>ابحث عن طلب <strong>XSS (Reflected)</strong> &mdash; طلب <code>GET</code> إلى <code>/vulnerabilities/xss_r/</code></li>
+                <li>ابحث عن طلب <strong>تسجيل الدخول</strong> &mdash; طلب <code>POST</code> إلى <code>/login.php</code></li>
+                <li>قارن أين يظهر مدخل المستخدم: في الرابط مقابل جسم الطلب</li>
+            </ol>
+
+            <h3>2ج: التحقق من الترويسات الأمنية المفقودة</h3>
+            <ol class="steps">
+                <li>انقر على أي استجابة من <span class="term-en">DVWA</span> في سجل <span class="term-en">HTTP History</span></li>
+                <li>انتقل إلى تبويب <strong><span class="term-en">Response</span></strong></li>
+                <li>تفحّص ترويسات الاستجابة &mdash; ابحث عن <code>X-Frame-Options</code> و<code>Content-Security-Policy</code> و<code>X-XSS-Protection</code></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; ما يجب (ألا) تراه:</h4>
+                <p><span class="term-en">DVWA</span> غير آمن عن قصد. ستكون استجاباته <strong>خالية</strong> من معظم الترويسات الأمنية. التطبيق المحمي بشكل صحيح سيتضمن:</p>
+<pre><code><span class="output-text">X-Frame-Options: DENY
+Content-Security-Policy: default-src 'self'
+X-Content-Type-Options: nosniff
+Strict-Transport-Security: max-age=31536000</span></code></pre>
+                <p>غياب هذه الترويسات يعني أن التطبيق عرضة لهجمات <span class="term-en">Clickjacking</span> و<span class="term-en">XSS</span> وانتحال نوع <span class="term-en">MIME</span>.</p>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 2 &mdash; أجب على الأسئلة التالية</h4></div>
+            <div class="fill-in">
+                <label>1. في طلب SQL Injection، أين يظهر مدخل المستخدم (id=1) — في الرابط أم في جسم الطلب؟ ما طريقة HTTP المستخدمة؟</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="في الرابط كمعامل استعلام (?id=1&Submit=Submit). طريقة HTTP: GET.">
+
+                <label>2. في طلب تسجيل الدخول، أين يظهر اسم المستخدم وكلمة المرور؟ ما طريقة HTTP المستخدمة؟</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="في جسم الطلب (username=admin&password=password&Login=Login). طريقة HTTP: POST.">
+
+                <label>3. اذكر ترويستَين أمنيتَين على الأقل مفقودتَين من استجابات DVWA واشرح ما تحمي كل واحدة منهما:</label>
+                <textarea class="task-answer" data-task="2" rows="4" placeholder="1. Content-Security-Policy — مفقودة. تحمي من XSS بتقييد السكريبتات التي يمكن تشغيلها في المتصفح.&#10;2. X-Frame-Options — مفقودة. تحمي من Clickjacking بمنع تضمين الصفحة في إطار iframe."></textarea>
+
+                <label>4. ما قيمة ترويسة Cookie المرسلة مع طلب SQL Injection؟ لماذا هذه الكوكي مهمة؟</label>
+                <textarea class="task-answer" data-task="2" rows="2" placeholder="Cookie: PHPSESSID=<32-char-hex>; security=low. تُثبت PHPSESSID أن الطلب صادر من مستخدم مسجّل الدخول. إن سُرقت، يمكن للمهاجم اختطاف الجلسة دون معرفة كلمة المرور."></textarea>
+
+                <label>5. لقطة الشاشة &mdash; طلب HTTP خام ظاهر في تبويب Request الخاص بـ Burp (اللوحة السفلية):</label>
+                <input type="file" id="ss-task2" accept="image/*" onchange="previewImage(this,'prev-task2')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="prev-task2" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="لقطة المهمة 2">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 2</h4>
+                <ol>
+                    <li><strong>س1:</strong> في <strong>الرابط</strong> كمعامل استعلام: <code>?id=1&amp;Submit=Submit</code>. الطريقة: <strong>GET</strong>.</li>
+                    <li><strong>س2:</strong> في <strong>جسم الطلب</strong>: <code>username=admin&amp;password=password&amp;Login=Login</code>. الطريقة: <strong>POST</strong>.</li>
+                    <li><strong>س3:</strong> <code>Content-Security-Policy</code> (تمنع <span class="term-en">XSS</span>)، <code>X-Frame-Options</code> (تمنع <span class="term-en">Clickjacking</span>)، <code>X-Content-Type-Options</code> (تمنع انتحال نوع <span class="term-en">MIME</span>)، <code>Strict-Transport-Security</code> (تُجبر على <span class="term-en">HTTPS</span>).</li>
+                    <li><strong>س4:</strong> <code>PHPSESSID=&lt;قيمة&gt;; security=low</code>. تُصادق <span class="term-en">PHPSESSID</span> على الجلسة. إن سُرقت، يمكن للمهاجم اختطاف الجلسة دون معرفة كلمة المرور.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- المهمة 3 -->
+        <section id="task3">
+            <h2>&#9881;&#65039; المهمة 3: تعديل الطلبات باستخدام <span class="term-en">Repeater</span></h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>المفهوم &mdash; أداة Repeater</h4>
+                    <p>تتيح لك أداة <span class="term-en">Repeater</span> في <span class="term-en">Burp</span> أخذ أي طلب ملتقط وتعديله وإرساله ورؤية الاستجابة &mdash; بالعدد الذي تريد. هذا ضروري لاختبار الثغرات يدوياً: يمكنك تغيير معامل، أو إضافة حمولة حقن، أو تغيير ترويسة، أو حذف كوكي لترى بالضبط كيف يتفاعل الخادم، دون لمس المتصفح.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">Burp Suite: تبويب Repeater</span>
+
+            <h3>3أ: إرسال طلب SQL Injection إلى Repeater</h3>
+            <ol class="steps">
+                <li>في سجل <span class="term-en">HTTP History</span>، انقر بزر الفأرة الأيمن على طلب <code>GET /vulnerabilities/sqli/?id=1</code></li>
+                <li>اختر <strong><span class="term-en">Send to Repeater</span></strong></li>
+                <li>انقر تبويب <strong><span class="term-en">Repeater</span></strong> في أعلى <span class="term-en">Burp Suite</span></li>
+                <li>ستجد الطلب الخام في اللوحة اليسرى</li>
+            </ol>
+
+            <h3>3ب: إرسال الطلب الأصلي</h3>
+            <ol class="steps">
+                <li>انقر <strong><span class="term-en">Send</span></strong> (الزر البرتقالي)</li>
+                <li>تظهر استجابة الخادم في اللوحة اليمنى</li>
+                <li>في لوحة <span class="term-en">Response</span>، انقر تبويب <strong><span class="term-en">Render</span></strong> لرؤية مخرجات <span class="term-en">HTML</span> بصرياً</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; الاستجابة المتوقعة لـ id=1:</h4>
+<pre><code><span class="output-text">First name: admin
+Surname: admin</span></code></pre>
+                <p>بحث الخادم عن المستخدم ذي المعرّف 1 في قاعدة البيانات وأعاد الاسم. هذا يؤكد عمل الطلب بشكل صحيح عبر <span class="term-en">Repeater</span>.</p>
+            </div>
+
+            <h3>3ج: تعديل المعامل وإعادة الإرسال</h3>
+            <ol class="steps">
+                <li>في لوحة طلب <span class="term-en">Repeater</span>، ابحث عن <code>id=1</code> في الرابط</li>
+                <li>غيّره إلى <code>id=2</code> وانقر <strong><span class="term-en">Send</span></strong> &mdash; لاحظ المستخدم المختلف المُعاد</li>
+                <li>غيّره إلى <code>id=5</code> وانقر <strong><span class="term-en">Send</span></strong> مجدداً</li>
+                <li>الآن جرّب <code>id=1'</code> (أضف علامة اقتباس مفردة) وانقر <strong><span class="term-en">Send</span></strong></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; ما يحدث مع id=1&apos; (علامة اقتباس مفردة):</h4>
+<pre><code><span class="output-text">You have an error in your SQL syntax; check the manual that
+corresponds to your MySQL server version for the right syntax
+to use near ''1''' at line 1</span></code></pre>
+                <p>تُعاد رسالة خطأ <span class="term-en">SQL</span> &mdash; هذا يؤكد أن المعامل عرضة لحقن <span class="term-en">SQL</span>. قاعدة البيانات تُسرّب تفاصيل الأخطاء الداخلية، وهو خطأ أمني خطير.</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>لماذا Repeater قوي جداً</h4>
+                    <p>مع <span class="term-en">Repeater</span> يمكنك اختبار عشرات الحمولات في ثوانٍ دون لمس المتصفح. لديك تحكم كامل في كل بايت في الطلب &mdash; الترويسات والكوكيز والطريقة والجسم. يستخدم المختبرون المحترفون <span class="term-en">Repeater</span> لتأكيد الثغرات واختبار تقنيات التجاوز وفهم كيفية معالجة الخادم للمدخلات.</p>
+                </div>
+            </div>
+
+            <h3>3د: اعتراض وتعديل طلب حي</h3>
+            <ol class="steps">
+                <li>في <span class="term-en">Burp &rarr; Proxy &rarr; Intercept</span>، انقر الزر لتشغيل <strong><span class="term-en">Intercept ON</span></strong></li>
+                <li>في <span class="term-en">Firefox</span>، أرسل نموذج <span class="term-en">XSS Reflected</span> باسم <code>Test</code></li>
+                <li>يتجمد <span class="term-en">Firefox</span> &mdash; اصطاد <span class="term-en">Burp</span> الطلب في منتصف طريقه</li>
+                <li>في لوحة <span class="term-en">Intercept</span> الخاصة بـ <span class="term-en">Burp</span>، غيّر <code>name=Test</code> إلى <code>name=Burp</code></li>
+                <li>انقر <strong><span class="term-en">Forward</span></strong> &mdash; يتلقى <span class="term-en">Firefox</span> الاستجابة المعدّلة</li>
+                <li>تقول الصفحة الآن <em>"Hello Burp"</em> رغم أنك كتبت <em>"Test"</em></li>
+                <li>أوقف الاعتراض <strong><span class="term-en">OFF</span></strong> مجدداً عند الانتهاء</li>
+            </ol>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 3 &mdash; أجب على الأسئلة التالية</h4></div>
+            <div class="fill-in">
+                <label>1. حين أرسلت id=2 في Repeater، ما الاسم الأول واسم العائلة اللذان أُعيدا؟</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="الاسم الأول: Gordon — اسم العائلة: Brown (المستخدم ذو المعرّف 2 في DVWA)">
+
+                <label>2. حين أرسلت id=1' (مع علامة اقتباس مفردة)، بماذا ردّ الخادم؟</label>
+                <textarea class="task-answer" data-task="3" rows="2" placeholder="خطأ في صياغة MySQL: 'You have an error in your SQL syntax...' — يؤكد أن المدخل يُحقن مباشرةً في استعلام SQL دون تطهير."></textarea>
+
+                <label>3. اشرح بكلماتك الخاصة لماذا ظهور خطأ SQL في استجابة الويب يُعدّ مشكلة أمنية:</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="تكشف أخطاء SQL عن معلومات داخلية: محرك قاعدة البيانات (MySQL) وبنية الاستعلام وأحياناً أسماء الجداول/الأعمدة. يستخدم المهاجم هذه المعلومات لصياغة حمولة حقن دقيقة، وتؤكد الأخطاء وجود الثغرة وتوجّه الخطوات التالية."></textarea>
+
+                <label>4. ما الميزة الرئيسية لاستخدام Repeater بدلاً من كتابة الحمولات مباشرةً في شريط عنوان المتصفح؟</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="يتيح Repeater التحكم الكامل في كل جزء من الطلب: الترويسات والكوكيز والطريقة والجسم — وليس الرابط فقط. يمكنك تعديل معاملات جسم POST غير الظاهرة في الرابط، والتكرار بسرعة دون تنقل المتصفح، والكوكي محفوظة تلقائياً."></textarea>
+
+                <label>5. لقطة الشاشة &mdash; لوحة Repeater تُظهر الطلب المعدّل واستجابة خطأ SQL:</label>
+                <input type="file" id="ss-task3" accept="image/*" onchange="previewImage(this,'prev-task3')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="prev-task3" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="لقطة المهمة 3">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 3</h4>
+                <ol>
+                    <li><strong>س1:</strong> الاسم الأول: <strong>Gordon</strong> &mdash; اسم العائلة: <strong>Brown</strong> (المستخدم ذو المعرّف 2 في <span class="term-en">DVWA</span> افتراضياً).</li>
+                    <li><strong>س2:</strong> خطأ في صياغة <span class="term-en">MySQL</span>: <em>"You have an error in your SQL syntax; check the manual..."</em> &mdash; يؤكد أن المدخل يُحقن مباشرةً في استعلام <span class="term-en">SQL</span>.</li>
+                    <li><strong>س3:</strong> تُسرّب أخطاء <span class="term-en">SQL</span> معلومات داخلية: محرك قاعدة البيانات (<span class="term-en">MySQL</span>)، وبنية الاستعلام، وأحياناً أسماء الجداول/الأعمدة. يساعد هذا المهاجم على صياغة حمولة حقن تعمل ويؤكد عدم وجود تحقق من المدخلات.</li>
+                    <li><strong>س4:</strong> يسمح <span class="term-en">Repeater</span> بتعديل <strong>أي جزء</strong> من الطلب بما فيه الترويسات وجسم <span class="term-en">POST</span>، وليس معاملات الرابط فقط. يرسل الطلبات فورياً دون إعادة تحميل الصفحة، ويحفظ الكوكيز تلقائياً، ويُظهر الاستجابة الخام &mdash; كل ذلك في عرض واحد.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- المهمة 4 -->
+        <section id="task4">
+            <h2>&#128506;&#65039; المهمة 4: رسم خريطة سطح الهجوم باستخدام <span class="term-en">Site Map</span></h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>المفهوم &mdash; رسم خريطة سطح الهجوم</h4>
+                    <p>قبل اختبار أي تطبيق، يبني خبراء الأمن خريطة بجميع الروابط والمعاملات والنقاط النهائية القابلة للوصول. تُنظّم <span class="term-en">Site Map</span> الخاصة بـ <span class="term-en">Burp</span> تلقائياً كل رابط زاره متصفحك في عرض شجري، مُجمَّعاً حسب المضيف والمسار. هذا هو <strong>سطح الهجوم</strong> للتطبيق &mdash; كل إدخال هو هدف اختبار محتمل.</p>
+                </div>
+            </div>
+
+            <h3>4أ: تحديد النطاق</h3>
+            <ol class="steps">
+                <li>في <span class="term-en">Burp</span>، انقر تبويب <strong><span class="term-en">Target</span></strong></li>
+                <li>انقر التبويب الفرعي <strong><span class="term-en">Site map</span></strong></li>
+                <li>في اللوحة اليسرى، انقر بزر الأيمن على إدخال مضيف <span class="term-en">DVWA</span> (مثلاً: <code>http://10.0.2.15</code>)</li>
+                <li>اختر <strong>"<span class="term-en">Add to scope</span>"</strong></li>
+                <li>إن سألك <span class="term-en">Burp</span> عن إيقاف تسجيل حركة المرور خارج النطاق، انقر <strong><span class="term-en">Yes</span></strong></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>لماذا تحدد النطاق؟</h4>
+                    <p>تحديد النطاق يُخبر <span class="term-en">Burp</span> بالتركيز فقط على هدفك. يمنع الاختبار العرضي لمواقع خارجية (<span class="term-en">Google</span> ومزودي <span class="term-en">CDN</span> وغيرها) التي يُحمّلها متصفحك في الخلفية، ويُبقي <span class="term-en">Site Map</span> نظيفة ومركّزة على <span class="term-en">DVWA</span>.</p>
+                </div>
+            </div>
+
+            <h3>4ب: تصفح جميع وحدات DVWA</h3>
+            <p>في <span class="term-en">Firefox</span>، انقر على <strong>كل وحدة</strong> في القائمة اليسرى لـ <span class="term-en">DVWA</span>: <span class="term-en">Brute Force, Command Injection, CSRF, File Inclusion, File Upload, Insecure CAPTCHA, SQL Injection, SQL Injection (Blind), Weak Session IDs, XSS (DOM), XSS (Reflected), XSS (Stored)</span>.</p>
+
+            <ol class="steps">
+                <li>بعد زيارة جميع الوحدات، ارجع إلى <span class="term-en">Burp &rarr; Target &rarr; Site map</span></li>
+                <li>وسّع شجرة المضيف (مثلاً: <code>http://10.0.2.15</code>)</li>
+                <li>وسّع مجلد <code>/vulnerabilities/</code></li>
+                <li>يجب أن ترى إدخالاً منفصلاً لكل وحدة <span class="term-en">DVWA</span> زرتها</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; ما يجب أن تُظهره خريطة Site Map:</h4>
+<pre><code><span class="output-text">http://10.0.2.15
+  &#9500;&#9472;&#9472; /
+  &#9500;&#9472;&#9472; /index.php
+  &#9500;&#9472;&#9472; /login.php
+  &#9500;&#9472;&#9472; /logout.php
+  &#9500;&#9472;&#9472; /dvwa/
+  &#9492;&#9472;&#9472; /vulnerabilities/
+        &#9500;&#9472;&#9472; /vulnerabilities/brute/
+        &#9500;&#9472;&#9472; /vulnerabilities/csrf/
+        &#9500;&#9472;&#9472; /vulnerabilities/exec/
+        &#9500;&#9472;&#9472; /vulnerabilities/fi/
+        &#9500;&#9472;&#9472; /vulnerabilities/sqli/
+        &#9500;&#9472;&#9472; /vulnerabilities/sqli_blind/
+        &#9500;&#9472;&#9472; /vulnerabilities/upload/
+        &#9500;&#9472;&#9472; /vulnerabilities/weak_id/
+        &#9500;&#9472;&#9472; /vulnerabilities/xss_d/
+        &#9500;&#9472;&#9472; /vulnerabilities/xss_r/
+        &#9492;&#9472;&#9472; /vulnerabilities/xss_s/</span></code></pre>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 4 &mdash; أجب على الأسئلة التالية</h4></div>
+            <div class="fill-in">
+                <label>1. كم مساراً فريداً اكتشفته خريطة Site Map الخاصة بـ Burp تحت /vulnerabilities/؟ اذكر على الأقل 6 منها:</label>
+                <textarea class="task-answer" data-task="4" rows="4" placeholder="12 وحدة. أمثلة:&#10;/vulnerabilities/sqli/ — حقن SQL&#10;/vulnerabilities/xss_r/ — XSS منعكس&#10;/vulnerabilities/xss_s/ — XSS مخزّن&#10;/vulnerabilities/exec/ — حقن أوامر&#10;/vulnerabilities/upload/ — رفع ملفات&#10;/vulnerabilities/csrf/ — CSRF"></textarea>
+
+                <label>2. ما الغرض من تحديد "النطاق" في Burp Suite قبل الاختبار؟</label>
+                <textarea class="task-answer" data-task="4" rows="2" placeholder="يقيّد النطاق نشاط Burp على التطبيق الهدف فقط، ويمنع الاختبار العرضي للنطاقات الخارجية ويُبقي خريطة Site Map نظيفة ومركّزة على الهدف."></textarea>
+
+                <label>3. كيف تساعد خريطة Site Map الخاصة بـ Burp مختبر الاختراق قبل الشروع في الهجوم؟</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="توفر Site Map صورة كاملة هيكلية بجميع روابط ونقاط دخول التطبيق القابلة للوصول. يستخدم المختبر هذه القائمة لتخطيط تغطية الاختبار وضمان عدم تفويت أي نقطة دخول."></textarea>
+
+                <label>4. قارن بين خريطة Site Map الخاصة بـ Burp وتبويب Network في DevTools بالمتصفح. ما الذي يمكن لـ Burp إظهاره دون DevTools؟</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="تستمر Site Map الخاصة بـ Burp طوال الجلسة كاملة (يُمسح DevTools عند تحديث الصفحة)، وتُنظّم الطلبات في شجرة حسب مسار الرابط، وتتيح التعديل وإعادة الإرسال، وتتكامل مع Repeater و Intruder. يُظهر DevTools طلبات الصفحة الحالية فقط ولا يمكنه تعديل الطلبات أو إعادة إرسالها."></textarea>
+
+                <label>5. لقطة الشاشة &mdash; خريطة Site Map الخاصة بـ Burp تُظهر شجرة /vulnerabilities/ موسّعة:</label>
+                <input type="file" id="ss-task4" accept="image/*" onchange="previewImage(this,'prev-task4')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="prev-task4" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="لقطة المهمة 4">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 4</h4>
+                <ol>
+                    <li><strong>س1:</strong> 12 وحدة ثغرات: <code>/brute/</code>، <code>/captcha/</code>، <code>/csrf/</code>، <code>/exec/</code>، <code>/fi/</code>، <code>/sqli/</code>، <code>/sqli_blind/</code>، <code>/upload/</code>، <code>/weak_id/</code>، <code>/xss_d/</code>، <code>/xss_r/</code>، <code>/xss_s/</code>.</li>
+                    <li><strong>س2:</strong> يقيّد النطاق نشاط <span class="term-en">Burp</span> على الهدف (<code>10.0.2.15</code>)، ويمنع الاختبار العرضي للموارد الخارجية ويُبقي الخريطة نظيفة ومركّزة.</li>
+                    <li><strong>س3:</strong> توفر <span class="term-en">Site Map</span> قائمة هيكلية كاملة بجميع نقاط دخول التطبيق المكتشفة. يستخدم المختبر هذا لتخطيط التغطية الشاملة وضمان عدم تفويت أي نقطة نهائية.</li>
+                    <li><strong>س4:</strong> تستمر <span class="term-en">Site Map</span> الخاصة بـ <span class="term-en">Burp</span> طوال الجلسة كاملة، وتتيح تعديل الطلبات وإعادة إرسالها عبر <span class="term-en">Repeater</span>، وتدعم تحديد النطاق والتصفية، وتتكامل مع أدوات الهجوم. يُظهر <span class="term-en">DevTools</span> طلبات الصفحة الحالية فقط، ويُمسح عند التحديث، ولا يمكنه تعديل الطلبات أو إعادة إرسالها.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- استكشاف الأخطاء -->
+        <section id="troubleshooting">
+            <h2>&#128295; استكشاف الأخطاء</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; DVWA لا يُحمَّل في Firefox</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تحقق من تشغيل حاوية <span class="term-en">Docker</span>: <code>sudo docker ps</code>. إن لم يكن <span class="term-en">DVWA</span> مدرجاً، شغّله: <code>sudo docker start dvwa</code>. تأكد من استخدامك <code>http://&lt;عنوان-ip-جهازك&gt;</code> (من <code>hostname -I</code>) وليس <code>localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; لا تظهر طلبات في سجل HTTP الخاص بـ Burp</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تأكد من تفعيل <span class="term-en">FoxyProxy</span> (ملف تعريف <span class="term-en">Burp Proxy</span> نشط). تأكد من تصفحك إلى <code>http://&lt;عنوان-ip-جهازك&gt;</code> &mdash; وليس <code>localhost</code> أو <code>127.0.0.1</code>. تأكد من أن مستمع بروكسي <span class="term-en">Burp</span> على <code>127.0.0.1:8080</code> ويُظهر <strong>Running</strong>. استخدم <code>http://</code> وليس <code>https://</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Firefox متجمد وDVWA لا يُحمَّل</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> الاعتراض في <span class="term-en">Burp</span> <strong>مفعّل</strong>. انتقل إلى <span class="term-en">Burp &rarr; Proxy &rarr; Intercept</span> وانقر <strong><span class="term-en">Forward</span></strong> (كرر لكل مورد) أو انقر الزر لإيقاف الاعتراض <strong><span class="term-en">OFF</span></strong>. في المهمتين 1 و2 تريد الاعتراض متوقفاً لتتدفق حركة المرور بحرية.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Repeater يُظهر "Connection refused"</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> توقف <span class="term-en">DVWA</span> عن العمل. تحقق: <code>sudo docker ps</code>. إن لم يكن مدرجاً: <code>sudo docker start dvwa</code>. تأكد أيضاً من أن ترويسة <span class="term-en">Host</span> في <span class="term-en">Repeater</span> تطابق عنوان IP جهازك (من <code>hostname -I</code>) &mdash; وليس <code>localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; خريطة Site Map فارغة أو تُظهر إدخالاً واحداً فقط</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تصفح <span class="term-en">DVWA</span> أكثر &mdash; انقر على كل وحدة في القائمة اليسرى. تأكد من أن المضيف ضمن النطاق (انقر بزر الأيمن على المضيف &rarr; <span class="term-en">Add to scope</span>). إن كان الفلتر مضبوطاً على "<span class="term-en">Show only in-scope items</span>"، تأكد من إضافة عنوان IP المضيف إلى النطاق أولاً.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; بعد المختبر، Firefox لا يملك وصولاً للإنترنت</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> لا يزال <span class="term-en">FoxyProxy</span> يُوجِّه الحركة إلى <span class="term-en">Burp</span> الذي لم يعد يعمل. انقر <strong>أيقونة <span class="term-en">FoxyProxy</span></strong> واختر <strong>"<span class="term-en">Disable FoxyProxy</span>"</strong>. افعل هذا دائماً في نهاية كل جلسة مختبر.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- إنشاء التقرير -->
+        <section id="report">
+            <h2>&#128196; إنشاء تقرير المختبر</h2>
+
+            <div style="border:2px solid #2980b9; border-radius:15px; padding:28px; margin:18px 0; background:#fafbfc;">
+                <div style="text-align:center; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid #2980b9;">
+                    <h3 style="color:var(--secondary-color); margin:0;">CYB236 &mdash; المختبر 06: تقرير Burp Suite مع DVWA</h3>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">اسم الطالب: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="الاسم الكامل (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">الرقم الجامعي: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="الرقم الجامعي (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">البريد الإلكتروني: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="البريد الإلكتروني (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;" dir="ltr">
+                </div>
+                <p style="font-size:0.85em; color:#e53e3e; margin-bottom:18px; text-align:center;">&#9432; جميع الحقول المحددة بـ <strong>*</strong> إلزامية ولا يمكن إنشاء التقرير دون تعبئتها.</p>
+                <div style="text-align:center;">
+                    <button disabled style="background:#9ca3af; color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:not-allowed; opacity:0.7;">&#128196; إنشاء تقرير PDF &mdash; غير متاح</button>
+                    <p style="color:#e53e3e; font-size:0.87em; margin-top:10px; text-align:center; font-weight:600;">&#9888; إنشاء التقرير غير متاح في النسخة العربية &mdash; يجب تقديم التقارير باللغة الإنجليزية.<br><span style="color:#718096; font-weight:400;">Reports must be submitted in English. Please use the English version of this lab.</span></p>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>قائمة التسليم</h4>
+                    <ul>
+                        <li>تقرير PDF من النسخة الإنجليزية (الاسم + الرقم الجامعي + جميع الإجابات)</li>
+                        <li>لقطة شاشة: المهمة 1 &mdash; سجل HTTP الخاص بـ Burp (10+ طلبات)</li>
+                        <li>لقطة شاشة: المهمة 2 &mdash; طلب HTTP خام في لوحة Request الخاصة بـ Burp</li>
+                        <li>لقطة شاشة: المهمة 3 &mdash; Repeater يُظهر استجابة خطأ SQL</li>
+                        <li>لقطة شاشة: المهمة 4 &mdash; Site Map مع شجرة /vulnerabilities/ موسّعة</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>جدول الدرجات</h3>
+            <table>
+                <tr><th>المهمة</th><th>الوصف</th><th>الدرجات</th></tr>
+                <tr><td><strong>المهمة 1</strong></td><td>التقاط حركة المرور &mdash; سجل HTTP والكوكيز ورموز الحالة</td><td>20</td></tr>
+                <tr><td><strong>المهمة 2</strong></td><td>تحليل الطلبات &mdash; GET مقابل POST والترويسات الأمنية المفقودة</td><td>25</td></tr>
+                <tr><td><strong>المهمة 3</strong></td><td>Repeater &mdash; تعديل المعامل وإطلاق خطأ SQL وشرح الأثر</td><td>30</td></tr>
+                <tr><td><strong>المهمة 4</strong></td><td>Site Map &mdash; رسم خريطة سطح الهجوم والنطاق والمقارنة مع DevTools</td><td>20</td></tr>
+                <tr><td><strong>الجودة</strong></td><td>إجابات واضحة ولقطات شاشة مُسمَّاة وتقرير منسّق</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:right; font-weight:bold;">المجموع</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>التنظيف</h3>
+<pre><code><span class="command-label"># تعطيل FoxyProxy: انقر أيقونة FoxyProxy → اختر "Disable FoxyProxy"</span>
+
+<span class="command-label"># إيقاف DVWA عند الانتهاء</span>
+sudo docker stop dvwa</code></pre>
+        </section>
+
+    </div><!-- نهاية المحتوى -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; أمن تطبيقات الويب</p>
+        <p>المختبر 06: Burp Suite مع DVWA &mdash; اعتراض HTTP في التطبيق العملي &bull; الفصلان 4 و5</p>
+    </div>
+
+</div><!-- نهاية الحاوية -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من المختبر.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this lab.');
+}
+</script>
+</body>
+</html>
