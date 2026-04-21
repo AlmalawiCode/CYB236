@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المختبر 07: Burp Suite Intruder &ndash; هجمات القاموس وكلمات المرور | CYB236 (v2025)</title>
+    <style>
+        :root {
+            --primary-color: #6d28d9;
+            --secondary-color: #4c1d95;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        /* مصطلح إنجليزي داخل النص العربي */
+        .term-en {
+            color: var(--primary-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* ── الترويسة ── */
+        .header {
+            background: linear-gradient(135deg, #1a0533 0%, #2d1060 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">&#128272;</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.15em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .prereq-badge {
+            display: inline-block;
+            background: rgba(56,161,105,0.3);
+            border: 1px solid rgba(56,161,105,0.6);
+            color: #c6f6d5;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* ── شريط معلومات المختبر ── */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.85em; letter-spacing: 0.5px; margin-bottom: 5px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* ── المحتوى ── */
+        .content { padding: 40px; }
+
+        /* ── فهرس المحتويات ── */
+        .toc {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-right: 5px solid #6d28d9;
+            border-left: none;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-right: 20px; padding-left: 0; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #4c1d95; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* ── الأقسام ── */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #6d28d9; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-right: 25px; margin-left: 0; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* ── صناديق التنبيه ── */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-right: 5px solid var(--info-color); border-left: none; }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-right: 5px solid var(--warning-color); border-left: none; }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-right: 5px solid var(--danger-color); border-left: none; }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-right: 5px solid var(--accent-color); border-left: none; }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* ── الجداول ── */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; padding: 14px 18px; text-align: right; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* ── الكود ── */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; direction: ltr; display: inline-block; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); direction: ltr; text-align: left; }
+        pre code { background: none; color: #68d391; padding: 0; display: inline; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+        .output-text { color: #fbd38d; }
+
+        /* ── الخطوات المرقّمة ── */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-right: 50px; padding-left: 0; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; right: 0; top: 0; left: auto; width: 35px; height: 35px; background: linear-gradient(135deg,#6d28d9,#4c1d95); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(109,40,217,0.3); }
+
+        /* ── قائمة التحقق ── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 35px 9px 0; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '☐'; position: absolute; right: 0; left: auto; font-size: 1.2em; color: #6d28d9; }
+
+        /* ── بانر المفهوم ── */
+        .concept-banner { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #c4b5fd; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* ── المخرجات المتوقعة ── */
+        .expected-output { background: #f7fafc; border: 2px dashed #6d28d9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #6d28d9; margin-top: 0; margin-bottom: 8px; }
+
+        /* ── مفتاح الإجابات ── */
+        .answer-key { background: linear-gradient(135deg,#f5f3ff,#ede9fe); border: 2px solid #6d28d9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .answer-key h4 { color: #4c1d95; margin-top: 0; margin-bottom: 10px; }
+        .answer-key ol { margin-right: 20px; margin-left: 0; margin-bottom: 0; }
+        .answer-key li { margin-bottom: 8px; }
+        .answer-key strong { color: #4c1d95; }
+
+        /* ── صندوق التسليم ── */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-right: 5px solid #805ad5; border-left: none; border-radius: 12px 0 0 12px; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* ── حقول الإجابة ── */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.95em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #6d28d9; box-shadow: 0 0 0 3px rgba(109,40,217,0.1); }
+
+        /* ── شارة الوحدة ── */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#6d28d9,#4c1d95); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* ── بطاقات أنماط Intruder ── */
+        .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin: 18px 0; }
+        .mode-card { background: white; border: 2px solid var(--border-color); border-radius: 12px; padding: 18px; }
+        .mode-card.active { border-color: #6d28d9; background: linear-gradient(135deg,#f5f3ff,#ede9fe); }
+        .mode-card h4 { color: #4c1d95; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .mode-card p { margin: 0; font-size: 0.9em; color: #4a5568; }
+        .mode-tag { font-size: 0.72em; background: #6d28d9; color: white; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+
+        /* ── جدول النتائج التجريبي ── */
+        .results-sim { background: #1a202c; border-radius: 12px; padding: 16px; margin: 14px 0; overflow-x: auto; }
+        .results-sim table { box-shadow: none; border-radius: 0; margin: 0; }
+        .results-sim th { background: #2d3748; color: #a0aec0; font-size: 0.8em; padding: 8px 12px; text-align: left; }
+        .results-sim td { color: #e2e8f0; font-size: 0.85em; padding: 7px 12px; border-bottom: 1px solid #2d3748; font-family: 'Consolas','Monaco',monospace; background: transparent; }
+        .results-sim tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+        .results-sim .hit-row td { color: #68d391; font-weight: bold; background: rgba(104,211,145,0.1) !important; }
+
+        /* ── استكشاف الأخطاء ── */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* ── صندوق الملخص ── */
+        .summary-box { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+        .summary-box h3 { color: #c4b5fd; margin-top: 0; border: none; }
+        .summary-box table { box-shadow: none; border-radius: 8px; overflow: hidden; }
+        .summary-box th { background: rgba(255,255,255,0.1); color: #e2e8f0; text-align: right; }
+        .summary-box td { color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; }
+        .summary-box tr:nth-child(even) td { background: rgba(255,255,255,0.05); }
+
+        /* ── التذييل ── */
+        .footer { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        /* ── زر تبديل اللغة ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+            .mode-grid { grid-template-columns: 1fr; }
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- زر تبديل اللغة -->
+<div class="lang-switch">
+    <a href="lab07-english.html" class="lang-btn">
+        &#127760; English
+    </a>
+</div>
+
+<div class="container">
+
+    <header class="header">
+        <h1>&#128272; المختبر 07: <span class="term-en">Burp Suite Intruder</span> &mdash; هجمات القاموس وكلمات المرور</h1>
+        <p class="subtitle">CYB236 &mdash; أمن تطبيقات الويب</p>
+        <div class="chapter-ref">الفصل 6 &mdash; <span class="term-en">Burp Intruder</span> &bull; هجمات القاموس &bull; مواضع الحمولة &bull; الدفاع ضد القوة الغاشمة</div>
+        <br>
+        <span class="prereq-badge">&#9989; المتطلب السابق: المختبران 05 و06 (<span class="term-en">Burp Suite</span> و<span class="term-en">FoxyProxy</span> مهيآن)</span>
+        <span class="prereq-badge" style="margin-right: 8px;">&#128197; محدَّث لإصدار <span class="term-en">Burp Suite Community Edition v2025.10.6</span></span>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>رقم المختبر</strong><span>07</span></div>
+        <div class="lab-info-item"><strong>المستوى</strong><span>متوسط</span></div>
+        <div class="lab-info-item"><strong>المدة</strong><span>45&ndash;60 دقيقة</span></div>
+        <div class="lab-info-item"><strong>البيئة</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>التالي</strong><span>المختبر 08</span></div>
+    </div>
+
+    <div class="content">
+
+        <nav class="toc">
+            <h2>&#128203; فهرس المحتويات</h2>
+            <ol>
+                <li><a href="#intro">ما هو <span class="term-en">Burp Intruder</span>؟</a></li>
+                <li><a href="#concept">هجمات القاموس مقابل القوة الغاشمة</a></li>
+                <li><a href="#setup">الإعداد: تشغيل <span class="term-en">DVWA</span> والتأكد من <span class="term-en">Burp</span></a></li>
+                <li><a href="#task1">المهمة 1: التقاط طلب تسجيل الدخول</a></li>
+                <li><a href="#task2">المهمة 2: إعداد <span class="term-en">Intruder</span></a></li>
+                <li><a href="#task3">المهمة 3: تشغيل الهجوم وتحليل النتائج</a></li>
+                <li><a href="#task4">المهمة 4: التدابير المضادة والدفاع</a></li>
+                <li><a href="#troubleshooting">استكشاف الأخطاء وإصلاحها</a></li>
+                <li><a href="#report">المُخرجات والتقرير</a></li>
+            </ol>
+        </nav>
+
+        <!-- ── المقدمة ── -->
+        <section id="intro">
+            <h2>&#128272; ما هو <span class="term-en">Burp Intruder</span>؟</h2>
+
+            <p>في <strong>المختبرين 05 و06</strong> تعلّمت أدوات <strong><span class="term-en">Proxy</span></strong> و<strong><span class="term-en">Repeater</span></strong> و<strong><span class="term-en">Site Map</span></strong> في <span class="term-en">Burp Suite</span>. في هذا المختبر ستعمل مع أقوى أداة اختبار آلي في ترسانة <span class="term-en">Burp</span>: وهي <strong><span class="term-en">Intruder</span></strong>.</p>
+
+            <p><strong><span class="term-en">Burp Intruder</span></strong> هو محرك اختبار طلبات آلي. يأخذ أي طلب <span class="term-en">HTTP</span> ملتقط، ويتيح لك تحديد معامل واحد أو أكثر كـ<em>مواضع حمولة</em>، ثم يرسل ذلك الطلب مراراً وتكراراً &mdash; مستبدلاً قيمة مختلفة في كل محاولة من قائمة كلمات أو مصدر حمولة آخر. هذا يؤتمت ما كان سيستغرق ساعات من العمل اليدوي في <span class="term-en">Repeater</span>.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>ما نستخدم <span class="term-en">Intruder</span> من أجله في هذا المختبر</h4>
+                    <p>سنستخدم <span class="term-en">Intruder</span> لتنفيذ <strong>هجوم قاموس</strong> ضد وحدة <span class="term-en">Brute Force</span> في <span class="term-en">DVWA</span> &mdash; باختبار قائمة من كلمات المرور الشائعة تلقائياً للعثور على الكلمة الصحيحة من خلال مقارنة أطوال استجابات الخادم.</p>
+                </div>
+            </div>
+
+            <h3>أنماط هجوم <span class="term-en">Intruder</span> الأربعة</h3>
+            <p>يدعم <span class="term-en">Intruder</span> أربعة أنواع هجوم. يعتمد الاختيار الصحيح على عدد مواضع الحمولة وكيفية تركيب الحمولات.</p>
+
+            <div class="mode-grid">
+                <div class="mode-card active">
+                    <h4>&#127919; <span class="term-en">Sniper</span> (القنّاص) <span class="mode-tag">مستخدم في هذا المختبر</span></h4>
+                    <p>قائمة حمولة واحدة. تختبر كل حمولة في <strong>موضع واحد في كل مرة</strong>. الأنسب لاختبار معامل واحد &mdash; كحقل كلمة المرور &mdash; بقائمة كلمات.</p>
+                </div>
+                <div class="mode-card">
+                    <h4>&#127922; <span class="term-en">Battering Ram</span> (الكبش)</h4>
+                    <p>قائمة حمولة واحدة. تدرج <strong>نفس الحمولة في جميع المواضع في آنٍ واحد</strong>. مفيد عندما يجب أن تظهر نفس القيمة في حقول متعددة معاً.</p>
+                </div>
+                <div class="mode-card">
+                    <h4>&#9874;&#65039; <span class="term-en">Pitchfork</span> (الشوكة)</h4>
+                    <p>قوائم حمولة متعددة &mdash; واحدة لكل موضع &mdash; تتكرر <strong>بالتوازي</strong>. الأنسب لأزواج اسم المستخدم وكلمة المرور المتطابقة (user1:pass1, user2:pass2).</p>
+                </div>
+                <div class="mode-card">
+                    <h4>&#128163; <span class="term-en">Cluster Bomb</span> (القنبلة العنقودية)</h4>
+                    <p>قوائم حمولة متعددة، <strong>تُختبر جميع التوليفات</strong>. يُجرَّب كل اسم مستخدم مع كل كلمة مرور. حشو بيانات اعتماد حقيقي، لكنه يولّد طلبات كثيرة.</p>
+                </div>
+            </div>
+
+            <h3><span class="term-en">Intruder</span> مقابل <span class="term-en">Repeater</span>: ما الفرق؟</h3>
+            <table>
+                <tr><th>الميزة</th><th><span class="term-en">Repeater</span> (المختبر 06)</th><th><span class="term-en">Intruder</span> (هذا المختبر)</th></tr>
+                <tr><td>عدد الطلبات</td><td>طلب واحد في كل مرة &mdash; تنقر <span class="term-en">Send</span> يدوياً</td><td>مئات أو آلاف &mdash; آلي</td></tr>
+                <tr><td>تغيير الحمولة</td><td>تكتب كل تغيير بيدك</td><td>محمَّل من قائمة كلمات، يتكرر تلقائياً</td></tr>
+                <tr><td>الأنسب لـ</td><td>الاستغلال اليدوي، الاختبارات الدقيقة الفردية</td><td>الفحص، هجمات كلمات المرور، اكتشاف المعاملات</td></tr>
+                <tr><td>عرض النتائج</td><td>استجابة واحدة في كل مرة</td><td>جدول بجميع الاستجابات &mdash; قابل للترتيب حسب الطول أو الحالة</td></tr>
+            </table>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>حد معدل الإصدار المجتمعي</h4>
+                    <p>يُقيّد <span class="term-en">Burp Suite Community Edition</span> (المجاني) <strong><span class="term-en">Intruder</span> بحوالي طلب واحد في الثانية</strong>. لا يوجد حد في الإصدار الاحترافي. في هذا المختبر ستستخدم قائمة كلمات مكونة من 15 كلمة مرور، لذا لا يُشكّل هذا التقييد مشكلة &mdash; يكتمل الهجوم في حوالي 15 ثانية. ستلاحظ مؤشر التقييد وستفهم أهمية الإصدار الاحترافي في المشاركات الحقيقية. في الإصدار v2025، يظهر إشعار تقييد المعدل كلافتة في نافذة نتائج الهجوم أو رسالة حالة في شريط الأدوات السفلي لعرض النتائج.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── المفهوم ── -->
+        <section id="concept">
+            <h2>&#128214; هجمات القاموس مقابل القوة الغاشمة</h2>
+
+            <h3>القوة الغاشمة البحتة</h3>
+            <p>يجرّب <strong>هجوم القوة الغاشمة البحتة</strong> كل تركيبة ممكنة من الأحرف &mdash; <code>aaa</code>، <code>aab</code>، <code>aac</code>&hellip; حتى <code>zzzzzzz</code>. لكلمة مرور مكونة من 6 أحرف صغيرة، هذا يعني 26&sup6; = 308 مليون تركيبة. من المضمون أنه سيجد كلمة المرور في نهاية المطاف، لكنه قد يستغرق وقتاً غير عملي.</p>
+
+            <h3>هجمات القاموس</h3>
+            <p>يستخدم <strong>هجوم القاموس</strong> <em>قائمة كلمات</em> &mdash; ملف مُجمَّع مسبقاً من كلمات المرور الشائعة، وكلمات المرور المسرَّبة، والتخمينات المحتملة. تظهر معظم كلمات المرور الحقيقية في هذه القوائم لأن الناس يُعيدون استخدام خيارات متوقعة. يتبادل هجوم القاموس الشمولية مقابل السرعة.</p>
+
+            <table>
+                <tr><th>نوع الهجوم</th><th>الأسلوب</th><th>السرعة</th><th>التغطية</th></tr>
+                <tr><td><strong>القوة الغاشمة</strong></td><td>كل تركيبة ممكنة من الأحرف</td><td>بطيء جداً</td><td>100% &mdash; يجد أي كلمة مرور في نهاية المطاف</td></tr>
+                <tr><td><strong>القاموس</strong></td><td>كلمات مرور شائعة من قائمة كلمات</td><td>سريع</td><td>جزئي &mdash; يجد كلمات المرور الضعيفة أو الشائعة فقط</td></tr>
+                <tr><td><strong>الهجين</strong></td><td>القاموس + التحولات (إضافة 123، !، تكبير)</td><td>متوسط</td><td>جيد &mdash; يكتشف &ldquo;password123&rdquo; و&ldquo;Admin!&rdquo; إلخ</td></tr>
+            </table>
+
+            <h3>ما هو <span class="term-en">rockyou.txt</span>؟</h3>
+            <p>يُعدّ <strong><span class="term-en">rockyou.txt</span></strong> أشهر قائمة كلمات كلمات المرور في اختبارات الأمان. يحتوي على أكثر من <strong>14 مليون كلمة مرور حقيقية</strong> مسرَّبة في خرق عام 2009 لمنصة الألعاب الاجتماعية <span class="term-en">RockYou</span>. نظراً لأن هذه كلمات مرور حقيقية اختارها مستخدمون فعليون، فهي فعّالة للغاية ضد بيانات الاعتماد الضعيفة.</p>
+
+<pre><code><span class="command-label"># rockyou.txt مدرجة مع Kali Linux (مضغوطة)</span>
+ls /usr/share/wordlists/
+
+<span class="command-label"># فك الضغط (مرة واحدة فقط)</span>
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+
+<span class="command-label"># عرض أول 15 سطراً — أكثر كلمات المرور شيوعاً</span>
+head -15 /usr/share/wordlists/rockyou.txt</code></pre>
+
+<pre><code><span class="output-text">123456
+12345
+123456789
+password
+iloveyou
+princess
+1234567
+rockyou
+12345678
+abc123
+nicole
+daniel
+babygirl
+monkey
+lovely</span></code></pre>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>في هذا المختبر: نستخدم قائمة كلمات مخصصة قصيرة</h4>
+                    <p>يحتوي <span class="term-en">rockyou.txt</span> على 14 مليون إدخال. تشغيله عبر <span class="term-en">Intruder Community Edition</span> بمعدل طلب واحد في الثانية سيستغرق أكثر من 160 يوماً. في هذا المختبر ستنشئ قائمة كلمات من 15 كلمة مرور تتضمن الإجابة الصحيحة. يُظهر هذا الأسلوب الكامل دون الانتظار &mdash; ستظل ترى بالضبط كيف يعمل الهجوم وكيفية قراءة النتائج.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>للاستخدام المرخص فقط</h4>
+                    <p>هجمات القاموس والقوة الغاشمة ضد أنظمة لا تملكها أو لا تحمل تصريحاً كتابياً صريحاً باختبارها هي أعمال <strong>غير قانونية</strong>. جميع الاختبارات في هذا المختبر تُنفَّذ ضد <span class="term-en">DVWA</span> العامل محلياً على جهازك الخاص فقط.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── الإعداد ── -->
+        <section id="setup">
+            <h2>&#9881;&#65039; الإعداد: تشغيل <span class="term-en">DVWA</span> والتأكد من <span class="term-en">Burp</span></h2>
+
+            <h3>الخطوة 1: تشغيل <span class="term-en">DVWA</span></h3>
+<pre><code><span class="command-label"># تشغيل حاوية DVWA Docker</span>
+sudo docker start dvwa
+
+<span class="command-label"># الحصول على عنوان IP لجهاز Kali</span>
+hostname -I</code></pre>
+            <p>دوّن عنوان الـ IP الخاص بك (مثلاً: <code>10.0.2.15</code>). استخدم هذا العنوان دائماً &mdash; وليس <code>localhost</code> &mdash; في جميع عناوين URL في المتصفح.</p>
+
+            <h3>الخطوة 2: ضبط أمان <span class="term-en">DVWA</span> على <span class="term-en">Low</span></h3>
+            <ol class="steps">
+                <li>في <span class="term-en">Firefox</span>، انتقل إلى <code>http://&lt;عنوان-ip-جهازك&gt;</code></li>
+                <li>سجّل الدخول: اسم المستخدم <code>admin</code> / كلمة المرور <code>password</code></li>
+                <li>انقر <strong><span class="term-en">DVWA Security</span></strong> في القائمة اليسرى</li>
+                <li>اختر <strong><span class="term-en">Low</span></strong> من القائمة المنسدلة وانقر <strong><span class="term-en">Submit</span></strong></li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>يجب أن يكون مستوى الأمان <span class="term-en">Low</span> للمهام 1&ndash;3</h4>
+                    <p>لا يوجد في مستوى أمان <span class="term-en">DVWA Low</span> أي حماية ضد القوة الغاشمة: لا تأخير، ولا إغلاق للحساب، ولا <span class="term-en">CAPTCHA</span>، ولا رمز <span class="term-en">CSRF</span>. هذا يتيح لك تشغيل الهجوم بنظافة ورؤية النتائج. في المهمة 4 ستُبدّل إلى <span class="term-en">Medium</span> و<span class="term-en">High</span> لمراقبة الدفاعات عملياً.</p>
+                </div>
+            </div>
+
+            <h3>الخطوة 3: التأكد من <span class="term-en">Burp Suite</span> و<span class="term-en">FoxyProxy</span></h3>
+            <ul>
+                <li><span class="term-en">Burp Suite</span> مفتوح (شغّله بـ <code>burpsuite</code> إن لزم &rarr; <span class="term-en">Temporary project</span> &rarr; <span class="term-en">Start Burp</span>)</li>
+                <li>مستمع البروكسي يُظهر <code>127.0.0.1:8080</code> كـ <strong><span class="term-en">Running</span></strong> &mdash; تحقق عبر تبويب <strong><span class="term-en">Proxy</span></strong> &rarr; زر <strong><span class="term-en">Proxy settings</span></strong> في أعلى التبويب؛ أو في الإصدار v2025 عبر أيقونة <strong><span class="term-en">Settings</span></strong> &rarr; <strong><span class="term-en">Tools</span></strong> &rarr; <strong><span class="term-en">Proxy</span></strong></li>
+                <li><span class="term-en">FoxyProxy</span> مفعّل مع تحديد ملف تعريف <strong><span class="term-en">Burp Proxy</span></strong> في <span class="term-en">Firefox</span></li>
+                <li>الاعتراض (<span class="term-en">Intercept</span>) <strong>متوقف</strong> حالياً</li>
+            </ul>
+
+            <h3>الخطوة 4: إنشاء قائمة الكلمات</h3>
+            <p>افتح طرفية ونفّذ هذا الأمر لإنشاء قائمة كلمات مخصصة قصيرة:</p>
+<pre><code><span class="command-label"># إنشاء ملف قائمة الكلمات في المجلد الرئيسي</span>
+cat &gt; ~/dvwa_wordlist.txt &lt;&lt; 'EOF'
+admin
+123456
+password
+12345
+qwerty
+abc123
+letmein
+monkey
+dragon
+master
+hello
+welcome
+shadow
+sunshine
+princess
+EOF</code></pre>
+
+<pre><code><span class="command-label"># التأكد من إنشاء الملف بشكل صحيح</span>
+cat ~/dvwa_wordlist.txt</code></pre>
+
+            <p>يحتوي الملف على 15 كلمة مرور شائعة. كلمة المرور الصحيحة لمسؤول <span class="term-en">DVWA</span> (<code>password</code>) هي <strong>الإدخال الثالث</strong> &mdash; سيجدها <span class="term-en">Intruder</span> تلقائياً باختبار جميع الـ15.</p>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>نقطة تحقق</h4>
+                    <p><span class="term-en">DVWA</span> يعمل ويمكن الوصول إليه على <code>http://&lt;عنوان-ip-جهازك&gt;</code>. الأمان مضبوط على <strong><span class="term-en">Low</span></strong>. <span class="term-en">Burp Suite</span> يعمل مع مستمع البروكسي على <code>127.0.0.1:8080</code>. <span class="term-en">FoxyProxy</span> يُوجِّه حركة <span class="term-en">Firefox</span> عبر <span class="term-en">Burp</span>. قائمة الكلمات موجودة في <code>~/dvwa_wordlist.txt</code>. أنت جاهز للبدء.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── المهمة 1 ── -->
+        <section id="task1">
+            <h2>&#128247; المهمة 1: التقاط طلب تسجيل الدخول</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مفهوم &mdash; لماذا نلتقط الطلب أولاً</h4>
+                    <p>لا يمكن لـ <span class="term-en">Intruder</span> بناء طلب من الصفر &mdash; يحتاج إلى طلب <span class="term-en">HTTP</span> حقيقي كقالب. سير العمل دائماً هو: <strong>التصفح الطبيعي &rarr; التقاط <span class="term-en">Burp</span> للطلب &rarr; الإرسال إلى <span class="term-en">Intruder</span> &rarr; تحديد المواضع &rarr; تشغيل الهجوم</strong>. الالتقاط أولاً يضمن امتلاك <span class="term-en">Intruder</span> لعنوان <span class="term-en">URL</span> الصحيح والترويسات والكوكيز وبنية المعامل للهدف.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">DVWA: وحدة Brute Force</span>
+
+            <h3>1أ: الانتقال إلى وحدة <span class="term-en">Brute Force</span> في <span class="term-en">DVWA</span></h3>
+            <ol class="steps">
+                <li>في <span class="term-en">Firefox</span>، تأكد من تفعيل <span class="term-en">FoxyProxy</span> (ملف تعريف <span class="term-en">Burp Proxy</span> محدد)</li>
+                <li>شغّل اعتراض <span class="term-en">Burp</span> (<strong><span class="term-en">ON</span></strong>): <span class="term-en">Proxy &rarr; Intercept &rarr;</span> انقر حتى يقرأ <strong>"<span class="term-en">Intercept is on</span>"</strong></li>
+                <li>في <span class="term-en">Firefox</span>، انتقل إلى <code>http://&lt;عنوان-ip-جهازك&gt;/vulnerabilities/brute/</code></li>
+                <li>قد يتجمد <span class="term-en">Firefox</span> على الطلبات الوسيطة &mdash; انقر <strong><span class="term-en">Forward</span></strong> في <span class="term-en">Burp</span> لكل واحد منها حتى تظهر صفحة <span class="term-en">Brute Force</span> في <span class="term-en">Firefox</span></li>
+                <li>يجب أن ترى نموذجاً صغيراً بحقلَي <strong><span class="term-en">Username</span></strong> و<strong><span class="term-en">Password</span></strong> وزر <strong><span class="term-en">Login</span></strong></li>
+            </ol>
+
+            <h3>1ب: إرسال طلب دخول تجريبي والتقاطه</h3>
+            <ol class="steps">
+                <li>في نموذج <span class="term-en">Brute Force</span>، أدخل:
+                    <ul>
+                        <li>اسم المستخدم: <code>admin</code></li>
+                        <li>كلمة المرور: <code>test</code> (خاطئة عن قصد &mdash; نحتاج فقط إلى بنية الطلب)</li>
+                    </ul>
+                </li>
+                <li>انقر زر <strong><span class="term-en">Login</span></strong></li>
+                <li>يلتقط <span class="term-en">Burp</span> الطلب &mdash; يتجمد <span class="term-en">Firefox</span></li>
+                <li>انتقل إلى <span class="term-en">Burp Suite &rarr; Proxy &rarr;</span> تبويب <strong><span class="term-en">Intercept</span></strong></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; شكل الطلب الملتقط:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/brute/?username=admin&password=test&Login=Login HTTP/1.1
+Host: 10.0.2.15
+User-Agent: Mozilla/5.0 ...
+Cookie: PHPSESSID=abc123def456; security=low
+Referer: http://10.0.2.15/vulnerabilities/brute/</span></code></pre>
+                <p>تستخدم وحدة <span class="term-en">Brute Force</span> في <span class="term-en">DVWA</span> طلب <strong><span class="term-en">GET</span></strong> &mdash; تظهر بيانات الاعتماد في <span class="term-en">URL</span> كمعاملات استعلام. معامل <code>password=test</code> هو الذي سنحوّله إلى موضع حمولة في المهمة 2.</p>
+            </div>
+
+            <h3>1ج: الإرسال إلى <span class="term-en">Intruder</span></h3>
+            <ol class="steps">
+                <li>في لوحة <span class="term-en">Intercept</span> الخاصة بـ <span class="term-en">Burp</span>، <strong>انقر بزر الأيمن</strong> في أي مكان على نص الطلب</li>
+                <li>اختر <strong>"<span class="term-en">Send to Intruder</span>"</strong></li>
+                <li>انقر <strong><span class="term-en">Forward</span></strong> لإطلاق الطلب (يتحرر <span class="term-en">Firefox</span> ويُظهر فشل تسجيل الدخول &mdash; هذا متوقع)</li>
+                <li>أوقف الاعتراض (<strong><span class="term-en">OFF</span></strong>)</li>
+                <li>انقر تبويب <strong><span class="term-en">Intruder</span></strong> في أعلى <span class="term-en">Burp Suite</span> &mdash; في الإصدار v2025 يظهر الطلب في تبويب هجوم مرقّم (مثلاً <strong><span class="term-en">Attack 1</span></strong>) داخل عرض <span class="term-en">Intruder</span>؛ انقر هذا التبويب للمتابعة</li>
+            </ol>
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>اختصار v2025: الإرسال مباشرةً من <span class="term-en">HTTP History</span></h4>
+                    <p>في <span class="term-en">Burp Suite v2025</span> يمكنك أيضاً إرسال طلب إلى <span class="term-en">Intruder</span> مباشرةً من <strong><span class="term-en">Proxy &rarr; HTTP history</span></strong>: ابحث عن طلب <span class="term-en">GET</span> الخاص بالقوة الغاشمة في قائمة السجل، وانقر عليه بزر الأيمن، واختر <strong>"<span class="term-en">Send to Intruder</span>"</strong>. هذا يتخطى خطوة الاعتراض. كلا الأسلوبين يعمل &mdash; أسلوب الاعتراض أعلاه أكثر توضيحاً لفهم سير العمل الكامل.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>نقطة تحقق</h4>
+                    <p>يجب أن يحتوي تبويب <span class="term-en">Intruder</span> الآن على الطلب الملتقط. قد ترى نقطة برتقالية صغيرة أو علامة نجمة على تبويب <span class="term-en">Intruder</span> تشير إلى وجود طلب في الانتظار. تابع إلى المهمة 2 لإعداد الهجوم.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 1 &mdash; الأسئلة</h4></div>
+            <div class="fill-in">
+                <label>1. ما طريقة <span class="term-en">HTTP</span> التي تستخدمها وحدة <span class="term-en">Brute Force</span> في <span class="term-en">DVWA</span> لطلب تسجيل الدخول؟ أين تظهر بيانات الاعتماد؟</label>
+                <textarea class="task-answer" data-task="1" rows="2" placeholder="طريقة GET. تظهر بيانات الاعتماد في URL كمعاملات استعلام: ?username=admin&password=test&Login=Login"></textarea>
+
+                <label>2. لماذا قد يكون استخدام <span class="term-en">GET</span> لنموذج تسجيل الدخول مصدر قلق أمني مقارنةً بـ <span class="term-en">POST</span>؟</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="تظهر بيانات اعتماد GET في URL، ويتم تخزينها في سجل المتصفح وسجلات وصول الخادم وأي بروكسي أو CDN بين العميل والخادم. يمكن لأي شخص لديه وصول إلى تلك السجلات رؤية كلمة المرور بنص واضح. POST يرسل بيانات الاعتماد في جسم الطلب، والذي لا يُخزَّن في السجلات المستندة إلى URL."></textarea>
+
+                <label>3. ما الكوكي الذي أُرسل مع الطلب الملتقط؟ لماذا يجب على <span class="term-en">Intruder</span> الحفاظ على هذا الكوكي في كل طلب هجوم؟</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="PHPSESSID=<قيمة>; security=low. كوكي الجلسة يُثبت أن الطلبات قادمة من مستخدم مسجّل الدخول. بدونه، سيحوّل الخادم كل طلب إلى صفحة تسجيل الدخول الرئيسية بدلاً من معالجة محاولات القوة الغاشمة ضد وحدة Brute Force."></textarea>
+
+                <label>4. لقطة شاشة &mdash; لوحة <span class="term-en">Burp Intercept</span> تُظهر طلب <span class="term-en">GET</span> الملتقط من وحدة <span class="term-en">Brute Force</span> في <span class="term-en">DVWA</span>:</label>
+                <input type="file" id="ss-task1" accept="image/*" onchange="previewImage(this,'prev-task1')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task1" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="لقطة شاشة المهمة 1">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 1</h4>
+                <ol>
+                    <li><strong>س1:</strong> طريقة <strong><span class="term-en">GET</span></strong>. تظهر بيانات الاعتماد في <strong>عنوان URL</strong> كمعاملات استعلام: <code>?username=admin&amp;password=test&amp;Login=Login</code>.</li>
+                    <li><strong>س2:</strong> بيانات اعتماد <span class="term-en">GET</span> مرئية في عنوان <span class="term-en">URL</span>، وتُخزَّن في سجل المتصفح، وتُكتب في سجلات وصول الخادم. أي نظام أو شخص لديه وصول إلى السجلات يمكنه قراءة كلمة المرور بنص واضح. يُرسل <span class="term-en">POST</span> بيانات الاعتماد في الجسم، مستبعَداً من سجلات عناوين <span class="term-en">URL</span> القياسية.</li>
+                    <li><strong>س3:</strong> <code>PHPSESSID=&lt;قيمة&gt;; security=low</code>. يُثبت كوكي الجلسة أن الطلبات قادمة من جلسة مُصادَق عليها. يحمل <span class="term-en">Intruder</span> هذا الكوكي تلقائياً (المأخوذ من الطلب الملتقط الأصلي) في كل طلب هجوم، بحيث تُعالَج كل محاولة من قِبَل الخادم كأنها قادمة من مستخدم مسجّل الدخول.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── المهمة 2 ── -->
+        <section id="task2">
+            <h2>&#9881;&#65039; المهمة 2: إعداد <span class="term-en">Intruder</span></h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مفهوم &mdash; مواضع الحمولة</h4>
+                    <p><strong>موضع الحمولة</strong> هو موقع في الطلب سيستبدله <span class="term-en">Intruder</span> بكل إدخال في قائمة الكلمات. تُحدَّد المواضع برمز <strong>&sect;</strong> (علامة القسم). يكتشف <span class="term-en">Burp</span> تلقائياً جميع قيم المعاملات ويُغلّفها بعلامات &sect;. ستمسح تلك العلامات وتُحدّد <em>فقط</em> قيمة كلمة المرور يدوياً &mdash; مع إبقاء اسم المستخدم ثابتاً كـ <code>admin</code>.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">Burp Suite: تبويب Intruder</span>
+
+            <h3>2أ: التحقق من تبويب <span class="term-en">Positions</span></h3>
+            <ol class="steps">
+                <li>انقر تبويب <strong><span class="term-en">Intruder</span></strong> في أعلى <span class="term-en">Burp Suite</span>، ثم انقر التبويب الفرعي للهجوم المرقّم (مثلاً <strong><span class="term-en">Attack 1</span></strong>) الذي أُنشئ عندما أرسلت الطلب إلى <span class="term-en">Intruder</span></li>
+                <li>يُعرَض عرض <strong><span class="term-en">Positions</span></strong> افتراضياً &mdash; يحتوي على محرر الطلب مع القائمة المنسدلة <strong><span class="term-en">Attack type</span></strong> في الأعلى وأزرار <strong><span class="term-en">Add §</span></strong> و<strong><span class="term-en">Clear §</span></strong> و<strong><span class="term-en">Auto §</span></strong> على الجانب الأيمن</li>
+                <li>يُعرَض الطلب الملتقط مع تمييز عدة قيم باللون <strong>الأخضر</strong> &mdash; هذه هي مواضع الحمولة المكتشفة تلقائياً</li>
+                <li>يبدو عنوان URL مشابهاً لـ: <code>...username=&sect;admin&sect;&amp;password=&sect;test&sect;&amp;Login=&sect;Login&sect;</code></li>
+            </ol>
+
+            <h3>2ب: مسح المواضع المكتشفة تلقائياً وتحديد موضع كلمة المرور</h3>
+            <ol class="steps">
+                <li>انقر زر <strong>"<span class="term-en">Clear §</span>"</strong> على اليمين &mdash; يُزيل جميع المواضع المكتشفة تلقائياً. تختفي التمييزات الخضراء. <em>(ملاحظة: يُظهر الإصدار v2025 أيضاً زر <strong>"<span class="term-en">Auto §</span>"</strong> &mdash; <strong>لا</strong> تنقر عليه؛ سيُعيد اكتشاف جميع المعاملات تلقائياً وهو ليس ما نريده هنا.)</em></li>
+                <li>في نص الطلب، ابحث عن <code>password=test</code></li>
+                <li>انقر واسحب <strong>لتحديد كلمة <code>test</code> فقط</strong> (القيمة، لا اسم المعامل)</li>
+                <li>انقر زر <strong>"<span class="term-en">Add §</span>"</strong> &mdash; يصبح <code>password=&sect;test&sect;</code> مُميَّزاً باللون الأخضر</li>
+                <li>يجب أن يقرأ عنوان URL الآن: <code>...username=admin&amp;password=&sect;test&sect;&amp;Login=Login</code></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; إعداد مواضع صحيح:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/brute/?username=admin&password=§test§&Login=Login HTTP/1.1
+Host: 10.0.2.15
+Cookie: PHPSESSID=abc123def456; security=low</span></code></pre>
+                <p>قيمة كلمة المرور فقط مُميَّزة باللون الأخضر. يبقى اسم المستخدم ثابتاً كـ <code>admin</code> في كل طلب. سيستبدل <span class="term-en">Intruder</span> كل إدخال في قائمة الكلمات محل <code>test</code>.</p>
+            </div>
+
+            <h3>2ج: تحديد نوع الهجوم</h3>
+            <ol class="steps">
+                <li>في أعلى عرض <span class="term-en">Positions</span> (فوق محرر الطلب)، ابحث عن القائمة المنسدلة <strong><span class="term-en">Attack type</span></strong> &mdash; في الإصدار v2025 تُعرَض بوضوح في أعلى منطقة إعداد الهجوم</li>
+                <li>اختر <strong><span class="term-en">Sniper</span></strong> (قد يكون الافتراضي بالفعل)</li>
+                <li><span class="term-en">Sniper</span> هو الصحيح: قائمة كلمات واحدة، موضع واحد (حقل كلمة المرور)</li>
+            </ol>
+
+            <h3>2د: تحميل قائمة الحمولة</h3>
+            <ol class="steps">
+                <li>انقر تبويب <strong><span class="term-en">Payloads</span></strong> لفتح لوحة الحمولات الجانبية &mdash; في الإصدار v2025 تظهر هذه اللوحة على الجانب الأيمن من عرض هجوم <span class="term-en">Intruder</span> ويمكن فتحها أو إغلاقها</li>
+                <li>ضمن <strong><span class="term-en">Payload type</span></strong>، تأكد من تحديد <strong><span class="term-en">Simple list</span></strong></li>
+                <li>ضمن <strong><span class="term-en">Payload configuration</span></strong> (يُسمى <em><span class="term-en">Payload settings</span></em> في إصدارات <span class="term-en">Burp</span> الأقدم)، انقر <strong>"<span class="term-en">Load</span>"</strong></li>
+                <li>انتقل إلى مجلدك الرئيسي (<code>/home/&lt;اسم-المستخدم&gt;/</code>) وحدد <code>dvwa_wordlist.txt</code></li>
+                <li>يجب أن تظهر الـ15 كلمة مرور الآن في مربع قائمة الحمولة</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>بديل: لصق كلمات المرور مباشرةً</h4>
+                    <p>إذا لم يعمل متصفح الملفات كما هو متوقع، يمكنك كتابة أو لصق كلمات المرور واحدة تلو الأخرى في حقل <strong>"<span class="term-en">Enter a new item</span>"</strong> والنقر على <strong><span class="term-en">Add</span></strong> لكل واحدة. النتيجة متطابقة.</p>
+                </div>
+            </div>
+
+            <h3>2هـ: تعطيل ترميز <span class="term-en">URL</span> (موصى به)</h3>
+            <ol class="steps">
+                <li>انتقل للأسفل في لوحة <span class="term-en">Payloads</span> للعثور على قسم <strong><span class="term-en">Payload encoding</span></strong> (في أسفل اللوحة، أسفل قائمة الحمولة)</li>
+                <li>أزِل تحديد <strong>"<span class="term-en">URL-encode these characters</span>"</strong></li>
+                <li>هذا يمنع <span class="term-en">Burp</span> من ترميز الأحرف في كلمات المرور (مثلاً تحويل <code>!</code> إلى <code>%21</code>). ليس حرجاً لهذه القائمة، لكنه ممارسة صحيحة.</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>ملخص الإعداد</h4>
+                    <p><strong>نوع الهجوم:</strong> <span class="term-en">Sniper</span> &nbsp;&bull;&nbsp; <strong>موضع الحمولة:</strong> <code>&sect;test&sect;</code> في حقل كلمة المرور &nbsp;&bull;&nbsp; <strong>قائمة الحمولة:</strong> 15 كلمة مرور شائعة محمَّلة من <code>dvwa_wordlist.txt</code> عبر لوحة <span class="term-en">Payloads</span> الجانبية &rarr; <span class="term-en">Payload configuration</span> &rarr; <span class="term-en">Load</span>. أنت جاهز لبدء الهجوم.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 2 &mdash; الأسئلة</h4></div>
+            <div class="fill-in">
+                <label>1. أي نوع هجوم (نمط) حددت، ولماذا <span class="term-en">Sniper</span> هو الاختيار الصحيح لهذا السيناريو؟</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="Sniper. لدينا موضع حمولة واحد (حقل كلمة المرور) وقائمة كلمات واحدة. يُدوِّر Sniper كل كلمة مرور عبر هذا الموضع الواحد. الأنماط الأخرى مخصصة لمواضع متعددة مع قوائم متعددة، وهو غير ضروري هنا لأننا نعرف مسبقاً أن اسم المستخدم هو 'admin'."></textarea>
+
+                <label>2. ما الرمز الذي يستخدمه <span class="term-en">Burp</span> لتحديد موضع الحمولة؟ اكتب كيف يبدو معامل كلمة المرور بعد تحديد الموضع:</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="الرمز: § (علامة القسم). بعد تحديد الموضع: password=§test§">
+
+                <label>3. لماذا نقرت على "<span class="term-en">Clear §</span>" قبل إضافة موضعك الخاص، بدلاً من الاحتفاظ بالمواضع المكتشفة تلقائياً؟</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="حدّد الاكتشاف التلقائي قيم المعاملات الثلاثة (username وpassword وLogin) كمواضع. مع Sniper ومواضع متعددة، سيُدوِّر Burp عبر كل موضع بشكل منفصل، مما يخلق طلبات إضافية تُفحص اسم المستخدم وقيمة زر Login — وهو ما لا نحتاجه. نريد فحص حقل كلمة المرور فقط مع إبقاء اسم المستخدم ثابتاً كـ 'admin'."></textarea>
+
+                <label>4. لقطة شاشة &mdash; تبويب <span class="term-en">Intruder Positions</span> يُظهر تحديد <code>&sect;test&sect;</code> فقط مع تحديد <span class="term-en">Sniper</span>:</label>
+                <input type="file" id="ss-task2a" accept="image/*" onchange="previewImage(this,'prev-task2a')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2a" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="لقطة شاشة المهمة 2أ">
+
+                <label>5. لقطة شاشة &mdash; تبويب <span class="term-en">Intruder Payloads</span> يُظهر قائمة الكلمات الـ15 محمَّلة:</label>
+                <input type="file" id="ss-task2b" accept="image/*" onchange="previewImage(this,'prev-task2b')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2b" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="لقطة شاشة المهمة 2ب">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 2</h4>
+                <ol>
+                    <li><strong>س1:</strong> <strong><span class="term-en">Sniper.</span></strong> قائمة حمولة واحدة، موضع واحد. نعرف أن اسم المستخدم هو <code>admin</code> لذا نحتاج فقط لتدوير كلمات المرور. <span class="term-en">Pitchfork</span> و<span class="term-en">Cluster Bomb</span> لمواضع متعددة مع قوائم متعددة، وهو غير ضروري هنا.</li>
+                    <li><strong>س2:</strong> الرمز: <strong>&sect;</strong> (علامة القسم). بعد تحديد الموضع: <code>password=&sect;test&sect;</code></li>
+                    <li><strong>س3:</strong> حدّد الاكتشاف التلقائي قيم <code>username</code> و<code>password</code> و<code>Login</code> كمواضع. مع <span class="term-en">Sniper</span> وثلاثة مواضع، سيُهدر <span class="term-en">Burp</span> طلبات بالتدوير عبر اسم المستخدم ونص زر <span class="term-en">Login</span>. نريد فحص حقل كلمة المرور فقط مع إبقاء اسم المستخدم ثابتاً كـ <code>admin</code>، لذا يجب إزالة جميع المواضع الأخرى.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── المهمة 3 ── -->
+        <section id="task3">
+            <h2>&#128200; المهمة 3: تشغيل الهجوم وتحليل النتائج</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مفهوم &mdash; كيفية تحديد كلمة المرور الصحيحة</h4>
+                    <p>يُعيد الخادم <strong><span class="term-en">HTTP 200 OK</span></strong> سواء نجح تسجيل الدخول أم فشل &mdash; لا يُعيد <span class="term-en">DVWA</span> التوجيه عند النجاح في مستوى الأمان <span class="term-en">Low</span>. لا يمكنك استخدام رمز الحالة لإيجاد الإجابة. بدلاً من ذلك، انظر إلى <strong>طول الاستجابة</strong>: يُعيد تسجيل الدخول الفاشل رسالة خطأ قصيرة، بينما يُعيد تسجيل الدخول الناجح صفحة تحتوي على رسالة ترحيب. ستُنتج كلمة المرور الصحيحة <strong>طول استجابة مختلفاً بشكل واضح</strong>.</p>
+                </div>
+            </div>
+
+            <h3>3أ: بدء الهجوم</h3>
+            <ol class="steps">
+                <li>انقر زر <strong>"<span class="term-en">Start attack</span>"</strong> (في منطقة أعلى يمين إعداد هجوم <span class="term-en">Intruder</span>)</li>
+                <li>تفتح نافذة جديدة (أو تبويب منفصل، حسب إصدار <span class="term-en">Burp</span>) &mdash; وهي <strong>جدول نتائج هجوم <span class="term-en">Intruder</span></strong></li>
+                <li>يبدأ <span class="term-en">Burp</span> بإرسال الطلبات تلقائياً بحوالي طلب واحد في الثانية (حد معدل الإصدار المجتمعي)</li>
+                <li>سيظهر إشعار تقييد المعدل &mdash; في الإصدار v2025 هذه لافتة أو رسالة حالة مثل <em>"<span class="term-en">Burp Intruder is running in Community Edition mode with throttled attack speed</span>"</em> أو ما شابه؛ قد تختلف الصياغة الدقيقة حسب الإصدار لكن المعنى واحد &mdash; هذا متوقع</li>
+                <li>شاهد الجدول يمتلئ صفاً تلو الآخر مع اكتمال كل طلب</li>
+                <li>انتظر اكتمال جميع الـ15 طلباً</li>
+            </ol>
+
+            <h3>3ب: تحديد كلمة المرور الصحيحة من خلال طول الاستجابة</h3>
+            <ol class="steps">
+                <li>بعد اكتمال جميع الـ15 طلباً، انظر إلى عمود <strong><span class="term-en">Length</span></strong> في جدول النتائج</li>
+                <li>انقر على رأس عمود <strong><span class="term-en">Length</span></strong> لترتيب الاستجابات حسب الحجم</li>
+                <li>سيكون لأحد الصفوف <strong>طول مختلف (أكبر) بشكل واضح</strong> مقارنةً بجميع الصفوف الأخرى</li>
+                <li>يُظهر عمود <strong><span class="term-en">Payload</span></strong> لذلك الصف كلمة المرور الصحيحة</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; جدول النتائج المتوقعة (قيم تقريبية):</h4>
+                <div class="results-sim">
+                    <table>
+                        <tr><th>#</th><th>Payload</th><th>Status</th><th>Length</th><th>ملاحظة</th></tr>
+                        <tr><td>1</td><td>admin</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>2</td><td>123456</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr class="hit-row"><td>3</td><td>password</td><td>200</td><td>4779</td><td>&#9989; طول مختلف &mdash; كلمة المرور الصحيحة!</td></tr>
+                        <tr><td>4</td><td>12345</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>5</td><td>qwerty</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>6</td><td>abc123</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>7</td><td>letmein</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>8</td><td>monkey</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>9</td><td>dragon</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>10</td><td>master</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>11</td><td>hello</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>12</td><td>welcome</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>13</td><td>shadow</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>14</td><td>sunshine</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>15</td><td>princess</td><td>200</td><td>4719</td><td></td></tr>
+                    </table>
+                </div>
+                <p>جميع المحاولات الفاشلة تُعيد نفس الطول (~4719 بايت). يُعيد تسجيل الدخول الناجح استجابة أطول (~4779 بايت) لأنها تتضمن رسالة ترحيب لا تحتويها استجابات الفشل.</p>
+            </div>
+
+            <h3>3ج: تأكيد كلمة المرور الصحيحة</h3>
+            <ol class="steps">
+                <li>انقر الصف ذو طول الاستجابة المختلف لتحديده</li>
+                <li>في لوحة <strong><span class="term-en">Response</span></strong> في أسفل نافذة الهجوم، ابحث عن رسالة النجاح</li>
+                <li>يجب أن ترى: <em>&ldquo;<span class="term-en">Welcome to the password protected area admin</span>&rdquo;</em></li>
+                <li>انقر صفاً بالطول الشائع وقارن &mdash; سيُظهر: <em>&ldquo;<span class="term-en">Username and/or password incorrect.</span>&rdquo;</em></li>
+            </ol>
+
+<pre><code><span class="command-label"># استجابة تسجيل الدخول الناجح تحتوي على:</span>
+<span class="output-text">Welcome to the password protected area admin</span>
+
+<span class="command-label"># استجابة تسجيل الدخول الفاشل تحتوي على:</span>
+<span class="output-text">Username and/or password incorrect.</span></code></pre>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>اكتمل الهجوم</h4>
+                    <p>كلمة المرور الصحيحة هي <strong>password</strong>. وجدها <span class="term-en">Burp Intruder</span> بإرسال 15 طلباً آلياً وتحديد الطلب ذو طول الاستجابة المختلف. هذه هي تقنية المتخصصين في الأمن المستخدمة لاختبار مدى مقاومة نماذج تسجيل الدخول للهجمات الآلية بكلمات المرور.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 3 &mdash; الأسئلة</h4></div>
+            <div class="fill-in">
+                <label>1. ما كلمة المرور التي تم تحديدها كصحيحة؟ كم طلباً أجمالياً أرسل <span class="term-en">Intruder</span>؟</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="كلمة المرور الصحيحة: password — إجمالي الطلبات: 15 (طلب واحد لكل إدخال في قائمة الكلمات)">
+
+                <label>2. لماذا لم تتمكن من تحديد كلمة المرور الصحيحة باستخدام رمز حالة <span class="term-en">HTTP</span>؟ ماذا استخدمت بدلاً من ذلك، ولماذا نجح ذلك؟</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="جميع الاستجابات أعادت HTTP 200 OK بغض النظر عن نجاح أو فشل تسجيل الدخول. لم تستطع رموز الحالة التمييز بينها. استُخدم طول الاستجابة بدلاً من ذلك — صفحة تسجيل الدخول الناجح أطول لأنها تحتوي على رسالة ترحيب ('Welcome to the password protected area admin') لا تحتوي عليها صفحة الفشل."></textarea>
+
+                <label>3. ما النص الدقيق الذي ظهر في استجابة تسجيل الدخول الناجح والذي أكّد العثور على كلمة المرور؟</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="Welcome to the password protected area admin">
+
+                <label>4. استغرق الهجوم حوالي 15 ثانية لـ15 كلمة مرور. لو استخدمت <span class="term-en">rockyou.txt</span> (14 مليون إدخال) بنفس المعدل، كم سيستغرق الأمر؟ ماذا يخبرك هذا عن الهجمات الآلية؟</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="14,000,000 ÷ 1 طلب/ثانية = ~162 يوماً. Burp Professional يرفع التقييد — بـ100 طلب/ثانية: ~1.6 يوم. بأجهزة مخصصة بـ1000 طلب/ثانية: ~4 ساعات. يُظهر هذا أن: (1) كلمات المرور الشائعة البسيطة توجد فوراً حتى مع التقييد، و(2) الهجمات الحقيقية ضد الأنظمة غير المحمية أخطر بكثير مما يُظهره هذا المختبر."></textarea>
+
+                <label>5. لقطة شاشة &mdash; جدول نتائج <span class="term-en">Intruder</span> يُظهر الإدخال ذو طول الاستجابة المختلف (الصف الصحيح مُبرَّز أو مُرتَّب في الأعلى):</label>
+                <input type="file" id="ss-task3" accept="image/*" onchange="previewImage(this,'prev-task3')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task3" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="لقطة شاشة المهمة 3">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 3</h4>
+                <ol>
+                    <li><strong>س1:</strong> كلمة المرور الصحيحة: <strong>password</strong>. إجمالي الطلبات: <strong>15</strong> (طلب واحد لكل إدخال في قائمة الكلمات في نمط <span class="term-en">Sniper</span>).</li>
+                    <li><strong>س2:</strong> تُعيد <span class="term-en">DVWA</span> كلاً من نجاح وفشل تسجيل الدخول برمز <strong><span class="term-en">HTTP 200</span></strong> في مستوى الأمان <span class="term-en">Low</span> &mdash; بدون توجيه، بدون رمز مختلف. العامل المميِّز هو <strong>طول الاستجابة</strong>: صفحة النجاح أطول لأنها تحتوي على رسالة الترحيب التي لا تحتوي عليها صفحة الفشل.</li>
+                    <li><strong>س3:</strong> <em>&ldquo;<span class="term-en">Welcome to the password protected area admin</span>&rdquo;</em></li>
+                    <li><strong>س4:</strong> 14,000,000 &divide; 1 طلب/ثانية &asymp; 162 يوماً بسرعة الإصدار المجتمعي. <span class="term-en">Burp Professional</span> بـ100 طلب/ثانية: ~1.6 يوم. أجهزة مخصصة بـ1,000 طلب/ثانية: ~4 ساعات. الاستنتاج الرئيسي: حتى التقييد الضعيف يجعل هجمات قوائم الكلمات الكبيرة بطيئة، لكن كلمات المرور الشائعة مثل &ldquo;password&rdquo; تظهر في بداية أي قائمة كلمات وتوجد في وقت قريب جداً.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── المهمة 4 ── -->
+        <section id="task4">
+            <h2>&#128737;&#65039; المهمة 4: التدابير المضادة والدفاع</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>مفهوم &mdash; لماذا نجح الهجوم</h4>
+                    <p>نجح الهجوم لأن <span class="term-en">DVWA</span> في مستوى الأمان <span class="term-en">Low</span> لا يملك <strong>أي حماية</strong>: لا تأخير بين المحاولات، ولا إغلاق للحساب بعد الفشل، ولا <span class="term-en">CAPTCHA</span>، ولا رمز <span class="term-en">CSRF</span>. يجب على التطبيقات الحقيقية تنفيذ دفاعات متعددة الطبقات. تتيح لك مستويات الأمان الأعلى في <span class="term-en">DVWA</span> مراقبة شكل هذه الدفاعات من منظور المهاجم.</p>
+                </div>
+            </div>
+
+            <h3>4أ: التبديل إلى الأمان المتوسط &mdash; ملاحظة تأخير المعدل</h3>
+            <ol class="steps">
+                <li>في <span class="term-en">DVWA</span>، انقر <strong><span class="term-en">DVWA Security</span></strong> في القائمة اليسرى</li>
+                <li>غيّر مستوى الأمان إلى <strong><span class="term-en">Medium</span></strong> وانقر <strong><span class="term-en">Submit</span></strong></li>
+                <li>في <span class="term-en">Burp Intruder</span>، انقر <strong>"<span class="term-en">Start attack</span>"</strong> مجدداً (نفس الإعداد)</li>
+                <li>لاحظ: يستغرق كل صف وقتاً أطول بشكل واضح للظهور مقارنةً بالسابق</li>
+                <li>يكتمل الهجوم في نهاية المطاف &mdash; لكن بشكل أبطأ بكثير</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; ما يفعله أمان <span class="term-en">DVWA</span> المتوسط:</h4>
+                <p>يُضيف <span class="term-en">DVWA Medium</span> <strong>توقفاً من جانب الخادم لمدة ثانيتين</strong> قبل الاستجابة لكل محاولة قوة غاشمة. يستغرق كل طلب 2+ ثانية بدلاً من ميلي ثانية. لـ15 كلمة مرور يستغرق الهجوم الآن ~30 ثانية. لـ <span class="term-en">rockyou.txt</span> بمعدل ثانيتين لكل تخمين: <strong>أكثر من 324 يوماً</strong> &mdash; مما يجعل الهجمات الآلية بقوائم كلمات كبيرة غير عملية في ظل القيود الزمنية.</p>
+            </div>
+
+            <h3>4ب: التبديل إلى الأمان العالي &mdash; ملاحظة رمز <span class="term-en">CSRF</span></h3>
+            <ol class="steps">
+                <li>غيّر أمان <span class="term-en">DVWA</span> إلى <strong><span class="term-en">High</span></strong> وانقر <strong><span class="term-en">Submit</span></strong></li>
+                <li>عُد إلى صفحة <span class="term-en">Brute Force</span> في <span class="term-en">Firefox</span> (مع تشغيل الاعتراض)</li>
+                <li>أرسل نموذج تسجيل الدخول مجدداً والتقط الطلب الجديد في <span class="term-en">Burp</span></li>
+                <li>انظر إلى عنوان <span class="term-en">URL</span> في الطلب الملتقط &mdash; لاحظ معاملاً إضافياً</li>
+                <li>جرّب تشغيل <span class="term-en">Intruder</span> بنفس الإعداد القديم ضد الأمان <span class="term-en">High</span> &mdash; ستفشل جميع المحاولات حتى لو كانت قائمة الكلمات تحتوي على كلمة المرور الصحيحة</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; ما يحتويه طلب الأمان العالي:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/brute/?username=admin&password=test
+    &Login=Login&user_token=a3f9b2c1d4e5f608 HTTP/1.1
+Host: 10.0.2.15
+Cookie: PHPSESSID=abc123; security=high</span></code></pre>
+                <p>يُضيف الأمان العالي <strong>رمز <span class="term-en">CSRF (Cross-Site Request Forgery)</span></strong> &mdash; قيمة عشوائية تُوَلَّد حديثاً لكل تحميل صفحة وصالحة لطلب واحد فقط. يُعيد <span class="term-en">Intruder</span> استخدام نفس الرمز لجميع الـ15 محاولة. يقبل الخادم الطلب الأول، ثم يرفض جميع الطلبات اللاحقة لأن الرمز استُهلك بالفعل. لا يمكن تحديد كلمة المرور الصحيحة حتى لو كانت موجودة في قائمة الكلمات.</p>
+            </div>
+
+            <h3>4ج: الدفاعات الواقعية ضد هجمات كلمات المرور</h3>
+            <table>
+                <tr><th>الدفاع</th><th>كيف يعمل</th><th>الفاعلية</th></tr>
+                <tr>
+                    <td><strong>إغلاق الحساب</strong></td>
+                    <td>بعد N محاولة فاشلة، يُغلَق الحساب لفترة أو حتى إعادة تعيينه يدوياً من قِبَل مسؤول</td>
+                    <td>عالية &mdash; يوقف التخمين الآلي الجماعي مباشرةً</td>
+                </tr>
+                <tr>
+                    <td><strong>تحديد المعدل</strong></td>
+                    <td>يفرض الخادم تأخيراً بين محاولات تسجيل الدخول من نفس الـ IP أو الحساب</td>
+                    <td>متوسطة &mdash; يُبطئ الهجمات بشكل كبير؛ يمكن تجاوزه بهجمات موزعة</td>
+                </tr>
+                <tr>
+                    <td><strong><span class="term-en">CAPTCHA</span></strong></td>
+                    <td>تحدٍّ بصري أو سلوكي بعد المحاولات الفاشلة يستطيع البشر حله لكن الروبوتات لا</td>
+                    <td>متوسطة &mdash; يوقف الأتمتة البسيطة؛ الروبوتات المتقدمة قد تتجاوزه أحياناً</td>
+                </tr>
+                <tr>
+                    <td><strong>رموز <span class="term-en">CSRF</span></strong></td>
+                    <td>رمز عشوائي يُستخدم مرة واحدة لكل طلب يمنع الإعادة والإرسال الآلي دون تحميل الصفحة مسبقاً</td>
+                    <td>عالية للأتمتة البسيطة &mdash; يجب على المهاجمين أيضاً استخراج الرموز، مما يتطلب أدوات أكثر تعقيداً</td>
+                </tr>
+                <tr>
+                    <td><strong>سياسة كلمة مرور قوية</strong></td>
+                    <td>فرض الحد الأدنى من الطول والتعقيد حتى لا تظهر كلمات مرور المستخدمين في قوائم الكلمات الشائعة</td>
+                    <td>عالية &mdash; أول وأساس الدفاع</td>
+                </tr>
+                <tr>
+                    <td><strong>المصادقة متعددة العوامل</strong></td>
+                    <td>حتى لو اكتُشفت كلمة المرور، يحجب العامل الثاني (تطبيق TOTP، مفتاح مادي) الوصول</td>
+                    <td>عالية جداً &mdash; يجعل الهجمات التي تعتمد على كلمة المرور فقط عديمة الجدوى</td>
+                </tr>
+            </table>
+
+            <div class="deliverable"><h4>&#9997;&#65039; المهمة 4 &mdash; الأسئلة</h4></div>
+            <div class="fill-in">
+                <label>1. ما الحماية التي يُضيفها أمان <span class="term-en">DVWA Medium</span>؟ كيف تُغيّر من عملية الهجوم لقائمة كلمات كبيرة؟</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="يُضيف DVWA Medium تأخيراً من جانب الخادم لمدة ثانيتين لكل محاولة. لـ15 كلمة مرور: ~30 ثانية (لا يزال ممكناً). لـrockyou.txt (14 مليون كلمة مرور): ~324 يوماً بمعدل ثانيتين/تخمين. لا يمنع تحديد المعدل الهجمات لكنه يجعل الهجمات القاموسية واسعة النطاق غير عملية ضمن أي إطار زمني معقول، خاصة مع دفاعات أخرى."></textarea>
+
+                <label>2. ما المعامل الإضافي الذي ظهر في الطلب على مستوى الأمان <span class="term-en">High</span>؟ لماذا يُبطل هذا تماماً هجوم <span class="term-en">Intruder</span> المُعدَّ في المهام 1&ndash;3؟</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="user_token=<قيمة_عشوائية> — رمز CSRF. كل رمز يُستخدم مرة واحدة ويتولد حديثاً لكل تحميل صفحة. يُعيد Intruder استخدام الرمز الملتقط في المهمة 1 لجميع الـ15 طلباً. يقبل الخادم الطلب الأول (الرمز مستهلك) ويرفض جميع الطلبات الـ14 المتبقية لأن رمزها غير صالح."></textarea>
+
+                <label>3. من الدفاعات في الجدول أعلاه، اختر الثلاثة التي تعتبرها الأكثر فاعلية وفسّر سبب ذلك:</label>
+                <textarea class="task-answer" data-task="4" rows="4" placeholder="1. المصادقة متعددة العوامل — حتى بمعرفة كلمة المرور الصحيحة لا يستطيع المهاجم تسجيل الدخول دون العامل الثاني، مما يجعل هجمات كلمات المرور بلا جدوى. 2. إغلاق الحساب — يُنهي محاولات الهجوم الآلي مباشرةً بعد عدد قليل من الفشل. 3. سياسة كلمة مرور قوية — تمنع تعيين كلمات مرور مثل 'password' من البداية، فتفشل هجمات القاموس في إيجادها."></textarea>
+
+                <label>4. كمطوّر، أي مجموعة من الدفاعات ستُنفّذ في صفحة تسجيل دخول الإنتاج؟ برّر اختياراتك:</label>
+                <textarea class="task-answer" data-task="4" rows="4" placeholder="تحديد المعدل (إبطاء المحاولات الآلية) + إغلاق الحساب بعد 5 فشل (إيقاف التخمين الجماعي) + المصادقة متعددة العوامل (حماية حتى في حالة اختراق كلمة المرور) + فرض كلمة مرور قوية عند التسجيل (منع كلمات المرور الضعيفة). يجب أن تكون رموز CSRF معيارية في جميع النماذج. هذا النهج الدفاعي متعدد الطبقات يعالج سرعة الأتمتة والتخمين الجماعي واختراق كلمات المرور وإنشاء بيانات اعتماد ضعيفة."></textarea>
+
+                <label>5. لقطة شاشة &mdash; طلب <span class="term-en">Brute Force</span> بالأمان العالي في <span class="term-en">Burp</span> يُظهر معامل <span class="term-en">user_token</span>:</label>
+                <input type="file" id="ss-task4" accept="image/*" onchange="previewImage(this,'prev-task4')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task4" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="لقطة شاشة المهمة 4">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; مفتاح الإجابات &mdash; المهمة 4</h4>
+                <ol>
+                    <li><strong>س1:</strong> توقف من جانب الخادم لمدة ثانيتين لكل محاولة. لـ15 كلمة مرور: ~30 ثانية. لـ14 مليون كلمة مرور بمعدل ثانيتين/تخمين: ~324 يوماً. لا يمنع تحديد المعدل الهجمات لكنه يجعل هجمات القاموس واسعة النطاق غير عملية ضمن أي إطار زمني معقول، خاصة مع دفاعات أخرى.</li>
+                    <li><strong>س2:</strong> <code>user_token=&lt;قيمة_عشوائية&gt;</code> &mdash; رمز <span class="term-en">CSRF</span>. يُستخدم مرة واحدة. يُعيد هجوم <span class="term-en">Intruder</span> استخدام الرمز من الطلب الملتقط الأصلي. يقبل الخادم الطلب الأول فقط (الرمز مستهلك)، ثم يرفض جميع الطلبات الـ14 المتبقية لأن رمزها غير صالح. كلمة المرور الصحيحة موجودة في القائمة لكن لا يمكن تحديدها لأن جميع الاستجابات تبدو كفشل.</li>
+                    <li><strong>س3:</strong> يُقبَل أي ثلاثة من الجدول. الاستدلال الرئيسي: المصادقة متعددة العوامل تجعل معرفة كلمة المرور بلا جدوى؛ إغلاق الحساب يُنهي محاولات الهجوم الآلي بعد محاولات قليلة؛ سياسة كلمة مرور قوية تضمن أن كلمة المرور ليست في أي قائمة كلمات. رموز <span class="term-en">CSRF</span> فعّالة أيضاً ضد الأتمتة البسيطة.</li>
+                    <li><strong>س4:</strong> المجموعة المثالية: تحديد المعدل + إغلاق الحساب (5&ndash;10 فشل) + المصادقة متعددة العوامل + متطلبات كلمة مرور قوية + رموز <span class="term-en">CSRF</span>. هذا دفاع متعدد الطبقات: كل طبقة تعوّض نقاط ضعف الأخريات. المصادقة متعددة العوامل هي الأهم لأنها تحمي حتى بعد اختراق كلمة المرور.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── استكشاف الأخطاء ── -->
+        <section id="troubleshooting">
+            <h2>&#128295; استكشاف الأخطاء وإصلاحها</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; تبويب <span class="term-en">Intruder</span> لا يحتوي على الطلب من المهمة 1</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> لم يُرسَل الطلب إلى <span class="term-en">Intruder</span>. عُد إلى <span class="term-en">Burp Proxy &rarr; HTTP History</span>، ابحث عن طلب <span class="term-en">GET</span> للقوة الغاشمة (عنوان URL يحتوي على <code>/vulnerabilities/brute/</code>)، انقر عليه بزر الأيمن، واختر <strong>"<span class="term-en">Send to Intruder</span>"</strong>. بدلاً من ذلك، كرّر الخطوة 1ب مع تشغيل الاعتراض وانقر بزر الأيمن على الطلب الملتقط.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; بعد النقر على "<span class="term-en">Add §</span>" لا يُميَّز شيء باللون الأخضر</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> يجب <strong>تحديد النص أولاً</strong> بالنقر والسحب لتمييز كلمة <code>test</code> في الطلب، ثم النقر على <span class="term-en">Add §</span>. إذا لم يكن هناك نص محدد عند النقر على <span class="term-en">Add §</span>، فلا شيء يحدث. جرّب النقر في بداية <code>test</code>، ثم اسحب مع الضغط على زر الفأرة حتى نهاية <code>test</code> قبل الإفراج.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; جميع النتائج الـ15 تُظهر نفس طول الاستجابة &mdash; لا تبرز كلمة مرور</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> انتهت صلاحية كوكي الجلسة على الأرجح. سجّل الدخول مجدداً إلى <span class="term-en">DVWA</span> (admin / password)، ثم انتقل إلى صفحة <span class="term-en">Brute Force</span>، والتقط طلباً جديداً مع تشغيل الاعتراض، وأرسل الطلب الجديد إلى <span class="term-en">Intruder</span>. تأكد أيضاً من ضبط أمان <span class="term-en">DVWA</span> على <strong><span class="term-en">Low</span></strong> &mdash; تُغيّر مستويات <span class="term-en">Medium/High</span> سلوك الاستجابة.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; هجوم <span class="term-en">Intruder</span> يُظهر "<span class="term-en">Connection refused</span>" لجميع الطلبات</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> توقف <span class="term-en">DVWA</span> عن العمل. تحقق: <code>sudo docker ps</code>. إذا لم يكن <span class="term-en">DVWA</span> مدرجاً: <code>sudo docker start dvwa</code>. تأكد أيضاً من أن رأس <span class="term-en">Host</span> في طلب <span class="term-en">Intruder</span> يُظهر عنوان IP جهازك (من <code>hostname -I</code>)، وليس <code>localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; لا يمكن تحميل ملف قائمة الكلمات في تبويب <span class="term-en">Intruder Payloads</span></div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تأكد من وجود الملف: <code>cat ~/dvwa_wordlist.txt</code>. إذا كان مفقوداً، أعِد تشغيل أمر <code>cat &gt; ~/dvwa_wordlist.txt &lt;&lt; 'EOF'</code> من قسم الإعداد. بدلاً من ذلك، في تبويب <span class="term-en">Payloads</span>، اكتب كل كلمة مرور في حقل <strong>"<span class="term-en">Enter a new item</span>"</strong> وانقر <strong><span class="term-en">Add</span></strong> لكل واحدة.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; صفحة <span class="term-en">DVWA Brute Force</span> لا تظهر &mdash; إعادة توجيه إلى تسجيل الدخول</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> انتهت صلاحية جلسة <span class="term-en">DVWA</span>. سجّل الدخول مجدداً إلى <span class="term-en">DVWA</span> (admin / password)، ثم انتقل إلى وحدة <span class="term-en">Brute Force</span> مجدداً. تأكد من أن <span class="term-en">FoxyProxy</span> لا يزال مفعّلاً حتى يلتقط <span class="term-en">Burp</span> كوكي الجلسة الجديد.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; بعد المختبر، <span class="term-en">Firefox</span> لا يصل إلى الإنترنت</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> <span class="term-en">FoxyProxy</span> لا يزال مفعّلاً ويُوجّه الحركة إلى <span class="term-en">Burp</span> الذي أُغلق الآن. انقر <strong>أيقونة <span class="term-en">FoxyProxy</span></strong> في شريط أدوات <span class="term-en">Firefox</span> واختر <strong>"<span class="term-en">Disable FoxyProxy</span>"</strong>. افعل هذا في نهاية كل جلسة مختبر.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; واجهة <span class="term-en">Intruder</span> تبدو مختلفة عن وصف المختبر (واجهة v2025)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> يتميز <span class="term-en">Burp Suite v2025</span> بواجهة <span class="term-en">Intruder</span> مُعاد تصميمها. الاختلافات الرئيسية عن الإصدارات الأقدم: (1) بعد إرسال طلب إلى <span class="term-en">Intruder</span>، يظهر في تبويب هجوم مرقّم (مثلاً <strong><span class="term-en">Attack 1</span></strong>) داخل عرض <span class="term-en">Intruder</span> &mdash; انقر هذا التبويب لرؤية محرر <span class="term-en">Positions</span>. (2) إعداد <strong><span class="term-en">Payloads</span></strong> موجود الآن في لوحة جانبية قابلة للطي &mdash; انقر تبويب/زر <strong><span class="term-en">Payloads</span></strong> على الجانب الأيمن لتوسيعها. (3) يظهر زر جديد <strong>"<span class="term-en">Auto §</span>"</strong> إلى جانب "<span class="term-en">Add §</span>" و"<span class="term-en">Clear §</span>" &mdash; لا تستخدم <span class="term-en">Auto §</span> في هذا المختبر (سيُحدّد جميع المعاملات تلقائياً). سير العمل الأساسي (المواضع &rarr; الحمولات &rarr; بدء الهجوم) لم يتغيّر.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; لا يمكن العثور على "<span class="term-en">Payload settings</span>" أو "<span class="term-en">Payload encoding</span>" في لوحة <span class="term-en">Payloads</span> (v2025)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> في <span class="term-en">Burp Suite v2025</span>، القسم المسمى سابقاً <strong>"<span class="term-en">Payload settings</span>"</strong> يُسمى الآن <strong>"<span class="term-en">Payload configuration</span>"</strong>. قسم <strong>"<span class="term-en">Payload encoding</span>"</strong> بمربع التحديد <em>"<span class="term-en">URL-encode these characters</span>"</em> لا يزال موجوداً &mdash; انتقل للأسفل حتى أسفل لوحة <span class="term-en">Payloads</span> الجانبية للعثور عليه. إذا بدت اللوحة ضيقة جداً، اسحب حدودها اليسرى لإعادة تحجيمها.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; لا يمكن العثور على إعدادات مستمع البروكسي (v2025)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> في <span class="term-en">Burp Suite v2025</span> يمكن الوصول إلى إعدادات مستمع البروكسي بطريقتين: (1) تبويب <strong><span class="term-en">Proxy</span></strong> &rarr; انقر زر <strong>"<span class="term-en">Proxy settings</span>"</strong> بالقرب من أعلى التبويب. (2) انقر أيقونة <strong><span class="term-en">Settings</span></strong> (الترس في الزاوية العليا اليمنى من <span class="term-en">Burp</span>) &rarr; <strong><span class="term-en">Tools</span></strong> &rarr; <strong><span class="term-en">Proxy</span></strong>. يجب أن يُظهر المستمع <code>127.0.0.1:8080</code> كـ <strong><span class="term-en">Running</span></strong>. إذا أظهر <strong><span class="term-en">Not running</span></strong>، انقر المُبدِّل بجانبه لتشغيله.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── التقرير ── -->
+        <section id="report">
+            <h2>&#128196; المُخرجات والتقرير</h2>
+
+            <div class="summary-box">
+                <h3>&#128203; ملخص المختبر 07</h3>
+                <table>
+                    <tr><th>المهمة</th><th>ما فعلته</th><th>الاستنتاج الرئيسي</th></tr>
+                    <tr><td><strong>المهمة 1</strong></td><td>التقاط طلب <span class="term-en">GET</span> للقوة الغاشمة في <span class="term-en">DVWA</span>، إرساله إلى <span class="term-en">Intruder</span></td><td>يحتاج <span class="term-en">Intruder</span> إلى طلب ملتقط حقيقي كقالب له</td></tr>
+                    <tr><td><strong>المهمة 2</strong></td><td>ضبط نمط <span class="term-en">Sniper</span>، تحديد موضع &sect;password&sect;، تحميل قائمة كلمات من 15 إدخالاً</td><td>المواضع تُحدّد ما يُستبدَل؛ <span class="term-en">Sniper</span> = قائمة واحدة، موضع واحد</td></tr>
+                    <tr><td><strong>المهمة 3</strong></td><td>تشغيل الهجوم، تحديد كلمة المرور الصحيحة من خلال فرق طول الاستجابة</td><td>عندما تكون رموز الحالة متطابقة، يكشف طول الاستجابة عن النتيجة الصحيحة</td></tr>
+                    <tr><td><strong>المهمة 4</strong></td><td>اختبار مستويات أمان <span class="term-en">Medium</span> (تأخير) و<span class="term-en">High</span> (رمز <span class="term-en">CSRF</span>) في <span class="term-en">DVWA</span></td><td>تحديد المعدل والإغلاق والرموز والمصادقة متعددة العوامل كل منها يُضيف طبقة دفاعية ذات معنى</td></tr>
+                </table>
+                <p style="margin-top:14px; opacity:0.9; font-size:0.92em;">في <strong>المختبر 08</strong> ستستكشف فئة جديدة من ثغرات الويب. إعداد بروكسي <span class="term-en">Burp</span> من المختبرات 05&ndash;07 يستمر استخدامه طوال الدورة.</p>
+            </div>
+
+            <div class="deliverable">
+                <h4>&#9997;&#65039; قائمة تدقيق التسليم</h4>
+                <ul>
+                    <li>تقرير <span class="term-en">PDF</span> (معلومات الطالب + جميع إجابات المهام)</li>
+                    <li>لقطة شاشة: المهمة 1 &mdash; طلب <span class="term-en">GET</span> للقوة الغاشمة الملتقط في <span class="term-en">Burp</span></li>
+                    <li>لقطة شاشة: المهمة 2 &mdash; تبويب <span class="term-en">Intruder Positions</span> مع تعيين <code>&sect;test&sect;</code> وتحديد <span class="term-en">Sniper</span></li>
+                    <li>لقطة شاشة: المهمة 2 &mdash; تبويب <span class="term-en">Intruder Payloads</span> مع تحميل قائمة الكلمات</li>
+                    <li>لقطة شاشة: المهمة 3 &mdash; جدول نتائج <span class="term-en">Intruder</span> يُظهر صف طول الاستجابة المختلف</li>
+                    <li>لقطة شاشة: المهمة 4 &mdash; طلب <span class="term-en">Brute Force</span> بالأمان العالي يُظهر معامل <span class="term-en">user_token</span></li>
+                </ul>
+            </div>
+
+            <h3>معيار التقييم</h3>
+            <table>
+                <tr><th>المهمة</th><th>الوصف</th><th>النقاط</th></tr>
+                <tr><td><strong>المهمة 1</strong></td><td>التقاط الطلب &mdash; طريقة <span class="term-en">HTTP</span>، موقع المعامل، فهم الكوكي</td><td>20</td></tr>
+                <tr><td><strong>المهمة 2</strong></td><td>إعداد <span class="term-en">Intruder</span> &mdash; نوع الهجوم الصحيح، الموضع، قائمة الحمولة</td><td>25</td></tr>
+                <tr><td><strong>المهمة 3</strong></td><td>تشغيل الهجوم &mdash; تحديد كلمة المرور، شرح الكشف بالطول، تحليل تأثير تحديد المعدل</td><td>30</td></tr>
+                <tr><td><strong>المهمة 4</strong></td><td>التدابير المضادة &mdash; ملاحظة دفاعات <span class="term-en">Medium/High</span>، التوصية بحمايات واقعية</td><td>20</td></tr>
+                <tr><td><strong>الجودة</strong></td><td>إجابات كتابية واضحة، لقطات شاشة مُصنَّفة، تقرير مُنسَّق</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:left;font-weight:bold;">الإجمالي</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>إنشاء تقرير المختبر</h3>
+            <div style="border:2px solid #6d28d9;border-radius:15px;padding:28px;margin:18px 0;background:#fafbfc;">
+                <div style="text-align:center;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #6d28d9;">
+                    <h3 style="color:var(--secondary-color);margin:0;">CYB236 &mdash; تقرير المختبر 07</h3>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">اسم الطالب: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="الاسم الكامل (مطلوب)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;font-family:inherit;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">رقم الطالب: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="رقم الطالب (مطلوب)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;font-family:inherit;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">البريد الإلكتروني: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="البريد الإلكتروني للطالب (مطلوب)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;font-family:inherit;">
+                </div>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#6d28d9,#4c1d95);color:white;border:none;padding:14px 38px;font-size:1.05em;font-weight:600;border-radius:10px;cursor:pointer;box-shadow:0 4px 15px rgba(109,40,217,0.4);font-family:inherit;">
+                        &#128196; إنشاء تقرير PDF
+                    </button>
+                </div>
+            </div>
+
+            <h3>التنظيف</h3>
+<pre><code><span class="command-label"># تعطيل FoxyProxy: انقر الأيقونة في Firefox → اختر "Disable FoxyProxy"</span>
+
+<span class="command-label"># إيقاف DVWA عند الانتهاء</span>
+sudo docker stop dvwa
+
+<span class="command-label"># حذف قائمة الكلمات (اختياري)</span>
+rm ~/dvwa_wordlist.txt</code></pre>
+        </section>
+
+    </div><!-- نهاية المحتوى -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; أمن تطبيقات الويب</p>
+        <p>المختبر 07: <span class="term-en">Burp Suite Intruder</span> &mdash; هجمات القاموس وكلمات المرور &bull; الفصل 6</p>
+    </div>
+
+</div><!-- نهاية الحاوية -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('اسم الطالب مطلوب.'); return; }
+    if (!sid)   { alert('رقم الطالب مطلوب.'); return; }
+    if (!email) { alert('البريد الإلكتروني مطلوب.'); return; }
+
+    var answers = {};
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!answers[t]) answers[t] = [];
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers[t].push({ label: lbl, value: f.value.trim() || '(لم تتم الإجابة)' });
+    });
+
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g,'').replace(/\s+/g,'_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
+    var w = window.open('','_blank');
+    if (!w) { alert('النوافذ المنبثقة محظورة. يُرجى السماح بالنوافذ المنبثقة لهذه الصفحة والمحاولة مجدداً.'); return; }
+
+    var h = '<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8">';
+    h += '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">';
+    h += '<title>Lab07_' + safeName + '_' + safeSid + '</title><style>';
+    h += 'body{font-family:"Tajawal","Amiri","Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.7;direction:rtl}';
+    h += 'h1{color:#4c1d95;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#f5f3ff;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #ede9fe}';
+    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-right:4px solid #6d28d9;padding-right:14px;border-left:none;padding-left:0}';
+    h += '.tt{color:#4c1d95;font-size:1.15em;margin-bottom:10px;font-weight:700}';
+    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
+    h += '.ss{margin-top:16px;page-break-inside:avoid}.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 \u0627\u0644\u0645\u062e\u062a\u0628\u0631 07: Burp Suite Intruder \u2014 \u0647\u062c\u0645\u0627\u062a \u0627\u0644\u0642\u0627\u0645\u0648\u0633 \u0648\u0643\u0644\u0645\u0627\u062a \u0627\u0644\u0645\u0631\u0648\u0631</h1>';
+    h += '<p class="sub">\u0623\u0645\u0646 \u062a\u0637\u0628\u064a\u0642\u0627\u062a \u0627\u0644\u0648\u064a\u0628</p>';
+    h += '<div class="si"><div><strong>\u0627\u0633\u0645 \u0627\u0644\u0637\u0627\u0644\u0628:</strong> ' + name + '</div>';
+    h += '<div><strong>\u0631\u0642\u0645 \u0627\u0644\u0637\u0627\u0644\u0628:</strong> ' + sid + '</div>';
+    h += '<div><strong>\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a:</strong> ' + email + '</div></div>';
+
+    var taskNames = {
+        '1': '\u0627\u0644\u0645\u0647\u0645\u0629 1: \u0627\u0644\u062a\u0642\u0627\u0637 \u0637\u0644\u0628 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644',
+        '2': '\u0627\u0644\u0645\u0647\u0645\u0629 2: \u0625\u0639\u062f\u0627\u062f Intruder',
+        '3': '\u0627\u0644\u0645\u0647\u0645\u0629 3: \u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u0647\u062c\u0648\u0645 \u0648\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0646\u062a\u0627\u0626\u062c',
+        '4': '\u0627\u0644\u0645\u0647\u0645\u0629 4: \u0627\u0644\u062a\u062f\u0627\u0628\u064a\u0631 \u0627\u0644\u0645\u0636\u0627\u062f\u0629 \u0648\u0627\u0644\u062f\u0641\u0627\u0639'
+    };
+
+    var ssIds = {
+        '1': ['prev-task1'],
+        '2': ['prev-task2a', 'prev-task2b'],
+        '3': ['prev-task3'],
+        '4': ['prev-task4']
+    };
+
+    var ssLabels = {
+        '1': ['\u0644\u0642\u0637\u0629 \u0634\u0627\u0634\u0629 \u2014 \u0637\u0644\u0628 Brute Force \u0627\u0644\u0645\u0644\u062a\u0642\u0637'],
+        '2': ['\u0644\u0642\u0637\u0629 \u0634\u0627\u0634\u0629 \u2014 \u062a\u0628\u0648\u064a\u0628 Intruder Positions', '\u0644\u0642\u0637\u0629 \u0634\u0627\u0634\u0629 \u2014 \u062a\u0628\u0648\u064a\u0628 Intruder Payloads'],
+        '3': ['\u0644\u0642\u0637\u0629 \u0634\u0627\u0634\u0629 \u2014 \u062c\u062f\u0648\u0644 \u0646\u062a\u0627\u0626\u062c Intruder'],
+        '4': ['\u0644\u0642\u0637\u0629 \u0634\u0627\u0634\u0629 \u2014 \u0645\u0639\u0627\u0645\u0644 user_token \u0628\u0627\u0644\u0623\u0645\u0627\u0646 \u0627\u0644\u0639\u0627\u0644\u064a']
+    };
+
+    for (var t = 1; t <= 4; t++) {
+        var tStr = String(t);
+        h += '<div class="ts"><div class="tt">' + taskNames[tStr] + '</div>';
+        if (answers[tStr]) {
+            answers[tStr].forEach(function(a) {
+                h += '<div class="ar"><div class="al">' + a.label + '</div>';
+                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+            });
+        }
+        ssIds[tStr].forEach(function(key, idx) {
+            if (screenshotData[key]) {
+                h += '<div class="ss"><div class="ss-lbl">' + ssLabels[tStr][idx] + '</div>';
+                h += '<img src="' + screenshotData[key] + '"></div>';
+            }
+        });
+        h += '</div>';
+        if (t < 4) h += '<hr>';
+    }
+
+    h += '<div class="fn">CYB236 \u2014 \u0627\u0644\u0645\u062e\u062a\u0628\u0631 07 \u2014 \u0623\u0645\u0646 \u062a\u0637\u0628\u064a\u0642\u0627\u062a \u0627\u0644\u0648\u064a\u0628</div>';
+    h += '</body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
+</body>
+</html>

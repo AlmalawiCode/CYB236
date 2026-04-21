@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المختبر 04: حقن SQL وحقن الأوامر وتزوير الطلبات (CSRF) مع DVWA</title>
     <style>
@@ -19,7 +20,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
             line-height: 1.9;
             color: var(--dark-text);
             background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
@@ -396,8 +397,9 @@ sudo docker start dvwa</code></pre>
                 <label>5. ما هو السبب الجذري لهذه الثغرة؟</label>
                 <textarea class="task-answer" data-task="1" rows="2" placeholder="تلميح: كيف يبني الخادم استعلامه؟"></textarea>
 
-                <label>6. اسم ملف لقطة الشاشة (تُظهر جميع المستخدمين مقارنةً بمستخدم واحد):</label>
-                <input type="text" class="task-answer" data-task="1" placeholder="مثلاً: task1_sqli_all_users.png">
+                <label>6. لقطة الشاشة &mdash; ارفع لقطة شاشة تُظهر جميع المستخدمين مقارنةً بمستخدم واحد:</label>
+                <input type="file" id="screenshot-task1" accept="image/*" onchange="previewImage(this,'preview-task1')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="preview-task1" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة المهمة 1">
             </div>
         </section>
 
@@ -474,8 +476,9 @@ sudo docker start dvwa</code></pre>
                 <label>4. كيف يختلف حقن الأوامر عن حقن SQL؟ (ما هو الهدف لكل منهما؟)</label>
                 <textarea class="task-answer" data-task="2" rows="3" placeholder="حقن SQL يستهدف... / حقن الأوامر يستهدف..."></textarea>
 
-                <label>5. اسم ملف لقطة الشاشة (ناتج ping مع نتيجة whoami):</label>
-                <input type="text" class="task-answer" data-task="2" placeholder="مثلاً: task2_command_injection.png">
+                <label>5. لقطة الشاشة &mdash; ارفع لقطة شاشة تُظهر ناتج ping مع نتيجة whoami:</label>
+                <input type="file" id="screenshot-task2" accept="image/*" onchange="previewImage(this,'preview-task2')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="preview-task2" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة المهمة 2">
             </div>
         </section>
 
@@ -561,8 +564,9 @@ sudo docker start dvwa</code></pre>
                 <label>6. اذكر دفاعين يمنعان ثغرة CSRF هذه:</label>
                 <textarea class="task-answer" data-task="3" rows="2" placeholder="1. ... 2. ..."></textarea>
 
-                <label>7. اسم ملف لقطة الشاشة (شريط الرابط يُظهر معاملات كلمة المرور):</label>
-                <input type="text" class="task-answer" data-task="3" placeholder="مثلاً: task3_csrf_url.png">
+                <label>7. لقطة الشاشة &mdash; ارفع لقطة شاشة تُظهر شريط الرابط مع معاملات كلمة المرور:</label>
+                <input type="file" id="screenshot-task3" accept="image/*" onchange="previewImage(this,'preview-task3')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="preview-task3" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة المهمة 3">
             </div>
         </section>
 
@@ -674,6 +678,20 @@ sudo docker stop dvwa</code></pre>
 </div><!-- نهاية الحاوية -->
 
 <script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
 function generateReport() {
     alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من المختبر.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this lab.');
 }

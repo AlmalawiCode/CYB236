@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مذكرة الفصل 21 — إدارة الثغرات الأمنية | CYB 236</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-50: #fffbeb;
+            --primary-600: #d97706;
+            --primary-700: #b45309;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── ألوان الفصل 21 ── */
+            --ch21: #b45309;
+            --ch21-light: #fffbeb;
+            --ch21-mid: #fcd34d;
+            --ch21-dark: #78350f;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.9;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+            direction: rtl;
+        }
+
+        /* المصطلحات التقنية الإنجليزية */
+        .term {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+            display: inline-block;
+            background: var(--primary-50);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary-700);
+        }
+
+        /* ───── شريط التنقل ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #d97706, #b45309);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--neutral-300);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── الغلاف ───── */
+        .cover {
+            background: linear-gradient(135deg, #1c0a00 0%, #2d1000 50%, #3d1a05 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ch21-mid);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: var(--ch21); border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            background: rgba(180,83,9,0.4);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        /* ───── الحاوية ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── الشريط الجانبي ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--ch21-light);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ch21);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--ch21-light); color: var(--ch21-dark); }
+        .sidebar-link.active { background: var(--ch21-light); color: var(--ch21); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--ch21); color: white; }
+
+        /* ───── المحتوى ───── */
+        .content { min-width: 0; }
+
+        /* ───── رأس الفصل ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+            background: var(--ch21-light);
+            color: var(--ch21);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.01em; }
+
+        .chapter-divider {
+            height: 4px;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            width: 80px;
+            background: var(--ch21);
+        }
+
+        /* ───── قسم الموضوع ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+            background: var(--ch21-light);
+        }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── بطاقات الأهداف ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--ch21);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.7; }
+
+        /* ───── صندوق القصة ───── */
+        .story {
+            background: var(--ch21-light);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #fde68a;
+            border-right: 5px solid var(--ch21);
+        }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+            background: #fef3c7;
+            color: var(--ch21);
+        }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-right: 3px solid var(--ch21-mid);
+        }
+
+        /* ───── نقطة رئيسية ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-right: 5px solid var(--green);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── تحذير ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-right: 5px solid var(--red);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق معلومات ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-right: 5px solid #3b82f6;
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق أصفر ───── */
+        .amber-box {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-right: 5px solid var(--ch21);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .amber-box h4 { color: var(--ch21); margin-bottom: 6px; font-size: 1em; }
+        .amber-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── قائمة نظيفة ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 36px 10px 0;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            background: var(--ch21-light);
+            border: 1px solid #fde68a;
+        }
+
+        /* ───── شبكة مقارنة ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── شبكة بطاقات ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--ch21);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── قائمة خطوات ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            background: var(--ch21);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* ───── صندوق الكود ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            white-space: pre;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+
+        /* ───── جدول البيانات ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: right;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:last-child  { border-radius: 10px 0 0 10px; }
+        .data-table tr td:first-child { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── شارات درجات CVSS ───── */
+        .cvss-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.82em;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+        .cvss-badge.critical { background: #7f1d1d; }
+        .cvss-badge.high     { background: var(--red); }
+        .cvss-badge.medium   { background: #f59e0b; }
+        .cvss-badge.low      { background: var(--green); }
+
+        /* ───── شبكة بطاقات CVSS ───── */
+        .cvss-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .cvss-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid var(--ch21);
+        }
+
+        .cvss-card .cvss-abbr {
+            font-size: 0.72em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ch21);
+            margin-bottom: 4px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .cvss-card .cvss-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .cvss-card .cvss-options {
+            font-size: 0.85em;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        .cvss-card .cvss-options em {
+            display: block;
+            margin-top: 6px;
+            color: var(--ch21);
+            font-style: normal;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        /* ───── نطاقات الدرجات ───── */
+        .score-band {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .score-range {
+            flex: 1;
+            min-width: 120px;
+            border-radius: 12px;
+            padding: 16px 18px;
+            text-align: center;
+        }
+
+        .score-range .sr-range { font-size: 1.3em; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; direction: ltr; }
+        .score-range .sr-label { font-size: 0.85em; font-weight: 600; margin-top: 4px; }
+
+        .score-range.low      { background: #f0fdf4; border: 2px solid var(--green); }
+        .score-range.low .sr-range, .score-range.low .sr-label { color: var(--green); }
+        .score-range.medium   { background: #fffbeb; border: 2px solid #f59e0b; }
+        .score-range.medium .sr-range, .score-range.medium .sr-label { color: #b45309; }
+        .score-range.high     { background: var(--red-light); border: 2px solid var(--red); }
+        .score-range.high .sr-range, .score-range.high .sr-label { color: var(--red); }
+        .score-range.critical { background: #fef2f2; border: 2px solid #7f1d1d; }
+        .score-range.critical .sr-range, .score-range.critical .sr-label { color: #7f1d1d; }
+
+        /* ───── بانر الملخص ───── */
+        .summary-banner {
+            background: linear-gradient(135deg, var(--ch21-dark), var(--ch21));
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 28px 8px 0;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; right: 0; font-weight: 700; }
+
+        /* ───── محاكاة حاسبة CVSS ───── */
+        .cvss-mockup-wrapper {
+            background: #f8fafc;
+            border: 1px solid var(--neutral-200);
+            border-radius: 20px;
+            padding: 28px 30px;
+            margin: 28px 0;
+        }
+
+        .cvss-mockup-label {
+            font-weight: 700;
+            font-size: 0.95em;
+            color: var(--ch21);
+            margin-bottom: 8px;
+        }
+
+        .cvss-mockup {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            direction: ltr;
+        }
+
+        .cvss-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--neutral-100);
+        }
+
+        .cvss-row:last-of-type { border-bottom: none; }
+
+        .cvss-row-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cvss-row-abbr {
+            background: var(--ch21);
+            color: white;
+            font-weight: 800;
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .cvss-row-name {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--dark2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .cvss-row-options {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .cvss-opt {
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 0.82em;
+            font-weight: 600;
+            background: var(--neutral-100);
+            color: var(--neutral-500);
+            border: 1px solid var(--neutral-200);
+            cursor: default;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .cvss-opt.selected {
+            background: var(--ch21);
+            color: white;
+            border-color: var(--ch21);
+            box-shadow: 0 2px 8px rgba(180,83,9,0.35);
+        }
+
+        .cvss-row-note {
+            font-size: 0.82em;
+            color: var(--gray);
+            font-style: italic;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .cvss-result-bar {
+            background: linear-gradient(135deg, var(--ch21-dark), var(--ch21));
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cvss-result-score {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .cvss-result-num {
+            font-size: 2.8em;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .cvss-result-badge {
+            padding: 6px 18px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .cvss-result-badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .cvss-result-vector {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cvss-result-vector-label {
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.7);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .cvss-result-vector code {
+            background: rgba(0,0,0,0.3);
+            color: #fcd34d;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.88em;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 900px) {
+            .cvss-row { grid-template-columns: 1fr; }
+            .cvss-result-bar { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* ───── فاصل الأقسام ───── */
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--ch21-light), var(--ch21), var(--ch21-light));
+            margin: 48px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── التذييل ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .cvss-grid, .score-band { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- شريط التنقل -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: أمن تطبيقات الويب</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="lang-switch">English</a>
+            <a href="../index.html" class="nav-link">الصفحة الرئيسية</a>
+            <a href="../week7/index-ar.html" class="nav-link">الأسبوع 7</a>
+            <a href="index-ar.html" class="nav-link active">الأسبوع 8</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════ الغلاف ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>الأسبوع 8</span>
+            <span>›</span>
+            <span>الجزء الثالث — منهجيات التطوير الآمن II</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            الأسبوع 8 &nbsp;·&nbsp; منهجيات التطوير الآمن II
+        </div>
+        <h1>إدارة الثغرات الأمنية</h1>
+        <p class="sub">إعادة الإنتاج · التقييم · الفرز · الإصلاح · اختبار الانحدار</p>
+        <div class="cover-chips">
+            <div class="cover-chip">Ch.21 Vulnerability Management</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ المحتوى ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ الشريط الجانبي ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">الفصل 21 — المحتويات</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#ch21-overview"   class="sidebar-link active"><span class="sidebar-link-number">1</span>نظرة عامة وخط الإجراءات</a>
+            <a href="#ch21-objectives" class="sidebar-link"><span class="sidebar-link-number">2</span>أهداف التعلم</a>
+            <a href="#ch21-reproduce"  class="sidebar-link"><span class="sidebar-link-number">3</span>إعادة إنتاج الثغرات</a>
+            <a href="#ch21-staging"    class="sidebar-link"><span class="sidebar-link-number">4</span>بيئة الاختبار المرحلية</a>
+            <a href="#ch21-rank"       class="sidebar-link"><span class="sidebar-link-number">5</span>تصنيف الخطورة</a>
+            <a href="#ch21-cvss-intro" class="sidebar-link"><span class="sidebar-link-number">6</span>مقدمة في CVSS</a>
+            <a href="#ch21-base"       class="sidebar-link"><span class="sidebar-link-number">7</span>الدرجة الأساسية (8 مدخلات)</a>
+            <a href="#ch21-calculator" class="sidebar-link"><span class="sidebar-link-number">8</span>استخدام الحاسبة</a>
+            <a href="#ch21-base-ex"    class="sidebar-link"><span class="sidebar-link-number">9</span>مثال على الدرجة الأساسية</a>
+            <a href="#ch21-temporal"   class="sidebar-link"><span class="sidebar-link-number">10</span>التقييم الزمني</a>
+            <a href="#ch21-env"        class="sidebar-link"><span class="sidebar-link-number">11</span>التقييم البيئي</a>
+            <a href="#ch21-advanced"   class="sidebar-link"><span class="sidebar-link-number">12</span>التقييم المتقدم والمخصص</a>
+            <a href="#ch21-fix"        class="sidebar-link"><span class="sidebar-link-number">13</span>إصلاح الثغرات</a>
+            <a href="#ch21-regression" class="sidebar-link"><span class="sidebar-link-number">14</span>اختبارات الانحدار</a>
+            <a href="#ch21-summary"    class="sidebar-link"><span class="sidebar-link-number">15</span>ملخص الفصل</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ المحتوى الرئيسي ═══════════ -->
+<main class="content">
+
+<!-- ════════ رأس الفصل ════════ -->
+<div class="chapter-header">
+    <div class="chapter-num">Chapter 21</div>
+    <div class="chapter-title">إدارة الثغرات الأمنية</div>
+    <div class="chapter-divider"></div>
+</div>
+
+<!-- ════════ نظرة عامة ════════ -->
+<div id="ch21-overview" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128203;</div>
+        <h2>خط إجراءات إدارة الثغرات الأمنية</h2>
+    </div>
+
+    <p>من متطلبات أي <strong>دورة حياة تطوير برمجي آمن (<span class="term">SSDL</span>)</strong> جيدة وجود خط إجراءات واضح للحصول على الثغرات الأمنية وفرزها ومعالجتها في تطبيق الويب. تظهر الثغرات في كل مرحلة — التصميم المعماري والتطوير والإنتاج — وكل واحدة منها تحتاج استجابةً منظمة وقابلة للتكرار.</p>
+
+    <p>يربط خط إجراءات إدارة الثغرات بين الاكتشاف (الفصل 20) والمعالجة، مما يضمن ألا تضيع أي ثغرة في الفجوة بين اكتشافها وإصلاحها الدائم.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128270;</div>
+            <div class="mc-title">1. إعادة الإنتاج</div>
+            <div class="mc-desc">التحقق من وجود الثغرة في بيئة اختبار مرحلية مضبوطة قبل اتخاذ أي إجراء.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128202;</div>
+            <div class="mc-title">2. التقييم والتصنيف</div>
+            <div class="mc-desc">استخدام <span class="term">CVSS</span> أو نظام مماثل لقياس الخطورة وترتيب الإصلاحات بالأولوية.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128295;</div>
+            <div class="mc-title">3. الإصلاح</div>
+            <div class="mc-desc">تطبيق حل دائم على مستوى التطبيق كله، أو إصلاح مؤقت مُتتبَّع مع فتح مهمة جديدة.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9989;</div>
+            <div class="mc-title">4. اختبار الانحدار</div>
+            <div class="mc-desc">كتابة اختبار يفشل إذا عادت هذه الثغرة مرةً أخرى — وشحنه مع الإصلاح.</div>
+        </div>
+    </div>
+
+    <div class="amber-box">
+        <h4>&#128203; موقع هذا الفصل ضمن دورة الـ SSDL</h4>
+        <p>يأتي الفصل 21 مباشرةً بعد أساليب اكتشاف الثغرات في الفصل 20. بمجرد اكتشاف ثغرة — سواء عبر التحليل الساكن أو الديناميكي أو تقرير ببرنامج مكافآت أو بلاغ من مستخدم — فإن إدارة الثغرات هي ما يحدث بعد ذلك لضمان معالجتها بصورة صحيحة ودائمة.</p>
+    </div>
+</div>
+
+<!-- ════════ أهداف التعلم ════════ -->
+<div id="ch21-objectives" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number">1</div>
+            <div class="objective-text"><strong>الشرح</strong> — لماذا تُعدّ إعادة إنتاج الثغرة في بيئة اختبار مرحلية الخطوةَ الأولى الضرورية، وما المخاطر التي يتجنبها التحقق من المشكلة قبل التصرف بناءً على التقرير.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">2</div>
+            <div class="objective-text"><strong>التطبيق</strong> — خوارزمية الدرجة الأساسية في <span class="term">CVSS v3.1</span>، مع التعرف الصحيح على جميع المدخلات الثمانية ووصف كيفية تضافرها لإنتاج درجة خطورة من 0 إلى 10.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">3</div>
+            <div class="objective-text"><strong>التمييز</strong> — بين الدرجة الأساسية والزمنية والبيئية في <span class="term">CVSS</span>، وشرح متى تضيف كل درجة قيمةً لترتيب الثغرات بالأولوية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">4</div>
+            <div class="objective-text"><strong>الوصف</strong> — قواعد الإصلاح الصحيح للثغرات، بما يشمل متى يكون الإصلاح الجزئي مقبولًا، وما الذي يجب أن يرافق كل مشكلة أمنية مُغلقة دائمًا، ولماذا تتصاعد قيمة اختبارات الانحدار مع مرور الوقت.</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ إعادة الإنتاج ════════ -->
+<div id="ch21-reproduce" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128270;</div>
+        <h2>الخطوة الأولى — إعادة إنتاج الثغرات</h2>
+    </div>
+
+    <p>بعد تلقي تقرير عن ثغرة أمنية، <strong>الخطوة الأولى دائمًا هي إعادة الإنتاج</strong> — التحقق من أن الثغرة موجودة فعلًا وتتصرف كما وُصفت — قبل استثمار أي جهد هندسي في الإصلاح.</p>
+
+    <h3>لماذا نُعيد الإنتاج أولًا؟</h3>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — مشكلة النتائج الإيجابية الخاطئة</div>
+        <p>أحيانًا يبدو خطأ في إعدادات المستخدم تمامًا كثغرة أمنية. مثلًا، قد "يجعل" مستخدم صورةً في تطبيق استضافة الصور "عامة" عن طريق الخطأ رغم أنه يضبط صوره عادةً على "خاصة". بدون إعادة الإنتاج، قد يُضيع المهندس ساعاتٍ في التحقيق في مشكلة غير موجودة أصلًا — أو يدفع مكافأةً لم تُكسَب.</p>
+    </div>
+
+    <ul class="clean-list">
+        <li><strong>يؤكد صحة التقرير</strong> — يتجنب إهدار ساعات هندسية في نتائج إيجابية خاطئة</li>
+        <li><strong>يكشف الأثر الأعمق</strong> — كثيرًا ما تُكشف خلال إعادة الإنتاج نطاقات أوسع للثغرة مما ورد في التقرير</li>
+        <li><strong>يحمي برامج المكافآت</strong> — لا ينبغي دفع مكافأة عن نتيجة إيجابية خاطئة؛ إعادة الإنتاج تُوفر دليلًا موثقًا</li>
+        <li><strong>يُبني الفهم</strong> — رؤية الثغرة تعمل يمنح المهندسين بصيرةً في السبب الجذري وتعقيد الإصلاح</li>
+        <li><strong>يُرسّخ الأساس</strong> — سجل إعادة الإنتاج هو الأساس لكتابة اختبار الانحدار لاحقًا</li>
+    </ul>
+
+    <div class="key-point">
+        <h4>&#128273; أعِد الإنتاج دائمًا ووثِّقه</h4>
+        <p>أعِد الإنتاج فورًا ووثّق النتائج. تسجيل الخطوات الدقيقة وحالة البيئة والسلوك الملاحَظ يمنح كل مهندس معني أساسًا مشتركًا — ويغدو ضروريًا عند التحقق من الإصلاح لاحقًا.</p>
+    </div>
+</div>
+
+<!-- ════════ بيئة الاختبار المرحلية ════════ -->
+<div id="ch21-staging" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128421;&#65039;</div>
+        <h2>بيئة الاختبار المرحلية</h2>
+    </div>
+
+    <p>تستلزم إعادة الإنتاج وجود <strong>بيئة اختبار مرحلية (<span class="term">staging environment</span>)</strong> — بيئة منفصلة ومضبوطة تعكس بيئة الإنتاج بأكبر قدر ممكن، لكنها لا تحتوي مستخدمين حقيقيين ولا بيانات فعلية.</p>
+
+    <h3>متطلبات بيئة الاختبار الجيدة</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>المتطلب</th>
+                <th>أهميته</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>تعكس بيئة الإنتاج عن كثب</strong></td>
+                <td>الثغرات التي تظهر فقط في إعدادات محددة لن تُعاد في بيئة مبسّطة</td>
+            </tr>
+            <tr>
+                <td><strong>إعداد آلي بالكامل</strong></td>
+                <td>الإعداد اليدوي بطيء وعُرضة للأخطاء — الأتمتة تضمن بيئةً موثوقة وقابلة للتكرار في كل مرة</td>
+            </tr>
+            <tr>
+                <td><strong>تحتوي مستخدمين وكائنات وهمية</strong></td>
+                <td>تحتاج البيئة إلى بيانات واقعية الشكل لتمثيل سلوك الإنتاج منطقيًا وبصريًا</td>
+            </tr>
+            <tr>
+                <td><strong>وصول داخلي فقط</strong></td>
+                <td>يجب ألا تكون البيئة قابلةً للوصول من الإنترنت العام — فقط عبر الشبكة الداخلية أو تسجيل دخول مشفّر</td>
+            </tr>
+            <tr>
+                <td><strong>الميزات الجديدة متاحة قبل الإصدار</strong></td>
+                <td>تتيح البيئة للفرق اختبار أمان الميزات الجديدة قبل وصولها للمستخدمين الحقيقيين</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; لا تُعِد الإنتاج أبدًا على بيئة الإنتاج</h4>
+        <p>محاولة إعادة إنتاج ثغرة على أنظمة الإنتاج الحية تُعرّض المستخدمين الحقيقيين للخطر، وتُفسد البيانات الفعلية، أو — في حالة ثغرة <span class="term">DoS</span> — تُعطّل الخدمة. استخدم دائمًا بيئةً اختبار مرحلية معزولة.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ تصنيف الخطورة ════════ -->
+<div id="ch21-rank" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128202;</div>
+        <h2>الخطوة الثانية — تصنيف خطورة الثغرات</h2>
+    </div>
+
+    <p>بعد إعادة إنتاج الثغرة، الخطوة التالية هي <strong>تصنيفها بالخطورة</strong> لترتيبها بالأولوية مقارنةً بالأعمال الهندسية الأخرى. ليست جميع الثغرات عاجلةً بالقدر ذاته — نظام التقييم يجعل تحديد الأولويات موضوعيًا ومتسقًا وقابلًا للدفاع عنه.</p>
+
+    <p>يجب أن يكون نظام التقييم الجيد:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>متينًا بما يكفي</h4>
+            <p>يجب أن يستطيع مقارنة أي ثغرتين بدقة — حتى وإن أثّرتا في أجزاء مختلفة من التطبيق أو اشتملتا على أساليب هجوم مختلفة.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>مرنًا بما يكفي</h4>
+            <p>يجب أن ينطبق على أشكال غير مألوفة وغير معتادة من الثغرات — لا فقط على أنواع <span class="term">OWASP Top 10</span> المعروفة. فأخطاء المنطق المخصصة والأنظمة المتصلة بـ <span class="term">IoT</span> تحتاج تقييمًا أيضًا.</p>
+        </div>
+    </div>
+
+    <p>الأسلوب الأكثر استخدامًا هو <strong>نظام تقييم الثغرات الشائعة (<span class="term">CVSS — Common Vulnerability Scoring System</span>)</strong>.</p>
+</div>
+
+<!-- ════════ مقدمة CVSS ════════ -->
+<div id="ch21-cvss-intro" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128396;&#65039;</div>
+        <h2>نظام تقييم الثغرات الشائعة (<span class="term">CVSS</span>)</h2>
+    </div>
+
+    <p><span class="term">CVSS</span> هو <strong>إطار عمل صناعي مفتوح المصدر ومجاني</strong> لتقييم الثغرات بناءً على سهولة استغلالها والضرر الذي قد يسببه الاستغلال الناجح. إنه نقطة انطلاق قوية لأي منظمة — لا سيما تلك ذات الميزانيات الأمنية المحدودة أو فرق الأمن الصغيرة.</p>
+
+    <p>يُقسّم <span class="term">CVSS v3.1</span> التقييم إلى ثلاثة مستويات مستقلة:</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#127919;</div>
+            <div class="mc-title">الدرجة الأساسية</div>
+            <div class="mc-desc">تُقيّم الثغرة في حد ذاتها، بمعزل عن البيئة أو أي تخفيفات مُطبَّقة. الدرجة الأكثر استخدامًا.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128336;</div>
+            <div class="mc-title">الدرجة الزمنية</div>
+            <div class="mc-desc">تُقيّم مدى استعداد مؤسستك للتعامل مع الثغرة بالنظر إلى الوضع الراهن — إمكانية الاستغلال وتوافر الإصلاح وجودة التقرير.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#127759;</div>
+            <div class="mc-title">الدرجة البيئية</div>
+            <div class="mc-desc">تُقيّم الثغرة نسبةً إلى تطبيقك المحدد — مع تحديد وزن السرية والنزاهة والتوافر بما يتناسب مع عملك.</div>
+        </div>
+    </div>
+
+    <h3>نطاقات الدرجات</h3>
+    <div class="score-band">
+        <div class="score-range low">
+            <div class="sr-range">0.1 – 4.0</div>
+            <div class="sr-label">&#128994; منخفض</div>
+        </div>
+        <div class="score-range medium">
+            <div class="sr-range">4.1 – 6.9</div>
+            <div class="sr-label">&#128993; متوسط</div>
+        </div>
+        <div class="score-range high">
+            <div class="sr-range">7.0 – 8.9</div>
+            <div class="sr-label">&#128308; مرتفع</div>
+        </div>
+        <div class="score-range critical">
+            <div class="sr-range">9.0 – 10.0</div>
+            <div class="sr-label">&#9899; حرج</div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128202; محدودية CVSS</h4>
+        <p>نظام <span class="term">CVSS</span> نظام للأغراض العامة، وهو عُرضة أحيانًا لانتقاد عدم دقته في تقييم الثغرات النادرة أو الفريدة أو المتسلسلة (حيث تتضافر أخطاء صغيرة متعددة لتكوين ثغرة أشد خطورة). أما لثغرات <span class="term">OWASP Top 10</span> القياسية، فيوفر أساسًا موثوقًا وموثقًا. المؤسسات ذات الأنظمة المتخصصة قد تُضيف عليه طبقات تقييم مخصصة.</p>
+    </div>
+</div>
+
+<!-- ════════ الدرجة الأساسية ════════ -->
+<div id="ch21-base" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>الدرجة الأساسية لـ CVSS — المدخلات الثمانية</h2>
+    </div>
+
+    <p>تُحسب الدرجة الأساسية في <span class="term">CVSS v3.1</span> من <strong>8 مدخلات</strong>. كل مدخل يصف بُعدًا محددًا من أبعاد عمل الثغرة وأثرها. تتضافر الخوارزمية مع جميع المدخلات الثمانية لإنتاج درجة نهائية بين 0 و10.</p>
+
+    <div class="cvss-grid">
+        <div class="cvss-card">
+            <div class="cvss-abbr">AV</div>
+            <div class="cvss-name">ناقل الهجوم — Attack Vector</div>
+            <div class="cvss-options">
+                الخيارات: <strong>Network · Adjacent · Local · Physical</strong>
+                <em>Network = المهاجم يستغل الثغرة عن بُعد عبر الإنترنت (الأشد خطورة). Physical = يحتاج المهاجم وصولًا جسديًا للجهاز (الأقل خطورة).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">AC</div>
+            <div class="cvss-name">تعقيد الهجوم — Attack Complexity</div>
+            <div class="cvss-options">
+                الخيارات: <strong>Low · High</strong>
+                <em>Low = الهجوم قابل للتكرار دون إعداد مسبق. High = يتطلب ظروفًا محددة (مثل تسجيل دخول مستخدم بعينه في وقت وصفحة محددين).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">PR</div>
+            <div class="cvss-name">الامتيازات المطلوبة — Privileges Required</div>
+            <div class="cvss-options">
+                الخيارات: <strong>None · Low · High</strong>
+                <em>None = يستطيع زائر مجهول شنّ الهجوم. Low = مستخدم عادي. High = يتطلب حساب مشرف للاستغلال.</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">UI</div>
+            <div class="cvss-name">تفاعل المستخدم — User Interaction</div>
+            <div class="cvss-options">
+                الخيارات: <strong>None · Required</strong>
+                <em>None = ينجح الهجوم تلقائيًا. Required = يجب أن يتخذ الضحية إجراءً (مثل النقر على رابط خبيث).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">S</div>
+            <div class="cvss-name">النطاق — Scope</div>
+            <div class="cvss-options">
+                الخيارات: <strong>Unchanged · Changed</strong>
+                <em>Unchanged = يبقى الأثر داخل المكوّن المُستغَل. Changed = يمتد الهجوم خارج النظام الأصلي (مثل ثغرة قاعدة بيانات تُؤثر في نظام التشغيل).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">C</div>
+            <div class="cvss-name">أثر السرية — Confidentiality Impact</div>
+            <div class="cvss-options">
+                الخيارات: <strong>None · Low · High</strong>
+                <em>ما حجم البيانات الحساسة المُسرَّبة؟ High = كشف كامل لجميع البيانات. تتوقف الخطورة على نوع بيانات تطبيقك (سجلات طبية مقابل منشورات عامة).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">I</div>
+            <div class="cvss-name">أثر النزاهة — Integrity Impact</div>
+            <div class="cvss-options">
+                الخيارات: <strong>None · Low · High</strong>
+                <em>None = المهاجم لا يستطيع تغيير حالة التطبيق. High = يستطيع تعديل كل أو معظم البيانات المخزنة أو حالة الخادم أو بيانات الجلسة.</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">A</div>
+            <div class="cvss-name">أثر التوافر — Availability Impact</div>
+            <div class="cvss-options">
+                الخيارات: <strong>None · Low · High</strong>
+                <em>هل يستطيع المهاجم حرمان المستخدمين الشرعيين من الخدمة؟ High = تعطّل كامل للخدمة (حرج لهجمات DoS على التطبيقات المتاحة على مدار الساعة).</em>
+            </div>
+        </div>
+    </div>
+
+    <h3 id="ch21-calculator">كيفية استخدام حاسبة CVSS الإلكترونية</h3>
+    <p>لا حاجة إلى الحساب اليدوي. حاسبة <span class="term">CVSS v3.1</span> الرسمية متاحة مجانًا على <a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator" target="_blank" style="color:var(--ch21);font-weight:600;">nvd.nist.gov/vuln-metrics/cvss/v3-calculator &#8599;</a>. اتبع هذه الخطوات لتقييم أي ثغرة:</p>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>افتح الحاسبة</strong><br>
+                انقر على <a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator" target="_blank" style="color:var(--ch21);font-weight:600;">nvd.nist.gov/vuln-metrics/cvss/v3-calculator &#8599;</a> لفتحها في متصفحك. ستجد قسم الدرجة الأساسية مع جميع المدخلات الثمانية معروضةً كمجموعات أزرار قابلة للنقر.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>اختر قيمةً لكل مدخل من المدخلات الثمانية</strong><br>
+                اعمل في كل مجموعة مدخلات — <span class="term">Attack Vector, Attack Complexity, Privileges Required, User Interaction, Scope, Confidentiality, Integrity, Availability</span> — وانقر على الخيار الأنسب لوصف الثغرة. كل نقرة تُحدّث الدرجة في الوقت الفعلي.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>اقرأ الدرجة الأساسية والتصنيف</strong><br>
+                بمجرد اختيار جميع المدخلات الثمانية، تعرض الحاسبة <strong>الدرجة الرقمية (0–10)</strong> والتصنيف: منخفض أو متوسط أو مرتفع أو حرج.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">4</div>
+            <div>
+                <strong>انسخ سلسلة المتجه (<span class="term">Vector String</span>)</strong><br>
+                أسفل الدرجة، تُولّد الحاسبة سلسلة متجه مضغوطة مثل:<br>
+                <code style="background:#0f172a;color:#86efac;padding:4px 10px;border-radius:6px;font-size:0.9em;direction:ltr;display:inline-block;">CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N</code><br>
+                انسخها في تذكرة الثغرة — فهي تُشفّر جميع الاختيارات الثمانية حتى يرى أي مهندس بالضبط كيف اشتُقت الدرجة.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">5</div>
+            <div>
+                <strong>(اختياري) أضف مدخلات الدرجة الزمنية والبيئية</strong><br>
+                انزل إلى قسمَي الزمني والبيئي للحصول على درجة أكثر سياقية. تستخدم معظم الفرق الدرجةَ الأساسية وحدها للفرز الاعتيادي.
+            </div>
+        </li>
+    </ol>
+
+    <!-- ── مثال توضيحي ── -->
+    <div class="cvss-mockup-wrapper">
+        <div class="cvss-mockup-label">&#128196; مثال توضيحي — تقييم ثغرة CSRF في الحاسبة</div>
+        <p style="font-size:0.92em;color:var(--gray);margin-bottom:18px;">تُظهر الأزرار المُضاءة أدناه الخيارات التي ستجريها لثغرة CSRF على نقطة نهاية الاشتراك. الخيارات غير المحددة باللون الرمادي، أما الخيار المختار لكل صف فمُبرز باللون الأصفر الذهبي.</p>
+
+        <div class="cvss-mockup">
+
+            <!-- صف: AV -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">AV</span>
+                    <span class="cvss-row-name">Attack Vector</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">Network</span>
+                    <span class="cvss-opt">Adjacent</span>
+                    <span class="cvss-opt">Local</span>
+                    <span class="cvss-opt">Physical</span>
+                </div>
+                <div class="cvss-row-note">المهاجم يرسل رابطًا عبر الإنترنت &#8594; <strong>Network</strong></div>
+            </div>
+
+            <!-- صف: AC -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">AC</span>
+                    <span class="cvss-row-name">Attack Complexity</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">مجرد رابط URL مُصاغ، لا إعداد مسبق &#8594; <strong>Low</strong></div>
+            </div>
+
+            <!-- صف: PR -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">PR</span>
+                    <span class="cvss-row-name">Privileges Required</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">None</span>
+                    <span class="cvss-opt">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">أي شخص يستطيع إرسال الرابط &#8594; <strong>None</strong></div>
+            </div>
+
+            <!-- صف: UI -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">UI</span>
+                    <span class="cvss-row-name">User Interaction</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt">None</span>
+                    <span class="cvss-opt selected">Required</span>
+                </div>
+                <div class="cvss-row-note">الضحية يجب أن ينقر الرابط &#8594; <strong>Required</strong></div>
+            </div>
+
+            <!-- صف: S -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">S</span>
+                    <span class="cvss-row-name">Scope</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">Unchanged</span>
+                    <span class="cvss-opt">Changed</span>
+                </div>
+                <div class="cvss-row-note">الأثر يبقى داخل حساب الضحية &#8594; <strong>Unchanged</strong></div>
+            </div>
+
+            <!-- صف: C -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">C</span>
+                    <span class="cvss-row-name">Confidentiality</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">None</span>
+                    <span class="cvss-opt">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">لا تُقرأ أي بيانات ولا تُكشف &#8594; <strong>None</strong></div>
+            </div>
+
+            <!-- صف: I -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">I</span>
+                    <span class="cvss-row-name">Integrity</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt">None</span>
+                    <span class="cvss-opt selected">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">مستوى الاشتراك يتغير دون موافقة &#8594; <strong>Low</strong></div>
+            </div>
+
+            <!-- صف: A -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">A</span>
+                    <span class="cvss-row-name">Availability</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">None</span>
+                    <span class="cvss-opt">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">الخدمة تبقى متاحة لجميع المستخدمين &#8594; <strong>None</strong></div>
+            </div>
+
+            <!-- النتيجة -->
+            <div class="cvss-result-bar">
+                <div class="cvss-result-score">
+                    <span class="cvss-result-num">4.3</span>
+                    <span class="cvss-result-badge medium">MEDIUM</span>
+                </div>
+                <div class="cvss-result-vector">
+                    <span class="cvss-result-vector-label">Vector String</span>
+                    <code>CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="story">
+        <div class="story-label">&#128214; قراءة سلسلة المتجه</div>
+        <p>تستخدم سلسلة المتجه تنسيق اختصار ثابت. كل مقطع هو <code style="direction:ltr;display:inline-block;">InputAbbreviation:ChosenValue</code> مفصولة بشرطة مائلة. مثلًا، <code style="direction:ltr;display:inline-block;">AV:N</code> تعني ناقل الهجوم = شبكة، و<code style="direction:ltr;display:inline-block;">UI:R</code> تعني تفاعل المستخدم = مطلوب. الجدول الكامل:</p>
+        <table class="data-table" style="margin-top:14px;">
+            <thead>
+                <tr><th>الاختصار</th><th>المدخل</th><th>القيم الممكنة</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>AV</strong></td><td>ناقل الهجوم</td><td style="direction:ltr;text-align:left;">N (Network) · A (Adjacent) · L (Local) · P (Physical)</td></tr>
+                <tr><td><strong>AC</strong></td><td>تعقيد الهجوم</td><td style="direction:ltr;text-align:left;">L (Low) · H (High)</td></tr>
+                <tr><td><strong>PR</strong></td><td>الامتيازات المطلوبة</td><td style="direction:ltr;text-align:left;">N (None) · L (Low) · H (High)</td></tr>
+                <tr><td><strong>UI</strong></td><td>تفاعل المستخدم</td><td style="direction:ltr;text-align:left;">N (None) · R (Required)</td></tr>
+                <tr><td><strong>S</strong></td><td>النطاق</td><td style="direction:ltr;text-align:left;">U (Unchanged) · C (Changed)</td></tr>
+                <tr><td><strong>C</strong></td><td>السرية</td><td style="direction:ltr;text-align:left;">N (None) · L (Low) · H (High)</td></tr>
+                <tr><td><strong>I</strong></td><td>النزاهة</td><td style="direction:ltr;text-align:left;">N (None) · L (Low) · H (High)</td></tr>
+                <tr><td><strong>A</strong></td><td>التوافر</td><td style="direction:ltr;text-align:left;">N (None) · L (Low) · H (High)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; احفظ سلسلة المتجه دائمًا</h4>
+        <p>الدرجة الرقمية (مثل 4.3) تُخبرك بالخطورة. سلسلة المتجه تُخبرك <em>بالسبب</em>. انسخ كليهما دائمًا في تذكرة الثغرة حتى يرى أي مهندس يراجع التقرير بعد أشهر بالضبط أي العوامل أدت إلى هذه الدرجة.</p>
+    </div>
+</div>
+
+<!-- ════════ مثال الدرجة الأساسية ════════ -->
+<div id="ch21-base-ex" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128221;</div>
+        <h2>مثال على الدرجة الأساسية — تقييم ثغرة CSRF</h2>
+    </div>
+
+    <p>لنُطبّق نموذج التقييم الثماني المدخلات على ثغرة حقيقية: <strong>هجوم <span class="term">CSRF</span> على نقطة نهاية إدارة الاشتراكات</strong> التي تقبل طلبات <span class="term">HTTP GET</span> (تناولها مثال اختبار الانحدار في الفصل 20).</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>المدخل</th>
+                <th>القيمة المختارة</th>
+                <th>المبرر</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>ناقل الهجوم (AV)</strong></td>
+                <td>Network</td>
+                <td>المهاجم يرسل رابطًا خبيثًا عبر البريد الإلكتروني — بالكامل عن بُعد عبر الإنترنت</td>
+            </tr>
+            <tr>
+                <td><strong>تعقيد الهجوم (AC)</strong></td>
+                <td>Low</td>
+                <td>صياغة الرابط لا تستلزم إعدادًا خاصًا — مجرد عنوان URL مع معاملات</td>
+            </tr>
+            <tr>
+                <td><strong>الامتيازات المطلوبة (PR)</strong></td>
+                <td>None</td>
+                <td>أي مهاجم غير مصادق يستطيع إنشاء الرابط الخبيث وإرساله</td>
+            </tr>
+            <tr>
+                <td><strong>تفاعل المستخدم (UI)</strong></td>
+                <td>Required</td>
+                <td>يجب أن ينقر الضحية على الرابط — الهجوم لا ينفّذ تلقائيًا</td>
+            </tr>
+            <tr>
+                <td><strong>النطاق (S)</strong></td>
+                <td>Unchanged</td>
+                <td>الأثر محدود ببيانات اشتراك الضحية — لا يمتد أبعد من ذلك</td>
+            </tr>
+            <tr>
+                <td><strong>السرية (C)</strong></td>
+                <td>None</td>
+                <td>لا تُقرأ أي بيانات ولا تُكشف — الهجوم يُعدّل الحالة فقط</td>
+            </tr>
+            <tr>
+                <td><strong>النزاهة (I)</strong></td>
+                <td>Low</td>
+                <td>مستوى اشتراك الضحية يتغير دون موافقة — تغيير محدود في الحالة</td>
+            </tr>
+            <tr>
+                <td><strong>التوافر (A)</strong></td>
+                <td>None</td>
+                <td>التطبيق يبقى متاحًا بالكامل — لا تعطّل للمستخدمين الآخرين</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story">
+        <div class="story-label">&#128202; النتيجة</div>
+        <p>تشغيل هذه القيم الثماني في حاسبة <span class="term">CVSS v3.1</span> ينتج <strong>درجةً أساسية تُقارب 4.3</strong> — مما يضع هذه الثغرة في نطاق الخطورة <span class="cvss-badge medium">Medium</span>.</p>
+        <p>هذا يُخبرنا: الثغرة حقيقية وينبغي إصلاحها، لكنها ليست طارئةً. يجب وضعها في قائمة انتظار الدورة القادمة، لا نشرها كإصلاح عاجل اليوم. الثغرة الحرجة (9.0+) — كتنفيذ كود عن بُعد دون مصادقة — ستستلزم إجراءً فوريًا بصرف النظر عن أولويات الدورة.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ التقييم الزمني ════════ -->
+<div id="ch21-temporal" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128336;</div>
+        <h2>التقييم الزمني لـ CVSS</h2>
+    </div>
+
+    <p>تُجيب الدرجة الزمنية على سؤال مختلف عن الدرجة الأساسية. بدلًا من "ما مدى خطورة هذه الثغرة؟"، تسأل: <strong>"ما مدى استعداد مؤسستك للتعامل مع هذه الثغرة الآن؟"</strong></p>
+
+    <p>تستخدم الدرجة الزمنية ثلاثة عوامل، كل منها يعكس <em>الوضع الراهن</em> للثغرة وقت الإبلاغ:</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>العامل</th>
+                <th>ما الذي يقيسه</th>
+                <th>النطاق</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>إمكانية الاستغلال (<span class="term">Exploitability</span>)</strong></td>
+                <td>هل هذه الثغرة نظرية فقط، أم دليل إثبات مفهوم، أم ثغرة عاملة بالكامل يمكن نشرها كما هي؟</td>
+                <td>Unproven → High</td>
+            </tr>
+            <tr>
+                <td><strong>مستوى المعالجة (<span class="term">Remediation Level</span>)</strong></td>
+                <td>هل يتوفر إصلاح رسمي مُختبَر؟ أم لا يُعرف أي حل حتى الآن؟</td>
+                <td>Official Fix → Unavailable</td>
+            </tr>
+            <tr>
+                <td><strong>موثوقية التقرير (<span class="term">Report Confidence</span>)</strong></td>
+                <td>ما مدى موثوقية تقرير الثغرة وتفصيله؟ هل يتضمن خطوات إعادة إنتاج؟</td>
+                <td>Unknown → Confirmed</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — الدرجة الزمنية في الممارسة</div>
+        <p>ثغرة ذات <strong>قابلية استغلال مرتفعة</strong> (ثغرة عاملة تنتشر على الإنترنت)، <strong>لا يتوفر لها إصلاح</strong>، وتقرير <strong>مؤكد مع استنساخ كامل</strong> — هذا الوضع يستلزم إجراءً فوريًا، حتى لو كانت الدرجة الأساسية "مرتفعة" لا "حرجة".</p>
+        <p>الدرجة الزمنية تُبرز هذه الإلحاحية. إنها لا تُغيّر الخطورة الجوهرية للثغرة نفسها — فقط مدى إلحاحية الاستجابة في ضوء الوضع الراهن للمعرفة والدفاعات المتاحة.</p>
+    </div>
+
+    <div class="amber-box">
+        <h4>&#128202; نطاق الدرجة الزمنية</h4>
+        <p>تستخدم الدرجة الزمنية السلّم ذاته (0–10) كالدرجة الأساسية. غير أن الدرجات الزمنية تكون <strong>مساويةً للدرجة الأساسية أو أدنى منها فقط</strong> — فالتخفيفات المُطبَّقة تُخفّض الدرجة الفعلية، لكنها لا ترفعها فوق الخطورة الجوهرية للثغرة.</p>
+    </div>
+</div>
+
+<!-- ════════ التقييم البيئي ════════ -->
+<div id="ch21-env" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127759;</div>
+        <h2>التقييم البيئي لـ CVSS</h2>
+    </div>
+
+    <p>تأخذ الدرجة البيئية جميع مدخلات الدرجة الأساسية وتُضيف إليها <strong>ثلاثة متطلبات جديدة</strong> تصف أهمية السرية والنزاهة والتوافر <em>لتطبيقك المحدد</em>. الثغرة ذاتها في نظام سجلات المرضى بمستشفى ينبغي أن تُعامَل بشكل مختلف تمامًا عن الثغرة نفسها في بيئة اختبار تجريبية.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>متطلب السرية</h4>
+            <p>ما مدى حساسية البيانات التي يخزّنها تطبيقك؟ تطبيق طبي يحتوي سجلات مرضى تُعطيه <strong>مرتفع</strong>. موقع تجميع أخبار عامة بلا حسابات مستخدمين يحصل على <strong>منخفض</strong>.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>متطلب النزاهة</h4>
+            <p>ما ضرر التغيير غير المصرّح به في حالة تطبيقك؟ نظام سجلات ضريبية مؤسسية يحصل على <strong>مرتفع</strong>. بيئة اختبار مؤقتة تُحذف بعد الاستخدام تحصل على <strong>منخفض</strong>.</p>
+        </div>
+    </div>
+    <div style="margin-top: 0;" class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>متطلب التوافر</h4>
+            <p>ما أهمية الاستمرارية في التشغيل؟ معالج دفع بـ <span class="term">SLA</span> نسبته 99.99% يحصل على <strong>مرتفع</strong>. أداة مطوّر داخلية بلا تعهدات جاهزية تحصل على <strong>منخفض</strong>.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #6b7280;">
+            <h4>آلية العمل</h4>
+            <p>تُعيد الدرجة البيئية ترجيح مدخلات الدرجة الأساسية بناءً على هذه المتطلبات الثلاثة — رفع الدرجة الفعلية أو خفضها بحسب مقدار الضرر الذي قد تُسببه الثغرة <em>لمؤسستك تحديدًا</em>.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; الدرجة الأساسية = موضوعية · الدرجة البيئية = سياقية</h4>
+        <p>تقيس الدرجة الأساسية الثغرة في معزل. تقيس الدرجة البيئية أثرها الحقيقي على مؤسستك. درجة أساسية 5.5 (متوسط) قد تصبح 9.2 (حرج) كدرجة بيئية لتطبيق رعاية صحية يخزّن معلومات صحية محمية. احسب كلتيهما دائمًا حين ترتفع المخاطر.</p>
+    </div>
+</div>
+
+<!-- ════════ التقييم المتقدم ════════ -->
+<div id="ch21-advanced" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#129520;</div>
+        <h2>التقييم المتقدم والمخصص للثغرات</h2>
+    </div>
+
+    <p>يُعدّ <span class="term">CVSS</span> نقطة انطلاق للأغراض العامة، لكن المؤسسات ذات البنى المعمارية المتخصصة قد تحتاج إلى بناء تعديلات تقييم خاصة فوق <span class="term">CVSS</span> للتعامل مع المخاطر التي لا يُنمذجها النظام القياسي بشكل جيد.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — أنظمة إنترنت الأشياء والأنظمة الفيزيائية</div>
+        <p>تأمّل تطبيق ويب يتحكم في شبكة كاميرات مراقبة. خيارات ناقل الهجوم في <span class="term">CVSS</span> (Network, Adjacent, Local, Physical) لا تُغطي بالكامل التداعيات الإضافية لاختراق هذا السيناريو:</p>
+        <ul class="clean-list">
+            <li>اختراق الكاميرا قد <strong>يُسرّب لقطات فيديو حساسة للمستأجرين</strong> — مما قد يكون مخالفًا لقوانين الخصوصية</li>
+            <li>سطح الهجوم يشمل ليس فقط تطبيق الويب بل أيضًا <strong>الأجهزة الفيزيائية</strong> المتصلة به</li>
+            <li>فقدان وظيفة الكاميرا قد تكون له <strong>تداعيات أمنية فيزيائية</strong> تتجاوز مخاطر البيانات</li>
+        </ul>
+        <p>لمثل هذه التطبيقات، ينبغي استخدام <span class="term">CVSS</span> أساسًا، مع إضافة أبعاد تقييم مخصصة لتعكس هذه المخاطر الفريدة.</p>
+    </div>
+
+    <div class="amber-box">
+        <h4>&#128202; تقييم نظام التقييم بمرور الوقت</h4>
+        <p>أي نظام تقييم — سواء كان <span class="term">CVSS</span> الصرف أو امتدادًا مخصصًا — ينبغي تقييمه دوريًا بناءً على قدرته على <strong>التنبؤ بدقة بالضرر الناجم</strong> عن الثغرات التي لم تُصلَح في وقتها. إذا تبيّن أن ثغرةً ذات تصنيف منخفض سببت ضررًا كبيرًا، فيجب تحديث نموذج التقييم لترجيح الثغرات المماثلة بشكل أعلى مستقبلًا.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ الإصلاح ════════ -->
+<div id="ch21-fix" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128295;</div>
+        <h2>الخطوة الثالثة — إصلاح الثغرات</h2>
+    </div>
+
+    <p>بعد إعادة الإنتاج والتقييم، يجب <strong>إصلاح الثغرة بالشكل الصحيح</strong>. تُحدد درجة <span class="term">CVSS</span> الأولوية والإلحاحية، لكن عوامل أعمال أخرى تُؤثر أيضًا في موعد شحن الإصلاح — بما في ذلك عقود العملاء والتزامات <span class="term">SLA</span> وما إذا كانت الثغرة تُستغل بشكل نشط.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — التقييم ليس العامل الوحيد</div>
+        <p>تُخبرك درجة <span class="term">CVSS</span> بخطورة الثغرة بمعزل. لكن أولويات الأعمال قد تتجاوز قائمة الانتظار. فمثلًا، ثغرة ذات خطورة <strong>متوسطة</strong> قد تحتاج الشحن قبل ثغرة <strong>مرتفعة</strong> إذا كان لدى عميل مؤسسي رئيسي متطلبًا تعاقديًا بمعالجة المشكلة المتوسطة قبل تاريخ تدقيقه القادم. التقييم يُبلّغ الأولوية — لكنه لا يُحددها بالكامل.</p>
+    </div>
+
+    <h3>قواعد الإصلاح الصحيح</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>يُفضَّل الحل الدائم على مستوى التطبيق كله</strong><br>
+                كلما أمكن، أصلح <em>فئة</em> الثغرة لا مجرد الحالة المُبلَّغ عنها. إصلاح حقن في نقطة نهاية واحدة ينبغي أن يُطلق مراجعةً وإصلاحًا لجميع نقاط النهاية التي تستخدم النمط ذاته.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>إذا كان الإصلاح جزئيًا فقط — افتح مهمة جديدة فورًا</strong><br>
+                لا تُغلق أبدًا مهمةً لإصلاح جزئي دون فتح مهمة متتبعة جديدة للسطح المعرّض للخطر المتبقي. يجب أن تتضمن المهمة الجديدة درجة <span class="term">CVSS</span> الخاصة بها وتُضاف إلى قائمة المتراكمات.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>أرسل اختبار انحدار مع كل إصلاح</strong><br>
+                كل مشكلة أمنية مُغلقة يجب أن يُرفق بها اختبار انحدار. هذا أمر غير قابل للتفاوض. يضمن الاختبار أن الثغرة لا يمكن أن تعود خلسةً في إعادة هيكلة أو تراجع مستقبلي.
+            </div>
+        </li>
+    </ol>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; لا تُغلق مهمةً دون فتح مهمة جديدة</h4>
+        <p>إغلاق مهمة ثغرة لإصلاح جزئي دون مهمة متابعة يُضيّع كل السياق المتراكم — خطوات الاستنساخ، وتحليل السبب الجذري، والفهم التقني لنطاق المشكلة. المهندسون الذين يصادفون الكود بعد أشهر لن يجدوا أي سجل بأن الثغرة لم تُصلَح سوى جزئيًا. يمكن أن <em>تنمو</em> الثغرات أيضًا في المخاطر مع توسّع ميزات التطبيق، حتى لو لم يتغير الكود الأصلي المحتوي لها.</p>
+    </div>
+</div>
+
+<!-- ════════ اختبارات الانحدار ════════ -->
+<div id="ch21-regression" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9989;</div>
+        <h2>الخطوة الرابعة — اختبارات انحدار الثغرات</h2>
+    </div>
+
+    <p>تُكتب اختبارات الانحدار <em>بعد</em> إصلاح الثغرة لضمان <strong>عدم عودتها أبدًا</strong>. إنها سهلة الكتابة، سريعة الاندماج في مجموعات الاختبار الموجودة، وتوفر حمايةً <em>دائمة</em> ضد نوع الثغرة المحدد الذي تُغطيه.</p>
+
+    <h3>لماذا تتصاعد قيمة اختبارات الانحدار بمرور الوقت؟</h3>
+    <p>مع نمو قاعدة الكود حجمًا وميزاتٍ، تتزايد فرص إعادة فتح ثغرة سبق إصلاحها عن طريق الخطأ. اختبار الانحدار المكتوب اليوم يحمي من كل حالة مستقبلية:</p>
+    <ul class="clean-list">
+        <li><strong>إعادة الهيكلة</strong> — تجديد الكود الذي يُنقل الدالة المعرّضة للخطر أو يُعيد تسميتها</li>
+        <li><strong>تحديث التبعيات</strong> — ترقية مكتبة يُغيّر السلوك الأساسي</li>
+        <li><strong>ميزة جديدة</strong> — نقطة نهاية جديدة بُنيت على نمط مماثل للنمط القديم</li>
+        <li><strong>التراجع</strong> — العودة إلى نسخة أقدم تسبق الإصلاح</li>
+    </ul>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — ستيف وجيد وانحدار CSRF</div>
+        <p>بنى المهندس <strong>ستيف</strong> نقطة نهاية لإدارة الاشتراكات باستخدام طلب <span class="term">GET</span> — وهو ثغرة <span class="term">CSRF</span>. لاحظ صديقه <strong>جيد</strong> أن إرسال رابط مُصاغ مثل <code style="direction:ltr;display:inline-block;">GET /api/changeSubscriptionTier?newTier=corporation</code> يُرقّي اشتراك ستيف خلسةً. أصلح ستيف نقطة النهاية لتستخدم <span class="term">POST</span>، ثم كتب اختبار انحدار:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✓ Regression test — ensures the CSRF fix can never be silently reverted</span>
+
+<span class="k">const</span> <span class="n">testTierChangeOnlyAcceptsPOST</span> = <span class="k">function</span>() {
+
+    requester
+        .options(<span class="s">'http://app.com/api/changeSubscriptionTier'</span>)
+        .on(<span class="s">'response'</span>, <span class="k">function</span>(res) {
+
+            <span class="k">const</span> verbs = res.headers[<span class="s">'Allow'</span>].split(<span class="s">','</span>);
+
+            <span class="c">// Rule 1: only one HTTP verb should be allowed on this endpoint</span>
+            <span class="k">if</span> (verbs.length &gt; <span class="n">1</span>) {
+                <span class="k">return</span> tester.fail(<span class="s">'Multiple verbs exposed'</span>);
+            }
+
+            <span class="c">// Rule 2: that one verb must be POST — never GET</span>
+            <span class="k">if</span> (verbs[<span class="n">0</span>] !== <span class="s">'POST'</span>) {
+                <span class="k">return</span> tester.fail(<span class="s">'GET still accessible'</span>);
+            }
+
+            tester.pass();
+
+        });
+
+};
+    </div>
+
+    <p>إذا أعادت أي تغيير مستقبلي في الكود نسخة <span class="term">GET</span> من نقطة النهاية — حتى عن طريق الخطأ — <strong>سيفشل هذا الاختبار فورًا</strong> ويمنع التغيير من الاندماج.</p>
+
+    <h3>متى تُشغّل اختبارات الانحدار؟</h3>
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; عند الإيداع/الدفع (موصى به)</h4>
+            <p>ارفض الإيداع أو الدفع إذا فشل أي اختبار انحدار. هذه أبكر نقطة ممكنة للفشل — يحصل المطورون على ردود فعل فورية قبل أن يدخل الكود الفرع الرئيسي.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>&#128336; تشغيل يومي مجدوَل (ثانوي)</h4>
+            <p>خيار ثانوي قوي للبيئات متعددة الفروع. يرصد الانحدارات الناجمة عن تغييرات غير مباشرة لم ترصدها إشارات الإيداع.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; كل مشكلة أمنية مُغلقة = اختبار انحدار جديد واحد</h4>
+        <p>هذه القاعدة بسيطة ومطلقة. إغلاق مشكلة أمنية دون اختبار انحدار يعني أن الثغرة لا تبعد سوى إعادة هيكلة مستقبلية واحدة عن العودة — خلسةً. اختبارات الانحدار هي أكثر استثمار أمني فعالية على المدى البعيد في دورة الـ <span class="term">SSDL</span> بأكملها.</p>
+    </div>
+</div>
+
+<!-- ════════ الملخص ════════ -->
+<div id="ch21-summary" class="summary-banner">
+    <h3>&#128203; ملخص الفصل 21 — إدارة الثغرات الأمنية</h3>
+    <ul>
+        <li>إدارة الثغرات خط إجراءات رباعي: إعادة الإنتاج ← التقييم ← الإصلاح ← اختبار الانحدار</li>
+        <li>إعادة الإنتاج في بيئة الاختبار المرحلية تُؤكد الصحة وتمنع إهدار الجهد وتحمي مدفوعات المكافآت</li>
+        <li>يستخدم CVSS v3.1 ثمانية مدخلات أساسية (AV, AC, PR, UI, S, C, I, A) لتوليد درجة خطورة موضوعية من 0 إلى 10</li>
+        <li>التقييم الزمني يقيس مدى استعداد فريقك للاستجابة؛ التقييم البيئي يُنسجم المخاطر مع طبيعة عملك</li>
+        <li>يجب أن تكون الإصلاحات دائمةً وشاملةً على مستوى التطبيق — الإصلاحات الجزئية يجب أن تُفضي دائمًا إلى مهمة متتبعة جديدة بدرجتها الخاصة</li>
+        <li>كل مشكلة أمنية مُغلقة يجب أن تُشحَن مع اختبار انحدار — بلا استثناءات</li>
+        <li>تتصاعد قيمة اختبارات الانحدار تصاعدًا أسيًا مع نمو قاعدة الكود، وتحجب دائمًا الثغرات المُصلَحة سابقًا من العودة</li>
+    </ul>
+</div>
+
+</main>
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- التذييل -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 &mdash; أمن تطبيقات الويب</div>
+        <div class="footer-links">
+            <a href="../index.html">الصفحة الرئيسية</a>
+            <a href="../week7/index-ar.html">الأسبوع 7</a>
+            <a href="../syllabus.html">المقرر</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

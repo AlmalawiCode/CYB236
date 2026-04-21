@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab 04: SQL Injection, Command Injection &amp; CSRF with DVWA</title>
     <style>
@@ -19,7 +20,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.7;
             color: var(--dark-text);
             background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
@@ -674,7 +675,8 @@ function generateReport() {
     });
 
     var w = window.open('','_blank');
-    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lab 04 \u2014 '+name+'</title><style>';
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab 04 \u2014 '+name+'</title><style>';
     h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
     h += 'h1{color:#1e3a5f;font-size:1.5em;text-align:center;margin-bottom:4px}';
     h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';

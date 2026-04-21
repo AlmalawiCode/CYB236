@@ -3,71 +3,1777 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 8: Defensive Techniques & Review | CYB236</title>
+    <title>CYB236 Handout - Chapter 21</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #fffbeb;
+            --primary-600: #d97706;
+            --primary-700: #b45309;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Color ── */
+            --ch21: #b45309;
+            --ch21-light: #fffbeb;
+            --ch21-mid: #fcd34d;
+            --ch21-dark: #78350f;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #1b998b, #1b998bdd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #d97706, #b45309);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .week-badge {
-            background: #1b998b;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #1b998b;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #1b998b;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #1c0a00 0%, #2d1000 50%, #3d1a05 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ch21-mid);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: var(--ch21); border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            background: rgba(180,83,9,0.4);
+        }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--ch21-light);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ch21);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--ch21-light); color: var(--ch21-dark); }
+        .sidebar-link.active { background: var(--ch21-light); color: var(--ch21); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--ch21); color: white; }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+            background: var(--ch21-light);
+            color: var(--ch21);
+        }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider {
+            height: 4px;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            width: 80px;
+            background: var(--ch21);
+        }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+            background: var(--ch21-light);
+        }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--ch21);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--ch21-light);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #fde68a;
+            border-left: 5px solid var(--ch21);
+        }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+            background: #fef3c7;
+            color: var(--ch21);
+        }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-left: 3px solid var(--ch21-mid);
+        }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Amber Box ───── */
+        .amber-box {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-left: 5px solid var(--ch21);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .amber-box h4 { color: var(--ch21); margin-bottom: 6px; font-size: 1em; }
+        .amber-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            background: var(--ch21-light);
+            border: 1px solid #fde68a;
+        }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--ch21);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            background: var(--ch21);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+
+        /* ───── Data Table ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .data-table tr td:last-child  { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── CVSS Score Badges ───── */
+        .cvss-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.82em;
+            color: white;
+        }
+        .cvss-badge.critical { background: #7f1d1d; }
+        .cvss-badge.high     { background: var(--red); }
+        .cvss-badge.medium   { background: #f59e0b; }
+        .cvss-badge.low      { background: var(--green); }
+
+        /* ───── CVSS Input Cards Grid ───── */
+        .cvss-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .cvss-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid var(--ch21);
+        }
+
+        .cvss-card .cvss-abbr {
+            font-size: 0.72em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ch21);
+            margin-bottom: 4px;
+        }
+
+        .cvss-card .cvss-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .cvss-card .cvss-options {
+            font-size: 0.85em;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .cvss-card .cvss-options em {
+            display: block;
+            margin-top: 6px;
+            color: var(--ch21);
+            font-style: normal;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        /* ───── Score Range Band ───── */
+        .score-band {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .score-range {
+            flex: 1;
+            min-width: 120px;
+            border-radius: 12px;
+            padding: 16px 18px;
+            text-align: center;
+        }
+
+        .score-range .sr-range { font-size: 1.3em; font-weight: 800; }
+        .score-range .sr-label { font-size: 0.85em; font-weight: 600; margin-top: 4px; }
+
+        .score-range.low      { background: #f0fdf4; border: 2px solid var(--green); }
+        .score-range.low .sr-range, .score-range.low .sr-label { color: var(--green); }
+        .score-range.medium   { background: #fffbeb; border: 2px solid #f59e0b; }
+        .score-range.medium .sr-range, .score-range.medium .sr-label { color: #b45309; }
+        .score-range.high     { background: var(--red-light); border: 2px solid var(--red); }
+        .score-range.high .sr-range, .score-range.high .sr-label { color: var(--red); }
+        .score-range.critical { background: #fef2f2; border: 2px solid #7f1d1d; }
+        .score-range.critical .sr-range, .score-range.critical .sr-label { color: #7f1d1d; }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            background: linear-gradient(135deg, var(--ch21-dark), var(--ch21));
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; left: 0; font-weight: 700; }
+
+        /* ───── CVSS Calculator Mockup ───── */
+        .cvss-mockup-wrapper {
+            background: #f8fafc;
+            border: 1px solid var(--neutral-200);
+            border-radius: 20px;
+            padding: 28px 30px;
+            margin: 28px 0;
+        }
+
+        .cvss-mockup-label {
+            font-weight: 700;
+            font-size: 0.95em;
+            color: var(--ch21);
+            margin-bottom: 8px;
+        }
+
+        .cvss-mockup {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .cvss-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--neutral-100);
+        }
+
+        .cvss-row:last-of-type { border-bottom: none; }
+
+        .cvss-row-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cvss-row-abbr {
+            background: var(--ch21);
+            color: white;
+            font-weight: 800;
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+        }
+
+        .cvss-row-name {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--dark2);
+        }
+
+        .cvss-row-options {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .cvss-opt {
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 0.82em;
+            font-weight: 600;
+            background: var(--neutral-100);
+            color: var(--neutral-500);
+            border: 1px solid var(--neutral-200);
+            cursor: default;
+        }
+
+        .cvss-opt.selected {
+            background: var(--ch21);
+            color: white;
+            border-color: var(--ch21);
+            box-shadow: 0 2px 8px rgba(180,83,9,0.35);
+        }
+
+        .cvss-row-note {
+            font-size: 0.82em;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .cvss-result-bar {
+            background: linear-gradient(135deg, var(--ch21-dark), var(--ch21));
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cvss-result-score {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .cvss-result-num {
+            font-size: 2.8em;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+        }
+
+        .cvss-result-badge {
+            padding: 6px 18px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+        }
+
+        .cvss-result-badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .cvss-result-vector {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cvss-result-vector-label {
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .cvss-result-vector code {
+            background: rgba(0,0,0,0.3);
+            color: #fcd34d;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.88em;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 900px) {
+            .cvss-row { grid-template-columns: 1fr; }
+            .cvss-result-bar { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* ───── Section Divider ───── */
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--ch21-light), var(--ch21), var(--ch21-light));
+            margin: 48px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Footer ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .cvss-grid, .score-band { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="week-badge">Week 8 - Defense</span>
-        <h1>Defensive Techniques & Review</h1>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="index-ar.html" class="nav-link" style="border:1px solid var(--neutral-300);">عربي</a>
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week7/index.html" class="nav-link">Week 7</a>
+            <a href="index.html" class="nav-link active">Week 8</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>Week 8</span>
+            <span>›</span>
+            <span>Part III — Secure Development Methodologies II</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            Week 8 &nbsp;·&nbsp; Secure Development Methodologies II
+        </div>
+        <h1>Vulnerability Management</h1>
+        <p class="sub">Reproduce · Score · Triage · Fix · Regression Test</p>
+        <div class="cover-chips">
+            <div class="cover-chip">Ch.21 Vulnerability Management</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ BODY ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Chapter 21 — Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#ch21-overview"    class="sidebar-link active"><span class="sidebar-link-number">1</span>Overview &amp; Pipeline</a>
+            <a href="#ch21-objectives"  class="sidebar-link"><span class="sidebar-link-number">2</span>Learning Objectives</a>
+            <a href="#ch21-reproduce"   class="sidebar-link"><span class="sidebar-link-number">3</span>Reproducing Vulnerabilities</a>
+            <a href="#ch21-staging"     class="sidebar-link"><span class="sidebar-link-number">4</span>Staging Environment</a>
+            <a href="#ch21-rank"        class="sidebar-link"><span class="sidebar-link-number">5</span>Ranking Severity</a>
+            <a href="#ch21-cvss-intro"  class="sidebar-link"><span class="sidebar-link-number">6</span>Intro to CVSS</a>
+            <a href="#ch21-base"        class="sidebar-link"><span class="sidebar-link-number">7</span>CVSS Base Score (8 Inputs)</a>
+            <a href="#ch21-calculator"  class="sidebar-link"><span class="sidebar-link-number">8</span>Using the Calculator</a>
+            <a href="#ch21-base-ex"     class="sidebar-link"><span class="sidebar-link-number">9</span>Base Score Example</a>
+            <a href="#ch21-temporal"    class="sidebar-link"><span class="sidebar-link-number">9</span>Temporal Scoring</a>
+            <a href="#ch21-env"         class="sidebar-link"><span class="sidebar-link-number">11</span>Environmental Scoring</a>
+            <a href="#ch21-advanced"    class="sidebar-link"><span class="sidebar-link-number">12</span>Advanced &amp; Custom Scoring</a>
+            <a href="#ch21-fix"         class="sidebar-link"><span class="sidebar-link-number">13</span>Fixing Vulnerabilities</a>
+            <a href="#ch21-regression"  class="sidebar-link"><span class="sidebar-link-number">14</span>Regression Tests</a>
+            <a href="#ch21-summary"     class="sidebar-link"><span class="sidebar-link-number">15</span>Chapter Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════ CHAPTER HEADER ════════ -->
+<div class="chapter-header">
+    <div class="chapter-num">Chapter 21</div>
+    <div class="chapter-title">Vulnerability Management</div>
+    <div class="chapter-divider"></div>
+</div>
+
+<!-- ════════ OVERVIEW ════════ -->
+<div id="ch21-overview" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128203;</div>
+        <h2>The Vulnerability Management Pipeline</h2>
+    </div>
+
+    <p>Part of any good <strong>Secure Software Development Life Cycle (SSDL)</strong> is a well-defined pipeline for obtaining, triaging, and resolving vulnerabilities found in a web application. Vulnerabilities appear at every phase — architecture, development, and production — and each one needs a structured, repeatable response.</p>
+
+    <p>The vulnerability management pipeline connects discovery (Chapter 20) with resolution, ensuring that nothing falls through the cracks between finding a bug and permanently fixing it.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128270;</div>
+            <div class="mc-title">1. Reproduce</div>
+            <div class="mc-desc">Confirm the vulnerability exists in a controlled staging environment before taking any action.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128202;</div>
+            <div class="mc-title">2. Score &amp; Rank</div>
+            <div class="mc-desc">Use CVSS or a similar system to quantify severity and prioritize fixes against other work.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128295;</div>
+            <div class="mc-title">3. Fix</div>
+            <div class="mc-desc">Implement a permanent, application-wide solution — or a tracked temporary fix with a new issue opened.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9989;</div>
+            <div class="mc-title">4. Regression Test</div>
+            <div class="mc-desc">Write a test that fails if this vulnerability is ever reintroduced — and ship it with the fix.</div>
+        </div>
+    </div>
+
+    <div class="amber-box">
+        <h4>&#128203; Where This Fits in the SSDL</h4>
+        <p>Chapter 21 follows directly from the vulnerability discovery techniques of Chapter 20. Once a vulnerability is found — whether through static analysis, dynamic analysis, a bug bounty submission, or a user report — vulnerability management is what happens next to ensure it is resolved properly and permanently.</p>
+    </div>
+</div>
+
+<!-- ════════ LEARNING OBJECTIVES ════════ -->
+<div id="ch21-objectives" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number">1</div>
+            <div class="objective-text"><strong>Explain</strong> why reproducing a vulnerability in a staging environment is the essential first step — and what risks are avoided by confirming the issue before acting on a report.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">2</div>
+            <div class="objective-text"><strong>Apply</strong> the CVSS v3.1 base scoring algorithm — correctly identifying and describing all 8 input factors and how they combine to produce a severity score from 0 to 10.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">3</div>
+            <div class="objective-text"><strong>Distinguish</strong> between CVSS base, temporal, and environmental scoring — and explain when each type of score adds value to vulnerability prioritization.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">4</div>
+            <div class="objective-text"><strong>Describe</strong> the rules for correctly fixing a vulnerability — including when partial fixes are acceptable, what must always accompany a closed security bug, and why regression tests grow in value over time.</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ REPRODUCING ════════ -->
+<div id="ch21-reproduce" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128270;</div>
+        <h2>Step 1 — Reproducing Vulnerabilities</h2>
+    </div>
+
+    <p>After receiving a vulnerability report, the <strong>first step is always reproduction</strong> — confirming the vulnerability actually exists and behaves as described — before any engineering effort is invested in a fix.</p>
+
+    <h3>Why Reproduce First?</h3>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — The False Positive Problem</div>
+        <p>Sometimes a user-defined configuration error looks exactly like a vulnerability. For example, a user "accidentally" makes an image on a photo-hosting app "public" when they usually set their photos to "private." Without reproducing the issue, an engineer could waste hours investigating a non-issue — or pay a bug bounty reward that was never earned.</p>
+    </div>
+
+    <ul class="clean-list">
+        <li><strong>Confirms the report is valid</strong> — avoids wasting engineering hours on false positives</li>
+        <li><strong>Reveals deeper impact</strong> — reproduction often uncovers that the vulnerability's scope is wider than originally reported</li>
+        <li><strong>Protects bug bounty programs</strong> — a bounty should never be paid for a false positive; reproduction provides documented proof</li>
+        <li><strong>Creates understanding</strong> — seeing the vulnerability execute gives engineers insight into root cause and fix complexity</li>
+        <li><strong>Establishes the baseline</strong> — the reproduction log is the foundation for writing the regression test later</li>
+    </ul>
+
+    <div class="key-point">
+        <h4>&#128273; Always Reproduce and Log</h4>
+        <p>Reproduce right away and document the results. Logging the exact steps, environment state, and observed behavior gives every engineer involved a shared baseline — and becomes essential when verifying the fix later.</p>
+    </div>
+</div>
+
+<!-- ════════ STAGING ════════ -->
+<div id="ch21-staging" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128421;&#65039;</div>
+        <h2>The Staging Environment</h2>
+    </div>
+
+    <p>Reproduction requires a <strong>staging environment</strong> — a separate, controlled environment that mirrors production as closely as possible, but contains no real users or live data.</p>
+
+    <h3>Requirements for a Good Staging Environment</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Requirement</th>
+                <th>Why It Matters</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Mirrors production closely</strong></td>
+                <td>Vulnerabilities that only appear in specific configurations won't reproduce in a simplified setup</td>
+            </tr>
+            <tr>
+                <td><strong>Fully automated setup</strong></td>
+                <td>Manual setup is slow and error-prone — automation ensures a reliable, repeatable environment every time</td>
+            </tr>
+            <tr>
+                <td><strong>Contains mock users &amp; objects</strong></td>
+                <td>Staging needs realistic data shapes to logically and visually represent production behavior</td>
+            </tr>
+            <tr>
+                <td><strong>Internal access only</strong></td>
+                <td>Staging must not be accessible from the public internet — only via the internal network or encrypted login</td>
+            </tr>
+            <tr>
+                <td><strong>New features available before release</strong></td>
+                <td>Staging lets teams test security of new features before they reach real users</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Never Reproduce on Production</h4>
+        <p>Attempting to reproduce a vulnerability against live production systems risks affecting real users, corrupting real data, or — in the case of a DoS vulnerability — taking the service offline. Always use an isolated staging environment.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ RANKING ════════ -->
+<div id="ch21-rank" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128202;</div>
+        <h2>Step 2 — Ranking Vulnerability Severity</h2>
+    </div>
+
+    <p>After reproducing a vulnerability, the next step is to <strong>rank it by severity</strong> so it can be prioritized against other engineering work. Not all vulnerabilities are equally urgent — a scoring system makes prioritization objective, consistent, and defensible.</p>
+
+    <p>A good scoring system must be:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>Robust Enough</h4>
+            <p>It must be able to compare any two vulnerabilities accurately — even ones that affect different parts of the application or involve different attack methods.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>Flexible Enough</h4>
+            <p>It must apply to uncommon and unusual forms of vulnerability — not only the well-known OWASP Top 10 types. Custom logic bugs and IoT-connected systems need scoring too.</p>
+        </div>
+    </div>
+
+    <p>The most widely used method is the <strong>Common Vulnerability Scoring System (CVSS)</strong>.</p>
+</div>
+
+<!-- ════════ CVSS INTRO ════════ -->
+<div id="ch21-cvss-intro" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128396;&#65039;</div>
+        <h2>The Common Vulnerability Scoring System (CVSS)</h2>
+    </div>
+
+    <p>CVSS is a <strong>freely published, industry-standard framework</strong> for scoring vulnerabilities based on how easy they are to exploit and what damage a successful exploitation can cause. It is a strong starting point for any organization — especially those with limited security budgets or small dedicated security teams.</p>
+
+    <p>CVSS v3.1 breaks scoring into three independent levels:</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#127919;</div>
+            <div class="mc-title">Base Score</div>
+            <div class="mc-desc">Scores the vulnerability itself, in isolation. Independent of environment or any mitigations in place. The most commonly used score.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128336;</div>
+            <div class="mc-title">Temporal Score</div>
+            <div class="mc-desc">Scores how well-equipped your organization is to respond given the current state of the vulnerability — exploitability, fix availability, report quality.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#127759;</div>
+            <div class="mc-title">Environmental Score</div>
+            <div class="mc-desc">Scores the vulnerability relative to your specific application — weighting by how critical confidentiality, integrity, and availability are to your business.</div>
+        </div>
+    </div>
+
+    <h3>Score Ranges</h3>
+    <div class="score-band">
+        <div class="score-range low">
+            <div class="sr-range">0.1 – 4.0</div>
+            <div class="sr-label">&#128994; Low</div>
+        </div>
+        <div class="score-range medium">
+            <div class="sr-range">4.1 – 6.9</div>
+            <div class="sr-label">&#128993; Medium</div>
+        </div>
+        <div class="score-range high">
+            <div class="sr-range">7.0 – 8.9</div>
+            <div class="sr-label">&#128308; High</div>
+        </div>
+        <div class="score-range critical">
+            <div class="sr-range">9.0 – 10.0</div>
+            <div class="sr-label">&#9899; Critical</div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128202; CVSS Limitations</h4>
+        <p>CVSS is a general-purpose system and is sometimes criticized for not accurately scoring rare, unique, or <em>chained</em> vulnerabilities (where multiple smaller bugs combine into a more severe exploit). For standard OWASP Top 10 vulnerabilities, it provides a reliable, well-documented baseline. Organizations with specialized systems may extend it with their own custom scoring layers.</p>
+    </div>
+</div>
+
+<!-- ════════ BASE SCORE ════════ -->
+<div id="ch21-base" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>CVSS Base Score — All 8 Input Factors</h2>
+    </div>
+
+    <p>The CVSS v3.1 base score is calculated from <strong>8 input factors</strong>. Each input describes a specific dimension of how the vulnerability works and what it can impact. The algorithm combines all 8 to produce a final score between 0 and 10.</p>
+
+    <div class="cvss-grid">
+        <div class="cvss-card">
+            <div class="cvss-abbr">AV</div>
+            <div class="cvss-name">Attack Vector</div>
+            <div class="cvss-options">
+                Options: <strong>Network · Adjacent · Local · Physical</strong>
+                <em>Network = attacker can exploit remotely over the internet (most severe). Physical = attacker needs physical access to the device (least severe).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">AC</div>
+            <div class="cvss-name">Attack Complexity</div>
+            <div class="cvss-options">
+                Options: <strong>Low · High</strong>
+                <em>Low = attack is repeatable with no setup. High = requires specific conditions (e.g., a particular user logged in at a specific time and page).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">PR</div>
+            <div class="cvss-name">Privileges Required</div>
+            <div class="cvss-options">
+                Options: <strong>None · Low · High</strong>
+                <em>None = guest user can attack. Low = regular user. High = admin account required to exploit.</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">UI</div>
+            <div class="cvss-name">User Interaction</div>
+            <div class="cvss-options">
+                Options: <strong>None · Required</strong>
+                <em>None = attack succeeds automatically. Required = victim must take an action (e.g., click a malicious link).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">S</div>
+            <div class="cvss-name">Scope</div>
+            <div class="cvss-options">
+                Options: <strong>Unchanged · Changed</strong>
+                <em>Unchanged = impact stays within the exploited component. Changed = attack spreads beyond the original system (e.g., DB exploit affects the OS).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">C</div>
+            <div class="cvss-name">Confidentiality Impact</div>
+            <div class="cvss-options">
+                Options: <strong>None · Low · High</strong>
+                <em>How much sensitive data is disclosed? High = complete exposure of all data. Severity depends on your application's data type (health records vs. public posts).</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">I</div>
+            <div class="cvss-name">Integrity Impact</div>
+            <div class="cvss-options">
+                Options: <strong>None · Low · High</strong>
+                <em>None = attacker cannot change application state. High = attacker can modify all or most stored data, server state, or session data.</em>
+            </div>
+        </div>
+        <div class="cvss-card">
+            <div class="cvss-abbr">A</div>
+            <div class="cvss-name">Availability Impact</div>
+            <div class="cvss-options">
+                Options: <strong>None · Low · High</strong>
+                <em>Can the attacker deny access to legitimate users? High = complete service disruption (critical for DoS attacks against 24/7 applications).</em>
+            </div>
+        </div>
+    </div>
+
+    <h3 id="ch21-calculator">How to Use the Online CVSS Calculator</h3>
+    <p>You do not need to compute the score manually. The official CVSS v3.1 calculator is freely available at <a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator" target="_blank" style="color:var(--ch21);font-weight:600;">nvd.nist.gov/vuln-metrics/cvss/v3-calculator &#8599;</a>. Follow these steps to score any vulnerability:</p>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>Open the calculator</strong><br>
+                Click <a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator" target="_blank" style="color:var(--ch21);font-weight:600;">nvd.nist.gov/vuln-metrics/cvss/v3-calculator &#8599;</a> to open it in your browser. You will see the Base Score section with all 8 inputs displayed as clickable button groups.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>Select a value for each of the 8 inputs</strong><br>
+                Work through each input group — Attack Vector, Attack Complexity, Privileges Required, User Interaction, Scope, Confidentiality, Integrity, Availability — and click the option that best describes the vulnerability. Each click updates the score in real time.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>Read the Base Score and severity label</strong><br>
+                Once all 8 inputs are selected, the calculator displays the final <strong>numerical score (0–10)</strong> and the severity label: Low, Medium, High, or Critical.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">4</div>
+            <div>
+                <strong>Copy the Vector String</strong><br>
+                Below the score, the calculator generates a compact <strong>vector string</strong> such as:<br>
+                <code style="background:#0f172a;color:#86efac;padding:4px 10px;border-radius:6px;font-size:0.9em;">CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N</code><br>
+                Copy it into your vulnerability ticket — it encodes all 8 choices so any engineer can see exactly how the score was derived.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">5</div>
+            <div>
+                <strong>(Optional) Add Temporal and Environmental inputs</strong><br>
+                Scroll down to the Temporal and Environmental sections for a more contextual score. Most teams use Base Score alone for standard triage.
+            </div>
+        </li>
+    </ol>
+
+    <!-- ── Illustrated Example ── -->
+    <div class="cvss-mockup-wrapper">
+        <div class="cvss-mockup-label">&#128196; Illustrated Example — CSRF Vulnerability Scored in the Calculator</div>
+        <p style="font-size:0.92em;color:var(--gray);margin-bottom:18px;">The highlighted buttons below show the selections you would make for the CSRF subscription endpoint vulnerability. Unselected options appear in grey; the chosen option for each row is highlighted in amber.</p>
+
+        <div class="cvss-mockup">
+
+            <!-- Row: AV -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">AV</span>
+                    <span class="cvss-row-name">Attack Vector</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">Network</span>
+                    <span class="cvss-opt">Adjacent</span>
+                    <span class="cvss-opt">Local</span>
+                    <span class="cvss-opt">Physical</span>
+                </div>
+                <div class="cvss-row-note">Attacker sends link over internet &#8594; <strong>Network</strong></div>
+            </div>
+
+            <!-- Row: AC -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">AC</span>
+                    <span class="cvss-row-name">Attack Complexity</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">Just a crafted URL, no setup needed &#8594; <strong>Low</strong></div>
+            </div>
+
+            <!-- Row: PR -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">PR</span>
+                    <span class="cvss-row-name">Privileges Required</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">None</span>
+                    <span class="cvss-opt">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">Anyone can send the link &#8594; <strong>None</strong></div>
+            </div>
+
+            <!-- Row: UI -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">UI</span>
+                    <span class="cvss-row-name">User Interaction</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt">None</span>
+                    <span class="cvss-opt selected">Required</span>
+                </div>
+                <div class="cvss-row-note">Victim must click the link &#8594; <strong>Required</strong></div>
+            </div>
+
+            <!-- Row: S -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">S</span>
+                    <span class="cvss-row-name">Scope</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">Unchanged</span>
+                    <span class="cvss-opt">Changed</span>
+                </div>
+                <div class="cvss-row-note">Impact stays within the victim's account &#8594; <strong>Unchanged</strong></div>
+            </div>
+
+            <!-- Row: C -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">C</span>
+                    <span class="cvss-row-name">Confidentiality</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">None</span>
+                    <span class="cvss-opt">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">No data is read or exposed &#8594; <strong>None</strong></div>
+            </div>
+
+            <!-- Row: I -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">I</span>
+                    <span class="cvss-row-name">Integrity</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt">None</span>
+                    <span class="cvss-opt selected">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">Subscription tier changed without consent &#8594; <strong>Low</strong></div>
+            </div>
+
+            <!-- Row: A -->
+            <div class="cvss-row">
+                <div class="cvss-row-label">
+                    <span class="cvss-row-abbr">A</span>
+                    <span class="cvss-row-name">Availability</span>
+                </div>
+                <div class="cvss-row-options">
+                    <span class="cvss-opt selected">None</span>
+                    <span class="cvss-opt">Low</span>
+                    <span class="cvss-opt">High</span>
+                </div>
+                <div class="cvss-row-note">Service remains available to all users &#8594; <strong>None</strong></div>
+            </div>
+
+            <!-- Result -->
+            <div class="cvss-result-bar">
+                <div class="cvss-result-score">
+                    <span class="cvss-result-num">4.3</span>
+                    <span class="cvss-result-badge medium">MEDIUM</span>
+                </div>
+                <div class="cvss-result-vector">
+                    <span class="cvss-result-vector-label">Vector String</span>
+                    <code>CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="story">
+        <div class="story-label">&#128214; Reading the Vector String</div>
+        <p>The vector string uses a fixed abbreviation format. Each segment is <code>InputAbbreviation:ChosenValue</code> separated by slashes. For example, <code>AV:N</code> means Attack Vector = Network, <code>UI:R</code> means User Interaction = Required. The full mapping:</p>
+        <table class="data-table" style="margin-top:14px;">
+            <thead>
+                <tr><th>Abbreviation</th><th>Input</th><th>Possible Values</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>AV</strong></td><td>Attack Vector</td><td>N (Network) · A (Adjacent) · L (Local) · P (Physical)</td></tr>
+                <tr><td><strong>AC</strong></td><td>Attack Complexity</td><td>L (Low) · H (High)</td></tr>
+                <tr><td><strong>PR</strong></td><td>Privileges Required</td><td>N (None) · L (Low) · H (High)</td></tr>
+                <tr><td><strong>UI</strong></td><td>User Interaction</td><td>N (None) · R (Required)</td></tr>
+                <tr><td><strong>S</strong></td><td>Scope</td><td>U (Unchanged) · C (Changed)</td></tr>
+                <tr><td><strong>C</strong></td><td>Confidentiality</td><td>N (None) · L (Low) · H (High)</td></tr>
+                <tr><td><strong>I</strong></td><td>Integrity</td><td>N (None) · L (Low) · H (High)</td></tr>
+                <tr><td><strong>A</strong></td><td>Availability</td><td>N (None) · L (Low) · H (High)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; Always Save the Vector String</h4>
+        <p>The numerical score (e.g., 4.3) tells you the severity. The vector string tells you <em>why</em>. Always copy both into your vulnerability ticket so that any engineer reviewing the report months later can see exactly which factors drove the score.</p>
+    </div>
+</div>
+
+<!-- ════════ BASE SCORE EXAMPLE ════════ -->
+<div id="ch21-base-ex" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128221;</div>
+        <h2>Base Score Example — Scoring a CSRF Vulnerability</h2>
+    </div>
+
+    <p>Let's apply the 8-factor base scoring model to a real vulnerability: a <strong>CSRF attack on a subscription management endpoint</strong> that accepts HTTP GET requests (covered in Chapter 20's regression test example).</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Input</th>
+                <th>Chosen Value</th>
+                <th>Reasoning</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Attack Vector (AV)</strong></td>
+                <td>Network</td>
+                <td>The attacker sends a malicious link via email — fully remote, over the internet</td>
+            </tr>
+            <tr>
+                <td><strong>Attack Complexity (AC)</strong></td>
+                <td>Low</td>
+                <td>Crafting the link requires no special setup — just a URL with parameters</td>
+            </tr>
+            <tr>
+                <td><strong>Privileges Required (PR)</strong></td>
+                <td>None</td>
+                <td>Any unauthenticated attacker can create and send the malicious link</td>
+            </tr>
+            <tr>
+                <td><strong>User Interaction (UI)</strong></td>
+                <td>Required</td>
+                <td>The victim must click the link — the attack does not execute automatically</td>
+            </tr>
+            <tr>
+                <td><strong>Scope (S)</strong></td>
+                <td>Unchanged</td>
+                <td>Impact is limited to the victim's subscription data — does not spread further</td>
+            </tr>
+            <tr>
+                <td><strong>Confidentiality (C)</strong></td>
+                <td>None</td>
+                <td>No data is read or disclosed — the attack only modifies state</td>
+            </tr>
+            <tr>
+                <td><strong>Integrity (I)</strong></td>
+                <td>Low</td>
+                <td>The victim's subscription tier is changed without consent — limited state change</td>
+            </tr>
+            <tr>
+                <td><strong>Availability (A)</strong></td>
+                <td>None</td>
+                <td>The application remains fully available — no disruption to other users</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story">
+        <div class="story-label">&#128202; Result</div>
+        <p>Running these 8 values through the CVSS v3.1 calculator produces a <strong>base score of approximately 4.3</strong> — placing this vulnerability in the <span class="cvss-badge medium">Medium</span> severity range.</p>
+        <p>This tells us: the vulnerability is real and should be fixed, but it is not an emergency. It should be queued in the next sprint, not deployed as a hotfix today. A critical (9.0+) vulnerability — such as an unauthenticated remote code execution — would require immediate action regardless of sprint priorities.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ TEMPORAL ════════ -->
+<div id="ch21-temporal" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128336;</div>
+        <h2>CVSS Temporal Scoring</h2>
+    </div>
+
+    <p>The temporal score answers a different question than the base score. Instead of asking "how severe is this vulnerability?", it asks: <strong>"how well-equipped is your organization to deal with this vulnerability right now?"</strong></p>
+
+    <p>The temporal score uses three factors, each reflecting the <em>current state</em> of the vulnerability at the time of reporting:</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Factor</th>
+                <th>What It Measures</th>
+                <th>Range</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Exploitability</strong></td>
+                <td>Is this vulnerability theoretical, a proof-of-concept, or a fully working exploit that can be deployed as-is?</td>
+                <td>Unproven → High</td>
+            </tr>
+            <tr>
+                <td><strong>Remediation Level</strong></td>
+                <td>Is a tested, official fix already available? Or is no solution currently known?</td>
+                <td>Official Fix (O) → Unavailable (U)</td>
+            </tr>
+            <tr>
+                <td><strong>Report Confidence</strong></td>
+                <td>How reliable and detailed is the vulnerability report? Does it include reproduction steps?</td>
+                <td>Unknown → Confirmed</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — Temporal in Practice</div>
+        <p>A vulnerability with a <strong>high exploitability</strong> score (working exploit already circulating online), <strong>no remediation available</strong>, and a <strong>confirmed report with full reproduction</strong> is a situation requiring immediate action — even if the base score was only "High" rather than "Critical."</p>
+        <p>The temporal score captures this urgency. It does not change the intrinsic severity of the vulnerability itself — only how urgent the response must be given the current state of knowledge and available defenses.</p>
+    </div>
+
+    <div class="amber-box">
+        <h4>&#128202; Temporal Score Range</h4>
+        <p>The temporal score uses the same 0–10 scale as the base score. However, temporal scores can only be <strong>equal to or lower</strong> than the base score — mitigations in place reduce the effective score, but cannot raise it above the intrinsic severity of the vulnerability itself.</p>
+    </div>
+</div>
+
+<!-- ════════ ENVIRONMENTAL ════════ -->
+<div id="ch21-env" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127759;</div>
+        <h2>CVSS Environmental Scoring</h2>
+    </div>
+
+    <p>The environmental score takes all of the base score inputs and adds <strong>three new requirements</strong> that describe how important confidentiality, integrity, and availability are to <em>your specific application</em>. The same vulnerability scored in a hospital's patient record system should be treated very differently than the same vulnerability in a test sandbox.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>Confidentiality Requirement</h4>
+            <p>How sensitive is the data your application stores? A healthcare application with patient records scores <strong>High</strong>. A public news aggregator with no user accounts scores <strong>Low</strong>.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>Integrity Requirement</h4>
+            <p>How damaging is unauthorized state change in your application? A corporate tax record system scores <strong>High</strong>. A temporary test sandbox that is thrown away after use scores <strong>Low</strong>.</p>
+        </div>
+    </div>
+    <div style="margin-top: 0;" class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>Availability Requirement</h4>
+            <p>How critical is uptime? A payment processor with a 99.99% SLA scores <strong>High</strong>. An internal developer tool with no uptime promises scores <strong>Low</strong>.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #6b7280;">
+            <h4>How It Works</h4>
+            <p>The environmental score reweights the base score inputs based on these three requirements — raising or lowering the effective score based on how much the exploit could actually hurt <em>your organization specifically</em>.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; Base Score = Objective · Environmental Score = Contextual</h4>
+        <p>The base score measures the vulnerability in a vacuum. The environmental score measures its real impact on your organization. A base score of 5.5 (Medium) could become a 9.2 (Critical) environmental score for a healthcare application storing protected health information. Always compute both when the stakes are high.</p>
+    </div>
+</div>
+
+<!-- ════════ ADVANCED SCORING ════════ -->
+<div id="ch21-advanced" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#129520;</div>
+        <h2>Advanced &amp; Custom Vulnerability Scoring</h2>
+    </div>
+
+    <p>CVSS is a general-purpose starting point, but organizations with specialized architectures may need to build their own scoring adjustments on top of CVSS to account for risks that the standard system does not model well.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — IoT and Physical Systems</div>
+        <p>Consider a web application that controls a network of security cameras. The CVSS Attack Vector options (Network, Adjacent, Local, Physical) do not fully capture the additional implications of a compromise in this scenario:</p>
+        <ul class="clean-list">
+            <li>A camera compromise could <strong>leak sensitive video footage of tenants</strong> — potentially illegal under privacy law</li>
+            <li>The attack surface includes not just the web application but also the <strong>physical devices</strong> connected to it</li>
+            <li>Loss of camera functionality could have <strong>physical security implications</strong> beyond data risk</li>
+        </ul>
+        <p>For such applications, CVSS should be used as a foundation, but custom scoring dimensions should be added to reflect these unique risks.</p>
+    </div>
+
+    <div class="amber-box">
+        <h4>&#128202; Evaluating Your Scoring System Over Time</h4>
+        <p>Any scoring system — whether pure CVSS or a custom extension — should be regularly evaluated based on its ability to <strong>accurately predict damage</strong> caused by vulnerabilities that were not fixed in time. If a low-severity rated vulnerability turns out to cause significant harm, the scoring model should be updated to weight similar vulnerabilities higher in the future.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ FIXING ════════ -->
+<div id="ch21-fix" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128295;</div>
+        <h2>Step 3 — Fixing Vulnerabilities</h2>
+    </div>
+
+    <p>After reproduction and scoring, the vulnerability must be <strong>fixed correctly</strong>. The CVSS score determines priority and urgency, but other business factors also influence when a fix ships — including customer contracts, SLA obligations, and whether the vulnerability is actively being exploited.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — Scoring Is Not the Only Factor</div>
+        <p>A vulnerability's CVSS score tells you how severe it is in isolation. But business priorities can override the queue. For example, a <strong>Medium</strong> severity vulnerability may need to ship before a <strong>High</strong> one if a major enterprise customer has a contractual requirement that the medium issue be resolved before their next audit date. Scoring informs priority — it does not fully determine it.</p>
+    </div>
+
+    <h3>Rules for Fixing Correctly</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>Prefer permanent, application-wide solutions</strong><br>
+                Whenever possible, fix the <em>class</em> of vulnerability — not just the single reported instance. An injection fix in one endpoint should trigger a review and fix of all endpoints that use the same pattern.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>If only a partial fix is possible — open a new bug immediately</strong><br>
+                Never close a bug for a partial fix without opening a new tracked issue for the remaining vulnerable surface area. The new issue must include its own CVSS score and be added to the backlog.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>Ship a regression test with every fix</strong><br>
+                Every closed security bug must have a regression test delivered alongside it. This is non-negotiable. The test ensures the vulnerability cannot silently reopen in a future refactor or rollback.
+            </div>
+        </li>
+    </ol>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Never Close a Bug Without a New One</h4>
+        <p>Closing a vulnerability bug for a partial fix without a follow-up issue loses all accumulated context — the reproduction steps, the root cause analysis, and the technical understanding of the scope. Engineers who come across the code months later will have no record that a vulnerability was only partially fixed. Vulnerabilities can also <em>grow</em> in risk as the application's feature set expands, even if the original code containing them has not changed.</p>
+    </div>
+</div>
+
+<!-- ════════ REGRESSION TESTS ════════ -->
+<div id="ch21-regression" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9989;</div>
+        <h2>Step 4 — Vulnerability Regression Tests</h2>
+    </div>
+
+    <p>Regression tests are written <em>after</em> a vulnerability is fixed to ensure it <strong>never comes back</strong>. They are simple to write, easy to integrate into existing test suites, and provide <em>permanent</em> protection against the specific vulnerability type they cover.</p>
+
+    <h3>Why Regression Tests Grow in Value Over Time</h3>
+    <p>As a codebase grows in size and feature set, the number of opportunities for a previously fixed vulnerability to accidentally reopen increases. A regression test written today protects against every future:</p>
+    <ul class="clean-list">
+        <li><strong>Refactor</strong> — code restructuring that moves or renames the vulnerable function</li>
+        <li><strong>Dependency update</strong> — a library upgrade that changes underlying behavior</li>
+        <li><strong>New feature</strong> — a new endpoint built on a similar pattern to the old one</li>
+        <li><strong>Rollback</strong> — reverting to an older version that predates the fix</li>
+    </ul>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — Steve, Jed, and the CSRF Regression</div>
+        <p>Engineer <strong>Steve</strong> builds a subscription management endpoint using a GET request — a CSRF vulnerability. His friend <strong>Jed</strong> notices that sending a crafted link like <code>GET /api/changeSubscriptionTier?newTier=corporation</code> silently upgrades Steve's subscription. Steve fixes the endpoint to use POST, then writes a regression test:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✓ Regression test — ensures the CSRF fix can never be silently reverted</span>
+
+<span class="k">const</span> <span class="n">testTierChangeOnlyAcceptsPOST</span> = <span class="k">function</span>() {
+
+    requester
+        .options(<span class="s">'http://app.com/api/changeSubscriptionTier'</span>)
+        .on(<span class="s">'response'</span>, <span class="k">function</span>(res) {
+
+            <span class="k">const</span> verbs = res.headers[<span class="s">'Allow'</span>].split(<span class="s">','</span>);
+
+            <span class="c">// Rule 1: only one HTTP verb should be allowed on this endpoint</span>
+            <span class="k">if</span> (verbs.length &gt; <span class="n">1</span>) {
+                <span class="k">return</span> tester.fail(<span class="s">'Multiple verbs exposed'</span>);
+            }
+
+            <span class="c">// Rule 2: that one verb must be POST — never GET</span>
+            <span class="k">if</span> (verbs[<span class="n">0</span>] !== <span class="s">'POST'</span>) {
+                <span class="k">return</span> tester.fail(<span class="s">'GET still accessible'</span>);
+            }
+
+            tester.pass();
+
+        });
+
+};
+    </div>
+
+    <p>If a future code change reintroduces a GET version of this endpoint — even accidentally — <strong>this test will immediately fail</strong> and block the change from being merged.</p>
+
+    <h3>When to Run Regression Tests</h3>
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; On Commit / Push Hooks (Recommended)</h4>
+            <p>Reject the commit or push if any regression test fails. This is the earliest possible point of failure — developers get immediate feedback before the code ever enters the main branch.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch21);">
+            <h4>&#128336; Scheduled Daily Runs (Secondary)</h4>
+            <p>A strong secondary option for complex multi-branch environments. Catches regressions introduced through indirect changes that weren't caught by commit hooks.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; Every Closed Security Bug = One New Regression Test</h4>
+        <p>This rule is simple and absolute. Closing a security bug without a regression test means the vulnerability is only one future refactor away from coming back — silently. Regression tests are the most cost-effective long-term security investment in the entire SSDL.</p>
+    </div>
+</div>
+
+<!-- ════════ SUMMARY ════════ -->
+<div id="ch21-summary" class="summary-banner">
+    <h3>&#128203; Chapter 21 Summary — Vulnerability Management</h3>
+    <ul>
+        <li>Vulnerability management is a 4-step pipeline: Reproduce → Score → Fix → Regression Test</li>
+        <li>Reproduction in a staging environment confirms validity, prevents wasted effort, and protects bug bounty payments</li>
+        <li>CVSS v3.1 uses 8 base inputs (AV, AC, PR, UI, S, C, I, A) to generate an objective 0–10 severity score</li>
+        <li>Temporal scoring measures how ready your team is to respond; environmental scoring contextualizes risk to your specific business</li>
+        <li>Fixes must be permanent and application-wide — partial fixes must always spawn a new tracked issue with its own score</li>
+        <li>Every closed security bug must ship with a regression test — no exceptions</li>
+        <li>Regression tests grow in value exponentially as the codebase grows, permanently blocking previously fixed vulnerabilities from returning</li>
+    </ul>
+</div>
+
+</main>
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 &mdash; Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week7/index.html">Week 7</a>
+            <a href="../syllabus.html">Syllabus</a>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>

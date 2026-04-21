@@ -2,67 +2,1169 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 7: Automated Scanning with Nikto & OWASP ZAP | CYB 236</title>
+    <title>Lab 07: Burp Suite Intruder &ndash; Dictionary &amp; Password Attacks | CYB236 (v2025)</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f8f9fa; color: #2c3e50; }
-        .banner { background: linear-gradient(135deg, #27ae60, #1e8449); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
-        .banner h1 { margin: 0 0 8px 0; font-size: 1.6em; }
-        .banner p { margin: 0; opacity: 0.9; }
-        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; margin-top: 10px; }
-        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-        .card h2 { color: #1e8449; margin-top: 0; border-bottom: 2px solid #d5f0e0; padding-bottom: 10px; }
-        ul li { margin-bottom: 8px; line-height: 1.6; }
-        .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-        .tool-tag { background: #e8f8f0; color: #1e8449; padding: 5px 12px; border-radius: 6px; font-size: 0.9em; font-weight: 600; }
-        .note { background: #d5f0e0; border-left: 4px solid #27ae60; padding: 15px 20px; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+        :root {
+            --primary-color: #6d28d9;
+            --secondary-color: #4c1d95;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a0533 0%, #2d1060 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">&#128272;</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .prereq-badge {
+            display: inline-block;
+            background: rgba(56,161,105,0.3);
+            border: 1px solid rgba(56,161,105,0.6);
+            color: #c6f6d5;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* Lab Info Bar */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.82em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* Content */
+        .content { padding: 40px; }
+
+        /* TOC */
+        .toc {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-left: 5px solid #6d28d9;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-left: 20px; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #4c1d95; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* Sections */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #6d28d9; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* Alert Boxes */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-left: 5px solid var(--info-color); }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-left: 5px solid var(--warning-color); }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-left: 5px solid var(--danger-color); }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-left: 5px solid var(--accent-color); }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; padding: 14px 18px; text-align: left; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* Code */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        pre code { background: none; color: #68d391; padding: 0; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+        .output-text { color: #fbd38d; }
+
+        /* Steps */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-left: 50px; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; width: 35px; height: 35px; background: linear-gradient(135deg,#6d28d9,#4c1d95); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(109,40,217,0.3); }
+
+        /* Concept Banner */
+        .concept-banner { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #c4b5fd; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* Expected Output */
+        .expected-output { background: #f7fafc; border: 2px dashed #6d28d9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #6d28d9; margin-top: 0; margin-bottom: 8px; }
+
+        /* Answer Key */
+        .answer-key { background: linear-gradient(135deg,#f5f3ff,#ede9fe); border: 2px solid #6d28d9; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .answer-key h4 { color: #4c1d95; margin-top: 0; margin-bottom: 10px; }
+        .answer-key ol { margin-left: 20px; margin-bottom: 0; }
+        .answer-key li { margin-bottom: 8px; }
+        .answer-key strong { color: #4c1d95; }
+
+        /* Deliverable */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-left: 5px solid #805ad5; border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* Fill-in */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.93em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #6d28d9; box-shadow: 0 0 0 3px rgba(109,40,217,0.1); }
+
+        /* Module Badge */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#6d28d9,#4c1d95); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* Intruder Mode Cards */
+        .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin: 18px 0; }
+        .mode-card { background: white; border: 2px solid var(--border-color); border-radius: 12px; padding: 18px; }
+        .mode-card.active { border-color: #6d28d9; background: linear-gradient(135deg,#f5f3ff,#ede9fe); }
+        .mode-card h4 { color: #4c1d95; margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .mode-card p { margin: 0; font-size: 0.9em; color: #4a5568; }
+        .mode-tag { font-size: 0.72em; background: #6d28d9; color: white; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+
+        /* Results table simulation */
+        .results-sim { background: #1a202c; border-radius: 12px; padding: 16px; margin: 14px 0; overflow-x: auto; }
+        .results-sim table { box-shadow: none; border-radius: 0; margin: 0; }
+        .results-sim th { background: #2d3748; color: #a0aec0; font-size: 0.8em; padding: 8px 12px; }
+        .results-sim td { color: #e2e8f0; font-size: 0.85em; padding: 7px 12px; border-bottom: 1px solid #2d3748; font-family: 'Consolas','Monaco',monospace; background: transparent; }
+        .results-sim tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+        .results-sim .hit-row td { color: #68d391; font-weight: bold; background: rgba(104,211,145,0.1) !important; }
+
+        /* Troubleshooting */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* Summary box */
+        .summary-box { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+        .summary-box h3 { color: #c4b5fd; margin-top: 0; border: none; }
+        .summary-box table { box-shadow: none; border-radius: 8px; overflow: hidden; }
+        .summary-box th { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .summary-box td { color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; }
+        .summary-box tr:nth-child(even) td { background: rgba(255,255,255,0.05); }
+
+        /* Footer */
+        .footer { background: linear-gradient(135deg,#1a0533,#2d1060); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+            .mode-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Language Switch */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<div class="banner">
-    <h1>Lab 7: Automated Scanning with Nikto & OWASP ZAP</h1>
-    <p>Topic 7 — Secure Development Methodologies I</p>
-    <span class="badge">Nikto (Kali) + OWASP ZAP (Kali)</span>
+<!-- Language Switch -->
+<div class="lang-switch">
+    <a href="lab07-arabic.html" class="lang-btn">
+        &#127760; عربي
+    </a>
 </div>
 
-<div class="card">
-    <h2>Lab Purpose</h2>
-    <p>This lab introduces automated security testing tools — a core part of the Security Testing methodology covered in Topic 7. Students will use Nikto and OWASP ZAP to scan DVWA automatically, compare results with their manual findings from previous labs, and understand how security professionals use automated tools as part of a broader testing strategy.</p>
-</div>
+<div class="container">
 
-<div class="card">
-    <h2>Tools Required</h2>
-    <div class="tools">
-        <span class="tool-tag">Nikto (pre-installed in Kali)</span>
-        <span class="tool-tag">OWASP ZAP (pre-installed in Kali)</span>
-        <span class="tool-tag">DVWA</span>
+    <header class="header">
+        <h1>&#128272; Lab 07: Burp Suite Intruder &mdash; Dictionary &amp; Password Attacks</h1>
+        <p class="subtitle">CYB236 &mdash; Web Application Security</p>
+        <div class="chapter-ref">Chapter 6 &mdash; Burp Intruder &bull; Dictionary Attacks &bull; Payload Positions &bull; Brute Force Defense</div>
+        <br>
+        <span class="prereq-badge">&#9989; Prerequisite: Labs 05 &amp; 06 (Burp Suite &amp; FoxyProxy configured)</span>
+        <span class="prereq-badge" style="margin-left: 8px;">&#128197; Updated for Burp Suite Community Edition v2025.10.6</span>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>Lab Number</strong><span>07</span></div>
+        <div class="lab-info-item"><strong>Difficulty</strong><span>Intermediate</span></div>
+        <div class="lab-info-item"><strong>Duration</strong><span>45&ndash;60 min</span></div>
+        <div class="lab-info-item"><strong>Environment</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>Next</strong><span>Lab 08</span></div>
     </div>
-</div>
 
-<div class="card">
-    <h2>Planned Tasks</h2>
-    <ul>
-        <li><strong>Task 1 — Nikto Scan:</strong> Run Nikto against the DVWA target. Review the output — which vulnerabilities did Nikto detect automatically? Which ones did it miss?</li>
-        <li><strong>Task 2 — OWASP ZAP Active Scan:</strong> Configure OWASP ZAP to proxy through the browser, spider DVWA, then run an active scan. Review the alerts generated.</li>
-        <li><strong>Task 3 — Compare Results:</strong> Compare Nikto vs ZAP findings. Identify which tool found what. Discuss the limitations of automated scanning vs manual testing.</li>
-        <li><strong>Task 4 — Document Findings:</strong> Write a brief vulnerability summary table listing each finding, severity, and tool that detected it.</li>
-    </ul>
-</div>
+    <div class="content">
 
-<div class="card">
-    <h2>Learning Outcomes</h2>
-    <ul>
-        <li>Use Nikto and OWASP ZAP for automated web application scanning</li>
-        <li>Understand the strengths and limitations of automated tools</li>
-        <li>Connect automated scanning to the Security Testing methodology from Topic 7</li>
-        <li>Practice documenting findings in a structured format</li>
-    </ul>
-</div>
+        <nav class="toc">
+            <h2>&#128203; Table of Contents</h2>
+            <ol>
+                <li><a href="#intro">What is Burp Intruder?</a></li>
+                <li><a href="#concept">Dictionary vs Brute Force Attacks</a></li>
+                <li><a href="#setup">Setup: Start DVWA &amp; Confirm Burp</a></li>
+                <li><a href="#task1">Task 1: Capture the Login Request</a></li>
+                <li><a href="#task2">Task 2: Configure Intruder</a></li>
+                <li><a href="#task3">Task 3: Run the Attack &amp; Analyze Results</a></li>
+                <li><a href="#task4">Task 4: Countermeasures &amp; Defense</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#report">Deliverables &amp; Report</a></li>
+            </ol>
+        </nav>
 
-<div class="note">
-    <strong>Instructor Note:</strong> Both Nikto and OWASP ZAP are pre-installed in Kali Linux. Target DVWA running locally. Make sure DVWA is set to LOW security before scanning so students see maximum findings.
-</div>
+        <!-- ── INTRO ── -->
+        <section id="intro">
+            <h2>&#128272; What is Burp Intruder?</h2>
 
+            <p>In <strong>Labs 05 and 06</strong> you learned Burp Suite's <strong>Proxy</strong>, <strong>Repeater</strong>, and <strong>Site Map</strong> tools. In this lab you will work with the most powerful automated testing tool in Burp's arsenal: <strong>Intruder</strong>.</p>
+
+            <p><strong>Burp Intruder</strong> is an automated request-fuzzing engine. It takes any captured HTTP request, lets you mark one or more parameters as <em>payload positions</em>, then sends that request repeatedly &mdash; substituting a different value on each attempt from a wordlist or other payload source. This automates what would otherwise take hours of manual work in Repeater.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>What We Use Intruder For in This Lab</h4>
+                    <p>We will use Intruder to perform a <strong>dictionary attack</strong> against DVWA's Brute Force login module &mdash; automatically testing a list of common passwords to find the correct one by comparing server response lengths.</p>
+                </div>
+            </div>
+
+            <h3>The Four Intruder Attack Modes</h3>
+            <p>Intruder supports four attack types. The right choice depends on how many payload positions you have and how you want payloads combined.</p>
+
+            <div class="mode-grid">
+                <div class="mode-card active">
+                    <h4>&#127919; Sniper <span class="mode-tag">Used in this lab</span></h4>
+                    <p>One payload list. Tests each payload in <strong>one position at a time</strong>. Best for testing a single parameter &mdash; like a password field &mdash; with a wordlist.</p>
+                </div>
+                <div class="mode-card">
+                    <h4>&#127922; Battering Ram</h4>
+                    <p>One payload list. Inserts the <strong>same payload into all positions simultaneously</strong>. Useful when the same value must appear in multiple fields at once.</p>
+                </div>
+                <div class="mode-card">
+                    <h4>&#9874;&#65039; Pitchfork</h4>
+                    <p>Multiple payload lists &mdash; one per position &mdash; iterated <strong>in parallel</strong>. Best for matched username+password pairs (user1:pass1, user2:pass2).</p>
+                </div>
+                <div class="mode-card">
+                    <h4>&#128163; Cluster Bomb</h4>
+                    <p>Multiple payload lists, <strong>all combinations tested</strong>. Every username is tried against every password. True credential stuffing, but generates many requests.</p>
+                </div>
+            </div>
+
+            <h3>Intruder vs Repeater: What Is the Difference?</h3>
+            <table>
+                <tr><th>Feature</th><th>Repeater (Lab 06)</th><th>Intruder (This Lab)</th></tr>
+                <tr><td>Number of requests</td><td>One at a time &mdash; you click Send manually</td><td>Hundreds or thousands &mdash; automated</td></tr>
+                <tr><td>Payload variation</td><td>You type each change by hand</td><td>Loaded from a wordlist, iterated automatically</td></tr>
+                <tr><td>Best for</td><td>Manual exploitation, precise one-off tests</td><td>Fuzzing, password attacks, parameter discovery</td></tr>
+                <tr><td>Results view</td><td>One response at a time</td><td>Table of all responses &mdash; sortable by length or status</td></tr>
+            </table>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Community Edition Rate Limit</h4>
+                    <p>Burp Suite Community Edition (free) <strong>throttles Intruder to approximately 1 request per second</strong>. Professional Edition has no limit. For this lab you will use a short 15-password wordlist, so the throttle is not a problem &mdash; the attack completes in about 15 seconds. You will observe the throttling indicator and understand why the Professional edition matters in real engagements. In v2025, the rate-limit notice appears as a banner in the attack results window or as a status message in the lower toolbar of the results view.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── CONCEPT ── -->
+        <section id="concept">
+            <h2>&#128214; Dictionary vs Brute Force Attacks</h2>
+
+            <h3>Pure Brute Force</h3>
+            <p>A <strong>pure brute force attack</strong> tries every possible combination of characters &mdash; <code>aaa</code>, <code>aab</code>, <code>aac</code>&hellip; up to <code>zzzzzzz</code>. For a 6-character lowercase password, that is 26&sup6; = 308 million combinations. It is guaranteed to find the password eventually, but can take an impractical amount of time.</p>
+
+            <h3>Dictionary Attacks</h3>
+            <p>A <strong>dictionary attack</strong> uses a <em>wordlist</em> &mdash; a pre-compiled file of common passwords, leaked passwords, and likely guesses. Most real-world passwords appear in these lists because people reuse predictable choices. A dictionary attack trades completeness for speed.</p>
+
+            <table>
+                <tr><th>Attack Type</th><th>Method</th><th>Speed</th><th>Coverage</th></tr>
+                <tr><td><strong>Brute Force</strong></td><td>Every possible character combination</td><td>Very slow</td><td>100% &mdash; finds any password eventually</td></tr>
+                <tr><td><strong>Dictionary</strong></td><td>Common passwords from a wordlist</td><td>Fast</td><td>Partial &mdash; only finds weak or common passwords</td></tr>
+                <tr><td><strong>Hybrid</strong></td><td>Dictionary + mutations (add 123, !, capitalise)</td><td>Medium</td><td>Good &mdash; catches &ldquo;password123&rdquo;, &ldquo;Admin!&rdquo; etc.</td></tr>
+            </table>
+
+            <h3>What Is rockyou.txt?</h3>
+            <p><strong>rockyou.txt</strong> is the most well-known password wordlist in security testing. It contains over <strong>14 million real passwords</strong> leaked in a 2009 breach of the RockYou social gaming platform. Because these are actual passwords real users chose, it is extremely effective against weak credentials.</p>
+
+<pre><code><span class="command-label"># rockyou.txt ships with Kali Linux (compressed)</span>
+ls /usr/share/wordlists/
+
+<span class="command-label"># Decompress it (only needed once)</span>
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+
+<span class="command-label"># View the first 15 lines — the most common passwords</span>
+head -15 /usr/share/wordlists/rockyou.txt</code></pre>
+
+<pre><code><span class="output-text">123456
+12345
+123456789
+password
+iloveyou
+princess
+1234567
+rockyou
+12345678
+abc123
+nicole
+daniel
+babygirl
+monkey
+lovely</span></code></pre>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>For This Lab: We Use a Short Custom Wordlist</h4>
+                    <p>rockyou.txt has 14 million entries. Running it through Intruder Community Edition at 1&nbsp;req/sec would take over 160 days. For this lab you will create a 15-password wordlist that includes the correct answer. This demonstrates the full technique without the wait &mdash; you will still see exactly how the attack works and how to read the results.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Authorized Use Only</h4>
+                    <p>Dictionary and brute force attacks against systems you do not own or have explicit written authorization to test are <strong>illegal</strong>. All testing in this lab is performed against DVWA running locally on your own machine only.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── SETUP ── -->
+        <section id="setup">
+            <h2>&#9881;&#65039; Setup: Start DVWA &amp; Confirm Burp</h2>
+
+            <h3>Step 1: Start DVWA</h3>
+<pre><code><span class="command-label"># Start the DVWA Docker container</span>
+sudo docker start dvwa
+
+<span class="command-label"># Get your Kali IP address</span>
+hostname -I</code></pre>
+            <p>Note your IP (e.g., <code>10.0.2.15</code>). Always use this IP &mdash; not <code>localhost</code> &mdash; in all browser URLs.</p>
+
+            <h3>Step 2: Set DVWA Security to Low</h3>
+            <ol class="steps">
+                <li>In Firefox, navigate to <code>http://&lt;your-ip&gt;</code></li>
+                <li>Log in: username <code>admin</code> / password <code>password</code></li>
+                <li>Click <strong>DVWA Security</strong> in the left menu</li>
+                <li>Select <strong>Low</strong> from the dropdown and click <strong>Submit</strong></li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Security Level Must Be Low for Tasks 1&ndash;3</h4>
+                    <p>DVWA Low security has no brute-force protection: no delay, no lockout, no CAPTCHA, no CSRF token. This lets you run the attack cleanly and see results. In Task 4 you will switch to Medium and High to observe the defenses in action.</p>
+                </div>
+            </div>
+
+            <h3>Step 3: Confirm Burp Suite and FoxyProxy</h3>
+            <ul>
+                <li>Burp Suite is open (launch with <code>burpsuite</code> if needed &rarr; Temporary project &rarr; Start Burp)</li>
+                <li>Proxy listener shows <code>127.0.0.1:8080</code> as <strong>Running</strong> &mdash; verify via <strong>Proxy</strong> tab &rarr; <strong>Proxy settings</strong> button at the top of the tab; or in v2025 via the <strong>Settings</strong> gear icon &rarr; <strong>Tools</strong> &rarr; <strong>Proxy</strong></li>
+                <li>FoxyProxy is active with the <strong>Burp Proxy</strong> profile selected in Firefox</li>
+                <li>Intercept is <strong>OFF</strong> for now</li>
+            </ul>
+
+            <h3>Step 4: Create the Wordlist</h3>
+            <p>Open a terminal and run this command to create a short custom wordlist:</p>
+<pre><code><span class="command-label"># Create the wordlist file in your home directory</span>
+cat &gt; ~/dvwa_wordlist.txt &lt;&lt; 'EOF'
+admin
+123456
+password
+12345
+qwerty
+abc123
+letmein
+monkey
+dragon
+master
+hello
+welcome
+shadow
+sunshine
+princess
+EOF</code></pre>
+
+<pre><code><span class="command-label"># Confirm the file was created correctly</span>
+cat ~/dvwa_wordlist.txt</code></pre>
+
+            <p>The file contains 15 common passwords. The correct DVWA admin password (<code>password</code>) is the <strong>3rd entry</strong> &mdash; Intruder will find it automatically by testing all 15.</p>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Checkpoint</h4>
+                    <p>DVWA is running and accessible at <code>http://&lt;your-ip&gt;</code>. Security is set to <strong>Low</strong>. Burp Suite is running with the proxy listener on <code>127.0.0.1:8080</code>. FoxyProxy is routing Firefox through Burp. The wordlist exists at <code>~/dvwa_wordlist.txt</code>. You are ready to begin.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── TASK 1 ── -->
+        <section id="task1">
+            <h2>&#128247; Task 1: Capture the Login Request</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; Why We Capture First</h4>
+                    <p>Intruder cannot build a request from scratch &mdash; it needs a real HTTP request as a template. The workflow is always: <strong>browse normally &rarr; Burp captures the request &rarr; send to Intruder &rarr; mark positions &rarr; run attack</strong>. Capturing first ensures Intruder has the correct URL, headers, cookies, and parameter structure for the target.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">DVWA: Brute Force Module</span>
+
+            <h3>1A: Navigate to the DVWA Brute Force Module</h3>
+            <ol class="steps">
+                <li>In Firefox, confirm FoxyProxy is active (Burp Proxy profile selected)</li>
+                <li>Turn Burp Intercept <strong>ON</strong>: Proxy &rarr; Intercept &rarr; click until it reads <strong>"Intercept is on"</strong></li>
+                <li>In Firefox, navigate to <code>http://&lt;your-ip&gt;/vulnerabilities/brute/</code></li>
+                <li>Firefox may freeze on intermediate requests &mdash; click <strong>Forward</strong> in Burp for each one until the Brute Force page loads in Firefox</li>
+                <li>You should see a small form with <strong>Username</strong> and <strong>Password</strong> fields and a <strong>Login</strong> button</li>
+            </ol>
+
+            <h3>1B: Submit a Test Login and Capture It</h3>
+            <ol class="steps">
+                <li>In the Brute Force form, enter:
+                    <ul>
+                        <li>Username: <code>admin</code></li>
+                        <li>Password: <code>test</code> (deliberately wrong &mdash; we just need the request structure)</li>
+                    </ul>
+                </li>
+                <li>Click the <strong>Login</strong> button</li>
+                <li>Burp catches the request &mdash; Firefox freezes</li>
+                <li>Switch to Burp Suite &rarr; Proxy &rarr; <strong>Intercept</strong> tab</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What the Captured Request Looks Like:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/brute/?username=admin&password=test&Login=Login HTTP/1.1
+Host: 10.0.2.15
+User-Agent: Mozilla/5.0 ...
+Cookie: PHPSESSID=abc123def456; security=low
+Referer: http://10.0.2.15/vulnerabilities/brute/</span></code></pre>
+                <p>DVWA's Brute Force module uses a <strong>GET</strong> request &mdash; credentials appear in the URL as query parameters. The <code>password=test</code> parameter is the one we will turn into a payload position in Task 2.</p>
+            </div>
+
+            <h3>1C: Send to Intruder</h3>
+            <ol class="steps">
+                <li>In Burp's Intercept panel, <strong>right-click</strong> anywhere on the request text</li>
+                <li>Select <strong>"Send to Intruder"</strong></li>
+                <li>Click <strong>Forward</strong> to release the request (Firefox unfreezes and shows a failed login &mdash; expected)</li>
+                <li>Turn Intercept <strong>OFF</strong></li>
+                <li>Click the <strong>Intruder</strong> tab at the top of Burp Suite &mdash; in v2025 the request appears in a numbered attack sub-tab (e.g., <strong>Attack 1</strong>) inside the Intruder view; click that sub-tab to proceed</li>
+            </ol>
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>v2025 Shortcut: Send Directly from HTTP History</h4>
+                    <p>In Burp Suite v2025 you can also send a request to Intruder directly from <strong>Proxy &rarr; HTTP history</strong>: find the brute-force GET request in the history list, right-click it, and select <strong>"Send to Intruder"</strong>. This skips the Intercept step. Either method works &mdash; the Intercept method above is more instructive for understanding the full workflow.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Checkpoint</h4>
+                    <p>The Intruder tab should now contain the captured request. You may see a small orange dot or asterisk on the Intruder tab indicating a request is waiting. Proceed to Task 2 to configure the attack.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 1 &mdash; Questions</h4></div>
+            <div class="fill-in">
+                <label>1. What HTTP method does DVWA&apos;s Brute Force module use for the login request? Where do the credentials appear?</label>
+                <textarea class="task-answer" data-task="1" rows="2" placeholder="GET method. The credentials appear in the URL as query parameters: ?username=admin&password=test&Login=Login"></textarea>
+
+                <label>2. Why might using GET for a login form be a security concern compared to POST?</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="GET credentials appear in the URL, which gets stored in browser history, server access logs, and any proxy or CDN logs between client and server. Anyone with access to those logs can see the password in plaintext. POST sends credentials in the request body, which is not stored in URL-based logs."></textarea>
+
+                <label>3. What cookie was sent with the captured request? Why must Intruder preserve this cookie in every attack request?</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="PHPSESSID=<value>; security=low. The session cookie proves the requests come from a logged-in user. Without it, the server would redirect every request to the main login page instead of processing the brute force attempts against the Brute Force module."></textarea>
+
+                <label>4. Screenshot &mdash; Burp Intercept panel showing the captured GET request from the DVWA Brute Force module:</label>
+                <input type="file" id="ss-task1" accept="image/*" onchange="previewImage(this,'prev-task1')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task1" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 1 screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 1</h4>
+                <ol>
+                    <li><strong>Q1:</strong> <strong>GET</strong> method. Credentials appear in the <strong>URL</strong> as query parameters: <code>?username=admin&amp;password=test&amp;Login=Login</code>.</li>
+                    <li><strong>Q2:</strong> GET credentials are visible in the URL, stored in browser history, and written to server access logs. Any system or person with log access can read the password in plaintext. POST sends credentials in the body, excluded from standard URL logs.</li>
+                    <li><strong>Q3:</strong> <code>PHPSESSID=&lt;value&gt;; security=low</code>. The session cookie proves the requests come from an authenticated session. Intruder automatically carries this cookie (taken from the original captured request) in every attack request, so each attempt is processed by the server as coming from a valid logged-in user.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── TASK 2 ── -->
+        <section id="task2">
+            <h2>&#9881;&#65039; Task 2: Configure Intruder</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; Payload Positions</h4>
+                    <p>A <strong>payload position</strong> is a location in the request that Intruder will replace with each wordlist entry. Positions are marked with the <strong>&sect;</strong> symbol (section sign). Burp auto-detects all parameter values and wraps them in &sect; markers. You will clear those and mark <em>only</em> the password value manually &mdash; keeping the username fixed as <code>admin</code>.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">Burp Suite: Intruder Tab</span>
+
+            <h3>2A: Check the Positions Sub-Tab</h3>
+            <ol class="steps">
+                <li>Click the <strong>Intruder</strong> tab at the top of Burp Suite, then click the numbered attack sub-tab (e.g., <strong>Attack 1</strong>) that was created when you sent the request to Intruder</li>
+                <li>The <strong>Positions</strong> view is shown by default &mdash; this contains the request editor with the <strong>Attack type</strong> dropdown at the top and the <strong>Add &sect;</strong>, <strong>Clear &sect;</strong>, and <strong>Auto &sect;</strong> buttons on the right side</li>
+                <li>The captured request is displayed with several values highlighted in <strong>green</strong> &mdash; these are auto-detected payload positions</li>
+                <li>The URL looks something like: <code>...username=&sect;admin&sect;&amp;password=&sect;test&sect;&amp;Login=&sect;Login&sect;</code></li>
+            </ol>
+
+            <h3>2B: Clear Auto-Detected Positions and Set the Password Position</h3>
+            <ol class="steps">
+                <li>Click the <strong>"Clear &sect;"</strong> button on the right &mdash; removes all auto-detected positions. The green highlights disappear. <em>(Note: v2025 also shows an <strong>"Auto &sect;"</strong> button &mdash; do <strong>not</strong> click it; Auto &sect; would re-detect all parameters automatically, which is not what we want here.)</em></li>
+                <li>In the request text, locate <code>password=test</code></li>
+                <li>Click and drag to <strong>select only the word <code>test</code></strong> (the value, not the parameter name)</li>
+                <li>Click the <strong>"Add &sect;"</strong> button &mdash; it becomes <code>password=&sect;test&sect;</code> highlighted in green</li>
+                <li>The URL should now read: <code>...username=admin&amp;password=&sect;test&sect;&amp;Login=Login</code></li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; Correct Positions Configuration:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/brute/?username=admin&password=§test§&Login=Login HTTP/1.1
+Host: 10.0.2.15
+Cookie: PHPSESSID=abc123def456; security=low</span></code></pre>
+                <p>Only the password value is highlighted in green. The username stays fixed as <code>admin</code> for every request. Intruder will substitute each wordlist entry in place of <code>test</code>.</p>
+            </div>
+
+            <h3>2C: Set the Attack Type</h3>
+            <ol class="steps">
+                <li>At the top of the Positions view (above the request editor), find the <strong>Attack type</strong> dropdown &mdash; in v2025 this is prominently displayed at the top of the attack configuration area</li>
+                <li>Select <strong>Sniper</strong> (may already be the default)</li>
+                <li>Sniper is correct: one wordlist, one position (the password field)</li>
+            </ol>
+
+            <h3>2D: Load the Payload List</h3>
+            <ol class="steps">
+                <li>Click the <strong>Payloads</strong> tab to open the Payloads side panel &mdash; in v2025 this panel appears on the right side of the Intruder attack view and can be toggled open or closed</li>
+                <li>Under <strong>Payload type</strong>, confirm <strong>Simple list</strong> is selected</li>
+                <li>Under <strong>Payload configuration</strong> (labeled <em>Payload settings</em> in older Burp versions), click <strong>"Load"</strong></li>
+                <li>Navigate to your home directory (<code>/home/&lt;your-username&gt;/</code>) and select <code>dvwa_wordlist.txt</code></li>
+                <li>All 15 passwords should now appear in the payload list box</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Alternative: Paste Passwords Directly</h4>
+                    <p>If the file browser does not work as expected, you can type or paste passwords one at a time into the <strong>"Enter a new item"</strong> field and click <strong>Add</strong> for each one. The result is identical.</p>
+                </div>
+            </div>
+
+            <h3>2E: Disable URL Encoding (Recommended)</h3>
+            <ol class="steps">
+                <li>Scroll down in the Payloads panel to find the <strong>Payload encoding</strong> section (at the bottom of the panel, below the payload list)</li>
+                <li>Uncheck <strong>"URL-encode these characters"</strong></li>
+                <li>This prevents Burp from encoding characters in passwords (e.g., turning <code>!</code> into <code>%21</code>). Not critical for this wordlist, but correct practice.</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Configuration Summary</h4>
+                    <p><strong>Attack type:</strong> Sniper &nbsp;&bull;&nbsp; <strong>Payload position:</strong> <code>&sect;test&sect;</code> in the password field &nbsp;&bull;&nbsp; <strong>Payload list:</strong> 15 common passwords loaded from <code>dvwa_wordlist.txt</code> via the Payloads side panel &rarr; Payload configuration &rarr; Load. You are ready to start the attack.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 2 &mdash; Questions</h4></div>
+            <div class="fill-in">
+                <label>1. Which attack type (mode) did you select, and why is Sniper the correct choice for this scenario?</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="Sniper. We have one payload position (the password field) and one wordlist. Sniper cycles each password through that single position. The other modes are for multiple positions with multiple lists, which is not needed here since we already know the username is 'admin'."></textarea>
+
+                <label>2. What symbol does Burp use to mark a payload position? Write how the password parameter looks after you set the position:</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="Symbol: § (section sign). After setting position: password=§test§">
+
+                <label>3. Why did you click &quot;Clear §&quot; before adding your own position, instead of keeping the auto-detected ones?</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="Auto-detection marked all three parameter values (username, password, and Login) as positions. With Sniper and multiple positions, Burp would cycle through each position separately, creating extra requests that fuzz the username and Login button value — which we don't need. We only want to fuzz the password while keeping username fixed as 'admin'."></textarea>
+
+                <label>4. Screenshot &mdash; Intruder Positions tab showing only §test§ marked with Sniper selected:</label>
+                <input type="file" id="ss-task2a" accept="image/*" onchange="previewImage(this,'prev-task2a')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2a" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 2a screenshot">
+
+                <label>5. Screenshot &mdash; Intruder Payloads tab showing your 15-item wordlist loaded:</label>
+                <input type="file" id="ss-task2b" accept="image/*" onchange="previewImage(this,'prev-task2b')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2b" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 2b screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 2</h4>
+                <ol>
+                    <li><strong>Q1:</strong> <strong>Sniper.</strong> One payload list, one position. We know the username is <code>admin</code> so we only need to cycle through passwords. Pitchfork and Cluster Bomb are for multiple positions with multiple lists, which is unnecessary here.</li>
+                    <li><strong>Q2:</strong> Symbol: <strong>&sect;</strong> (section sign). After setting position: <code>password=&sect;test&sect;</code></li>
+                    <li><strong>Q3:</strong> Auto-detection marked <code>username</code>, <code>password</code>, and <code>Login</code> values as positions. With Sniper and three positions, Burp would waste requests cycling through the username and the Login button text. We want to fuzz only the password field with the username fixed as <code>admin</code>, so all other positions must be removed.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── TASK 3 ── -->
+        <section id="task3">
+            <h2>&#128200; Task 3: Run the Attack &amp; Analyze Results</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; How to Identify the Correct Password</h4>
+                    <p>The server returns <strong>HTTP 200 OK</strong> whether the login succeeds or fails &mdash; DVWA does not redirect on success at Low security level. You cannot use the status code to find the answer. Instead, look at the <strong>response length</strong>: a failed login returns a short error message, while a successful login returns a page with a welcome message. The correct password will produce a <strong>noticeably different response length</strong>.</p>
+                </div>
+            </div>
+
+            <h3>3A: Start the Attack</h3>
+            <ol class="steps">
+                <li>Click the <strong>"Start attack"</strong> button (top-right area of the Intruder attack configuration)</li>
+                <li>A new window (or separate tab, depending on your Burp version) opens &mdash; the <strong>Intruder attack results table</strong></li>
+                <li>Burp begins sending requests automatically at approximately 1 per second (Community Edition rate limit)</li>
+                <li>A rate-limiting notice will appear &mdash; in v2025 this is a banner or status message such as <em>"Burp Intruder is running in Community Edition mode with throttled attack speed"</em> or similar; the exact wording may vary by version but the meaning is the same &mdash; this is expected</li>
+                <li>Watch the table fill in row by row as each request completes</li>
+                <li>Wait for all 15 requests to complete</li>
+            </ol>
+
+            <h3>3B: Find the Correct Password by Response Length</h3>
+            <ol class="steps">
+                <li>Once all 15 requests finish, look at the <strong>Length</strong> column in the results table</li>
+                <li>Click the <strong>Length</strong> column header to sort responses by size</li>
+                <li>One row will have a noticeably <strong>different (larger) length</strong> compared to all others</li>
+                <li>The <strong>Payload</strong> column for that row shows the correct password</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; Expected Results Table (approximate values):</h4>
+                <div class="results-sim">
+                    <table>
+                        <tr><th>#</th><th>Payload</th><th>Status</th><th>Length</th><th>Note</th></tr>
+                        <tr><td>1</td><td>admin</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>2</td><td>123456</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr class="hit-row"><td>3</td><td>password</td><td>200</td><td>4779</td><td>&#9989; Different length &mdash; correct password!</td></tr>
+                        <tr><td>4</td><td>12345</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>5</td><td>qwerty</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>6</td><td>abc123</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>7</td><td>letmein</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>8</td><td>monkey</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>9</td><td>dragon</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>10</td><td>master</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>11</td><td>hello</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>12</td><td>welcome</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>13</td><td>shadow</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>14</td><td>sunshine</td><td>200</td><td>4719</td><td></td></tr>
+                        <tr><td>15</td><td>princess</td><td>200</td><td>4719</td><td></td></tr>
+                    </table>
+                </div>
+                <p>All failed attempts return the same length (~4719 bytes). The successful login returns a longer response (~4779 bytes) because it includes a welcome message that the failed responses do not contain.</p>
+            </div>
+
+            <h3>3C: Confirm the Correct Password</h3>
+            <ol class="steps">
+                <li>Click the row with the different response length to select it</li>
+                <li>In the <strong>Response</strong> panel at the bottom of the attack window, look for the success message</li>
+                <li>You should see: <em>&ldquo;Welcome to the password protected area admin&rdquo;</em></li>
+                <li>Click a row with the common length and compare &mdash; it will show: <em>&ldquo;Username and/or password incorrect.&rdquo;</em></li>
+            </ol>
+
+<pre><code><span class="command-label"># Successful login response contains:</span>
+<span class="output-text">Welcome to the password protected area admin</span>
+
+<span class="command-label"># Failed login response contains:</span>
+<span class="output-text">Username and/or password incorrect.</span></code></pre>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Attack Complete</h4>
+                    <p>The correct password is <strong>password</strong>. Burp Intruder found it by sending 15 automated requests and identifying the one with a different response length. This is the exact technique security professionals use to test how well a login form resists automated password attacks.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 3 &mdash; Questions</h4></div>
+            <div class="fill-in">
+                <label>1. What password was identified as correct? How many total requests did Intruder send?</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="Correct password: password — Total requests: 15 (one per wordlist entry)">
+
+                <label>2. Why couldn&apos;t you identify the correct password using the HTTP status code? What did you use instead, and why did it work?</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="All responses returned HTTP 200 OK regardless of login success or failure. Status codes could not distinguish them. Response LENGTH was used instead — the successful login page is longer because it contains a welcome message ('Welcome to the password protected area admin') that the failure page does not."></textarea>
+
+                <label>3. What exact text appeared in the successful login response that confirmed the password was found?</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="Welcome to the password protected area admin">
+
+                <label>4. The attack took about 15 seconds for 15 passwords. If you used rockyou.txt (14 million entries) at the same rate, how long would it take? What does this tell you about automated attacks?</label>
+                <textarea class="task-answer" data-task="3" rows="3" placeholder="14,000,000 ÷ 1 req/sec = ~162 days. Burp Professional removes the throttle — at 100 req/sec, the same attack takes ~1.6 days. At 1000 req/sec (dedicated hardware): ~4 hours. This shows that: (1) simple common passwords are found instantly even with throttling, and (2) real attacks against unprotected systems are far more dangerous than this lab demonstrates."></textarea>
+
+                <label>5. Screenshot &mdash; Intruder results table showing the entry with a different response length (the correct password row highlighted or sorted to the top):</label>
+                <input type="file" id="ss-task3" accept="image/*" onchange="previewImage(this,'prev-task3')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task3" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 3 screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 3</h4>
+                <ol>
+                    <li><strong>Q1:</strong> Correct password: <strong>password</strong>. Total requests: <strong>15</strong> (one per wordlist entry in Sniper mode).</li>
+                    <li><strong>Q2:</strong> DVWA returns <strong>HTTP 200</strong> for both success and failure at Low security &mdash; no redirect, no different code. The distinguishing factor is <strong>response length</strong>: the success page is longer because it contains the welcome message that the failure page does not.</li>
+                    <li><strong>Q3:</strong> <em>&ldquo;Welcome to the password protected area admin&rdquo;</em></li>
+                    <li><strong>Q4:</strong> 14,000,000 &divide; 1 req/sec &asymp; 162 days at Community Edition speed. Burp Professional at 100 req/sec: ~1.6 days. Dedicated hardware at 1,000 req/sec: ~4 hours. Key insight: even weak throttling makes large wordlist attacks slow, but common passwords like &ldquo;password&rdquo; appear very early in any wordlist and are found almost immediately.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── TASK 4 ── -->
+        <section id="task4">
+            <h2>&#128737;&#65039; Task 4: Countermeasures &amp; Defense</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; Why the Attack Worked</h4>
+                    <p>The attack succeeded because DVWA at Low security has <strong>zero protections</strong>: no delay between attempts, no lockout after failures, no CAPTCHA, no CSRF token. Real-world applications must implement layered defenses. DVWA's higher security levels let you observe what these defenses look like from an attacker&apos;s perspective.</p>
+                </div>
+            </div>
+
+            <h3>4A: Switch to Medium Security &mdash; Observe the Rate Delay</h3>
+            <ol class="steps">
+                <li>In DVWA, click <strong>DVWA Security</strong> in the left menu</li>
+                <li>Change the security level to <strong>Medium</strong> and click <strong>Submit</strong></li>
+                <li>In Burp Intruder, click <strong>"Start attack"</strong> again (same configuration)</li>
+                <li>Observe: each row takes noticeably longer to appear than before</li>
+                <li>The attack still completes &mdash; but much more slowly</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What DVWA Medium Security Does:</h4>
+                <p>DVWA Medium adds a <strong>2-second server-side sleep</strong> before responding to each brute force attempt. Every request takes 2+ seconds instead of milliseconds. For 15 passwords the attack now takes ~30 seconds. For rockyou.txt at 2 seconds per guess: <strong>over 324 days</strong> &mdash; making automated attacks with large wordlists impractical under time constraints.</p>
+            </div>
+
+            <h3>4B: Switch to High Security &mdash; Observe the CSRF Token</h3>
+            <ol class="steps">
+                <li>Change DVWA Security to <strong>High</strong> and click <strong>Submit</strong></li>
+                <li>Return to the Brute Force page in Firefox (with Intercept ON)</li>
+                <li>Submit the login form again and capture the new request in Burp</li>
+                <li>Look at the URL in the captured request &mdash; notice an extra parameter</li>
+                <li>Try running Intruder with the same old configuration against High security &mdash; all attempts will fail even if the wordlist contains the correct password</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What the High Security Request Contains:</h4>
+<pre><code><span class="output-text">GET /vulnerabilities/brute/?username=admin&password=test
+    &Login=Login&user_token=a3f9b2c1d4e5f608 HTTP/1.1
+Host: 10.0.2.15
+Cookie: PHPSESSID=abc123; security=high</span></code></pre>
+                <p>High security adds a <strong>CSRF (Cross-Site Request Forgery) token</strong> &mdash; a random value generated fresh for each page load and valid for only one request. Intruder reuses the same token for all 15 attempts. The server accepts the first request, then rejects all subsequent ones because the token has already been consumed. The correct password cannot be identified even when it is in the wordlist.</p>
+            </div>
+
+            <h3>4C: Real-World Defenses Against Password Attacks</h3>
+            <table>
+                <tr><th>Defense</th><th>How It Works</th><th>Effectiveness</th></tr>
+                <tr>
+                    <td><strong>Account Lockout</strong></td>
+                    <td>After N failed attempts, the account is locked for a time or until manually reset by an admin</td>
+                    <td>High &mdash; directly stops automated bulk guessing</td>
+                </tr>
+                <tr>
+                    <td><strong>Rate Limiting</strong></td>
+                    <td>Server enforces a delay between login attempts from the same IP or account</td>
+                    <td>Medium &mdash; slows attacks significantly; can be bypassed with distributed attacks</td>
+                </tr>
+                <tr>
+                    <td><strong>CAPTCHA</strong></td>
+                    <td>Visual or behavioral challenge after failed attempts that humans can solve but bots cannot</td>
+                    <td>Medium &mdash; stops dumb automation; advanced bots can sometimes bypass</td>
+                </tr>
+                <tr>
+                    <td><strong>CSRF Tokens</strong></td>
+                    <td>One-use random token per request prevents replay and automated submissions without prior page load</td>
+                    <td>High for simple automation &mdash; attackers must also scrape tokens, requiring more complex tools</td>
+                </tr>
+                <tr>
+                    <td><strong>Strong Password Policy</strong></td>
+                    <td>Enforce minimum length and complexity so user passwords don&apos;t appear in common wordlists</td>
+                    <td>High &mdash; the first and most fundamental defense</td>
+                </tr>
+                <tr>
+                    <td><strong>Multi-Factor Authentication</strong></td>
+                    <td>Even if the password is discovered, a second factor (TOTP app, hardware key) blocks access</td>
+                    <td>Very High &mdash; renders password-only attacks useless</td>
+                </tr>
+            </table>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 4 &mdash; Questions</h4></div>
+            <div class="fill-in">
+                <label>1. What protection does DVWA Medium security add? How does it change the attack&apos;s practicality for a large wordlist?</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="DVWA Medium adds a 2-second server-side delay per attempt. For 15 passwords: ~30 seconds (still feasible). For rockyou.txt (14M passwords): ~324 days at 2 sec/guess. Rate limiting makes large-scale attacks impractical within typical engagement time windows, though it does not completely prevent them."></textarea>
+
+                <label>2. What extra parameter appeared in the request at High security? Why does this completely break the Intruder attack configured in Tasks 1&ndash;3?</label>
+                <textarea class="task-answer" data-task="4" rows="3" placeholder="user_token=<random_value> — a CSRF token. Each token is single-use and generated fresh per page load. Intruder reuses the same token captured in Task 1 for all 15 requests. The server accepts the first request (consuming the token) and rejects all subsequent requests because their token has already been used."></textarea>
+
+                <label>3. From the defenses in the table above, choose the THREE you consider most effective and explain why:</label>
+                <textarea class="task-answer" data-task="4" rows="4" placeholder="1. MFA — even with the correct password an attacker cannot log in without the second factor, making password attacks irrelevant. 2. Account lockout — directly terminates automated attack attempts after N failures. 3. Strong password policy — prevents passwords like 'password' from being set in the first place, so dictionary attacks fail to find them."></textarea>
+
+                <label>4. As a developer, which combination of defenses would you implement in a production login page? Justify your choices:</label>
+                <textarea class="task-answer" data-task="4" rows="4" placeholder="Rate limiting (slow automated attempts) + account lockout after 5 failures (stop bulk guessing) + MFA (protect even if password is compromised) + strong password enforcement at registration (prevent weak passwords). CSRF tokens should be standard on all forms. This defense-in-depth approach addresses automation speed, bulk guessing, password compromise, and weak credential creation."></textarea>
+
+                <label>5. Screenshot &mdash; DVWA High security Brute Force request in Burp showing the user_token parameter:</label>
+                <input type="file" id="ss-task4" accept="image/*" onchange="previewImage(this,'prev-task4')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task4" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 4 screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 4</h4>
+                <ol>
+                    <li><strong>Q1:</strong> 2-second server-side sleep per attempt. For 15 passwords: ~30 seconds. For 14 million passwords at 2 sec/guess: ~324 days. Rate limiting does not prevent attacks but makes large-scale dictionary attacks impractical within any reasonable timeframe, especially combined with other defenses.</li>
+                    <li><strong>Q2:</strong> <code>user_token=&lt;random_value&gt;</code> &mdash; a CSRF token. It is single-use. The Intruder attack reuses the token from the originally captured request. The server accepts only the first request (token consumed), then rejects all 14 remaining requests because their token is invalid. The correct password is present in the list but cannot be identified because all responses look like failures.</li>
+                    <li><strong>Q3:</strong> Accept any three from the table. Key reasoning: MFA makes password knowledge useless; account lockout terminates automated attempts after few tries; strong password policy ensures the password is not in any wordlist. CSRF tokens are also highly effective against simple automation.</li>
+                    <li><strong>Q4:</strong> Ideal combination: rate limiting + account lockout (5&ndash;10 failures) + MFA + strong password requirements + CSRF tokens. This is defense-in-depth: each layer compensates for the others&apos; weaknesses. MFA is the most critical because it protects even after a password breach.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── TROUBLESHOOTING ── -->
+        <section id="troubleshooting">
+            <h2>&#128295; Troubleshooting</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Intruder tab does not contain the request from Task 1</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> The request was not sent to Intruder. Return to Burp Proxy &rarr; HTTP History, find the Brute Force GET request (URL contains <code>/vulnerabilities/brute/</code>), right-click it, and select <strong>"Send to Intruder"</strong>. Alternatively, repeat Task 1B with Intercept ON and right-click the intercepted request.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; After clicking &quot;Add §&quot; nothing is highlighted in green</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> You must <strong>select text first</strong> by clicking and dragging to highlight the word <code>test</code> in the request, then click Add &sect;. If no text is selected when you click Add &sect;, nothing happens. Try clicking at the start of <code>test</code>, holding the mouse button, and dragging to the end of <code>test</code> before releasing.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; All 15 results show the same response length &mdash; no password stands out</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> The session cookie has likely expired. Log back into DVWA (admin / password), then navigate to the Brute Force page, capture a fresh request with Intercept ON, and send the new request to Intruder. Also confirm DVWA security is set to <strong>Low</strong> &mdash; Medium/High change response behavior.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Intruder attack shows &quot;Connection refused&quot; for all requests</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> DVWA stopped running. Check: <code>sudo docker ps</code>. If DVWA is not listed: <code>sudo docker start dvwa</code>. Also confirm the Host header in the Intruder request shows your machine IP (from <code>hostname -I</code>), not <code>localhost</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Cannot load the wordlist file in the Intruder Payloads tab</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Confirm the file exists: <code>cat ~/dvwa_wordlist.txt</code>. If it is missing, re-run the <code>cat &gt; ~/dvwa_wordlist.txt &lt;&lt; &apos;EOF&apos;</code> command from the Setup section. Alternatively, in the Payloads tab, type each password into the <strong>"Enter a new item"</strong> field and click <strong>Add</strong> for each one.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; DVWA Brute Force page does not appear &mdash; redirected to login</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Your DVWA session has expired. Log back into DVWA (admin / password), then navigate to the Brute Force module again. Make sure FoxyProxy is still active so the new session cookie is captured by Burp.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; After the lab, Firefox has no internet access</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> FoxyProxy is still active and routing traffic to Burp, which is now closed. Click the <strong>FoxyProxy icon</strong> in the Firefox toolbar and select <strong>"Disable FoxyProxy"</strong>. Do this at the end of every lab session.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Intruder interface looks different from the lab description (v2025 UI)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Burp Suite v2025 features a redesigned Intruder interface. Key differences from older versions: (1) After sending a request to Intruder, it appears in a numbered attack sub-tab (e.g., <strong>Attack 1</strong>) inside the Intruder view &mdash; click that sub-tab to see the Positions editor. (2) The <strong>Payloads</strong> configuration is now in a collapsible side panel &mdash; click the <strong>Payloads</strong> tab/button on the right side to expand it. (3) A new <strong>"Auto &sect;"</strong> button appears alongside "Add &sect;" and "Clear &sect;" &mdash; do not use Auto &sect; for this lab (it would mark all parameters automatically). The core workflow (positions &rarr; payloads &rarr; start attack) is unchanged.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Cannot find &quot;Payload settings&quot; or &quot;Payload encoding&quot; in the Payloads panel (v2025)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> In Burp Suite v2025, the section previously called <strong>"Payload settings"</strong> is now labeled <strong>"Payload configuration"</strong>. The <strong>"Payload encoding"</strong> section with the <em>"URL-encode these characters"</em> checkbox is still present &mdash; scroll down to the bottom of the Payloads side panel to find it. If the panel appears too narrow, drag its left border to resize it.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Cannot find Proxy listener settings (v2025)</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> In Burp Suite v2025 the proxy listener settings can be reached two ways: (1) <strong>Proxy</strong> tab &rarr; click the <strong>"Proxy settings"</strong> button near the top of the tab. (2) Click the <strong>Settings</strong> gear icon (top-right corner of Burp) &rarr; <strong>Tools</strong> &rarr; <strong>Proxy</strong>. The listener should show <code>127.0.0.1:8080</code> as <strong>Running</strong>. If it shows <strong>Not running</strong>, click the toggle next to it to start it.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── REPORT ── -->
+        <section id="report">
+            <h2>&#128196; Deliverables &amp; Report</h2>
+
+            <div class="summary-box">
+                <h3>&#128203; Lab 07 Summary</h3>
+                <table>
+                    <tr><th>Task</th><th>What You Did</th><th>Key Takeaway</th></tr>
+                    <tr><td><strong>Task 1</strong></td><td>Captured DVWA Brute Force GET request, sent to Intruder</td><td>Intruder needs a real captured request as its template</td></tr>
+                    <tr><td><strong>Task 2</strong></td><td>Set Sniper mode, marked &sect;password&sect; position, loaded 15-entry wordlist</td><td>Positions mark what gets replaced; Sniper = one list, one position</td></tr>
+                    <tr><td><strong>Task 3</strong></td><td>Ran attack, identified correct password by response length difference</td><td>When status codes are identical, response length reveals the hit</td></tr>
+                    <tr><td><strong>Task 4</strong></td><td>Tested Medium (delay) and High (CSRF token) DVWA security levels</td><td>Rate limiting, lockout, tokens, and MFA each add a meaningful layer of defense</td></tr>
+                </table>
+                <p style="margin-top:14px; opacity:0.9; font-size:0.92em;">In <strong>Lab 08</strong> you will explore a new class of web vulnerability. The Burp proxy setup from Labs 05&ndash;07 continues to be used throughout the course.</p>
+            </div>
+
+            <div class="deliverable">
+                <h4>&#9997;&#65039; Submission Checklist</h4>
+                <ul>
+                    <li>PDF report (student info + all task answers)</li>
+                    <li>Screenshot: Task 1 &mdash; Intercepted Brute Force GET request in Burp</li>
+                    <li>Screenshot: Task 2 &mdash; Intruder Positions tab with <code>&sect;test&sect;</code> set and Sniper selected</li>
+                    <li>Screenshot: Task 2 &mdash; Intruder Payloads tab with wordlist loaded</li>
+                    <li>Screenshot: Task 3 &mdash; Intruder results table showing the different response length row</li>
+                    <li>Screenshot: Task 4 &mdash; High security Brute Force request showing the <code>user_token</code> parameter</li>
+                </ul>
+            </div>
+
+            <h3>Grading Rubric</h3>
+            <table>
+                <tr><th>Task</th><th>Description</th><th>Points</th></tr>
+                <tr><td><strong>Task 1</strong></td><td>Capture the request &mdash; HTTP method, parameter location, cookie understanding</td><td>20</td></tr>
+                <tr><td><strong>Task 2</strong></td><td>Configure Intruder &mdash; correct attack type, position, payload list</td><td>25</td></tr>
+                <tr><td><strong>Task 3</strong></td><td>Run attack &mdash; identify password, explain length-based detection, analyze rate limit impact</td><td>30</td></tr>
+                <tr><td><strong>Task 4</strong></td><td>Countermeasures &mdash; observe Medium/High defenses, recommend real-world protections</td><td>20</td></tr>
+                <tr><td><strong>Quality</strong></td><td>Clear written answers, labeled screenshots, formatted report</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:right;font-weight:bold;">Total</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>Generate Your Lab Report</h3>
+            <div style="border:2px solid #6d28d9;border-radius:15px;padding:28px;margin:18px 0;background:#fafbfc;">
+                <div style="text-align:center;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #6d28d9;">
+                    <h3 style="color:var(--secondary-color);margin:0;">CYB236 &mdash; Lab 07 Report</h3>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student Name: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="Full name (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student ID: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="Student ID (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Email: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="Student email (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                </div>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#6d28d9,#4c1d95);color:white;border:none;padding:14px 38px;font-size:1.05em;font-weight:600;border-radius:10px;cursor:pointer;box-shadow:0 4px 15px rgba(109,40,217,0.4);">
+                        &#128196; Generate PDF Report
+                    </button>
+                </div>
+            </div>
+
+            <h3>Cleanup</h3>
+<pre><code><span class="command-label"># Disable FoxyProxy: click the icon in Firefox → select "Disable FoxyProxy"</span>
+
+<span class="command-label"># Stop DVWA when finished</span>
+sudo docker stop dvwa
+
+<span class="command-label"># Remove the wordlist (optional)</span>
+rm ~/dvwa_wordlist.txt</code></pre>
+        </section>
+
+    </div><!-- end content -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; Web Application Security</p>
+        <p>Lab 07: Burp Suite Intruder &mdash; Dictionary &amp; Password Attacks &bull; Chapter 6</p>
+    </div>
+
+</div><!-- end container -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('Student Name is required.'); return; }
+    if (!sid)   { alert('Student ID is required.'); return; }
+    if (!email) { alert('Email is required.'); return; }
+
+    var answers = {};
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!answers[t]) answers[t] = [];
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers[t].push({ label: lbl, value: f.value.trim() || '(not answered)' });
+    });
+
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g,'').replace(/\s+/g,'_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
+    var w = window.open('','_blank');
+    if (!w) { alert('Popup blocked. Please allow popups for this page and try again.'); return; }
+
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+    h += '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">';
+    h += '<title>Lab07_' + safeName + '_' + safeSid + '</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
+    h += 'h1{color:#4c1d95;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#f5f3ff;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #ede9fe}';
+    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-left:4px solid #6d28d9;padding-left:14px}';
+    h += '.tt{color:#4c1d95;font-size:1.15em;margin-bottom:10px;font-weight:700}';
+    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
+    h += '.ss{margin-top:16px;page-break-inside:avoid}.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 Lab 07: Burp Suite Intruder \u2014 Dictionary &amp; Password Attacks</h1>';
+    h += '<p class="sub">Web Application Security</p>';
+    h += '<div class="si"><div><strong>Student Name:</strong> ' + name + '</div>';
+    h += '<div><strong>Student ID:</strong> ' + sid + '</div>';
+    h += '<div><strong>Email:</strong> ' + email + '</div></div>';
+
+    var taskNames = {
+        '1': 'Task 1: Capture the Login Request',
+        '2': 'Task 2: Configure Intruder',
+        '3': 'Task 3: Run the Attack &amp; Analyze Results',
+        '4': 'Task 4: Countermeasures &amp; Defense'
+    };
+
+    var ssIds = {
+        '1': ['prev-task1'],
+        '2': ['prev-task2a', 'prev-task2b'],
+        '3': ['prev-task3'],
+        '4': ['prev-task4']
+    };
+
+    var ssLabels = {
+        '1': ['Screenshot \u2014 Intercepted Brute Force Request'],
+        '2': ['Screenshot \u2014 Intruder Positions Tab', 'Screenshot \u2014 Intruder Payloads Tab'],
+        '3': ['Screenshot \u2014 Intruder Results Table'],
+        '4': ['Screenshot \u2014 High Security user_token']
+    };
+
+    for (var t = 1; t <= 4; t++) {
+        var tStr = String(t);
+        h += '<div class="ts"><div class="tt">' + taskNames[tStr] + '</div>';
+        if (answers[tStr]) {
+            answers[tStr].forEach(function(a) {
+                h += '<div class="ar"><div class="al">' + a.label + '</div>';
+                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+            });
+        }
+        ssIds[tStr].forEach(function(key, idx) {
+            if (screenshotData[key]) {
+                h += '<div class="ss"><div class="ss-lbl">' + ssLabels[tStr][idx] + '</div>';
+                h += '<img src="' + screenshotData[key] + '"></div>';
+            }
+        });
+        h += '</div>';
+        if (t < 4) h += '<hr>';
+    }
+
+    h += '<div class="fn">CYB236 \u2014 Lab 07 \u2014 Web Application Security</div>';
+    h += '</body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
 </body>
 </html>

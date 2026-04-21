@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab 02: Introduction to Web Application Reconnaissance</title>
     <style>
@@ -22,7 +23,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.7;
             color: var(--dark-text);
             background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
@@ -948,7 +949,8 @@ function generateReport() {
 
     // Build print content
     var printWindow = window.open('', '_blank');
-    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lab 02 Report - ' + name + '</title>';
+    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab 02 Report - ' + name + '</title>';
     html += '<style>';
     html += 'body { font-family: "Segoe UI", Tahoma, sans-serif; padding: 40px; color: #2d3748; line-height: 1.6; }';
     html += 'h1 { color: #1a365d; font-size: 1.6em; text-align: center; margin-bottom: 5px; }';
