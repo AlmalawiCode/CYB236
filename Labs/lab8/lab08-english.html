@@ -4,68 +4,953 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 8: Vulnerability Assessment on DVWA | CYB 236</title>
+    <title>Lab 08: Full Vulnerability Assessment on DVWA | CYB236 (v2025)</title>
     <style>
-        body { font-family: 'Tajawal', 'Amiri', 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f8f9fa; color: #2c3e50; }
-        .banner { background: linear-gradient(135deg, #27ae60, #1e8449); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
-        .banner h1 { margin: 0 0 8px 0; font-size: 1.6em; }
-        .banner p { margin: 0; opacity: 0.9; }
-        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85em; margin-top: 10px; }
-        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-        .card h2 { color: #1e8449; margin-top: 0; border-bottom: 2px solid #d5f0e0; padding-bottom: 10px; }
-        ul li { margin-bottom: 8px; line-height: 1.6; }
-        .tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-        .tool-tag { background: #e8f8f0; color: #1e8449; padding: 5px 12px; border-radius: 6px; font-size: 0.9em; font-weight: 600; }
-        .note { background: #d5f0e0; border-left: 4px solid #27ae60; padding: 15px 20px; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+        :root {
+            --primary-color: #0d9488;
+            --secondary-color: #0f766e;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #042f2e 0%, #134e4a 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">&#128269;</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .prereq-badge {
+            display: inline-block;
+            background: rgba(13,148,136,0.3);
+            border: 1px solid rgba(13,148,136,0.6);
+            color: #99f6e4;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* Lab Info Bar */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.82em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* Content */
+        .content { padding: 40px; }
+
+        /* TOC */
+        .toc {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-left: 5px solid #0d9488;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-left: 20px; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #0f766e; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* Sections */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #0d9488; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* Alert Boxes */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-left: 5px solid var(--info-color); }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-left: 5px solid var(--warning-color); }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-left: 5px solid var(--danger-color); }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-left: 5px solid var(--accent-color); }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#042f2e,#134e4a); color: white; padding: 14px 18px; text-align: left; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* Code */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        pre code { background: none; color: #68d391; padding: 0; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+        .output-text { color: #fbd38d; }
+
+        /* Steps */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-left: 50px; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; width: 35px; height: 35px; background: linear-gradient(135deg,#0d9488,#0f766e); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(13,148,136,0.3); }
+
+        /* Concept Banner */
+        .concept-banner { background: linear-gradient(135deg,#042f2e,#134e4a); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #99f6e4; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* Expected Output */
+        .expected-output { background: #f7fafc; border: 2px dashed #0d9488; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .expected-output h4 { color: #0d9488; margin-top: 0; margin-bottom: 8px; }
+
+        /* Answer Key */
+        .answer-key { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border: 2px solid #0d9488; border-radius: 12px; padding: 18px; margin: 14px 0; }
+        .answer-key h4 { color: #0f766e; margin-top: 0; margin-bottom: 10px; }
+        .answer-key ol { margin-left: 20px; margin-bottom: 0; }
+        .answer-key li { margin-bottom: 8px; }
+        .answer-key strong { color: #0f766e; }
+
+        /* Deliverable */
+        .deliverable { background: linear-gradient(135deg,#f0fdfa,#a7f3d0); border-left: 5px solid #0d9488; border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #065f46; margin-top: 0; }
+
+        /* Fill-in */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.93em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #0d9488; box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
+
+        /* Module Badge */
+        .module-badge { display: inline-block; background: linear-gradient(135deg,#0d9488,#0f766e); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.84em; font-weight: 600; margin-bottom: 12px; }
+
+        /* Severity Cards */
+        .vuln-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 18px 0; }
+        .vuln-card { background: white; border: 2px solid var(--border-color); border-radius: 12px; padding: 18px; }
+        .vuln-card.critical { border-color: #7f1d1d; background: linear-gradient(135deg,#fff5f5,#fed7d7); }
+        .vuln-card.high     { border-color: #c05621; background: linear-gradient(135deg,#fffaf0,#feebc8); }
+        .vuln-card.medium   { border-color: #975a16; background: linear-gradient(135deg,#fffff0,#fefcbf); }
+        .vuln-card.low      { border-color: #276749; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+        .vuln-card h4 { margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .vuln-card p { margin: 0; font-size: 0.9em; color: #4a5568; }
+        .severity-tag { font-size: 0.72em; padding: 2px 8px; border-radius: 10px; white-space: nowrap; font-weight: 600; }
+        .severity-tag.critical { background: #7f1d1d; color: white; }
+        .severity-tag.high     { background: #c05621; color: white; }
+        .severity-tag.medium   { background: #975a16; color: white; }
+        .severity-tag.low      { background: #276749; color: white; }
+
+        /* Troubleshooting */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* Summary box */
+        .summary-box { background: linear-gradient(135deg,#042f2e,#134e4a); color: white; border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+        .summary-box h3 { color: #99f6e4; margin-top: 0; border: none; }
+        .summary-box table { box-shadow: none; border-radius: 8px; overflow: hidden; }
+        .summary-box th { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .summary-box td { color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; }
+        .summary-box tr:nth-child(even) td { background: rgba(255,255,255,0.05); }
+
+        /* Footer */
+        .footer { background: linear-gradient(135deg,#042f2e,#134e4a); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+            .vuln-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Language Switch */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
     </style>
 </head>
 <body>
 
-<div class="banner">
-    <h1>Lab 8: Full Vulnerability Assessment on DVWA</h1>
-    <p>Topic 8 — Secure Development Methodologies II</p>
-    <span class="badge">DVWA + Burp Suite + Nikto + CVSS Scoring</span>
+<!-- Language Switch -->
+<div class="lang-switch">
+    <a href="lab08-arabic.html" class="lang-btn">
+        &#127760; عربي
+    </a>
 </div>
 
-<div class="card">
-    <h2>Lab Purpose</h2>
-    <p>This is a capstone assessment lab. Students apply all skills learned in previous labs to conduct a structured vulnerability assessment of DVWA — combining manual testing (Burp Suite) and automated scanning (Nikto/ZAP) — and then score each finding using CVSS. This directly reflects the Vulnerability Management process from Topic 8.</p>
-</div>
+<div class="container">
 
-<div class="card">
-    <h2>Tools Required</h2>
-    <div class="tools">
-        <span class="tool-tag">DVWA</span>
-        <span class="tool-tag">Burp Suite</span>
-        <span class="tool-tag">Nikto (Kali)</span>
-        <span class="tool-tag">OWASP ZAP (Kali)</span>
-        <span class="tool-tag">CVSS Calculator</span>
+    <header class="header">
+        <h1>&#128269; Lab 08: Full Vulnerability Assessment on DVWA</h1>
+        <p class="subtitle">CYB236 &mdash; Web Application Security</p>
+        <div class="chapter-ref">Chapter 8 &mdash; Vulnerability Management &bull; CVSS Scoring &bull; Assessment Methodology</div>
+        <br>
+        <span class="prereq-badge">&#9989; Prerequisite: Labs 01&ndash;07 completed</span>
+        <span class="prereq-badge" style="margin-left: 8px;">&#127891; Capstone Lab &mdash; All Tools Combined</span>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>Lab Number</strong><span>08</span></div>
+        <div class="lab-info-item"><strong>Difficulty</strong><span>Advanced</span></div>
+        <div class="lab-info-item"><strong>Duration</strong><span>60&ndash;90 min</span></div>
+        <div class="lab-info-item"><strong>Environment</strong><span>Kali + DVWA</span></div>
+        <div class="lab-info-item"><strong>Builds On</strong><span>Labs 01&ndash;07</span></div>
     </div>
-</div>
 
-<div class="card">
-    <h2>Planned Tasks</h2>
-    <ul>
-        <li><strong>Task 1 — Scoping:</strong> Define the assessment scope — which DVWA modules will be tested, what is out of scope, what tools will be used.</li>
-        <li><strong>Task 2 — Testing:</strong> Run a combination of manual and automated tests against DVWA. Students apply what they learned in Labs 3–7 (Burp Suite, XSS, SQLi, CSRF, Auth attacks, Nikto, ZAP).</li>
-        <li><strong>Task 3 — CVSS Scoring:</strong> For each vulnerability found, calculate a CVSS v3 base score using the online CVSS calculator. Justify the score based on Attack Vector, Complexity, Impact, etc.</li>
-        <li><strong>Task 4 — Report:</strong> Write a short vulnerability assessment report with: Executive Summary, Vulnerability Table (name, description, CVSS score, evidence), and Recommendations.</li>
-    </ul>
-</div>
+    <div class="content">
 
-<div class="card">
-    <h2>Learning Outcomes</h2>
-    <ul>
-        <li>Conduct a structured vulnerability assessment combining manual and automated techniques</li>
-        <li>Apply CVSS scoring to real vulnerabilities</li>
-        <li>Practice professional security report writing</li>
-        <li>Understand the full Vulnerability Management lifecycle</li>
-    </ul>
-</div>
+        <nav class="toc">
+            <h2>&#128203; Table of Contents</h2>
+            <ol>
+                <li><a href="#intro">What is a Vulnerability Assessment?</a></li>
+                <li><a href="#methodology">Assessment Methodology &amp; CVSS</a></li>
+                <li><a href="#setup">Setup: Start DVWA &amp; Tools</a></li>
+                <li><a href="#task1">Task 1: Manual Testing with Burp Suite</a></li>
+                <li><a href="#task2">Task 2: Automated Scanning &amp; CVSS Scoring</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#report">Deliverables &amp; Submission</a></li>
+            </ol>
+        </nav>
 
-<div class="note">
-    <strong>Instructor Note:</strong> This lab is best used as a graded assignment (part of Assignment #2). Students should produce a PDF report. Allow students to use any tool they have learned so far. CVSS calculator is available at nvd.nist.gov/vuln-metrics/cvss/v3-calculator.
-</div>
+        <!-- ── INTRO ── -->
+        <section id="intro">
+            <h2>&#128269; What is a Vulnerability Assessment?</h2>
 
+            <p>In <strong>Labs 01&ndash;07</strong> you learned individual attack techniques: SQL injection, XSS, CSRF, command injection, and password attacks using Burp Suite. This capstone lab brings everything together in a structured <strong>Vulnerability Assessment (VA)</strong> &mdash; the systematic process of discovering, classifying, and reporting security weaknesses in a target system.</p>
+
+            <p>A <strong>Vulnerability Assessment</strong> is not the same as penetration testing. It focuses on <em>finding and documenting</em> vulnerabilities rather than fully exploiting them to gain maximum access. The deliverable is a professional report that a development team or management can use to prioritize remediation efforts.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>What This Lab Simulates</h4>
+                    <p>You are acting as a security consultant performing a vulnerability assessment against a client&apos;s web application (simulated by DVWA). You will test manually and automatically, then score each finding using CVSS v3.1 to produce a standardized severity baseline.</p>
+                </div>
+            </div>
+
+            <h3>Vulnerability Assessment vs Penetration Testing</h3>
+            <table>
+                <tr><th>Aspect</th><th>Vulnerability Assessment</th><th>Penetration Test</th></tr>
+                <tr><td><strong>Goal</strong></td><td>Find and document all vulnerabilities</td><td>Exploit vulnerabilities to prove impact</td></tr>
+                <tr><td><strong>Depth</strong></td><td>Broad coverage, less depth per finding</td><td>Narrow and deep &mdash; full exploit chains</td></tr>
+                <tr><td><strong>Output</strong></td><td>Vulnerability report with severity scores</td><td>Exploitation report with proof-of-concept</td></tr>
+                <tr><td><strong>Risk to System</strong></td><td>Lower &mdash; less disruptive</td><td>Higher &mdash; can crash or alter system state</td></tr>
+                <tr><td><strong>Duration</strong></td><td>Hours to days</td><td>Days to weeks</td></tr>
+                <tr><td><strong>Used By</strong></td><td>IT teams, compliance auditors</td><td>Security teams proving real-world risk</td></tr>
+            </table>
+
+            <h3>CVSS Severity Ratings</h3>
+            <div class="vuln-grid">
+                <div class="vuln-card critical">
+                    <h4>&#128308; Critical <span class="severity-tag critical">9.0&ndash;10.0</span></h4>
+                    <p>Remotely exploitable, no authentication needed, full system compromise. Requires <strong>immediate</strong> remediation.</p>
+                </div>
+                <div class="vuln-card high">
+                    <h4>&#128992; High <span class="severity-tag high">7.0&ndash;8.9</span></h4>
+                    <p>Significant impact, relatively easy to exploit. Remediate within <strong>30 days</strong>.</p>
+                </div>
+                <div class="vuln-card medium">
+                    <h4>&#128993; Medium <span class="severity-tag medium">4.0&ndash;6.9</span></h4>
+                    <p>Moderate impact or requires specific conditions. Remediate within <strong>90 days</strong>.</p>
+                </div>
+                <div class="vuln-card low">
+                    <h4>&#128994; Low <span class="severity-tag low">0.1&ndash;3.9</span></h4>
+                    <p>Limited impact, often needs physical access or user interaction. Address in <strong>next dev cycle</strong>.</p>
+                </div>
+            </div>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Why DVWA Is the Right Target for This Lab</h4>
+                    <p>DVWA (Damn Vulnerable Web Application) is intentionally built with all OWASP Top 10 vulnerabilities at configurable severity levels. It is a legal, controlled target that lets you practice a real VA workflow without any risk of unauthorized access to production systems. Everything in this lab runs locally on your Kali machine.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── METHODOLOGY ── -->
+        <section id="methodology">
+            <h2>&#128214; Assessment Methodology &amp; CVSS</h2>
+
+            <p>Professional vulnerability assessments follow a structured methodology. This lab uses a simplified version of the <strong>OWASP Testing Guide (OTG)</strong> and <strong>PTES (Penetration Testing Execution Standard)</strong> frameworks adapted for a single-application assessment.</p>
+
+            <h3>The Three Phases of This Assessment</h3>
+            <table>
+                <tr><th>Phase</th><th>Activity</th><th>Tools Used</th><th>Lab Task</th></tr>
+                <tr><td><strong>1. Reconnaissance</strong></td><td>Identify running services, technologies, and attack surface</td><td>Nikto, Burp Site Map</td><td>Task 2</td></tr>
+                <tr><td><strong>2. Vulnerability Discovery</strong></td><td>Manual testing of individual modules for known vulnerability classes</td><td>Burp Suite, Firefox</td><td>Task 1</td></tr>
+                <tr><td><strong>3. Automated Scanning &amp; CVSS</strong></td><td>Automated tools to find additional vulnerabilities and score all findings using CVSS v3.1</td><td>Nikto, OWASP ZAP, CVSS Calculator</td><td>Task 2</td></tr>
+            </table>
+
+            <h3>CVSS v3.1 &mdash; The Scoring Standard</h3>
+            <p><strong>CVSS (Common Vulnerability Scoring System) v3.1</strong> is the industry-standard framework for assessing the severity of security vulnerabilities. It produces a numeric score from 0.0 to 10.0. Every finding in a professional VA report must include a CVSS base score with its full vector string so the score is reproducible by anyone.</p>
+
+            <h3>CVSS v3.1 Base Metrics</h3>
+            <table>
+                <tr><th>Metric Group</th><th>Metric</th><th>Values</th></tr>
+                <tr><td rowspan="4"><strong>Exploitability</strong></td><td>Attack Vector (AV)</td><td>Network (N), Adjacent (A), Local (L), Physical (P)</td></tr>
+                <tr><td>Attack Complexity (AC)</td><td>Low (L), High (H)</td></tr>
+                <tr><td>Privileges Required (PR)</td><td>None (N), Low (L), High (H)</td></tr>
+                <tr><td>User Interaction (UI)</td><td>None (N), Required (R)</td></tr>
+                <tr><td><strong>Scope</strong></td><td>Scope (S)</td><td>Unchanged (U), Changed (C)</td></tr>
+                <tr><td rowspan="3"><strong>Impact</strong></td><td>Confidentiality (C)</td><td>None (N), Low (L), High (H)</td></tr>
+                <tr><td>Integrity (I)</td><td>None (N), Low (L), High (H)</td></tr>
+                <tr><td>Availability (A)</td><td>None (N), Low (L), High (H)</td></tr>
+            </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>CVSS Vector String Notation</h4>
+                    <p>Scores are written as a vector: <code>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H</code>. This encodes all metric values and lets anyone reproduce the score. Use the online CVSS v3.1 calculator at <strong>nvd.nist.gov/vuln-metrics/cvss/v3-calculator</strong> for all scoring in this lab.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── SETUP ── -->
+        <section id="setup">
+            <h2>&#9881;&#65039; Setup: Start DVWA &amp; Tools</h2>
+
+            <h3>Step 1: Start DVWA</h3>
+<pre><code><span class="command-label"># Start the DVWA Docker container</span>
+sudo docker start dvwa
+
+<span class="command-label"># Confirm it is running</span>
+sudo docker ps
+
+<span class="command-label"># Get your Kali IP address</span>
+hostname -I</code></pre>
+            <p>Note your IP address (e.g., <code>10.0.2.15</code>). Use this IP in all URLs throughout the lab &mdash; never use <code>localhost</code>.</p>
+
+            <h3>Step 2: Set DVWA to Low Security</h3>
+            <ol class="steps">
+                <li>Open Firefox and navigate to <code>http://&lt;your-ip&gt;</code></li>
+                <li>Log in: <code>admin</code> / <code>password</code></li>
+                <li>Click <strong>DVWA Security</strong> in the left menu</li>
+                <li>Select <strong>Low</strong> from the dropdown and click <strong>Submit</strong></li>
+            </ol>
+
+            <h3>Step 3: Start Burp Suite</h3>
+            <ol class="steps">
+                <li>Open a terminal and run: <code>burpsuite</code></li>
+                <li>Select <strong>Temporary project</strong> &rarr; <strong>Start Burp</strong></li>
+                <li>Confirm the proxy listener is running on <code>127.0.0.1:8080</code></li>
+                <li>In Firefox, activate the <strong>Burp Proxy</strong> FoxyProxy profile</li>
+                <li>Set Intercept to <strong>OFF</strong> for now</li>
+            </ol>
+
+            <h3>Step 4: Verify Nikto and OWASP ZAP</h3>
+            <p><strong>Nikto</strong> is an open-source command-line web server scanner. It automatically checks a target web server for thousands of known vulnerabilities, outdated software versions, dangerous files, and misconfigurations (such as missing security headers or exposed admin interfaces). Nikto is fast and noisy — it does not try to hide its activity — making it ideal for authorized assessments where speed matters more than stealth.</p>
+            <p><strong>OWASP ZAP (Zed Attack Proxy)</strong> is a free, open-source web application security scanner maintained by OWASP. Unlike Nikto, ZAP works as an intercepting proxy and includes both passive scanning (observing traffic) and active scanning (sending attack payloads). It can find a broader range of application-layer vulnerabilities such as XSS, SQL injection, and broken authentication. ZAP also has a graphical interface, making it approachable for beginners while still being powerful enough for professional use.</p>
+<pre><code><span class="command-label"># Verify Nikto is installed</span>
+nikto -Version
+
+<span class="command-label"># If Nikto is not installed, install it</span>
+sudo apt-get update && sudo apt-get install -y nikto
+
+<span class="command-label"># Verify OWASP ZAP is available</span>
+which zaproxy || which owasp-zap
+
+<span class="command-label"># If OWASP ZAP is not installed, install it</span>
+sudo apt-get update && sudo apt-get install -y zaproxy</code></pre>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Checkpoint</h4>
+                    <p>DVWA is running at <code>http://&lt;your-ip&gt;</code> with security set to <strong>Low</strong>. Burp Suite is running with FoxyProxy active. Nikto and OWASP ZAP are available. You are ready to begin the assessment.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── TASK 1 ── -->
+        <section id="task1">
+            <h2>&#128300; Task 1: Manual Testing with Burp Suite</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; Manual Testing Builds Understanding</h4>
+                    <p>Automated scanners miss business-logic flaws and context-dependent vulnerabilities. Manual testing &mdash; using Burp Suite&apos;s Proxy and Repeater &mdash; ensures you understand <em>why</em> each vulnerability exists and can provide meaningful, specific remediation advice. In professional engagements, manual findings often carry more weight than automated ones.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">DVWA: In-Scope Modules &bull; Security: Low</span>
+
+            <h3>2A: SQL Injection</h3>
+            <p>Navigate to <strong>SQL Injection</strong> in the DVWA left menu.</p>
+            <ol class="steps">
+                <li>Enter <code>1</code> in the User ID field and click Submit &mdash; observe the normal output</li>
+                <li>Enter <code>' OR '1'='1</code> and click Submit &mdash; observe: all user records are returned (WHERE clause bypassed)</li>
+                <li>Enter <code>1' UNION SELECT user, password FROM users-- -</code> and click Submit</li>
+                <li>Observe: usernames and MD5 password hashes are returned in the First name / Surname fields</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; Expected Output &mdash; UNION-Based SQL Injection:</h4>
+<pre><code><span class="output-text">ID: 1' UNION SELECT user, password FROM users-- -
+First name: admin
+Surname: 5f4dcc3b5aa765d61d8327deb882cf99
+
+First name: gordonb
+Surname: e99a18c428cb38d5f260853678922e03</span></code></pre>
+                <p>The &ldquo;Surname&rdquo; field contains MD5 password hashes. <code>5f4dcc3b5aa765d61d8327deb882cf99</code> is the MD5 hash of <code>password</code> &mdash; crackable instantly with any rainbow table.</p>
+            </div>
+
+            <h3>2B: Command Injection</h3>
+            <p>Navigate to <strong>Command Injection</strong> in the DVWA left menu.</p>
+            <ol class="steps">
+                <li>Enter <code>127.0.0.1</code> and click Submit &mdash; observe normal ping output</li>
+                <li>Enter <code>127.0.0.1; whoami</code> and click Submit &mdash; observe the OS user is appended to the output</li>
+                <li>Enter <code>127.0.0.1; cat /etc/passwd</code> and click Submit</li>
+                <li>Observe: the full contents of <code>/etc/passwd</code> are returned alongside the ping</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; Expected Output &mdash; Command Injection:</h4>
+<pre><code><span class="output-text">PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+...
+www-data
+
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+...</span></code></pre>
+                <p>The semicolon (<code>;</code>) chains a second OS command after the ping. User input reaches the shell directly. The web server process runs as <code>www-data</code>.</p>
+            </div>
+
+            <h3>2C: XSS (Reflected)</h3>
+            <p>Navigate to <strong>XSS (Reflected)</strong> in the DVWA left menu.</p>
+            <ol class="steps">
+                <li>In the &ldquo;What&apos;s your name?&rdquo; field, enter your name normally &mdash; observe it reflected in the response</li>
+                <li>Enter <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> and click Submit &mdash; an alert box appears</li>
+                <li>Enter <code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code> and click Submit</li>
+                <li>Observe: the alert displays the current session cookie value</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; Expected Output &mdash; Reflected XSS Cookie Theft:</h4>
+                <p>An alert dialog displays: <strong>PHPSESSID=abc123def456; security=low</strong></p>
+                <p>A real attacker crafts a malicious URL containing this payload. Any victim who clicks the link sends their session cookie to the attacker, enabling session hijacking without knowing the victim&apos;s password.</p>
+            </div>
+
+            <h3>2D: XSS (Stored)</h3>
+            <p>Navigate to <strong>XSS (Stored)</strong> in the DVWA left menu.</p>
+            <ol class="steps">
+                <li>In the <strong>Message</strong> field, enter: <code>&lt;script&gt;alert('Stored XSS')&lt;/script&gt;</code></li>
+                <li>In the <strong>Name</strong> field, enter any name and click <strong>Sign Guestbook</strong></li>
+                <li>The page reloads &mdash; the alert fires <em>automatically</em> on page load</li>
+                <li>Refresh the page &mdash; the alert fires again (payload persists in the database)</li>
+                <li>Open a private/incognito tab, navigate to the Stored XSS page &mdash; the alert fires for any visitor</li>
+            </ol>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Stored XSS Affects Every User Who Visits the Page</h4>
+                    <p>Unlike Reflected XSS (which requires tricking a specific victim into clicking a link), Stored XSS fires automatically for <em>every user</em> who loads the page. In a real application, a payload in an admin panel would steal the session cookie of every administrator who visits &mdash; without any attacker interaction after the initial submission.</p>
+                </div>
+            </div>
+
+            <h3>2E: CSRF</h3>
+            <p>Navigate to <strong>CSRF</strong> in the DVWA left menu.</p>
+            <ol class="steps">
+                <li>Turn Burp Intercept <strong>ON</strong>, enter any new password in both fields and click <strong>Change</strong></li>
+                <li>Observe the captured request: <code>GET /vulnerabilities/csrf/?password_new=test&amp;password_conf=test&amp;Change=Change</code></li>
+                <li>Forward the request and turn Intercept <strong>OFF</strong></li>
+                <li>Note that the entire password change is a simple GET request &mdash; all parameters are in the URL</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>&#9989; What a CSRF Attack Looks Like:</h4>
+<pre><code><span class="output-text">&lt;!-- Attacker embeds this on any webpage --&gt;
+&lt;img src="http://&lt;your-ip&gt;/vulnerabilities/csrf/?password_new=hacked&amp;password_conf=hacked&amp;Change=Change"&gt;</span></code></pre>
+                <p>When a logged-in DVWA user visits any page containing this <code>&lt;img&gt;</code> tag, the browser automatically sends the GET request &mdash; silently changing their password to <code>hacked</code> with no user interaction required beyond visiting the page.</p>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 1 &mdash; Questions</h4></div>
+            <div class="fill-in">
+                <label>1. SQL Injection: What payload retrieved all user records? What payload dumped password hashes? Why are MD5-hashed passwords still a critical security risk?</label>
+                <textarea class="task-answer" data-task="1" rows="4" placeholder="All records: ' OR '1'='1 (tautology — always true, bypasses the WHERE clause). Hashes: 1' UNION SELECT user, password FROM users-- - (injects a second SELECT returning the users table). MD5 hashes are critical risks because MD5 is a fast, unsalted algorithm. Tools like hashcat test billions of hashes per second — 'password' → 5f4dcc3b5aa765d61d8327deb882cf99 cracks instantly via rainbow tables."></textarea>
+
+                <label>2. Command Injection: What character chained the OS command to the ping? Name two other shell characters that also work for command chaining:</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="Semicolon (;) was used — runs the second command unconditionally after the first. Other chaining characters: && (AND — second command runs only if first succeeds), | (pipe — passes stdout of first command to stdin of second), || (OR — second runs only if first fails), $(cmd) (command substitution)."></textarea>
+
+                <label>3. What is the key difference between Reflected XSS and Stored XSS in terms of <em>who is affected</em> and <em>how</em>? Which is rated more severe, and why?</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="Reflected XSS: payload is in the URL — only the victim who clicks the crafted link is affected (targeted attack). Stored XSS: payload is saved to the database — fires automatically for every user who loads the page (passive, affects all users). Stored XSS is rated more severe because it requires no victim interaction and has a much wider blast radius."></textarea>
+
+                <label>4. CSRF: Why does using a GET request for a password change make the vulnerability significantly worse than using POST?</label>
+                <textarea class="task-answer" data-task="1" rows="3" placeholder="GET parameters are in the URL, which can be embedded in an &lt;img src=&gt; tag. Browsers automatically fetch images — no click or interaction needed. When a logged-in user visits any page with the malicious img tag, the browser sends the request and changes the password silently. POST requires a form submission with JavaScript to automate, which is harder to trigger invisibly and may trigger browser warnings."></textarea>
+
+                <label>5. Screenshot &mdash; SQL Injection UNION SELECT result showing usernames and password hashes:</label>
+                <input type="file" id="ss-task2a" accept="image/*" onchange="previewImage(this,'prev-task2a')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2a" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 2a screenshot">
+
+                <label>6. Screenshot &mdash; Command Injection output showing <code>whoami</code> result or <code>/etc/passwd</code> contents:</label>
+                <input type="file" id="ss-task2b" accept="image/*" onchange="previewImage(this,'prev-task2b')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2b" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 2b screenshot">
+
+                <label>7. Screenshot &mdash; Reflected XSS alert box displaying <code>document.cookie</code>:</label>
+                <input type="file" id="ss-task2c" accept="image/*" onchange="previewImage(this,'prev-task2c')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task2c" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 2c screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 1</h4>
+                <ol>
+                    <li><strong>Q1:</strong> All records: <code>' OR '1'='1</code>. Hashes: <code>1' UNION SELECT user, password FROM users-- -</code>. MD5 is fast, unsalted, and has precomputed rainbow tables. <code>5f4dcc3b5aa765d61d8327deb882cf99</code> = <code>password</code> in any rainbow table lookup.</li>
+                    <li><strong>Q2:</strong> Semicolon <code>;</code>. Others: <code>&amp;&amp;</code> (AND chaining), <code>|</code> (pipe), <code>||</code> (OR), <code>$(cmd)</code> (substitution).</li>
+                    <li><strong>Q3:</strong> Reflected: targeted, requires victim to click a crafted link. Stored: passive, fires for every user who loads the page. Stored XSS is rated more severe &mdash; wider impact with no victim interaction needed beyond normal browsing.</li>
+                    <li><strong>Q4:</strong> GET parameters are in the URL, embeddable in <code>&lt;img src&gt;</code>. Browsers auto-fetch images &mdash; no user interaction needed. POST requires a form submit, which is harder to trigger silently and is not auto-sent for resources like images.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── TASK 2 ── -->
+        <section id="task2">
+            <h2>&#128202; Task 2: Automated Scanning &amp; CVSS Scoring</h2>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Concept &mdash; Automated Tools Complement Manual Testing</h4>
+                    <p>Automated scanners are fast and consistent but prone to false positives and blind to logic flaws. Manual testing is thorough but slow. A professional VA uses <em>both</em>: manual testing for depth and understanding, automated tools for breadth and confirmation. You will then score every finding with CVSS to give stakeholders a standardized severity baseline.</p>
+                </div>
+            </div>
+
+            <span class="module-badge">Tools: Nikto &bull; OWASP ZAP &bull; CVSS Calculator</span>
+
+            <h3>3A: Run Nikto Against DVWA</h3>
+            <p>Nikto is a fast web server scanner that identifies server misconfigurations, missing security headers, default credentials, and version disclosure.</p>
+
+<pre><code><span class="command-label"># Run Nikto against DVWA (replace with your IP)</span>
+nikto -h http://&lt;your-ip&gt; -o nikto_dvwa.txt
+
+<span class="command-label"># View the saved results</span>
+cat nikto_dvwa.txt</code></pre>
+
+            <div class="expected-output">
+                <h4>&#9989; Typical Nikto Findings Against DVWA:</h4>
+<pre><code><span class="output-text">- Nikto v2.1.6
+---------------------------------------------------------------------------
++ Target IP:       10.0.2.15
++ Target Port:     80
++ Server:          Apache/2.4.56 (Debian)
+---------------------------------------------------------------------------
++ /: Cookie PHPSESSID created without the httponly flag.
++ /: The anti-clickjacking X-Frame-Options header is not present.
++ /: The X-Content-Type-Options header is not set.
++ /: X-Powered-By PHP/8.2 header found — version disclosed.
++ /config/: Directory indexing found.
++ /login.php: Default DVWA credentials admin/password accepted.
++ Apache/2.4.56 appears outdated (current is 2.4.59+).</span></code></pre>
+                <p>Nikto finds server-level issues &mdash; missing security headers, default credentials, version disclosure. These complement the application-level vulnerabilities found in Task 2.</p>
+            </div>
+
+            <h3>3B: Run OWASP ZAP Against DVWA</h3>
+            <p>OWASP ZAP is a full-featured web application scanner. The quickest approach is its built-in automated scan.</p>
+            <ol class="steps">
+                <li>Launch ZAP: <strong>Applications &rarr; Web Application Analysis &rarr; OWASP ZAP</strong>, or run <code>zaproxy</code> in a terminal</li>
+                <li>In ZAP, click <strong>Automated Scan</strong></li>
+                <li>Enter the target URL: <code>http://&lt;your-ip&gt;</code></li>
+                <li>Click <strong>Attack</strong> and wait for the scan to complete (5&ndash;10 minutes)</li>
+                <li>Review the <strong>Alerts</strong> tab &mdash; findings are sorted by risk level (High, Medium, Low, Informational)</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>ZAP and Authentication</h4>
+                    <p>DVWA requires login for most vulnerability pages. For a deeper ZAP scan, browse DVWA through ZAP&apos;s proxy while logged in first (so ZAP captures the session cookie), then run the scan. For this lab, reviewing ZAP&apos;s findings on accessible pages is sufficient. Note in your report that a deeper scan with authenticated session would yield additional findings.</p>
+                </div>
+            </div>
+
+            <div class="expected-output">
+                <h4>&#9989; Typical ZAP Alerts for DVWA:</h4>
+                <table>
+                    <tr><th>Risk</th><th>Alert</th><th>Location</th></tr>
+                    <tr><td>&#128308; High</td><td>SQL Injection</td><td>/vulnerabilities/sqli/</td></tr>
+                    <tr><td>&#128308; High</td><td>Cross Site Scripting (Reflected)</td><td>/vulnerabilities/xss_r/</td></tr>
+                    <tr><td>&#128992; Medium</td><td>Absence of Anti-CSRF Tokens</td><td>/vulnerabilities/csrf/</td></tr>
+                    <tr><td>&#128992; Medium</td><td>X-Frame-Options Header Missing</td><td>All pages</td></tr>
+                    <tr><td>&#128993; Low</td><td>Cookie Without HttpOnly Flag</td><td>All pages</td></tr>
+                    <tr><td>&#128993; Low</td><td>Server Version Disclosure (Apache)</td><td>HTTP response headers</td></tr>
+                </table>
+            </div>
+
+            <h3>3C: CVSS v3.1 Scoring for Each Finding</h3>
+            <p>For each vulnerability found in Tasks 1 and 2, calculate a CVSS v3.1 base score at <strong>nvd.nist.gov/vuln-metrics/cvss/v3-calculator</strong>. Reference scores for in-scope DVWA vulnerabilities at Low security:</p>
+
+            <table>
+                <tr><th>Vulnerability</th><th>CVSS:3.1 Vector</th><th>Score</th><th>Severity</th></tr>
+                <tr><td><strong>Command Injection</strong></td><td><code>AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H</code></td><td><strong>9.9</strong></td><td>&#128308; Critical</td></tr>
+                <tr><td><strong>SQL Injection</strong></td><td><code>AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</code></td><td><strong>8.8</strong></td><td>&#128308; High</td></tr>
+                <tr><td><strong>XSS (Reflected)</strong></td><td><code>AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N</code></td><td><strong>6.1</strong></td><td>&#128993; Medium</td></tr>
+                <tr><td><strong>CSRF</strong></td><td><code>AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N</code></td><td><strong>6.5</strong></td><td>&#128993; Medium</td></tr>
+                <tr><td><strong>XSS (Stored)</strong></td><td><code>AV:N/AC:L/PR:L/UI:R/S:C/C:L/I:L/A:N</code></td><td><strong>5.4</strong></td><td>&#128993; Medium</td></tr>
+                <tr><td><strong>Missing HttpOnly Cookie Flag</strong></td><td><code>AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:N/A:N</code></td><td><strong>3.1</strong></td><td>&#128994; Low</td></tr>
+                <tr><td><strong>Server Version Disclosure</strong></td><td><code>AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N</code></td><td><strong>3.7</strong></td><td>&#128994; Low</td></tr>
+            </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Why Command Injection (9.9) Scores Higher Than SQL Injection (8.8)</h4>
+                    <p>The key difference is the <strong>Scope (S)</strong> metric. Command Injection has <strong>S:C (Changed)</strong> because exploiting the web application directly impacts the underlying operating system &mdash; a completely different security component. SQL Injection has <strong>S:U (Unchanged)</strong> because its impact stays within the application&apos;s data boundary. Scope:Changed applies a significant score multiplier in the CVSS formula.</p>
+                </div>
+            </div>
+
+            <div class="deliverable"><h4>&#9997;&#65039; Task 2 &mdash; Questions</h4></div>
+            <div class="fill-in">
+                <label>1. List three findings that Nikto reported that were NOT found by your manual testing in Task 1. What category of issues does Nikto specialize in finding?</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="Nikto-only findings: missing X-Frame-Options header, missing X-Content-Type-Options header, PHP/Apache version disclosure in response headers, directory indexing on /config/. Nikto specializes in server-level configuration issues — missing security headers, exposed server metadata, outdated software versions, and default credentials. It does not find application-logic vulnerabilities like XSS or SQLi at depth."></textarea>
+
+                <label>2. Compare ZAP&apos;s findings to your manual findings from Task 2. Did ZAP find everything you found manually? Did it find anything you missed?</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="ZAP typically confirms SQLi and Reflected XSS but often misses CSRF on authenticated pages without session configuration. Manual testing found all six vulnerability classes including Stored XSS and CSRF with full context. ZAP adds missing security header alerts not covered in manual testing. ZAP may also produce false positives that require manual verification to confirm or dismiss."></textarea>
+
+                <label>3. Explain why Command Injection (9.9) received a higher CVSS score than SQL Injection (8.8). Which specific metric is different between them?</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="The Scope (S) metric is the key difference. Command Injection has S:C (Changed) — the vulnerability in the web app allows attacking the OS, a different security component. SQL Injection has S:U (Unchanged) — impact stays within the app's database. The CVSS formula applies a significant multiplier when Scope is Changed because it represents a broader blast radius across security boundaries."></textarea>
+
+                <label>4. Using the CVSS calculator (nvd.nist.gov), calculate the score for SQL Injection if Privileges Required changed from Low (PR:L) to None (PR:N). What score do you get, and why did it increase?</label>
+                <textarea class="task-answer" data-task="2" rows="3" placeholder="Changing PR:L to PR:N gives approximately 9.8. It increased because requiring no privileges means any unauthenticated internet user can exploit the vulnerability — the pool of potential attackers grows from 'any logged-in user' to 'anyone on the internet.' PR:N is the most severe value for that metric and significantly increases the exploitability subscore."></textarea>
+
+                <label>5. Screenshot &mdash; Nikto scan output in terminal showing findings against DVWA:</label>
+                <input type="file" id="ss-task3a" accept="image/*" onchange="previewImage(this,'prev-task3a')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task3a" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 3a screenshot">
+
+                <label>6. Screenshot &mdash; OWASP ZAP Alerts tab showing vulnerability findings:</label>
+                <input type="file" id="ss-task3b" accept="image/*" onchange="previewImage(this,'prev-task3b')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-task3b" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Task 3b screenshot">
+            </div>
+
+            <div class="answer-key">
+                <h4>&#128273; Answer Key &mdash; Task 2</h4>
+                <ol>
+                    <li><strong>Q1:</strong> Nikto-only: missing X-Frame-Options, X-Content-Type-Options, server version disclosure (Apache/PHP), directory indexing on /config/. Nikto specializes in server-level configuration &mdash; headers, metadata, outdated software, default creds. Application-logic flaws require manual or ZAP-level testing.</li>
+                    <li><strong>Q2:</strong> ZAP confirms SQLi and Reflected XSS but typically misses CSRF (needs session context) and Stored XSS (needs authenticated browsing). Manual testing provides full coverage. ZAP adds header-level findings. Some ZAP alerts are false positives requiring manual verification.</li>
+                    <li><strong>Q3:</strong> The <strong>Scope (S)</strong> metric. Command Injection: S:C (Changed) &mdash; impacts the OS beyond the web app. SQL Injection: S:U (Unchanged) &mdash; impact stays within the database. CVSS applies a formula multiplier for Changed scope because it crosses security boundaries.</li>
+                    <li><strong>Q4:</strong> Score &asymp; 9.8. Removing the authentication requirement makes it exploitable by any unauthenticated internet user, not just logged-in accounts. PR:N vs PR:L dramatically expands the potential attacker population and urgency of remediation.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ── TROUBLESHOOTING ── -->
+        <section id="troubleshooting">
+            <h2>&#128295; Troubleshooting</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; DVWA is not accessible &mdash; browser shows connection refused</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> The Docker container may have stopped. Run: <code>sudo docker ps</code>. If DVWA is not listed, start it: <code>sudo docker start dvwa</code>. Confirm your IP with <code>hostname -I</code> and use that IP (not <code>localhost</code>) in all URLs.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; SQL Injection payload returns no results or a database error</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Confirm DVWA security is set to <strong>Low</strong>. Medium and High use different query structures requiring different payloads. Also verify you are using straight apostrophes (<code>&apos;</code>), not curly quotes. Copy payloads directly from the lab rather than typing them by hand.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; XSS alert box does not appear &mdash; the script shows as plain text</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> DVWA security is above Low. At Medium and High, DVWA strips <code>&lt;script&gt;</code> tags. Set security back to <strong>Low</strong>. If the alert still does not fire, try an event-based payload as a fallback: <code>&lt;img src=x onerror=alert(document.cookie)&gt;</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Stored XSS payload does not persist &mdash; alert fires once then stops</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> The DVWA guestbook entry may have been cleared (DVWA resets its database periodically) or the payload was truncated by the HTML <code>maxlength</code> attribute on the message field. To bypass maxlength: turn Burp Intercept ON, submit the form, and modify the <code>mtxMessage</code> parameter directly in Burp before forwarding.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Nikto scan completes instantly with very few results</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Confirm DVWA is reachable: <code>curl http://&lt;your-ip&gt;</code>. Specify the port explicitly: <code>nikto -h http://&lt;your-ip&gt; -p 80</code>. If DVWA runs on a non-standard port (e.g., 8080), replace <code>-p 80</code> with the correct port. You should see at least the Apache/PHP version and missing header findings.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; OWASP ZAP finds only 1&ndash;2 alerts</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> ZAP&apos;s automated scan of DVWA is limited without authentication context. To improve results: (1) Log into DVWA through ZAP&apos;s proxy (activate ZAP as a proxy in Firefox, browse DVWA while logged in, then run the scan — ZAP will carry the session cookie). (2) Even with limited results, ZAP still finds server-header issues. Document all findings and note the authentication limitation in your report.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Command Injection shows ping output but the chained command does not execute</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Confirm you are on the <strong>Command Injection</strong> module specifically (not another module). Security must be <strong>Low</strong> &mdash; Medium/High sanitize the semicolon. First test with <code>127.0.0.1</code> alone to confirm the normal ping works, then append <code>; whoami</code>. If the semicolon is blocked, try the pipe: <code>127.0.0.1 | whoami</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; My CVSS score does not match the reference table</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> CVSS metric selection has nuance. Common errors: (1) Confusing <strong>PR:N</strong> (no login needed) with <strong>PR:L</strong> (any logged-in user) &mdash; DVWA Low requires a login, so most findings use PR:L. (2) Scope: Command Injection is <strong>S:C</strong> (Changed) because it impacts the OS; SQL Injection is <strong>S:U</strong> (Unchanged) because it stays within the database. The CVSS calculator updates the score in real time as you select each metric.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── REPORT ── -->
+        <section id="report">
+            <h2>&#128196; Deliverables &amp; Submission</h2>
+
+            <div class="summary-box">
+                <h3>&#128203; Lab 08 Summary</h3>
+                <table>
+                    <tr><th>Task</th><th>What You Did</th><th>Key Takeaway</th></tr>
+                    <tr><td><strong>Task 1</strong></td><td>Manually tested SQLi, Command Injection, XSS (Reflected &amp; Stored), and CSRF with Burp Suite</td><td>Manual testing reveals logic flaws automated tools miss and provides evidence for CVSS scoring</td></tr>
+                    <tr><td><strong>Task 2</strong></td><td>Ran Nikto and ZAP; scored all findings with CVSS v3.1</td><td>Automated tools add breadth; CVSS provides a standardized severity baseline for prioritization</td></tr>
+                </table>
+                <p style="margin-top:14px; opacity:0.9; font-size:0.92em;">This lab completes the core labs of CYB236. The Vulnerability Assessment methodology you practiced here is directly applicable to real-world security consulting, internal IT security audits, and industry certification exams.</p>
+            </div>
+
+            <div class="deliverable">
+                <h4>&#9997;&#65039; Submission Checklist</h4>
+                <ul>
+                    <li>PDF report (generated using the button below) containing all task answers</li>
+                    <li>Screenshot: Task 1 &mdash; SQL Injection UNION SELECT result showing usernames and password hashes</li>
+                    <li>Screenshot: Task 1 &mdash; Command Injection output showing <code>whoami</code> or <code>/etc/passwd</code> contents</li>
+                    <li>Screenshot: Task 1 &mdash; Reflected XSS alert displaying <code>document.cookie</code></li>
+                    <li>Screenshot: Task 2 &mdash; Nikto scan output in terminal</li>
+                    <li>Screenshot: Task 2 &mdash; OWASP ZAP Alerts tab showing findings</li>
+                </ul>
+            </div>
+
+            <h3>Grading Rubric</h3>
+            <table>
+                <tr><th>Task</th><th>Description</th><th>Points</th></tr>
+                <tr><td><strong>Task 1</strong></td><td>Manual testing &mdash; demonstrate SQLi, Command Injection, XSS (R &amp; S), CSRF with evidence</td><td>40</td></tr>
+                <tr><td><strong>Task 2</strong></td><td>Automated scanning &mdash; Nikto/ZAP findings compared, CVSS scoring with correct vectors</td><td>55</td></tr>
+                <tr><td><strong>Quality</strong></td><td>Labeled screenshots, professional writing, complete and specific answers</td><td>5</td></tr>
+                <tr><td colspan="2" style="text-align:right;font-weight:bold;">Total</td><td><strong>100</strong></td></tr>
+            </table>
+
+            <h3>Generate Your Lab Report</h3>
+            <div style="border:2px solid #0d9488;border-radius:15px;padding:28px;margin:18px 0;background:#fafbfc;">
+                <div style="text-align:center;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #0d9488;">
+                    <h3 style="color:var(--secondary-color);margin:0;">CYB236 &mdash; Lab 08 Report</h3>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student Name: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="Full name (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student ID: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="Student ID (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Email: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="Student email (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                </div>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#0d9488,#0f766e);color:white;border:none;padding:14px 38px;font-size:1.05em;font-weight:600;border-radius:10px;cursor:pointer;box-shadow:0 4px 15px rgba(13,148,136,0.4);">
+                        &#128196; Generate PDF Report
+                    </button>
+                </div>
+            </div>
+
+            <h3>Cleanup</h3>
+<pre><code><span class="command-label"># Disable FoxyProxy: click the icon in Firefox → select "Disable FoxyProxy"</span>
+
+<span class="command-label"># Stop DVWA when finished</span>
+sudo docker stop dvwa
+
+<span class="command-label"># Close Burp Suite and OWASP ZAP</span></code></pre>
+        </section>
+
+    </div><!-- end content -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; Web Application Security</p>
+        <p>Lab 08: Full Vulnerability Assessment on DVWA &bull; Chapter 8 &mdash; Vulnerability Management</p>
+    </div>
+
+</div><!-- end container -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('Student Name is required.'); return; }
+    if (!sid)   { alert('Student ID is required.'); return; }
+    if (!email) { alert('Email is required.'); return; }
+
+    var answers = {};
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!answers[t]) answers[t] = [];
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers[t].push({ label: lbl, value: f.value.trim() || '(not answered)' });
+    });
+
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g,'').replace(/\s+/g,'_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
+    var w = window.open('','_blank');
+    if (!w) { alert('Popup blocked. Please allow popups for this page and try again.'); return; }
+
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+    h += '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">';
+    h += '<title>Lab08_' + safeName + '_' + safeSid + '</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
+    h += 'h1{color:#0f766e;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#f0fdfa;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #ccfbf1}';
+    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-left:4px solid #0d9488;padding-left:14px}';
+    h += '.tt{color:#0f766e;font-size:1.15em;margin-bottom:10px;font-weight:700}';
+    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
+    h += '.ss{margin-top:16px;page-break-inside:avoid}.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 Lab 08: Full Vulnerability Assessment on DVWA</h1>';
+    h += '<p class="sub">Web Application Security</p>';
+    h += '<div class="si"><div><strong>Student Name:</strong> ' + name + '</div>';
+    h += '<div><strong>Student ID:</strong> ' + sid + '</div>';
+    h += '<div><strong>Email:</strong> ' + email + '</div></div>';
+
+    var taskNames = {
+        '1': 'Task 1: Manual Testing with Burp Suite',
+        '2': 'Task 2: Automated Scanning &amp; CVSS Scoring'
+    };
+
+    var ssIds = {
+        '1': ['prev-task2a','prev-task2b','prev-task2c'],
+        '2': ['prev-task3a','prev-task3b']
+    };
+
+    var ssLabels = {
+        '1': ['Screenshot \u2014 SQL Injection UNION SELECT Result','Screenshot \u2014 Command Injection Output','Screenshot \u2014 Reflected XSS Cookie Alert'],
+        '2': ['Screenshot \u2014 Nikto Scan Output','Screenshot \u2014 OWASP ZAP Alerts Tab']
+    };
+
+    for (var t = 1; t <= 2; t++) {
+        var tStr = String(t);
+        h += '<div class="ts"><div class="tt">' + taskNames[tStr] + '</div>';
+        if (answers[tStr]) {
+            answers[tStr].forEach(function(a) {
+                h += '<div class="ar"><div class="al">' + a.label + '</div>';
+                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+            });
+        }
+        if (ssIds[tStr] && ssIds[tStr].length > 0) {
+            ssIds[tStr].forEach(function(key, idx) {
+                if (screenshotData[key]) {
+                    h += '<div class="ss"><div class="ss-lbl">' + ssLabels[tStr][idx] + '</div>';
+                    h += '<img src="' + screenshotData[key] + '"></div>';
+                }
+            });
+        }
+        h += '</div>';
+        if (t < 2) h += '<hr>';
+    }
+
+    h += '<div class="fn">CYB236 \u2014 Lab 08 \u2014 Web Application Security</div>';
+    h += '</body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
 </body>
 </html>
