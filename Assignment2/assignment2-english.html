@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2 — CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --accent-d:  #d35400;
+            --green:     #16a34a;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #0f2340 0%, #1a3a5c 100%);
+            color: white;
+            padding: 44px 40px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80" opacity="0.04">🔍</text></svg>') center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 5px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .header .subtitle {
+            font-size: 1.05em;
+            opacity: 0.85;
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .header .chapter-ref {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* ── Info Bar ── */
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+            color: white;
+        }
+        .info-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+        }
+        .info-item strong {
+            display: block;
+            font-size: 0.78em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+        .info-item span { font-size: 1.02em; font-weight: 700; }
+
+        /* ── Content ── */
+        .content { padding: 40px; }
+
+        /* ── Instructions box ── */
+        .instructions {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 12px 12px 0;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+        }
+        .instructions h3 { color: #1d4ed8; margin-bottom: 10px; font-size: 1em; }
+        .instructions ul { padding-right: 0; list-style: none; }
+        .instructions li {
+            padding: 4px 0 4px 22px;
+            position: relative;
+            font-size: 0.97em;
+        }
+        .instructions li::before {
+            content: '›';
+            position: absolute; left: 0;
+            color: #3b82f6; font-weight: 700;
+        }
+
+        /* ── Part header ── */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            margin: 36px 0 22px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+        .part-title { font-size: 1.1em; font-weight: 700; }
+        .part-pts {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ── Question ── */
+        .question {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+        }
+        .question-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .q-num {
+            background: var(--primary);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 3px 11px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-pts {
+            color: var(--accent);
+            font-size: 0.82em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .q-text {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .q-hint {
+            font-size: 0.85em;
+            color: var(--muted);
+            margin: 6px 0 10px;
+            font-style: italic;
+        }
+
+        input[type="text"].task-answer, input[type="text"].fill-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.2s;
+        }
+        input[type="text"].task-answer:focus,
+        input[type="text"].fill-answer:focus,
+        textarea.task-answer:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        textarea.task-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            resize: vertical;
+            min-height: 90px;
+            transition: border-color 0.2s;
+        }
+
+        /* ── Screenshot upload ── */
+        .screenshot-box {
+            border: 2px dashed #94a3b8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            background: #f8fafc;
+            margin-top: 10px;
+        }
+        .screenshot-box label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .screenshot-box input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .screenshot-box img {
+            display: none;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        .screenshot-hint {
+            font-size: 0.8em;
+            color: var(--muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* ── Alert boxes ── */
+        .alert {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert.info  { background: #eff6ff; border: 1px solid #bfdbfe; }
+        .alert.warn  { background: #fffbeb; border: 1px solid #fde68a; }
+        .alert h4 { margin-bottom: 4px; }
+
+        /* ── Report section ── */
+        .report-section {
+            background: #fafbfc;
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 36px;
+        }
+        .report-section h2 {
+            color: var(--primary);
+            font-size: 1.25em;
+            margin-bottom: 6px;
+        }
+        .report-section p { color: var(--muted); font-size: 0.95em; margin-bottom: 20px; }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .field-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .field-group label span { color: var(--red); }
+        .field-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        .field-group input:focus { outline: none; border-color: var(--accent); }
+
+        .generate-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-d));
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.05em;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(26,58,92,0.4);
+            transition: opacity 0.2s;
+        }
+        .generate-btn:hover { opacity: 0.92; }
+
+        /* ── Checklist ── */
+        .checklist {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+        .checklist h4 { color: var(--primary); margin-bottom: 12px; font-size: 1em; }
+        .checklist ul { list-style: none; }
+        .checklist li {
+            padding: 6px 0 6px 28px;
+            position: relative;
+            font-size: 0.95em;
+            border-bottom: 1px solid var(--border);
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .checklist li::before { content: '☐'; position: absolute; left: 0; color: var(--accent); font-size: 1.1em; }
+
+        /* ── Footer ── */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 22px 40px;
+            font-size: 0.88em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        /* ── Language Switch ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; }
+            .generate-btn { display: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Language Switch -->
+<div class="lang-switch">
+    <a href="assignment2-arabic.html" class="lang-btn">
+        &#127760; عربي
+    </a>
+</div>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-label">Assignment 2</div>
+        <h1>Burp Suite &amp; Web Traffic Analysis</h1>
+        <p class="subtitle">Proxy Interception &nbsp;&middot;&nbsp; HTTP Analysis &amp; Repeater &nbsp;&middot;&nbsp; Intruder &amp; Password Attacks</p>
+        <div class="chapter-ref">CYB 236 &mdash; Web Application Security &mdash; Spring 2026</div>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+        <div class="info-item"><strong>Coverage</strong><span>Labs 5 &middot; 6 &middot; 7</span></div>
+        <div class="info-item"><strong>Total Marks</strong><span>100 pts</span></div>
+        <div class="info-item"><strong>Submission</strong><span>PDF Report</span></div>
+        <div class="info-item"><strong>Screenshots</strong><span>4 Required</span></div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>&#128196; Instructions</h3>
+            <ul>
+                <li>Answer <strong>all questions</strong> in the fields provided on this page.</li>
+                <li>Upload each required screenshot using the file upload buttons. Screenshots will be embedded in your report.</li>
+                <li>When done, scroll to the bottom, enter your student information, and click <strong>Generate PDF Report</strong>.</li>
+                <li>A new window will open &mdash; use <strong>Ctrl+P &rarr; Save as PDF</strong> to save your submission.</li>
+                <li>Submit the generated PDF to the LMS by the deadline.</li>
+            </ul>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             PART A — Proxy & Traffic Interception
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part A</div>
+            <div class="part-title">Proxy &amp; Traffic Interception &mdash; Burp Suite Setup</div>
+            <div class="part-pts">20 pts</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            Based on <strong>Lab 5</strong>. Open Burp Suite and Firefox on your Kali Linux VM to answer the following.
+        </p>
+
+        <!-- Q1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q1</span>
+                <span class="q-text">What is the default proxy listener address and port used by Burp Suite Community Edition? Where do you verify this setting inside Burp?</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <p class="q-hint">Check Proxy &rarr; Proxy settings in Burp Suite.</p>
+            <input type="text" class="task-answer" data-task="A" placeholder="e.g.  127.0.0.1:8080 — found in Proxy → Proxy settings">
+        </div>
+
+        <!-- Q2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q2</span>
+                <span class="q-text">What Firefox extension did you install to route browser traffic through Burp Suite? Why is it preferred over Firefox's built-in proxy settings?</span>
+                <span class="q-pts">3 pts</span>
+            </div>
+            <p class="q-hint">Give at least one specific advantage of the extension.</p>
+            <input type="text" class="task-answer" data-task="A" placeholder="Extension name and why it is used instead of built-in settings...">
+        </div>
+
+        <!-- Q3 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q3</span>
+                <span class="q-text">Explain in your own words how Burp Suite's intercepting proxy works. Describe the complete path of an HTTP request from Firefox, through FoxyProxy, through Burp Suite, to the target web server &mdash; and back.</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <p class="q-hint">Mention what happens at each step and what Burp can do with the traffic.</p>
+            <textarea class="task-answer" data-task="A" placeholder="Step 1: Firefox sends the request...&#10;Step 2: FoxyProxy redirects it to...&#10;Step 3: Burp Suite receives it and...&#10;..."></textarea>
+        </div>
+
+        <!-- Screenshot A -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-1</span>
+                <span class="q-text">Screenshot &mdash; Burp Suite proxy listener showing <code>127.0.0.1:8080</code> as Running, with FoxyProxy active in Firefox</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">Both the Burp proxy settings and the FoxyProxy icon (active state) must be visible.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-1</label>
+                <input type="file" id="ss-a" accept="image/*" onchange="previewImage(this,'prev-a')">
+                <img id="prev-a" alt="Screenshot A preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG &mdash; Max recommended size: 5 MB</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             PART B — HTTP Analysis & Repeater
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part B</div>
+            <div class="part-title">HTTP Analysis &amp; Request Manipulation</div>
+            <div class="part-pts">35 pts</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            Based on <strong>Lab 6</strong>. Start DVWA with Docker, route Firefox through Burp Suite, and use HTTP History, Repeater, and Site Map to answer the following.
+        </p>
+
+        <!-- Q4 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q4</span>
+                <span class="q-text">What HTTP method did DVWA's login form use? Where do the credentials (username and password) appear in the raw request captured by Burp?</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">Check the login POST request in Burp's HTTP History.</p>
+            <input type="text" class="task-answer" data-task="B" placeholder="Method: ...   Credentials appear in: ...">
+        </div>
+
+        <!-- Q5 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q5</span>
+                <span class="q-text">What is the name of the session cookie set by DVWA after login? Explain what an attacker could do if they steal this cookie value.</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <input type="text" class="task-answer" data-task="B" placeholder="Cookie name: ...   If stolen, an attacker can: ...">
+        </div>
+
+        <!-- Q6 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q6</span>
+                <span class="q-text">List at least two security headers that are <strong>missing</strong> from DVWA's HTTP responses. For each header, name the specific attack it protects against.</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <p class="q-hint">Check any DVWA response in Burp's Response tab. Compare with headers a hardened application would include.</p>
+            <textarea class="task-answer" data-task="B" placeholder="1. Header name: ...  Missing → enables: ...&#10;2. Header name: ...  Missing → enables: ..."></textarea>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q7</span>
+                <span class="q-text">In Burp's Repeater, you changed the SQL Injection parameter from <code>id=1</code> to <code>id=1'</code> (adding a single quote). What did the server respond with? Explain why exposing database error messages in web responses is a security problem, and what information an attacker gains from them.</span>
+                <span class="q-pts">12 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="B" placeholder="The server responded with: ...&#10;&#10;This is dangerous because: ...&#10;&#10;An attacker gains: ..."></textarea>
+        </div>
+
+        <!-- Screenshot B -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-2</span>
+                <span class="q-text">Screenshot &mdash; Burp Suite Repeater showing the modified request (<code>id=1'</code>) and the SQL error in the response panel</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">Both the request (left panel) and response (right panel) must be visible in Repeater.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-2</label>
+                <input type="file" id="ss-b" accept="image/*" onchange="previewImage(this,'prev-b')">
+                <img id="prev-b" alt="Screenshot B preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             PART C — Intruder & Password Attacks
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part C</div>
+            <div class="part-title">Intruder &amp; Password Attacks</div>
+            <div class="part-pts">45 pts</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            Based on <strong>Lab 7</strong>. Use Burp Suite Intruder against DVWA's Brute Force module with security set to <strong>Low</strong>. Answer the questions for the dictionary attack and countermeasures.
+        </p>
+
+        <!-- Q8 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q8</span>
+                <span class="q-text">Write the exact Intruder attack mode you selected for the password attack. Explain why it was the correct choice when testing passwords with a known username.</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <input type="text" class="task-answer" data-task="C" placeholder="Mode: ...   Reason: ...">
+        </div>
+
+        <!-- Q9 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q9</span>
+                <span class="q-text">All 15 Intruder responses returned HTTP status code 200 OK. Explain how you identified which response contained the correct password. What was the password?</span>
+                <span class="q-pts">6 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="I identified the correct password by looking at...&#10;The correct password was: ..."></textarea>
+        </div>
+
+        <!-- Q10 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q10</span>
+                <span class="q-text">What happened when you switched DVWA security to Medium and re-ran the Intruder attack? What additional defense appeared at High security? Explain how each affected the attack.</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="Medium security: ...&#10;&#10;High security: ...&#10;&#10;Impact on the attack: ..."></textarea>
+        </div>
+
+        <!-- Q11 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q11</span>
+                <span class="q-text">Complete this comparison table:</span>
+                <span class="q-pts">10 pts</span>
+            </div>
+            <p class="q-hint">Fill in the answer for each cell.</p>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:0.93em;">
+                <thead>
+                    <tr style="background:var(--primary); color:white;">
+                        <th style="padding:10px 14px; text-align:left; border-radius:8px 0 0 0;">Property</th>
+                        <th style="padding:10px 14px; text-align:left;">Dictionary Attack</th>
+                        <th style="padding:10px 14px; text-align:left; border-radius:0 8px 0 0;">Brute Force Attack</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">Method used</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">Speed</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                    </tr>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">Coverage (will it find any password?)</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Your answer..."></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 14px; font-weight:600;">Which did you use in Lab 7, and why?</td>
+                        <td colspan="2" style="padding:8px 10px;"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="Which one and why..."></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Q12 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">Q12</span>
+                <span class="q-text">A company's web application has no account lockout, no rate limiting, and no CAPTCHA on its login page. An attacker uses Burp Intruder with rockyou.txt (14 million passwords) to attack employee accounts. What three defenses should the company implement? For each defense, explain how it would reduce the risk of this attack.</span>
+                <span class="q-pts">7 pts</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="Defense 1: ...  How it reduces risk: ...&#10;Defense 2: ...  How it reduces risk: ...&#10;Defense 3: ...  How it reduces risk: ..."></textarea>
+        </div>
+
+        <!-- Screenshot C1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-3</span>
+                <span class="q-text">Screenshot &mdash; Intruder results table showing all 15 responses, with the correct password entry visible (different response length)</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">The Length column must be visible. Sort by Length so the different entry stands out.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-3</label>
+                <input type="file" id="ss-c1" accept="image/*" onchange="previewImage(this,'prev-c1')">
+                <img id="prev-c1" alt="Screenshot C1 preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- Screenshot C2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">SS-4</span>
+                <span class="q-text">Screenshot &mdash; DVWA High security Brute Force request in Burp showing the <code>user_token</code> CSRF parameter in the URL</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <p class="q-hint">The full URL with the <code>user_token</code> parameter must be visible in Burp's Intercept or HTTP History panel.</p>
+            <div class="screenshot-box">
+                <label>&#128247; Upload Screenshot SS-4</label>
+                <input type="file" id="ss-c2" accept="image/*" onchange="previewImage(this,'prev-c2')">
+                <img id="prev-c2" alt="Screenshot C2 preview">
+                <p class="screenshot-hint">Accepted formats: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             GENERATE PDF
+             ═══════════════════════════════════ -->
+        <div class="report-section">
+            <h2>&#128196; Generate Your Assignment Report</h2>
+            <p>Fill in your student information and click <strong>Generate PDF Report</strong>. A printable page will open &mdash; use <strong>Ctrl+P &rarr; Save as PDF</strong> to produce your submission file.</p>
+
+            <div class="student-grid">
+                <div class="field-group">
+                    <label>Student Name <span>*</span></label>
+                    <input type="text" id="student-name" placeholder="Full name (required)">
+                </div>
+                <div class="field-group">
+                    <label>Student ID <span>*</span></label>
+                    <input type="text" id="student-id" placeholder="Student ID (required)">
+                </div>
+            </div>
+            <div class="field-group" style="margin-bottom:6px;">
+                <label>University Email <span>*</span></label>
+                <input type="email" id="student-email" placeholder="Student email (required)">
+            </div>
+
+            <button class="generate-btn" onclick="generateReport()">
+                &#128196; &nbsp; Generate PDF Report
+            </button>
+        </div>
+
+        <!-- Checklist -->
+        <div class="checklist">
+            <h4>&#9989; Submission Checklist</h4>
+            <ul>
+                <li>PDF report generated from this page (includes name, ID, and all answers)</li>
+                <li>SS-1 &mdash; Burp Suite proxy listener Running + FoxyProxy active</li>
+                <li>SS-2 &mdash; Burp Repeater: modified request (<code>id=1'</code>) + SQL error response</li>
+                <li>SS-3 &mdash; Intruder results table with correct password (different length)</li>
+                <li>SS-4 &mdash; DVWA High security request showing <code>user_token</code> parameter</li>
+            </ul>
+        </div>
+
+        <div class="alert warn" style="margin-top:24px;">
+            <span class="alert-icon">&#9888;&#65039;</span>
+            <div>
+                <h4>Academic Integrity</h4>
+                <p style="margin:0; font-size:0.93em;">All work must be your own. Screenshots must show your own VM/browser. Identical screenshots across submissions will be flagged. Refer to the course academic integrity policy for consequences.</p>
+            </div>
+        </div>
+
+    </div><!-- end .content -->
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; Web Application Security &mdash; King Abdulaziz University</p>
+        <p>Assignment 2: Burp Suite &amp; Web Traffic Analysis &nbsp;&middot;&nbsp; Labs 5&ndash;7 &nbsp;&middot;&nbsp; Spring 2026</p>
+    </div>
+
+</div><!-- end .container -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('Student Name is required.'); return; }
+    if (!sid)   { alert('Student ID is required.'); return; }
+    if (!email) { alert('Email is required.'); return; }
+
+    // Collect answers per part
+    var parts = { A: [], B: [], C: [] };
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var t = f.getAttribute('data-task');
+        if (!parts[t]) parts[t] = [];
+        var lbl = '';
+        var el = f;
+        // walk up to find question label
+        while (el && !el.classList.contains('question')) el = el.parentElement;
+        if (el) {
+            var qt = el.querySelector('.q-text');
+            if (qt) lbl = qt.textContent.trim();
+        }
+        parts[t].push({ label: lbl || '—', value: f.value.trim() || '(not answered)' });
+    });
+
+    var partNames = {
+        A: 'Part A — Proxy & Traffic Interception (Lab 5)',
+        B: 'Part B — HTTP Analysis & Request Manipulation (Lab 6)',
+        C: 'Part C — Intruder & Password Attacks (Lab 7)'
+    };
+    var ssMap = {
+        'prev-a':  'SS-1 — Burp Proxy Listener + FoxyProxy Active',
+        'prev-b':  'SS-2 — Burp Repeater: SQL Injection Error',
+        'prev-c1': 'SS-3 — Intruder Results (Correct Password)',
+        'prev-c2': 'SS-4 — DVWA High Security (CSRF Token)'
+    };
+    var ssPerPart = { A: ['prev-a'], B: ['prev-b'], C: ['prev-c1','prev-c2'] };
+
+    var w = window.open('', '_blank');
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+    h += '<title>Assign2_' + name.replace(/\s+/g,'_') + '_' + sid + '</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6;font-size:14px}';
+    h += 'h1{color:#1a3a5c;font-size:1.45em;text-align:center;margin-bottom:4px}';
+    h += 'h2{color:#1a3a5c;font-size:1.05em;margin:24px 0 10px;padding:8px 14px;background:#eff6ff;border-left:4px solid #1a3a5c;border-radius:0 8px 8px 0}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:20px;font-size:.88em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#e8f0fe;padding:12px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #b8d0f7;font-size:.9em}';
+    h += '.ar{margin-bottom:10px;page-break-inside:avoid}';
+    h += '.al{font-weight:600;color:#4a5568;font-size:.85em;margin-bottom:3px}';
+    h += '.av{background:#f8fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word;font-size:.93em}';
+    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}';
+    h += '.ss{margin-top:14px;page-break-inside:avoid}';
+    h += '.ss-lbl{font-weight:600;color:#4a5568;font-size:.85em;margin-bottom:6px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.75em;margin-top:36px;border-top:1px solid #e2e8f0;padding-top:14px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 Assignment 2: Burp Suite & Web Traffic Analysis</h1>';
+    h += '<p class="sub">Labs 5 \u00b7 6 \u00b7 7 &nbsp;\u2014&nbsp; Spring 2026 &nbsp;\u2014&nbsp; King Abdulaziz University</p>';
+    h += '<div class="si">';
+    h += '<div><strong>Name:</strong> ' + name + '</div>';
+    h += '<div><strong>ID:</strong> ' + sid + '</div>';
+    h += '<div><strong>Email:</strong> ' + email + '</div>';
+    h += '</div>';
+
+    ['A','B','C'].forEach(function(p) {
+        h += '<h2>' + partNames[p] + '</h2>';
+        if (parts[p]) {
+            parts[p].forEach(function(a) {
+                h += '<div class="ar"><div class="al">' + a.label.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+                h += '<div class="av">' + a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+            });
+        }
+        if (ssPerPart[p]) {
+            ssPerPart[p].forEach(function(ssId) {
+                if (screenshotData[ssId]) {
+                    h += '<div class="ss"><div class="ss-lbl">' + ssMap[ssId] + '</div>';
+                    h += '<img src="' + screenshotData[ssId] + '"></div>';
+                }
+            });
+        }
+        h += '<hr>';
+    });
+
+    h += '<div class="fn">CYB 236 \u2014 Assignment 2 &nbsp;\u00b7&nbsp; ' + name + ' &nbsp;\u00b7&nbsp; ' + sid + '</div>';
+    h += '</body></html>';
+
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
+</body>
+</html>

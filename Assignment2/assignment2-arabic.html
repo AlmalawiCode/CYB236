@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الواجب 2 — CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --accent-d:  #d35400;
+            --green:     #16a34a;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--text);
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+            direction: rtl;
+        }
+
+        /* مصطلح إنجليزي داخل النص العربي */
+        .term-en {
+            color: var(--accent);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* ── الترويسة ── */
+        .header {
+            background: linear-gradient(135deg, #0f2340 0%, #1a3a5c 100%);
+            color: white;
+            padding: 44px 40px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80" opacity="0.04">🔍</text></svg>') center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 5px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .header .subtitle {
+            font-size: 1.05em;
+            opacity: 0.85;
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .header .chapter-ref {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* ── شريط المعلومات ── */
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+            color: white;
+        }
+        .info-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+        }
+        .info-item strong {
+            display: block;
+            font-size: 0.78em;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+        .info-item span { font-size: 1.02em; font-weight: 700; }
+
+        /* ── المحتوى ── */
+        .content { padding: 40px; }
+
+        /* ── صندوق التعليمات ── */
+        .instructions {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-right: 5px solid #3b82f6;
+            border-left: none;
+            border-radius: 12px 0 0 12px;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+        }
+        .instructions h3 { color: #1d4ed8; margin-bottom: 10px; font-size: 1em; }
+        .instructions ul { padding-left: 0; list-style: none; }
+        .instructions li {
+            padding: 4px 22px 4px 0;
+            position: relative;
+            font-size: 0.97em;
+        }
+        .instructions li::before {
+            content: '›';
+            position: absolute; right: 0; left: auto;
+            color: #3b82f6; font-weight: 700;
+        }
+
+        /* ── رأس الجزء ── */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            margin: 36px 0 22px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .part-title { font-size: 1.1em; font-weight: 700; }
+        .part-pts {
+            margin-right: auto;
+            margin-left: 0;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ── السؤال ── */
+        .question {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+        }
+        .question-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .q-num {
+            background: var(--primary);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 3px 11px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-pts {
+            color: var(--accent);
+            font-size: 0.82em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .q-text {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .q-hint {
+            font-size: 0.85em;
+            color: var(--muted);
+            margin: 6px 0 10px;
+            font-style: italic;
+        }
+
+        code {
+            background: #1a202c;
+            color: #68d391;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-family: 'Consolas','Monaco',monospace;
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        input[type="text"].task-answer, input[type="text"].fill-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.2s;
+        }
+        input[type="text"].task-answer:focus,
+        input[type="text"].fill-answer:focus,
+        textarea.task-answer:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        textarea.task-answer {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.97em;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            resize: vertical;
+            min-height: 90px;
+            transition: border-color 0.2s;
+        }
+
+        /* ── رفع لقطة الشاشة ── */
+        .screenshot-box {
+            border: 2px dashed #94a3b8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            background: #f8fafc;
+            margin-top: 10px;
+        }
+        .screenshot-box label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .screenshot-box input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .screenshot-box img {
+            display: none;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        .screenshot-hint {
+            font-size: 0.8em;
+            color: var(--muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* ── صناديق التنبيه ── */
+        .alert {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert.info  { background: #eff6ff; border: 1px solid #bfdbfe; }
+        .alert.warn  { background: #fffbeb; border: 1px solid #fde68a; }
+        .alert h4 { margin-bottom: 4px; }
+
+        /* ── قسم التقرير ── */
+        .report-section {
+            background: #fafbfc;
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 36px;
+        }
+        .report-section h2 {
+            color: var(--primary);
+            font-size: 1.25em;
+            margin-bottom: 6px;
+        }
+        .report-section p { color: var(--muted); font-size: 0.95em; margin-bottom: 20px; }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .field-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .field-group label span { color: var(--red); }
+        .field-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        .field-group input:focus { outline: none; border-color: var(--accent); }
+
+        .generate-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-d));
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.05em;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(26,58,92,0.4);
+            transition: opacity 0.2s;
+        }
+        .generate-btn:hover { opacity: 0.92; }
+
+        /* ── قائمة التحقق ── */
+        .checklist {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+        .checklist h4 { color: var(--primary); margin-bottom: 12px; font-size: 1em; }
+        .checklist ul { list-style: none; }
+        .checklist li {
+            padding: 6px 28px 6px 0;
+            position: relative;
+            font-size: 0.95em;
+            border-bottom: 1px solid var(--border);
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .checklist li::before { content: '☐'; position: absolute; right: 0; left: auto; color: var(--accent); font-size: 1.1em; }
+
+        /* ── التذييل ── */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 22px 40px;
+            font-size: 0.88em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        /* ── زر تبديل اللغة ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; }
+            .generate-btn { display: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- زر تبديل اللغة -->
+<div class="lang-switch">
+    <a href="assignment2-english.html" class="lang-btn">
+        &#127760; English
+    </a>
+</div>
+
+<div class="container">
+
+    <!-- الترويسة -->
+    <div class="header">
+        <div class="header-label">الواجب 2</div>
+        <h1>Burp Suite وتحليل حركة مرور الويب</h1>
+        <p class="subtitle">اعتراض البروكسي &nbsp;&middot;&nbsp; تحليل HTTP والمُكرِّر &nbsp;&middot;&nbsp; المتسلل وهجمات كلمات المرور</p>
+        <div class="chapter-ref">CYB 236 &mdash; أمن تطبيقات الويب &mdash; الفصل الدراسي الثاني 2026</div>
+    </div>
+
+    <!-- شريط المعلومات -->
+    <div class="info-bar">
+        <div class="info-item"><strong>التغطية</strong><span>المختبرات 5 &middot; 6 &middot; 7</span></div>
+        <div class="info-item"><strong>مجموع الدرجات</strong><span>100 درجة</span></div>
+        <div class="info-item"><strong>التسليم</strong><span>تقرير PDF</span></div>
+        <div class="info-item"><strong>لقطات الشاشة</strong><span>4 مطلوبة</span></div>
+    </div>
+
+    <!-- المحتوى -->
+    <div class="content">
+
+        <!-- التعليمات -->
+        <div class="instructions">
+            <h3>&#128196; التعليمات</h3>
+            <ul>
+                <li>أجب على <strong>جميع الأسئلة</strong> في الحقول المخصصة لها في هذه الصفحة.</li>
+                <li>ارفع كل لقطة شاشة مطلوبة باستخدام أزرار رفع الملفات. ستُضمَّن لقطات الشاشة في تقريرك.</li>
+                <li>عند الانتهاء، انتقل إلى الأسفل وأدخل بياناتك الطلابية، ثم انقر على <strong>إنشاء تقرير PDF</strong>.</li>
+                <li>ستفتح نافذة جديدة — استخدم <strong>Ctrl+P &larr; حفظ بصيغة PDF</strong> لحفظ ملف التسليم.</li>
+                <li>ارفع ملف PDF المُنشأ إلى نظام إدارة التعلم (LMS) قبل الموعد النهائي.</li>
+            </ul>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             الجزء أ — البروكسي واعتراض حركة المرور
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">الجزء أ</div>
+            <div class="part-title">البروكسي واعتراض حركة المرور &mdash; إعداد <span class="term-en">Burp Suite</span></div>
+            <div class="part-pts">20 درجة</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            بناءً على <strong>المختبر 5</strong>. افتح <span class="term-en">Burp Suite</span> و<span class="term-en">Firefox</span> على جهاز Kali Linux الافتراضي للإجابة على ما يلي.
+        </p>
+
+        <!-- س1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س1</span>
+                <span class="q-text">ما عنوان ومنفذ مستمع البروكسي الافتراضي المستخدم في <span class="term-en">Burp Suite Community Edition</span>؟ أين يمكنك التحقق من هذا الإعداد داخل <span class="term-en">Burp</span>؟</span>
+                <span class="q-pts">4 درجات</span>
+            </div>
+            <p class="q-hint">تحقق من <span class="term-en">Proxy → Proxy settings</span> في <span class="term-en">Burp Suite</span>.</p>
+            <input type="text" class="task-answer" data-task="A" placeholder="مثلاً:  127.0.0.1:8080 — موجود في Proxy → Proxy settings">
+        </div>
+
+        <!-- س2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س2</span>
+                <span class="q-text">ما إضافة <span class="term-en">Firefox</span> التي ثبّتها لتوجيه حركة مرور المتصفح عبر <span class="term-en">Burp Suite</span>؟ لماذا تُفضَّل على إعدادات البروكسي المدمجة في <span class="term-en">Firefox</span>؟</span>
+                <span class="q-pts">3 درجات</span>
+            </div>
+            <p class="q-hint">اذكر ميزة واحدة محددة على الأقل للإضافة.</p>
+            <input type="text" class="task-answer" data-task="A" placeholder="اسم الإضافة ولماذا تُستخدم بدلاً من الإعدادات المدمجة...">
+        </div>
+
+        <!-- س3 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س3</span>
+                <span class="q-text">اشرح بأسلوبك كيف يعمل بروكسي الاعتراض في <span class="term-en">Burp Suite</span>. صِف المسار الكامل لطلب <span class="term-en">HTTP</span> من <span class="term-en">Firefox</span>، عبر <span class="term-en">FoxyProxy</span>، عبر <span class="term-en">Burp Suite</span>، إلى خادم الويب المستهدف — والعودة.</span>
+                <span class="q-pts">8 درجات</span>
+            </div>
+            <p class="q-hint">اذكر ما يحدث في كل خطوة وما يمكن لـ <span class="term-en">Burp</span> فعله بحركة المرور.</p>
+            <textarea class="task-answer" data-task="A" placeholder="الخطوة 1: يُرسل Firefox الطلب...&#10;الخطوة 2: يُعيد FoxyProxy توجيهه إلى...&#10;الخطوة 3: يستقبله Burp Suite و...&#10;..."></textarea>
+        </div>
+
+        <!-- لقطة الشاشة أ -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-1</span>
+                <span class="q-text">لقطة شاشة — مستمع بروكسي <span class="term-en">Burp Suite</span> يُظهر <code>127.0.0.1:8080</code> قيد التشغيل، مع تفعيل <span class="term-en">FoxyProxy</span> في <span class="term-en">Firefox</span></span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن تكون إعدادات بروكسي <span class="term-en">Burp</span> وأيقونة <span class="term-en">FoxyProxy</span> (الحالة النشطة) مرئية.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-1</label>
+                <input type="file" id="ss-a" accept="image/*" onchange="previewImage(this,'prev-a')">
+                <img id="prev-a" alt="معاينة لقطة الشاشة أ">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG &mdash; الحجم الأقصى الموصى به: 5 ميغابايت</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             الجزء ب — تحليل HTTP والتلاعب بالطلبات
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">الجزء ب</div>
+            <div class="part-title">تحليل <span class="term-en">HTTP</span> والتلاعب بالطلبات</div>
+            <div class="part-pts">35 درجة</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            بناءً على <strong>المختبر 6</strong>. شغّل <span class="term-en">DVWA</span> باستخدام <span class="term-en">Docker</span>، ووجّه <span class="term-en">Firefox</span> عبر <span class="term-en">Burp Suite</span>، واستخدم <span class="term-en">HTTP History</span> و<span class="term-en">Repeater</span> و<span class="term-en">Site Map</span> للإجابة على ما يلي.
+        </p>
+
+        <!-- س4 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س4</span>
+                <span class="q-text">ما طريقة <span class="term-en">HTTP</span> التي استخدمها نموذج تسجيل الدخول في <span class="term-en">DVWA</span>؟ أين تظهر بيانات الاعتماد (اسم المستخدم وكلمة المرور) في الطلب الخام الذي التقطه <span class="term-en">Burp</span>؟</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">تحقق من طلب <span class="term-en">POST</span> لتسجيل الدخول في <span class="term-en">HTTP History</span> الخاص بـ <span class="term-en">Burp</span>.</p>
+            <input type="text" class="task-answer" data-task="B" placeholder="الطريقة: ...   بيانات الاعتماد تظهر في: ...">
+        </div>
+
+        <!-- س5 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س5</span>
+                <span class="q-text">ما اسم ملف تعريف ارتباط الجلسة (<span class="term-en">session cookie</span>) الذي يُعيّنه <span class="term-en">DVWA</span> بعد تسجيل الدخول؟ اشرح ماذا يمكن للمهاجم فعله إذا سرق قيمة هذا الملف.</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <input type="text" class="task-answer" data-task="B" placeholder="اسم الملف: ...   إذا سُرق، يمكن للمهاجم: ...">
+        </div>
+
+        <!-- س6 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س6</span>
+                <span class="q-text">أدرج ترويستَي أمان (<span class="term-en">security headers</span>) على الأقل <strong>مفقودتين</strong> من استجابات <span class="term-en">HTTP</span> الخاصة بـ <span class="term-en">DVWA</span>. لكل ترويسة، اذكر الهجوم المحدد الذي تحمي منه.</span>
+                <span class="q-pts">8 درجات</span>
+            </div>
+            <p class="q-hint">تحقق من أي استجابة لـ <span class="term-en">DVWA</span> في تبويب <span class="term-en">Response</span> في <span class="term-en">Burp</span>. قارنها مع الترويسات التي يتضمنها تطبيق مُحصَّن.</p>
+            <textarea class="task-answer" data-task="B" placeholder="1. اسم الترويسة: ...  مفقودة ← تُتيح: ...&#10;2. اسم الترويسة: ...  مفقودة ← تُتيح: ..."></textarea>
+        </div>
+
+        <!-- س7 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س7</span>
+                <span class="q-text">في <span class="term-en">Repeater</span> الخاص بـ <span class="term-en">Burp</span>، غيّرت معامل حقن SQL من <code>id=1</code> إلى <code>id=1'</code> (بإضافة علامة اقتباس مفردة). بماذا استجاب الخادم؟ اشرح لماذا يُعد كشف رسائل خطأ قاعدة البيانات في استجابات الويب مشكلة أمنية، وما المعلومات التي يحصل عليها المهاجم منها.</span>
+                <span class="q-pts">12 درجة</span>
+            </div>
+            <textarea class="task-answer" data-task="B" placeholder="استجاب الخادم بـ: ...&#10;&#10;هذا خطير لأن: ...&#10;&#10;يحصل المهاجم على: ..."></textarea>
+        </div>
+
+        <!-- لقطة الشاشة ب -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-2</span>
+                <span class="q-text">لقطة شاشة — <span class="term-en">Burp Suite Repeater</span> يُظهر الطلب المُعدَّل (<code>id=1'</code>) وخطأ SQL في لوحة الاستجابة</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن يكون كلٌّ من الطلب (اللوحة اليسرى) والاستجابة (اللوحة اليمنى) مرئيَّين في <span class="term-en">Repeater</span>.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-2</label>
+                <input type="file" id="ss-b" accept="image/*" onchange="previewImage(this,'prev-b')">
+                <img id="prev-b" alt="معاينة لقطة الشاشة ب">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             الجزء ج — المتسلل وهجمات كلمات المرور
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">الجزء ج</div>
+            <div class="part-title">المتسلل (<span class="term-en">Intruder</span>) وهجمات كلمات المرور</div>
+            <div class="part-pts">45 درجة</div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.93em; margin-bottom:20px;">
+            بناءً على <strong>المختبر 7</strong>. استخدم <span class="term-en">Burp Suite Intruder</span> ضد وحدة القوة الغاشمة (<span class="term-en">Brute Force</span>) في <span class="term-en">DVWA</span> مع ضبط الأمان على <strong>Low</strong>. أجب على الأسئلة حول هجوم القاموس والتدابير المضادة.
+        </p>
+
+        <!-- س8 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س8</span>
+                <span class="q-text">اكتب وضع هجوم <span class="term-en">Intruder</span> الذي اخترته لهجوم كلمة المرور. اشرح لماذا كان الخيار الصحيح عند اختبار كلمات المرور مع اسم مستخدم معروف.</span>
+                <span class="q-pts">4 درجات</span>
+            </div>
+            <input type="text" class="task-answer" data-task="C" placeholder="الوضع: ...   السبب: ...">
+        </div>
+
+        <!-- س9 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س9</span>
+                <span class="q-text">أعادت جميع استجابات <span class="term-en">Intruder</span> الـ 15 رمز حالة <span class="term-en">HTTP 200 OK</span>. اشرح كيف حدّدت الاستجابة التي تحتوي على كلمة المرور الصحيحة. ما كانت كلمة المرور؟</span>
+                <span class="q-pts">6 درجات</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="حدّدت كلمة المرور الصحيحة من خلال النظر إلى...&#10;كلمة المرور الصحيحة كانت: ..."></textarea>
+        </div>
+
+        <!-- س10 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س10</span>
+                <span class="q-text">ماذا حدث عندما بدّلت أمان <span class="term-en">DVWA</span> إلى <span class="term-en">Medium</span> وأعدت تشغيل هجوم <span class="term-en">Intruder</span>؟ ما الدفاع الإضافي الذي ظهر عند مستوى الأمان <span class="term-en">High</span>؟ اشرح كيف أثّر كلٌّ منهما على الهجوم.</span>
+                <span class="q-pts">8 درجات</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="مستوى الأمان المتوسط: ...&#10;&#10;مستوى الأمان العالي: ...&#10;&#10;التأثير على الهجوم: ..."></textarea>
+        </div>
+
+        <!-- س11 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س11</span>
+                <span class="q-text">أكمل جدول المقارنة هذا:</span>
+                <span class="q-pts">10 درجات</span>
+            </div>
+            <p class="q-hint">أدخل الإجابة لكل خلية.</p>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:0.93em;">
+                <thead>
+                    <tr style="background:var(--primary); color:white;">
+                        <th style="padding:10px 14px; text-align:right; border-radius:0 8px 0 0;">الخاصية</th>
+                        <th style="padding:10px 14px; text-align:right;">هجوم القاموس</th>
+                        <th style="padding:10px 14px; text-align:right; border-radius:8px 0 0 0;">هجوم القوة الغاشمة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">الطريقة المستخدمة</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">السرعة</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                    </tr>
+                    <tr style="background:#f8fafc;">
+                        <td style="padding:10px 14px; font-weight:600; border-bottom:1px solid var(--border);">التغطية (هل سيجد أي كلمة مرور؟)</td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                        <td style="padding:8px 10px; border-bottom:1px solid var(--border);"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="إجابتك..."></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 14px; font-weight:600;">أيهما استخدمت في المختبر 7، ولماذا؟</td>
+                        <td colspan="2" style="padding:8px 10px;"><input type="text" class="task-answer" data-task="C" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;" placeholder="أيهما ولماذا..."></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- س12 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">س12</span>
+                <span class="q-text">تطبيق ويب لشركة ما لا يحتوي على قفل حساب، ولا تحديد معدل، ولا <span class="term-en">CAPTCHA</span> في صفحة تسجيل الدخول. يستخدم مهاجم <span class="term-en">Burp Intruder</span> مع <span class="term-en">rockyou.txt</span> (14 مليون كلمة مرور) لمهاجمة حسابات الموظفين. ما التدابير الدفاعية الثلاثة التي يجب على الشركة تنفيذها؟ لكل تدبير، اشرح كيف يُقلل من خطر هذا الهجوم.</span>
+                <span class="q-pts">7 درجات</span>
+            </div>
+            <textarea class="task-answer" data-task="C" placeholder="التدبير 1: ...  كيف يُقلل الخطر: ...&#10;التدبير 2: ...  كيف يُقلل الخطر: ...&#10;التدبير 3: ...  كيف يُقلل الخطر: ..."></textarea>
+        </div>
+
+        <!-- لقطة الشاشة ج-1 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-3</span>
+                <span class="q-text">لقطة شاشة — جدول نتائج <span class="term-en">Intruder</span> يُظهر جميع الاستجابات الـ 15، مع ظهور إدخال كلمة المرور الصحيحة (حجم استجابة مختلف)</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن يكون عمود <span class="term-en">Length</span> مرئياً. رتّب حسب الحجم ليبرز الإدخال المختلف.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-3</label>
+                <input type="file" id="ss-c1" accept="image/*" onchange="previewImage(this,'prev-c1')">
+                <img id="prev-c1" alt="معاينة لقطة الشاشة ج-1">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- لقطة الشاشة ج-2 -->
+        <div class="question">
+            <div class="question-header">
+                <span class="q-num">ص-4</span>
+                <span class="q-text">لقطة شاشة — طلب القوة الغاشمة في <span class="term-en">DVWA</span> بمستوى أمان عالي في <span class="term-en">Burp</span> يُظهر معامل <code>user_token</code> (<span class="term-en">CSRF</span>) في الرابط</span>
+                <span class="q-pts">5 درجات</span>
+            </div>
+            <p class="q-hint">يجب أن يكون الرابط الكامل مع معامل <code>user_token</code> مرئياً في لوحة <span class="term-en">Intercept</span> أو <span class="term-en">HTTP History</span> في <span class="term-en">Burp</span>.</p>
+            <div class="screenshot-box">
+                <label>&#128247; ارفع لقطة الشاشة ص-4</label>
+                <input type="file" id="ss-c2" accept="image/*" onchange="previewImage(this,'prev-c2')">
+                <img id="prev-c2" alt="معاينة لقطة الشاشة ج-2">
+                <p class="screenshot-hint">الصيغ المقبولة: PNG, JPG, JPEG</p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             إنشاء PDF
+             ═══════════════════════════════════ -->
+        <div class="report-section">
+            <h2>&#128196; إنشاء تقرير الواجب</h2>
+            <p>أدخل بياناتك الطلابية وانقر على <strong>إنشاء تقرير PDF</strong>. ستفتح صفحة قابلة للطباعة — استخدم <strong>Ctrl+P &larr; حفظ بصيغة PDF</strong> لإنتاج ملف التسليم.</p>
+
+            <div class="student-grid">
+                <div class="field-group">
+                    <label>اسم الطالب <span>*</span></label>
+                    <input type="text" id="student-name" placeholder="الاسم الكامل (مطلوب)">
+                </div>
+                <div class="field-group">
+                    <label>الرقم الجامعي <span>*</span></label>
+                    <input type="text" id="student-id" placeholder="الرقم الجامعي (مطلوب)">
+                </div>
+            </div>
+            <div class="field-group" style="margin-bottom:6px;">
+                <label>البريد الإلكتروني الجامعي <span>*</span></label>
+                <input type="email" id="student-email" placeholder="البريد الإلكتروني (مطلوب)" dir="ltr">
+            </div>
+
+            <button disabled style="width:100%; background:#9ca3af; color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:not-allowed; opacity:0.7;">&#128196; إنشاء تقرير PDF &mdash; غير متاح</button>
+            <p style="color:#e53e3e; font-size:0.87em; margin-top:10px; text-align:center; font-weight:600;">&#9888; إنشاء التقرير غير متاح في النسخة العربية &mdash; يجب تقديم التقارير باللغة الإنجليزية.<br><span style="color:#718096; font-weight:400;">Reports must be submitted in English. Please use the English version of this assignment.</span></p>
+        </div>
+
+        <!-- قائمة التحقق -->
+        <div class="checklist">
+            <h4>&#9989; قائمة التسليم</h4>
+            <ul>
+                <li>تقرير PDF مُنشأ من هذه الصفحة (يتضمن الاسم والرقم الجامعي وجميع الإجابات)</li>
+                <li>ص-1 — مستمع بروكسي <span class="term-en">Burp Suite</span> قيد التشغيل + <span class="term-en">FoxyProxy</span> نشط</li>
+                <li>ص-2 — <span class="term-en">Burp Repeater</span>: الطلب المُعدَّل (<code>id=1'</code>) + خطأ SQL في الاستجابة</li>
+                <li>ص-3 — جدول نتائج <span class="term-en">Intruder</span> مع كلمة المرور الصحيحة (حجم مختلف)</li>
+                <li>ص-4 — طلب أمان عالي في <span class="term-en">DVWA</span> يُظهر معامل <code>user_token</code></li>
+            </ul>
+        </div>
+
+        <div class="alert warn" style="margin-top:24px;">
+            <span class="alert-icon">&#9888;&#65039;</span>
+            <div>
+                <h4>النزاهة الأكاديمية</h4>
+                <p style="margin:0; font-size:0.93em;">يجب أن يكون جميع العمل من إنتاجك الخاص. يجب أن تُظهر لقطات الشاشة جهازك الافتراضي ومتصفحك أنت. ستُستشكَل لقطات الشاشة المتطابقة بين التسليمات. راجع سياسة النزاهة الأكاديمية للمقرر للاطلاع على التبعات.</p>
+            </div>
+        </div>
+
+    </div><!-- نهاية المحتوى -->
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; أمن تطبيقات الويب &mdash; جامعة الملك عبدالعزيز</p>
+        <p>الواجب 2: Burp Suite وتحليل حركة مرور الويب &nbsp;&middot;&nbsp; المختبرات 5&ndash;7 &nbsp;&middot;&nbsp; الفصل الدراسي الثاني 2026</p>
+    </div>
+
+</div><!-- نهاية الحاوية -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من الواجب.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this assignment.');
+    return;
+}
+</script>
+</body>
+</html>
