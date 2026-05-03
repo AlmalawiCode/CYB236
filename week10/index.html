@@ -3,76 +3,1435 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Topic 10: Secure Development IV | CYB 236</title>
+    <title>CYB236 Handout - Chapters 25–27</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #ecfdf5;
+            --primary-600: #059669;
+            --primary-700: #047857;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Color ── */
+            --ch: #059669;
+            --ch-light: #ecfdf5;
+            --ch-mid: #6ee7b7;
+            --ch-dark: #064e3b;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #27ae60, #27ae60dd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #059669, #047857);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .topic-badge {
-            background: #27ae60;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #27ae60;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #27ae60;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--ch-light); color: var(--primary-700); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #065f46 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ch-mid);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: var(--ch); border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            background: rgba(5,150,105,0.4);
+        }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--ch-light);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ch);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--ch-light); color: var(--ch-dark); }
+        .sidebar-link.active { background: var(--ch-light); color: var(--ch); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--ch); color: white; }
+
+        .sidebar-sep {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neutral-400);
+            padding: 12px 12px 6px;
+        }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+            background: var(--ch-light);
+            color: var(--ch);
+        }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider {
+            height: 4px;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            width: 80px;
+            background: var(--ch);
+        }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+            background: var(--ch-light);
+        }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--ch);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--ch-light);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #a7f3d0;
+            border-left: 5px solid var(--ch);
+        }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+            background: #d1fae5;
+            color: var(--ch);
+        }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Emerald Box ───── */
+        .emerald-box {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-left: 5px solid var(--ch);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .emerald-box h4 { color: var(--ch); margin-bottom: 6px; font-size: 1em; }
+        .emerald-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            background: var(--ch-light);
+            border: 1px solid #a7f3d0;
+        }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--ch);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            background: var(--ch);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .tag { color: #f472b6; }
+        .code-box .attr { color: #a5b4fc; }
+
+        /* ───── Data Table ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .data-table tr td:last-child  { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── Section Divider ───── */
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--ch-light), var(--ch), var(--ch-light));
+            margin: 48px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            background: linear-gradient(135deg, var(--ch-dark), var(--ch));
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; left: 0; font-weight: 700; }
+
+        /* ───── Footer ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="topic-badge">Topic 10 - Development</span>
-        <h1>Secure Development IV</h1>
-        <p class="subtitle">Defending Against Injection, DoS, Third-Party</p>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week9/index.html" class="nav-link">Week 9</a>
+            <a href="index.html" class="nav-link active">Week 10</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>Week 10</span>
+            <span>›</span>
+            <span>Part III — Secure Development IV</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            Week 10 &nbsp;·&nbsp; Secure Development IV
+        </div>
+        <h1>Defending Against Injection, DoS &amp; Third-Party Risks</h1>
+        <p class="sub">Parameterize · Limit Authority · Scan Dependencies · Isolate Integrations</p>
+        <div class="cover-chips">
+            <div class="cover-chip">Ch.25 Defending Against Injection</div>
+            <div class="cover-chip">Ch.26 Defending Against DoS</div>
+            <div class="cover-chip">Ch.27 Securing Third-Party Dependencies</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ BODY ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Chapters 25–27 — Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#overview"         class="sidebar-link active"><span class="sidebar-link-number">1</span>Overview</a>
+            <a href="#objectives"       class="sidebar-link"><span class="sidebar-link-number">2</span>Learning Objectives</a>
+
+            <div class="sidebar-sep">Ch.25 — Injection Defense</div>
+            <a href="#inj-detect"       class="sidebar-link"><span class="sidebar-link-number">3</span>Detecting SQL Injection</a>
+            <a href="#inj-prepared"     class="sidebar-link"><span class="sidebar-link-number">4</span>Prepared Statements</a>
+            <a href="#inj-db"           class="sidebar-link"><span class="sidebar-link-number">5</span>Database-Specific Defenses</a>
+            <a href="#inj-generic"      class="sidebar-link"><span class="sidebar-link-number">6</span>Generic Injection Targets</a>
+            <a href="#inj-pola"         class="sidebar-link"><span class="sidebar-link-number">7</span>Principle of Least Authority</a>
+            <a href="#inj-whitelist"    class="sidebar-link"><span class="sidebar-link-number">8</span>Whitelisting Commands</a>
+
+            <div class="sidebar-sep">Ch.26 — DoS Defense</div>
+            <a href="#dos-regex"        class="sidebar-link"><span class="sidebar-link-number">9</span>Regex DoS Protection</a>
+            <a href="#dos-logical"      class="sidebar-link"><span class="sidebar-link-number">10</span>Logical DoS Protection</a>
+            <a href="#dos-ddos"         class="sidebar-link"><span class="sidebar-link-number">11</span>DDoS &amp; Botnets</a>
+            <a href="#dos-mitigation"   class="sidebar-link"><span class="sidebar-link-number">12</span>DDoS Mitigation</a>
+
+            <div class="sidebar-sep">Ch.27 — Third-Party Security</div>
+            <a href="#tp-trees"         class="sidebar-link"><span class="sidebar-link-number">13</span>Dependency Trees</a>
+            <a href="#tp-automated"     class="sidebar-link"><span class="sidebar-link-number">14</span>Automated CVE Scanning</a>
+            <a href="#tp-separation"    class="sidebar-link"><span class="sidebar-link-number">15</span>Separation of Concerns</a>
+            <a href="#tp-packages"      class="sidebar-link"><span class="sidebar-link-number">16</span>Secure Package Management</a>
+
+            <div class="sidebar-sep">Wrap-Up</div>
+            <a href="#summary"          class="sidebar-link"><span class="sidebar-link-number">17</span>Combined Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════ CHAPTER HEADER ════════ -->
+<div class="chapter-header">
+    <div class="chapter-num">Chapters 25 – 27</div>
+    <div class="chapter-title">Defending Against Injection, DoS &amp; Third-Party Risks</div>
+    <div class="chapter-divider"></div>
+</div>
+
+<!-- ════════ OVERVIEW ════════ -->
+<div id="overview" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>Overview — Completing the Defensive Picture</h2>
+    </div>
+
+    <p>Week 10 concludes Part III of the course — the defensive half of the book. Having already covered defenses against XSS, CSRF, and XXE in Week 9, we now turn to the remaining three attack classes: <strong>Injection</strong>, <strong>Denial of Service</strong>, and <strong>Third-Party Dependency exploitation</strong>. Each chapter provides concrete techniques, code patterns, and architectural decisions that reduce or eliminate the risk these attack classes pose.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128200;</div>
+            <div class="mc-title">Ch.25 — Injection Defense</div>
+            <div class="mc-desc">Detect SQL injection risks, use prepared statements, apply the Principle of Least Authority, and whitelist commands.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9889;</div>
+            <div class="mc-title">Ch.26 — DoS Defense</div>
+            <div class="mc-desc">Prevent regex DoS, classify logical DoS risk, and mitigate DDoS through bandwidth services and blackholing.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128230;</div>
+            <div class="mc-title">Ch.27 — Third-Party Security</div>
+            <div class="mc-desc">Evaluate dependency trees, scan CVE databases, isolate risky packages, and lock versions with shrinkwrapping.</div>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128203; Layered Defense Across All Attack Classes</h4>
+        <p>No single control is sufficient. The most resilient applications combine secure coding practices, architectural constraints (like the Principle of Least Authority), automated scanning, and monitored logging — so that if one layer fails, others remain in place.</p>
+    </div>
+</div>
+
+<!-- ════════ LEARNING OBJECTIVES ════════ -->
+<div id="objectives" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number">1</div>
+            <div class="objective-text"><strong>Detect</strong> SQL injection risk in an existing codebase by identifying database adapter imports, raw query construction, and unsafe string concatenation patterns.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">2</div>
+            <div class="objective-text"><strong>Implement</strong> prepared statements to pre-compile SQL queries and explain why parameterization prevents the intention of a query from being changed by user-supplied data.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">3</div>
+            <div class="objective-text"><strong>Apply</strong> the Principle of Least Authority across application modules to limit damage in the event of an injection breach, and whitelist user-accessible server-side commands.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">4</div>
+            <div class="objective-text"><strong>Classify</strong> DoS risk as a spectrum (not binary), distinguish Regex DoS from Logical DoS, and explain why DDoS mitigations may also block legitimate traffic.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">5</div>
+            <div class="objective-text"><strong>Secure</strong> third-party integrations by evaluating full dependency trees, running automated CVE scans, isolating packages on separate servers, and version-locking with shrinkwrapping.</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--              CHAPTER 25 — INJECTION DEFENSE              -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ DETECTING SQL INJECTION ════════ -->
+<div id="inj-detect" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128200;</div>
+        <h2>Ch.25 — Detecting SQL Injection in Your Codebase</h2>
+    </div>
+
+    <p>Before defending against SQL injection, you must first <strong>locate where SQL queries are constructed</strong> in your codebase. In most modern web applications, SQL operations occur server-side, past the routing layer — so the client folder can usually be skipped. However, analytics routes and background services must be included because they frequently interact with databases.</p>
+
+    <h3>Finding SQL Calls Across Multiple Adapters</h3>
+    <p>Applications often use more than one SQL adapter. The easiest way to find all SQL calls in a Node.js project is to search for the adapter import statements:</p>
+
+    <div class="code-box">
+<span class="c">// Search for these imports to locate all SQL operations in the codebase</span>
+<span class="k">const</span> sql   = require(<span class="s">'mssql'</span>);   <span class="c">// SQL Server via NodeMSSQL adapter</span>
+<span class="k">const</span> mysql = require(<span class="s">'mysql'</span>);   <span class="c">// MySQL via mysql adapter</span>
+
+<span class="c">// Both adapters typically conclude queries with a .query(x) call</span>
+<span class="c">// Some adapters use a more literal syntax — look for these too:</span>
+<span class="k">const</span> <span class="n">getUserByUsername</span> = <span class="k">function</span>(username) {
+    <span class="k">const</span> q = <span class="k">new</span> sql();
+    q.select(<span class="s">'*'</span>);
+    q.from(<span class="s">'users'</span>);
+    q.where(<span class="s">`username = ${username}`</span>);   <span class="c">// ✗ UNSAFE — direct interpolation</span>
+};
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; DSL Adapters Can Hide SQL Calls</h4>
+        <p>Some server software uses a Domain-Specific Language (DSL) that generates SQL on your behalf. These calls may not look like raw SQL, but they still execute queries under the hood. Always check your ORM and analytics library documentation to understand how they interact with the database.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; Start With a Comprehensive Search</h4>
+        <p>Compile a list of every SQL adapter, ORM, and DSL used in your application — including those used by third-party dependencies. Any location where user-supplied data touches a query is a potential injection point.</p>
+    </div>
+</div>
+
+<!-- ════════ PREPARED STATEMENTS ════════ -->
+<div id="inj-prepared" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128274;</div>
+        <h2>Prepared Statements — The First Line of Defense</h2>
+    </div>
+
+    <p>Prepared statements are the most widely recommended and effective defense against SQL injection. They work by <strong>compiling the query first</strong> with placeholder variables, then supplying the actual values separately. Because the query's intention is fixed before any user data is considered, it is impossible for user input to alter what the query does.</p>
+
+    <h3>How Prepared Statements Work</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>Compile the query with placeholders</strong><br>
+                The database receives and compiles the query structure — e.g., <code>SELECT name FROM products WHERE price &lt;= ?</code>. The <code>?</code> is a bind variable (placeholder). At this point, the query's intention is locked in stone.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>Supply the variable values separately</strong><br>
+                User-supplied data is passed to the already-compiled query. The database treats this data as a plain value — never as SQL syntax. A <code>SELECT</code> cannot become a <code>DELETE</code> no matter what the user submits.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>Execute and deallocate</strong><br>
+                The query executes with the bound values, then the compiled statement is deallocated to free its namespace in memory.
+            </div>
+        </li>
+    </ol>
+
+    <h3>MySQL Prepared Statement Example</h3>
+
+    <div class="code-box">
+<span class="c">-- ✓ SAFE: Query intention is compiled BEFORE user data is applied</span>
+PREPARE q FROM <span class="s">'SELECT name, barCode FROM products WHERE price &lt;= ?'</span>;
+SET @price = <span class="n">12</span>;           <span class="c">-- user-supplied value</span>
+EXECUTE q USING @price;   <span class="c">-- value fills the ? placeholder after compilation</span>
+DEALLOCATE PREPARE q;
+
+<span class="c">-- Even if @price = "5; UPDATE users SET balance=10000"</span>
+<span class="c">-- the extra UPDATE never fires — it was never compiled</span>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; Traditional Query (Unsafe)</h4>
+            <p>User data and query string are sent together as a single string. A crafted input can escape the query and inject new SQL commands.</p>
+            <p style="margin-top:10px;"><code>'SELECT name FROM products WHERE price &lt;= ' + price + ';'</code></p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; Prepared Statement (Safe)</h4>
+            <p>Query is compiled first. User data fills a placeholder after compilation. No amount of crafted input can change the query's structure.</p>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128273; Supported Everywhere</h4>
+        <p>Prepared statements are supported by virtually every major SQL database: MySQL, Oracle, PostgreSQL, Microsoft SQL Server, and more. The only trade-off is a minor performance cost — one extra round-trip to the database for compilation — which is negligible in most applications.</p>
+    </div>
+</div>
+
+<!-- ════════ DATABASE-SPECIFIC DEFENSES ════════ -->
+<div id="inj-db" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128451;</div>
+        <h2>Database-Specific Defenses</h2>
+    </div>
+
+    <p>In addition to prepared statements, major SQL databases provide their own <strong>built-in encoding and escaping functions</strong> that sanitize risky character sets. These should be used whenever a query cannot be fully parameterized — but they should be treated as a <em>mitigation</em>, not a complete defense.</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Database</th>
+                <th>Function / Method</th>
+                <th>What It Escapes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Oracle (Java)</strong></td>
+                <td><code>ESAPI.encoder().encodeForSQL(new OracleCodec(), str)</code></td>
+                <td>Encodes characters that would be dangerous in Oracle SQL contexts</td>
+            </tr>
+            <tr>
+                <td><strong>MySQL</strong></td>
+                <td><code>SELECT QUOTE('test''case')</code></td>
+                <td>Escapes backslashes, single quotes, and NULL — returns a properly single-quoted string</td>
+            </tr>
+            <tr>
+                <td><strong>MySQL</strong></td>
+                <td><code>mysql_real_escape_string()</code></td>
+                <td>Escapes backslashes, single/double quotes, <code>\n</code>, and <code>\r</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Not a Comprehensive Defense</h4>
+        <p>Database-specific sanitizers reduce injection risk but should never be the <em>only</em> defense. They do not protect against all injection variants, and they depend on the developer correctly identifying and escaping every risky input. Always prefer prepared statements as the primary control.</p>
+    </div>
+</div>
+
+<!-- ════════ GENERIC INJECTION TARGETS ════════ -->
+<div id="inj-generic" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128269;</div>
+        <h2>Generic Injection Targets</h2>
+    </div>
+
+    <p>Injection is not limited to SQL. Any component that accepts text input and passes it to an <strong>interpreter, compiler, or command-line utility</strong> is a potential injection target. When auditing your codebase, pay close attention to the following high-risk targets:</p>
+
+    <ul class="clean-list">
+        <li><strong>SQL databases</strong> — the most common target; use prepared statements and database-specific encoders</li>
+        <li><strong>Task schedulers</strong> — scheduled jobs that accept dynamic parameters can be manipulated to run unintended commands</li>
+        <li><strong>Compression / optimization libraries</strong> — CLI tools like FFMPEG that accept file paths or options from user input</li>
+        <li><strong>Remote backup scripts</strong> — scripts that call the host OS with user-controlled arguments</li>
+        <li><strong>Loggers</strong> — log injection can corrupt log files or exploit downstream log parsers</li>
+        <li><strong>Any call to the host OS</strong> — shell commands constructed with user data are command injection vectors</li>
+        <li><strong>Any interpreter or compiler</strong> — eval-style functions that execute user-supplied strings</li>
+        <li><strong>Third-party dependencies</strong> — subdependencies may themselves interact with CLIs or databases in risky ways</li>
+    </ul>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — Injection Beyond Databases</div>
+        <p>A video-hosting application might use FFMPEG for video compression, called from a Node.js API endpoint. If the filename or compression options passed to FFMPEG come directly from user input without sanitization, an attacker can inject shell commands that execute with the permissions of the web server process.</p>
+    </div>
+</div>
+
+<!-- ════════ PRINCIPLE OF LEAST AUTHORITY ════════ -->
+<div id="inj-pola" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128275;</div>
+        <h2>Principle of Least Authority (PoLA)</h2>
+    </div>
+
+    <p>The <strong>Principle of Least Authority</strong> (also called Principle of Least Privilege) states that every module in a system should only have access to the <em>data and functionality required for that module to operate correctly</em> — nothing more. Applying this principle does not prevent injection, but it dramatically limits the damage an attacker can cause if an injection vulnerability is found and exploited.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — CLI Backup Example</div>
+        <p>Imagine a CLI tool that automatically backs up user profile photos. If this CLI runs with <strong>admin privileges</strong>, a successful injection attack against it could expose the entire application server. If instead the CLI runs with only the minimal file-read permissions it needs for its backup task, the blast radius of a breach is dramatically smaller.</p>
+    </div>
+
+    <h3>Applying PoLA in Practice</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; Without PoLA</h4>
+            <p>A single database user with full admin access is used by all modules. An injection in any module gives the attacker full database control — read, write, delete, and schema modification.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; With PoLA</h4>
+            <p>Each module has its own database role scoped to exactly the operations it needs. An injection in the search module can only perform <code>SELECT</code> — not <code>UPDATE</code> or <code>DROP</code>.</p>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128273; PoLA Becomes More Important as Apps Scale</h4>
+        <p>The more complex an application becomes, the more inter-module interactions it has, and the more important PoLA is. Managing additional accounts and keys may seem like overhead for developers, but it is essential for containing breaches in production systems.</p>
+    </div>
+</div>
+
+<!-- ════════ WHITELISTING COMMANDS ════════ -->
+<div id="inj-whitelist" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9989;</div>
+        <h2>Whitelisting Commands</h2>
+    </div>
+
+    <p>Allowing a client to send arbitrary commands to be executed on the server is a high-risk architectural pattern that should be avoided entirely. When server-side command execution is unavoidable, a <strong>whitelist of permitted commands</strong> must be defined and enforced — never a blacklist.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; No Whitelist (Vulnerable)</h4>
+            <p>Any command supported by the CLI library is executable by the client. An attacker can invoke commands never intended for end-user use, or chain commands to create unintended behavior.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; Whitelist Approach (Safe)</h4>
+            <p>Only commands that appear in a pre-defined whitelist array are permitted. Any command not on the list is immediately rejected with a 400 status before execution.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="k">const</span> cli      = require(<span class="s">'../util/cli'</span>);
+<span class="k">const</span> commands = [<span class="s">'print'</span>, <span class="s">'cut'</span>, <span class="s">'copy'</span>, <span class="s">'paste'</span>, <span class="s">'refresh'</span>];
+
+<span class="c">// ✓ SAFE — only whitelisted commands are forwarded to the CLI</span>
+<span class="k">const</span> <span class="n">postCommands</span> = <span class="k">function</span>(req, res) {
+    <span class="k">const</span> userCommands = req.body.commands;
+    userCommands.forEach((c) => {
+        <span class="k">if</span> (!commands.includes(c)) { <span class="k">return</span> res.sendStatus(<span class="n">400</span>); }
+    });
+    cli.run(req.body.commands);
+};
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; Whitelist vs. Blacklist</h4>
+        <p>A blacklist approach is dangerous because applications evolve — a new command added later may provide the user with unintended access, and the blacklist will not protect against it unless manually updated. A whitelist, by contrast, defaults to <em>deny</em>: new commands are blocked until explicitly approved.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--                CHAPTER 26 — DoS DEFENSE                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ REGEX DoS ════════ -->
+<div id="dos-regex" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128269;</div>
+        <h2>Ch.26 — Protecting Against Regex DoS</h2>
+    </div>
+
+    <p>Regex DoS is the easiest form of DoS to prevent, but it requires knowing what to look for. The attack targets <strong>regular expressions with exponential backtracking</strong> — patterns that, when fed a carefully crafted input, cause the regex engine to spend an extremely long time trying every possible match combination.</p>
+
+    <h3>What Makes a Regex "Evil"</h3>
+    <p>Dangerous regex patterns typically involve a <strong>repeated group with a greedy quantifier</strong>:</p>
+
+    <div class="code-box">
+<span class="c">// Pattern that can cause exponential backtracking:</span>
+(<span class="n">a</span>[<span class="n">ab</span>]*)+
+<span class="c">// The + means: find all potential matches before returning (greedy)</span>
+<span class="c">// The * means: match the subexpression as many times as possible</span>
+<span class="c">// Combined: the engine tries an exponential number of paths</span>
+    </div>
+
+    <h3>Three Steps to Prevent Regex DoS</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>Use a static analysis tool or regex performance tester</strong><br>
+                OSS tools can scan your regular expressions for "evil" patterns and flag them before they reach production. Manual performance testing with adversarial inputs is also effective for catching problematic regex.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>Never allow user-supplied regex in your application</strong><br>
+                Allowing users to upload or compose regular expressions is an extreme risk. There is no reliable way to safely evaluate arbitrary user-provided regex without significant effort — avoid this pattern entirely.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>Audit third-party integrations</strong><br>
+                Ensure that no application you integrate with uses user-supplied regex or poorly written regular expressions internally. A regex DoS in a dependency affects your application just as much as one in your own code.
+            </div>
+        </li>
+    </ol>
+</div>
+
+<!-- ════════ LOGICAL DoS ════════ -->
+<div id="dos-logical" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9889;</div>
+        <h2>Protecting Against Logical DoS</h2>
+    </div>
+
+    <p>Logical DoS is harder to detect and prevent than Regex DoS. It targets application logic that accidentally allows an attacker (or even a legitimate user) to consume a disproportionate amount of server or client resources — such as a computationally expensive API endpoint that can be called repeatedly.</p>
+
+    <h3>DoS Risk Is a Spectrum, Not Binary</h3>
+    <p>Unlike XSS — where a vulnerability either exists or it doesn't — DoS risk exists on a scale:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>Low Risk ("Safe")</h4>
+            <p>Exploiting this code would require an attacker with massive resources. Even if targeted, the impact is minimal. Considered safe for practical purposes.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #f59e0b;">
+            <h4>Medium Risk</h4>
+            <p>The logic can be abused under certain conditions — e.g., only noticeable on low-powered devices, or only with a coordinated effort. Should be prioritized for remediation.</p>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128161; Err on the Side of Caution</h4>
+        <p>When classifying DoS risk, it is safer to treat medium-risk code as vulnerable. A function that is slow on mobile devices today may become a DDoS target tomorrow if the application grows in scale or visibility.</p>
+    </div>
+
+    <h3>Identifying High-Risk Areas</h3>
+    <p>To protect against logical DoS, identify the parts of your codebase that interact with critical system resources:</p>
+
+    <ul class="clean-list">
+        <li>CPU-intensive operations triggered by API endpoints (heavy computation, image processing)</li>
+        <li>Database queries without result limits — e.g., a query that can return millions of rows</li>
+        <li>Recursive functions without strict depth limits</li>
+        <li>Async background jobs (backups, file conversion) that can be triggered repeatedly via API</li>
+        <li>Client-side rendering loops that grow with the size of a user-supplied dataset</li>
+    </ul>
+</div>
+
+<!-- ════════ DDoS ════════ -->
+<div id="dos-ddos" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127760;</div>
+        <h2>DDoS Attacks &amp; Botnets</h2>
+    </div>
+
+    <p>Distributed Denial of Service (DDoS) attacks are much harder to defend against than single-attacker DoS because they originate from <strong>many sources simultaneously</strong>, controlled by a centralized attacker. Rather than targeting a code bug, most DDoS attacks overwhelm the target through sheer volume of legitimate-looking traffic.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — How Botnets Work</div>
+        <p>A DDoS attacker distributes malware through legitimate channels (bundled with software, phishing links, etc.). This malware runs silently on infected devices — PCs, mobile phones, IoT devices like routers and smart appliances — and opens a backdoor. The attacker can then remotely command thousands of these "zombie" devices to simultaneously flood a target server. This network of compromised devices is called a <strong>botnet</strong> (robot + network).</p>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; DDoS Cannot Be Fully Prevented</h4>
+        <p>Because DDoS traffic mimics legitimate traffic in many ways, there is no perfect filter. The goal is mitigation — reducing the impact on legitimate users while blocking as much malicious traffic as possible. Any aggressive mitigation that blocks enough malicious traffic will also risk blocking some legitimate users.</p>
+    </div>
+</div>
+
+<!-- ════════ DDoS MITIGATION ════════ -->
+<div id="dos-mitigation" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>DDoS Mitigation Techniques</h2>
+    </div>
+
+    <p>While DDoS cannot be fully prevented, several techniques significantly reduce its impact:</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Technique</th>
+                <th>How It Works</th>
+                <th>Trade-Off</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Bandwidth Management Services</strong></td>
+                <td>Third-party services intercept all traffic before it reaches your server. Each packet is analyzed in real time and blocked if it matches malicious patterns. Highly effective for high-volume attacks.</td>
+                <td>Cost; may have false positives blocking legitimate users</td>
+            </tr>
+            <tr>
+                <td><strong>Blackholing</strong></td>
+                <td>Suspicious or repeated traffic is redirected to a decoy ("blackhole") server that appears functional but performs no real operations. Legitimate traffic continues to the real server.</td>
+                <td>Can accidentally route legitimate traffic to the blackhole if targeting accuracy is insufficient</td>
+            </tr>
+            <tr>
+                <td><strong>Rate Limiting</strong></td>
+                <td>Limit the number of requests a single IP address or user can make per time window. Simple to implement and effective against low-sophistication attacks.</td>
+                <td>Shared IPs (NAT, proxies) may cause innocent users to be blocked</td>
+            </tr>
+            <tr>
+                <td><strong>Comprehensive Logging</strong></td>
+                <td>Log all requests with timestamps and response times. Log async background jobs manually. Enables detection of DoS patterns that would otherwise go unnoticed.</td>
+                <td>Requires storage and monitoring infrastructure</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128273; Know Your Baseline Before Deploying Mitigations</h4>
+        <p>Overly aggressive DDoS filters will block legitimate users. Before implementing mitigation measures, collect detailed metrics on normal user behavior — request rates, geographic patterns, device types. This baseline allows you to tune filters to minimize false positives while maximizing protection.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--           CHAPTER 27 — THIRD-PARTY SECURITY              -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ DEPENDENCY TREES ════════ -->
+<div id="tp-trees" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128230;</div>
+        <h2>Ch.27 — Evaluating Dependency Trees</h2>
+    </div>
+
+    <p>Modern web applications rarely use only their direct third-party dependencies. Each dependency often has its own dependencies — called <strong>fourth-party dependencies</strong> — which may have their own, and so on. The full chain is called a <strong>dependency tree</strong>.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — The Real-World Dependency Problem</div>
+        <p>Consider an application that uses jQuery directly, but also uses an SPA Framework and a UI Component Library — both of which also require jQuery, but at an older version. In a large app with 100 third-party dependencies, this pattern can result in a dependency tree spanning <strong>thousands or tens of thousands</strong> of unique packages and versions.</p>
+    </div>
+
+    <div class="code-box">
+<span class="c"># Use npm ls to view your full dependency tree</span>
+npm ls
+
+<span class="c"># Example output — every indented item is a subdependency:</span>
+@fortawesome/ember-fontawesome@0.1.14
+@fortawesome/fontawesome-svg-core@1.2.19
+    @fortawesome/fontawesome-common-types@0.2.19 deduped
+    broccoli-file-creator@1.2.0
+    broccoli-plugin@1.3.1 deduped
+    mkdirp@0.5.1 deduped
+    broccoli-merge-trees@2.0.1
+        merge-trees@1.0.1
+    </div>
+
+    <h3>Why Version Differences Matter</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>Real-World Risk</h4>
+            <p>Your app uses jQuery 3.4.0 (safe), but your SPA Framework uses jQuery 2.2.1 (vulnerable). Even though your top-level import is safe, the subdependency version is still loaded and exploitable.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>The Goal</h4>
+            <p>Each unique dependency at each unique version must be independently evaluated. A vulnerability in a subdependency version is just as dangerous as one in a direct dependency.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ════════ AUTOMATED CVE SCANNING ════════ -->
+<div id="tp-automated" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128202;</div>
+        <h2>Automated Dependency Evaluation &amp; CVE Scanning</h2>
+    </div>
+
+    <p>Manually reviewing thousands of dependencies is impractical. Automated tooling is essential. The most effective approach is to <strong>model the dependency tree as a data structure</strong> and then compare it against a known CVE (Common Vulnerabilities and Exposures) database.</p>
+
+    <h3>Tools and Commands</h3>
+
+    <div class="code-box">
+<span class="c"># List the full dependency tree to a specified depth</span>
+npm list --depth=<span class="n">5</span>
+
+<span class="c"># Run an automated audit comparing your tree against known CVEs</span>
+npm audit
+
+<span class="c"># Snyk — a popular third-party vulnerability scanner</span>
+snyk test
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Resource</th>
+                <th>What It Provides</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>NIST National Vulnerability Database</strong></td>
+                <td>Government-funded, long-lived CVE database. Reliable for comparing dependency versions against known vulnerabilities.</td>
+            </tr>
+            <tr>
+                <td><strong>Snyk</strong></td>
+                <td>Third-party scanner that integrates with npm, Maven, pip, and other package managers. Provides remediation guidance alongside vulnerability reports.</td>
+            </tr>
+            <tr>
+                <td><strong>npm audit</strong></td>
+                <td>Built-in npm command that checks your installed packages against the npm advisory database and reports known vulnerabilities.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128273; Automate on Every Dependency Addition</h4>
+        <p>CVE scanning should not be a one-time activity. Every time a new dependency is added or updated, the full tree should be re-scanned. Integrate CVE scanning into your CI/CD pipeline so that vulnerability checks happen automatically before any code is deployed.</p>
+    </div>
+</div>
+
+<!-- ════════ SEPARATION OF CONCERNS ════════ -->
+<div id="tp-separation" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128736;</div>
+        <h2>Secure Integration — Separation of Concerns</h2>
+    </div>
+
+    <p>One of the most effective architectural techniques for reducing the risk of a compromised third-party dependency is to <strong>run it on its own isolated server</strong>. Your main application communicates with it via HTTP, sending and receiving JSON payloads.</p>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>Deploy the risky dependency on its own server</strong><br>
+                The dependency runs in an environment with no access to your application's database, file system, or internal network. If the package is compromised, the attacker is isolated to that server.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>Communicate via HTTP + JSON only</strong><br>
+                JSON payloads ensure that script execution on the main application server is not possible through the communication channel alone. The dependency behaves like a stateless function — input in, output out.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>Configure firewall rules for the dependency server</strong><br>
+                Restrict what the dependency server can connect to. Without a properly configured firewall, a compromised dependency could still reach your database or internal services, defeating the isolation.
+            </div>
+        </li>
+    </ol>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Isolation Has Costs</h4>
+        <p>Running dependencies on separate servers introduces latency (extra HTTP round-trips) and operational complexity (more servers to maintain). Additionally, any confidential data sent to the dependency server could still be intercepted or logged if the package is compromised. Isolation reduces risk — it does not eliminate it.</p>
+    </div>
+</div>
+
+<!-- ════════ SECURE PACKAGE MANAGEMENT ════════ -->
+<div id="tp-packages" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128274;</div>
+        <h2>Secure Package Management — Version Locking &amp; Shrinkwrapping</h2>
+    </div>
+
+    <p>When you audit a dependency and determine it is safe at a specific version, you want to <strong>prevent that version from changing without your knowledge</strong>. npm and similar package managers offer tools for this.</p>
+
+    <h3>Semantic Versioning &amp; the Caret Risk</h3>
+    <p>npm uses semantic versioning with three numbers: <code>major.minor.patch</code>. By default, npm adds a caret (<code>^</code>) before each dependency version, which instructs npm to always install the <em>latest patch</em>:</p>
+
+    <div class="code-box">
+<span class="c">// package.json — default behavior with caret</span>
+<span class="s">"dependencies"</span>: {
+    <span class="s">"myLib"</span>: <span class="s">"^1.0.23"</span>   <span class="c">// may auto-upgrade to 1.0.24, 1.0.25, etc.</span>
+}
+
+<span class="c">// Remove the caret to pin to the exact audited version:</span>
+<span class="s">"dependencies"</span>: {
+    <span class="s">"myLib"</span>: <span class="s">"1.0.23"</span>    <span class="c">// always uses exactly 1.0.23</span>
+}
+    </div>
+
+    <h3>Shrinkwrapping — Locking the Entire Tree</h3>
+    <p>Pinning the top-level version only controls your direct dependencies. Subdependencies can still change. <strong>Shrinkwrapping</strong> locks the entire dependency tree:</p>
+
+    <div class="code-box">
+<span class="c"># Generate a shrinkwrap file that locks ALL versions in the tree</span>
+npm shrinkwrap
+
+<span class="c"># This creates npm-shrinkwrap.json</span>
+<span class="c"># From this point, every dependency AND subdependency</span>
+<span class="c"># is pinned to the exact version that was audited</span>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Technique</th>
+                <th>What It Locks</th>
+                <th>Limitation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Remove caret (^)</strong></td>
+                <td>Top-level direct dependencies only</td>
+                <td>Does not lock subdependency versions</td>
+            </tr>
+            <tr>
+                <td><strong>npm shrinkwrap</strong></td>
+                <td>Entire dependency tree (all levels)</td>
+                <td>A maintainer could redeploy using an existing version number — shrinkwrap cannot detect this</td>
+            </tr>
+            <tr>
+                <td><strong>Git SHA references</strong></td>
+                <td>Specific commits in a Git repository</td>
+                <td>More complex to manage; requires access to source repositories</td>
+            </tr>
+            <tr>
+                <td><strong>Private npm mirror</strong></td>
+                <td>Your own copy of each audited package version</td>
+                <td>Highest security, but highest operational overhead</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="emerald-box">
+        <h4>&#128273; Defense in Depth for Dependencies</h4>
+        <p>The most secure approach combines multiple techniques: shrinkwrap the dependency tree, reference Git SHAs for the most critical packages, and consider running a private npm mirror for high-security environments. No single technique fully eliminates the risk of a compromised dependency — they must be layered.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ SUMMARY ════════ -->
+<div id="summary" class="summary-banner">
+    <h3>&#128737; Chapters 25–27 Summary — Injection, DoS &amp; Third-Party Defense</h3>
+    <ul>
+        <li>Detect SQL injection risk by finding all database adapter imports and raw query constructions in the codebase — including those in analytics routes and background services</li>
+        <li>Prepared statements pre-compile queries before user data is applied — the query's intention cannot be changed by any user input, eliminating most SQL injection risk</li>
+        <li>Database-specific encoders (Oracle ESAPI, MySQL QUOTE / mysql_real_escape_string) reduce injection risk but are mitigations, not a comprehensive defense</li>
+        <li>Injection targets extend beyond SQL — task schedulers, CLIs, loggers, OS calls, and any interpreter are all potential injection surfaces</li>
+        <li>The Principle of Least Authority limits breach damage by ensuring each module only has access to the data and functionality it strictly needs</li>
+        <li>When user input must map to server-side commands, enforce a whitelist — never a blacklist — of permitted operations</li>
+        <li>Regex DoS is prevented by scanning for evil regex patterns (repeated groups with greedy quantifiers) and never allowing user-supplied regex</li>
+        <li>DoS risk exists on a spectrum — classify code as high/medium/low risk rather than binary safe/vulnerable; err on the side of caution</li>
+        <li>DDoS cannot be fully prevented — mitigate with bandwidth management services, blackholing, and rate limiting, using your legitimate traffic baseline to tune filters</li>
+        <li>Dependency trees can span thousands of packages — automated CVE scanning (npm audit, Snyk, NIST NVD) is essential and should run on every dependency change</li>
+        <li>Isolate risky third-party packages on their own server communicating via HTTP + JSON to contain the blast radius of a compromised dependency</li>
+        <li>Lock your entire dependency tree with npm shrinkwrap; use Git SHA references or a private npm mirror for the highest-security environments</li>
+    </ul>
+</div>
+
+</main>
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 &mdash; Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week9/index.html">Week 9</a>
+            <a href="../syllabus.html">Syllabus</a>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>
