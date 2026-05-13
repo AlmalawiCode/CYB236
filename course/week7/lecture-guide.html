@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 7 — Lecture Guide</title>
+    <style>
+        @page { size: A4; margin: 14mm 16mm; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #111;
+            background: white;
+            width: 178mm;
+            margin: 0 auto;
+        }
+
+        /* screen nav */
+        .screen-nav {
+            background: #0f766e;
+            color: white;
+            padding: 10px 20px;
+            font-size: 13px;
+            display: flex;
+            gap: 12px;
+        }
+        .screen-nav a { color: white; text-decoration: none; opacity: .8; }
+        @media print { .screen-nav { display: none; } }
+
+        /* header */
+        .ph {
+            border-bottom: 3px solid #0f766e;
+            padding-bottom: 6px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .ph h1 { font-size: 14pt; font-weight: 800; color: #0f766e; }
+        .ph .meta { font-size: 9pt; color: #666; text-align: right; }
+
+        /* chapter */
+        .chapter { margin-bottom: 20px; }
+
+        .ch-title {
+            color: white;
+            font-size: 11.5pt;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .ch-title .time { font-size: 9pt; font-weight: 500; opacity: .85; }
+
+        .c17 { background: #0f766e; }
+        .c18 { background: #1d4ed8; }
+        .c19 { background: #7c3aed; }
+        .c20 { background: #c2410c; }
+
+        /* topic row */
+        .topic {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 5px 10px;
+            border-left: 3px solid #e5e5e5;
+            margin-bottom: 4px;
+        }
+        .topic.t17 { border-color: #0f766e; }
+        .topic.t18 { border-color: #1d4ed8; }
+        .topic.t19 { border-color: #7c3aed; }
+        .topic.t20 { border-color: #c2410c; }
+
+        .topic .num {
+            font-size: 8pt;
+            font-weight: 700;
+            color: #aaa;
+            min-width: 18px;
+        }
+        .topic .label { font-weight: 700; font-size: 11pt; }
+        .topic .note  { font-size: 9pt; color: #555; }
+
+        /* divider */
+        .div {
+            height: 2px;
+            background: linear-gradient(90deg, #0f766e, #1d4ed8, #7c3aed, #c2410c);
+            border-radius: 1px;
+            margin: 18px 0;
+        }
+
+        /* footer */
+        .pf {
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+            margin-top: 16px;
+            font-size: 8pt;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<div class="screen-nav">
+    <a href="../index.html">Course Home</a> ›
+    <a href="index.html">Week 7 Lecture</a> ›
+    Lecture Guide
+</div>
+
+<div class="ph">
+    <h1>Week 7 — Secure Development Methodologies I</h1>
+    <div class="meta">CYB 236 · Ch. 17–20 · 75 min</div>
+</div>
+
+
+<!-- CH 17 -->
+<div class="chapter">
+    <div class="ch-title c17">Chapter 17 — Securing Modern Web Applications <span class="time">~15 min</span></div>
+
+    <div class="topic t17"><span class="num">1</span><span class="label">The Castle Analogy</span><span class="note">— large attack surface, defend by priority, not uniformly</span></div>
+    <div class="topic t17"><span class="num">2</span><span class="label">Penetrate-and-Patch vs. Holistic Approach</span><span class="note">— reactive vs. proactive security culture</span></div>
+    <div class="topic t17"><span class="num">3</span><span class="label">The Three Pillars</span><span class="note">— Architecture → Code Review → Vulnerability Discovery (in order)</span></div>
+    <div class="topic t17"><span class="num">4</span><span class="label">Vulnerability Management &amp; Risk Assessment</span><span class="note">— financial risk, ease of exploitation, data type, SLAs</span></div>
+    <div class="topic t17"><span class="num">5</span><span class="label">Regression Testing</span><span class="note">— ~25% of vulns are regressions; write a test after every fix</span></div>
+</div>
+
+<div class="div"></div>
+
+<!-- CH 18 -->
+<div class="chapter">
+    <div class="ch-title c18">Chapter 18 — Secure Application Architecture <span class="time">~20 min</span></div>
+
+    <div class="topic t18"><span class="num">1</span><span class="label">Analyzing Requirements for Hidden Risk</span><span class="note">— MegaMerch case: credentials, PII, auth model, financial data</span></div>
+    <div class="topic t18"><span class="num">2</span><span class="label">The NIST Finding</span><span class="note">— fixing at architecture phase costs 30–60× less than in production</span></div>
+    <div class="topic t18"><span class="num">3</span><span class="label">SSL vs. TLS &amp; HTTPS</span><span class="note">— SSL is deprecated; TLS is the standard; all traffic must use HTTPS</span></div>
+    <div class="topic t18"><span class="num">4</span><span class="label">Password Hashing</span><span class="note">— plain text → MD5 → BCrypt / PBKDF2; slow algorithms resist brute-force</span></div>
+    <div class="topic t18"><span class="num">5</span><span class="label">Two-Factor Authentication (2FA)</span><span class="note">— attacker needs password AND physical device</span></div>
+</div>
+
+<div class="div"></div>
+
+<!-- CH 19 -->
+<div class="chapter">
+    <div class="ch-title c19">Chapter 19 — Reviewing Code for Security <span class="time">~20 min</span></div>
+
+    <div class="topic t19"><span class="num">1</span><span class="label">Archetypical vs. Logic Vulnerabilities</span><span class="note">— scanners find known patterns; logic bugs need human review</span></div>
+    <div class="topic t19"><span class="num">2</span><span class="label">How to Start — Git Review Flow</span><span class="note">— checkout master → pull → switch branch → diff</span></div>
+    <div class="topic t19"><span class="num">3</span><span class="label">The 5-Step Review Framework</span><span class="note">— client → API → dependencies → exposed APIs → remaining code</span></div>
+    <div class="topic t19"><span class="num">4</span><span class="label">Anti-Pattern 1: Blacklists</span><span class="note">— always incomplete; use whitelists instead</span></div>
+    <div class="topic t19"><span class="num">5</span><span class="label">Anti-Pattern 2: Boilerplate in Production</span><span class="note">— default configs are for dev, not security (MongoDB incident)</span></div>
+    <div class="topic t19"><span class="num">6</span><span class="label">Anti-Pattern 3: Trust-by-Default</span><span class="note">— one account for all modules; use least-privilege instead</span></div>
+    <div class="topic t19"><span class="num">7</span><span class="label">Anti-Pattern 4: Client/Server Coupling</span><span class="note">— separate concerns; communicate via typed JSON over HTTPS</span></div>
+</div>
+
+<div class="div"></div>
+
+<!-- CH 20 -->
+<div class="chapter">
+    <div class="ch-title c20">Chapter 20 — Vulnerability Discovery <span class="time">~20 min</span></div>
+
+    <div class="topic t20"><span class="num">1</span><span class="label">Why Discovery Is Still Needed</span><span class="note">— architecture + review still leave gaps in production</span></div>
+    <div class="topic t20"><span class="num">2</span><span class="label">Static Analysis</span><span class="note">— reads source without running it; fast but misses runtime &amp; logic bugs</span></div>
+    <div class="topic t20"><span class="num">3</span><span class="label">Dynamic Analysis</span><span class="note">— runs the app; confirms real vulnerabilities; slower and costlier</span></div>
+    <div class="topic t20"><span class="num">4</span><span class="label">Regression Testing</span><span class="note">— Steve &amp; Jed CSRF story; run on every push hook</span></div>
+    <div class="topic t20"><span class="num">5</span><span class="label">Responsible Disclosure</span><span class="note">— legal path for users to report; fix window before publishing</span></div>
+    <div class="topic t20"><span class="num">6</span><span class="label">Bug Bounty Programs</span><span class="note">— HackerOne / BugCrowd; cash rewards; pen testers + hunters</span></div>
+    <div class="topic t20"><span class="num">7</span><span class="label">The SSDL Wrap-Up</span><span class="note">— all techniques combined = Secure Software Development Life Cycle</span></div>
+</div>
+
+
+<div class="pf">
+    <span>CYB 236 — Web Application Security &nbsp;|&nbsp; Week 7 Lecture Guide</span>
+    <span>Chapters 17 · 18 · 19 · 20</span>
+</div>
+
+</body>
+</html>

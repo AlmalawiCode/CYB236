@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مذكرة الفصول 17 و18 و19 و20 | CYB 236</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-50: #f0fdfa;
+            --primary-600: #0d9488;
+            --primary-700: #0f766e;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── ألوان الفصول ── */
+            --ch17: #0f766e;
+            --ch17-light: #f0fdfa;
+            --ch17-mid: #5eead4;
+
+            --ch18: #1d4ed8;
+            --ch18-light: #eff6ff;
+            --ch18-mid: #93c5fd;
+
+            --ch19: #7c3aed;
+            --ch19-light: #f5f3ff;
+            --ch19-mid: #c4b5fd;
+
+            --ch20: #c2410c;
+            --ch20-light: #fff7ed;
+            --ch20-mid: #fdba74;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.9;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+            direction: rtl;
+        }
+
+        /* المصطلحات التقنية الإنجليزية */
+        .term {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+            display: inline-block;
+            background: var(--primary-50);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary-700);
+        }
+
+        /* ───── شريط التنقل ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--neutral-300);
+        }
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── الغلاف ───── */
+        .cover {
+            background: linear-gradient(135deg, #0d1117 0%, #0f2027 50%, #1a2a3a 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5eead4;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: #0f766e; border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .cover-chip.ch17 { background: rgba(15,118,110,0.35); }
+        .cover-chip.ch18 { background: rgba(29,78,216,0.35); }
+        .cover-chip.ch19 { background: rgba(124,58,237,0.35); }
+        .cover-chip.ch20 { background: rgba(194,65,12,0.35); }
+
+        /* ───── الحاوية ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── الشريط الجانبي ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--neutral-200); }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .sidebar-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .sidebar-ch-label {
+            padding: 8px 12px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--neutral-400);
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--primary-600); color: white; }
+
+        /* ───── المحتوى ───── */
+        .content { min-width: 0; }
+
+        /* ───── رأس الفصل ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .chapter-num.ch17 { background: var(--ch17-light); color: var(--ch17); }
+        .chapter-num.ch18 { background: var(--ch18-light); color: var(--ch18); }
+        .chapter-num.ch19 { background: var(--ch19-light); color: var(--ch19); }
+        .chapter-num.ch20 { background: var(--ch20-light); color: var(--ch20); }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.01em; }
+
+        .chapter-divider { height: 4px; border-radius: 2px; margin: 10px auto 0; width: 80px; }
+        .chapter-divider.ch17 { background: var(--ch17); }
+        .chapter-divider.ch18 { background: var(--ch18); }
+        .chapter-divider.ch19 { background: var(--ch19); }
+        .chapter-divider.ch20 { background: var(--ch20); }
+
+        /* ───── قسم الموضوع ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .topic-icon.ch17 { background: var(--ch17-light); }
+        .topic-icon.ch18 { background: var(--ch18-light); }
+        .topic-icon.ch19 { background: var(--ch19-light); }
+        .topic-icon.ch20 { background: var(--ch20-light); }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── بطاقات الأهداف ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .objective-number.ch17 { background: var(--ch17); }
+        .objective-number.ch18 { background: var(--ch18); }
+        .objective-number.ch19 { background: var(--ch19); }
+        .objective-number.ch20 { background: var(--ch20); }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.7; }
+
+        /* ───── صندوق القصة ───── */
+        .story {
+            background: var(--neutral-50);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+            border-right: 5px solid;
+        }
+
+        .story.ch17 { border-color: var(--ch17); }
+        .story.ch18 { border-color: var(--ch18); }
+        .story.ch19 { border-color: var(--ch19); }
+        .story.ch20 { border-color: var(--ch20); }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+        }
+
+        .story-label.ch17 { background: var(--ch17-light); color: var(--ch17); }
+        .story-label.ch18 { background: var(--ch18-light); color: var(--ch18); }
+        .story-label.ch19 { background: var(--ch19-light); color: var(--ch19); }
+        .story-label.ch20 { background: var(--ch20-light); color: var(--ch20); }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        .dialogue {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--dark2);
+            border: 1px solid var(--neutral-200);
+            border-right: 3px solid var(--border);
+        }
+
+        /* ───── نقطة رئيسية ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-right: 5px solid var(--green);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── تحذير ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-right: 5px solid var(--red);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق معلومات ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-right: 5px solid #3b82f6;
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق أخضر مزرق ───── */
+        .teal-box {
+            background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+            border-right: 5px solid var(--ch17);
+            border-radius: 0 14px 14px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .teal-box h4 { color: var(--ch17); margin-bottom: 6px; font-size: 1em; }
+        .teal-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── قائمة نظيفة ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 36px 10px 0;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+        }
+
+        .clean-list.ch17 li::before { background: var(--ch17-light); }
+        .clean-list.ch18 li::before { background: var(--ch18-light); }
+        .clean-list.ch19 li::before { background: var(--ch19-light); }
+        .clean-list.ch20 li::before { background: var(--ch20-light); }
+
+        /* ───── شبكة مقارنة ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── شبكة بطاقات ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── قائمة خطوات ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .step-num.ch17 { background: var(--ch17); }
+        .step-num.ch18 { background: var(--ch18); }
+        .step-num.ch19 { background: var(--ch19); }
+        .step-num.ch20 { background: var(--ch20); }
+
+        /* ───── صندوق الكود ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .good { color: #86efac; font-weight: bold; }
+        .code-box .bad  { color: #f87171; font-weight: bold; }
+
+        /* ───── جدول البيانات ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: right;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:last-child { border-radius: 10px 0 0 10px; }
+        .data-table tr td:first-child  { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── شارة الخطر ───── */
+        .risk-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.82em;
+            color: white;
+        }
+        .risk-badge.high   { background: var(--red); }
+        .risk-badge.medium { background: #f59e0b; }
+        .risk-badge.low    { background: var(--green); }
+
+        /* ───── مقارنة آمن / غير آمن ───── */
+        .secure-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .secure-side { border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-md); }
+
+        .secure-side-header {
+            padding: 14px 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .secure-side-header.bad  { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .secure-side-header.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+
+        .secure-side-body { padding: 20px; background: white; }
+        .secure-side-body ul { list-style: none; padding: 0; }
+        .secure-side-body li { padding: 8px 28px 8px 0; position: relative; font-size: 0.95em; }
+        .secure-side-body.bad  li::before { content: '✗'; position: absolute; right: 0; color: var(--red);   font-weight: 700; }
+        .secure-side-body.good li::before { content: '✓'; position: absolute; right: 0; color: var(--green); font-weight: 700; }
+
+        /* ───── بانر الملخص ───── */
+        .summary-banner {
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner.ch17 { background: linear-gradient(135deg, #134e4a, #0f766e); }
+        .summary-banner.ch18 { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); }
+        .summary-banner.ch19 { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+        .summary-banner.ch20 { background: linear-gradient(135deg, #7c2d12, #c2410c); }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 28px 8px 0;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; right: 0; font-weight: 700; }
+
+        /* ───── فاصل الصفحة ───── */
+        .page-break {
+            height: 6px;
+            background: linear-gradient(90deg, var(--ch17), var(--ch18), var(--ch19), var(--ch20));
+            margin: 60px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── التذييل ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid, .secure-compare { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- شريط التنقل -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: أمن تطبيقات الويب</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="lang-switch">English</a>
+            <a href="../index.html" class="nav-link">الصفحة الرئيسية</a>
+            <a href="../week6/index-ar.html" class="nav-link">الأسبوع 6</a>
+            <a href="index-ar.html" class="nav-link active">الأسبوع 7</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════ الغلاف ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>الأسبوع 7</span>
+            <span>›</span>
+            <span>الجزء الثالث — منهجيات التطوير الآمن I</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            الأسبوع 7 &nbsp;·&nbsp; منهجيات التطوير الآمن I
+        </div>
+        <h1>منهجيات التطوير الآمن I</h1>
+        <p class="sub">عقلية الدفاع · البنية الآمنة · مراجعة الكود · اكتشاف الثغرات</p>
+        <div class="cover-chips">
+            <div class="cover-chip ch17">Ch.17 تأمين تطبيقات الويب</div>
+            <div class="cover-chip ch18">Ch.18 البنية الآمنة</div>
+            <div class="cover-chip ch19">Ch.19 مراجعة الكود</div>
+            <div class="cover-chip ch20">Ch.20 اكتشاف الثغرات</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ المحتوى ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ المحتوى الرئيسي ═══════════ -->
+<main class="content">
+
+<!-- ════════════════════════════════════════════════
+     الفصل 17 — تأمين تطبيقات الويب الحديثة
+     ════════════════════════════════════════════════ -->
+<div id="chapter-17" class="chapter-header">
+    <div class="chapter-num ch17">الفصل 17</div>
+    <div class="chapter-title">تأمين تطبيقات الويب الحديثة</div>
+    <div class="chapter-divider ch17"></div>
+</div>
+
+<!-- أهداف التعلم - الفصل 17 -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch17">1</div>
+            <div class="objective-text"><strong>الشرح</strong> — لماذا يُعدّ أسلوب "<span class="term">penetrate-and-patch</span>" (الاختراق ثم الترقيع) غير كافٍ، وكيف تُنتج استراتيجية الدفاع الشاملة القائمة على البنية المعمارية تطبيقات أكثر أمانًا منذ البداية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">2</div>
+            <div class="objective-text"><strong>التعرف</strong> على الركائز الثلاث المتسلسلة للتطوير البرمجي الآمن — البنية الآمنة، ومراجعات الكود الشاملة، واكتشاف الثغرات — وشرح أهمية الترتيب.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">3</div>
+            <div class="objective-text"><strong>وصف</strong> دورة حياة الثغرات الأمنية الكاملة: تقييم المخاطر، والتحديد بالأولويات، والتتبع، والترقيع، واختبار الانحدار — وشرح كيف تمنع كل خطوة الأضرار المستقبلية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch17">4</div>
+            <div class="objective-text"><strong>فهم</strong> كيف تجعل المعرفة بأساليب الاستطلاع والهجوم من الجزأين الأول والثاني المدافعَ أكثر فاعلية في تحديد الأولويات وبناء الدفاعات.</div>
+        </div>
+    </div>
+</div>
+
+<!-- عقلية الدفاع - الفصل 17 -->
+<div id="ch17-defense" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127965;</div>
+        <h2>عقلية الدفاع</h2>
+    </div>
+
+    <p>تطبيقات الويب الحديثة أكثر تعقيدًا وتوزيعًا من سابقاتها. يُعظّم هذا التعقيد المتزايد سطح الهجوم — أي نقاط الدخول التي قد يحاول المخترق استغلالها. الدفاع عن تطبيق الويب لا يبدأ بلوحة المفاتيح، بل في عقل المطوّر نفسه.</p>
+
+    <div class="story ch17">
+        <div class="story-label ch17">&#128214; من الكتاب — تشبيه القلعة</div>
+        <p>الدفاع عن تطبيق ويب يشبه إلى حدٍّ ما الدفاع عن <strong>قلعة قروسطية</strong>. تتألف القلعة من مبانٍ وأسوار — تمثّل كود التطبيق الأساسي. خارجها توجد مبانٍ تتكامل مع القلعة وتدعمها، تمامًا كالتبعيات والتكاملات في التطبيق.</p>
+        <p>في زمن الحرب، من المستحيل تحصين كل مدخل بالقوة ذاتها. يُحدد المدافعون الأذكياء أولوياتهم. وينطبق الأمر نفسه على أمن تطبيقات الويب — يجب تحديد أولويات الدفاعات بناءً على المخاطر، لا تطبيقها بشكل موحّد بأقصى قوة في كل مكان.</p>
+        <div class="dialogue">
+            يضطلع هؤلاء المحترفون بدور المدافع الرئيسي، مستخدمين مهارات هندسة البرمجيات جنبًا إلى جنب مع مهارات الاستطلاع والاختراق، لتقليل احتمالية نجاح الهجوم، والتخفيف من الأضرار المحتملة، وإدارة الأضرار النشطة أو الماضية.
+        </div>
+    </div>
+
+    <h3>أسلوب الاختراق ثم الترقيع مقابل الأسلوب الشامل</h3>
+    <p>الأسلوب التقليدي في الأمن — "<span class="term">penetrate-and-patch</span>" — ينتظر حتى تُكتشف الثغرة (من قِبل مخترق أو عميل أو ماسح أمني)، ثم يصلحها. هذا الأسلوب التفاعلي مكلف وبطيء وخطير.</p>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#10007; الاختراق ثم الترقيع (تفاعلي)</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>مراجعة الأمن تتم فقط بعد إطلاق الكود</li>
+                    <li>الثغرات يكتشفها المهاجمون أولًا</li>
+                    <li>إعادة البنية المعمارية مكلفة بعد اعتماد المستخدمين</li>
+                    <li>كل خطأ يُعالج بمعزل — السبب الجذري يُهمل</li>
+                    <li>لا ثقافة أمنية استباقية في فريق التطوير</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#10003; الأسلوب الشامل (استباقي)</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>الأمن يُصمَّم قبل كتابة سطر كود واحد</li>
+                    <li>البنية المعمارية تُراجع للمخاطر في مرحلة التصميم</li>
+                    <li>الكود يُراجع أمنيًا في كل طلب دمج</li>
+                    <li>الاختبار التلقائي يرصد الانتكاسات قبل الإصدار</li>
+                    <li>ثقافة الأمن متجذّرة في عملية التطوير</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; رؤية أساسية</h4>
+        <p>جميع المهارات — الاستطلاع والهجوم والدفاع — متآزرة. فهم كيفية رسم المخترق خريطة تطبيقك واستغلاله يمنحك رؤية لتحديد أولويات الدفاعات وإخفاء التفاصيل المعمارية عن الأعين الخبيثة.</p>
+    </div>
+</div>
+
+<!-- الركائز الثلاث - الفصل 17 -->
+<div id="ch17-pillars" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#127963;</div>
+        <h2>الركائز الثلاث للتطوير الآمن</h2>
+    </div>
+
+    <p>يتبع الأسلوب الشامل لأمن تطبيقات الويب ثلاث ركائز متسلسلة ومترابطة. كل ركيزة تبني على السابقة — إهمال أي ركيزة أو إضعافها يزيد المخاطر الإجمالية.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#129516;</div>
+            <div class="mc-title">الركيزة 1: البنية المعمارية</div>
+            <div class="mc-desc">تصميم الأمن في النظام قبل كتابة الكود. تقييم تدفق البيانات وحدود الثقة ونماذج التهديد.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128270;</div>
+            <div class="mc-title">الركيزة 2: مراجعة الكود</div>
+            <div class="mc-desc">مراجعة كل <span class="term">commit</span> بحثًا عن الثغرات الشائعة وأخطاء المنطق. مراجعة الفرق المتقاطعة تقلل تضارب المصالح.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128202;</div>
+            <div class="mc-title">الركيزة 3: اكتشاف الثغرات</div>
+            <div class="mc-desc">استخدام الأتمتة واختبار الاختراق وبرامج المكافآت لاصطياد ما أفلت من البنية والمراجعة.</div>
+        </div>
+    </div>
+
+    <div class="story ch17">
+        <div class="story-label ch17">&#128214; من الكتاب — قائمة مراجعة الكود</div>
+        <p>رصد الثغرات الأمنية على مستوى مراجعة الكود لكل <span class="term">commit</span> أيسر مما يبدو. الأسئلة الرئيسية التي يجب طرحها:</p>
+        <ul class="clean-list ch17">
+            <li>كيف تُنقل البيانات من النقطة أ إلى النقطة ب (الصيغة والتشفير)؟</li>
+            <li>كيف تُخزَّن البيانات (نص عادي، أو <span class="term">hash</span>، أو مشفّرة)؟</li>
+            <li>حين تصل البيانات إلى العميل، كيف تُعرض للمستخدم (مخاطر حقن <span class="term">DOM</span>)؟</li>
+            <li>حين تصل البيانات إلى الخادم، ما العمليات التي تُجرى عليها وكيف تُحفظ؟</li>
+        </ul>
+    </div>
+</div>
+
+<!-- إدارة الثغرات - الفصل 17 -->
+<div id="ch17-vuln-mgmt" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch17">&#128203;</div>
+        <h2>إدارة الثغرات واختبار الانحدار</h2>
+    </div>
+
+    <p>ليست جميع الثغرات الأمنية متساوية في خطورتها. يجب اشتقاق أولوية الإصلاح من تقييم منظّم للمخاطر قبل البدء بأي جهد هندسي.</p>
+
+    <h3>عوامل تقييم المخاطر</h3>
+    <ul class="clean-list ch17">
+        <li><strong>المخاطر المالية</strong> — ما الخسارة النقدية المحتملة في حال الاستغلال؟</li>
+        <li><strong>صعوبة الاستغلال</strong> — ما مدى سهولة تفعيل الثغرة من قِبل المهاجم؟</li>
+        <li><strong>نوع البيانات المعرضة للخطر</strong> — هل هي <span class="term">PII</span>، أم بيانات مالية، أم بيانات اعتماد، أم بيانات عامة؟</li>
+        <li><strong>الالتزامات التعاقدية القائمة</strong> — هل تنتهك الثغرة اتفاقيات مستوى الخدمة مع العملاء؟</li>
+        <li><strong>الإجراءات التخفيفية الموجودة</strong> — هل ثمة ضوابط تعويضية تقلل من المخاطر؟</li>
+    </ul>
+
+    <div class="info-box">
+        <h4>&#128202; إحصاءات الانحدار</h4>
+        <p>أفاد مهندس أمني من شركة برمجيات كبرى (أكثر من 10,000 موظف) بأن ما يقارب <strong>25% من ثغراتهم الأمنية كانت انحدارات</strong> — أخطاء سبق إصلاحها ثم عادت. اختبارات الانحدار هي أكثر دفاع فعالية وأقله تكلفة ضد هذا النمط.</p>
+    </div>
+
+    <p>بعد ترقيع أي ثغرة، اكتب دائمًا <strong>اختبار انحدار</strong> — اختبارًا سيفشل إن أُعيدت الثغرة. هذا الاستثمار الصغير مقدمًا يمكن أن يمنع عودة الثغرة خلسةً في إعادة هيكلة مستقبلية أو تراجع.</p>
+</div>
+
+<!-- ملخص الفصل 17 -->
+<div id="ch17-summary" class="summary-banner ch17">
+    <h3>&#128273; ملخص الفصل 17</h3>
+    <ul>
+        <li>تطبيقات الويب الحديثة ذات سطح هجوم واسع يستوجب دفاعات مُحدّدة بأولويات لا شاملة</li>
+        <li>الأسلوب الشامل (البنية ← مراجعة الكود ← الاكتشاف) يتفوق على أسلوب الاختراق ثم الترقيع</li>
+        <li>تقييم المخاطر يحدد ترتيب إصلاح الثغرات وإلحاحيتها</li>
+        <li>اختبار الانحدار يمنع إعادة فتح الثغرات المُصلَحة دون علم</li>
+        <li>المعرفة بالاستطلاع والهجوم تجعل المدافعين أكثر فاعلية بكثير</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     الفصل 18 — بنية التطبيق الآمنة
+     ════════════════════════════════════════════════ -->
+<div id="chapter-18" class="chapter-header">
+    <div class="chapter-num ch18">الفصل 18</div>
+    <div class="chapter-title">بنية التطبيق الآمنة</div>
+    <div class="chapter-divider ch18"></div>
+</div>
+
+<!-- أهداف التعلم - الفصل 18 -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch18">1</div>
+            <div class="objective-text"><strong>تحليل</strong> مجموعة من المتطلبات التجارية واستنتاج تداعياتها الأمنية — المصادقة، والتفويض، ومعالجة <span class="term">PII</span>، ومخاطر البيانات أثناء النقل — قبل كتابة أي كود.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">2</div>
+            <div class="objective-text"><strong>شرح</strong> الفرق بين <span class="term">SSL</span> و<span class="term">TLS</span>، ولماذا يجب تشفير جميع البيانات أثناء النقل، وكيف يفرض <span class="term">HTTPS</span> استخدام <span class="term">TLS/SSL</span> على مستوى المتصفح.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">3</div>
+            <div class="objective-text"><strong>مقارنة</strong> أساليب تخزين كلمات المرور (النص العادي، <span class="term">MD5</span>، <span class="term">BCrypt</span>، <span class="term">PBKDF2</span>) وشرح لماذا تُعدّ خوارزميات التجزئة البطيئة ضرورية لحماية بيانات الاعتماد من هجمات القوة الغاشمة.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch18">4</div>
+            <div class="objective-text"><strong>فهم</strong> نتيجة <span class="term">NIST</span> القائلة بأن إصلاح خلل أمني في مرحلة البنية المعمارية يكلف أقل بـ 30–60 مرة من إصلاحه في بيئة الإنتاج — ولماذا يبرر ذلك الاستثمار المسبق.</div>
+        </div>
+    </div>
+</div>
+
+<!-- متطلبات التحليل - الفصل 18 -->
+<div id="ch18-requirements" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128196;</div>
+        <h2>تحليل متطلبات الميزات لتحديد المخاطر الأمنية</h2>
+    </div>
+
+    <p>الخطوة الأولى في تأمين أي تطبيق هي <strong>مرحلة البنية المعمارية</strong> — قبل كتابة سطر كود واحد. هذه المرحلة تمرين متعدد الوظائف يتعاون فيه المهندسون ومديرو المنتج ومهندسو الأمن لتقييم تدفق البيانات وحدود الثقة وسطوح الهجوم المحتملة.</p>
+
+    <div class="story ch18">
+        <div class="story-label ch18">&#128214; من الكتاب — دراسة حالة MegaMerch</div>
+        <p>تخيّل أن MegaBank تُطلق منصة تجارة إلكترونية جديدة تسمى <strong>MegaMerch</strong>. المتطلبات التجارية تبدو بسيطة للوهلة الأولى:</p>
+        <ul class="clean-list ch18">
+            <li>يمكن للمستخدمين إنشاء حسابات وتسجيل الدخول</li>
+            <li>تحتوي الحسابات على الاسم الكامل والعنوان وتاريخ الميلاد</li>
+            <li>يمكن للمستخدمين تصفح المنتجات والبحث عنها</li>
+            <li>يمكن للمستخدمين حفظ بطاقات الائتمان والحسابات البنكية للاستخدام لاحقًا</li>
+        </ul>
+        <p>لكن تحليلًا أمنيًا رفيع المستوى يكشف فورًا عن مناطق خطر كامنة داخل هذه المتطلبات البسيطة:</p>
+        <ul class="clean-list ch18">
+            <li>نخزن <strong>بيانات اعتماد</strong> — نظام مصادقة ضروري</li>
+            <li>نخزن <strong>معلومات تعريفية شخصية (<span class="term">PII</span>)</strong> — التزامات قانونية وخصوصية</li>
+            <li>للمستخدمين <strong>صلاحيات مرتفعة</strong> مقارنة بالزوار — نموذج تفويض ضروري</li>
+            <li>يمكن للمستخدمين <strong>البحث</strong> — قد تكون قاعدة بيانات ثانوية مطلوبة (تعقيد المزامنة)</li>
+            <li>نخزن <strong>بيانات مالية</strong> — أعلى فئات المخاطر، قواعد امتثال صارمة</li>
+        </ul>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; مبدأ البنية أولًا</h4>
+        <p>أي مؤسسة لديها فرق أمن وتطوير منفصلة يجب أن تبني قنوات تواصل بينهما داخل عملية التطوير. لا يمكن تحليل الميزات بشكل صحيح في عزلة — يجب إشراك أصحاب المصلحة من الهندسة وتطوير المنتج معًا.</p>
+    </div>
+
+    <div class="teal-box">
+        <h4>&#128202; نتيجة NIST</h4>
+        <p>بناءً على دراسة لتطبيقات ويب شائعة، خلص <span class="term">NIST</span> إلى: <em>"تكلفة إزالة ثغرة أمنية في مرحلة التصميم تتراوح بين <strong>30 و60 مرة أقل</strong> من تكلفة إزالتها في الإنتاج."</em> بنية الأمن المسبقة ليست تكلفة إضافية — بل استثمار ذو عوائد ضخمة.</p>
+    </div>
+</div>
+
+<!-- SSL/TLS - الفصل 18 -->
+<div id="ch18-ssl" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128274;</div>
+        <h2><span class="term">SSL/TLS</span> والبيانات الآمنة أثناء النقل</h2>
+    </div>
+
+    <p>من أهم القرارات المعمارية كيفية التعامل مع البيانات المتنقلة عبر الشبكة. يجب تشفير جميع البيانات المرسلة عبر الإنترنت للوقاية من <strong>هجمات الرجل في المنتصف (<span class="term">MitM</span>)</strong> — حيث يعترض المهاجم الاتصال بين العميل والخادم لسرقة بيانات الاعتماد أو رموز الجلسة أو البيانات المالية.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: #ef4444;">
+            <h4 style="color:#dc2626;"><span class="term">SSL</span> — طبقة المقابس الآمنة</h4>
+            <p>صمّمته Netscape في منتصف التسعينيات. صدرت عدة إصدارات منه. يعاني من ثغرات معمارية معروفة (مثل <span class="term">POODLE</span> و<span class="term">BEAST</span>). يُعدّ <strong>قديمًا للاستخدام الأمني</strong> رغم انتشاره الواسع.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #16a34a;">
+            <h4 style="color:#15803d;"><span class="term">TLS</span> — أمن طبقة النقل</h4>
+            <p>حُدِّد بـ <span class="term">RFC 2246</span> عام 1999. يوفر أمانًا محسّنًا بشكل ملحوظ مقارنة بـ <span class="term">SSL</span>. لا يتوافق مع الإصدارات القديمة من <span class="term">SSL</span> بسبب الاختلافات المعمارية. <strong>موصى به لجميع تطبيقات الويب الحديثة</strong>.</p>
+        </div>
+    </div>
+
+    <p>توفر مواصفة <span class="term">HTTP</span> بروتوكول <strong><span class="term">HTTPS</span></strong> ("HTTP الآمن") — مخطط <span class="term">URI</span> يشترط <span class="term">TLS/SSL</span> قبل إرسال أي بيانات. تعرض المتصفحات أيقونة قفل عند تفعيل <span class="term">HTTPS</span> وتُحذّر المستخدمين عند تعرّض الاتصال للخطر.</p>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; متطلب الإنتاج</h4>
+        <p>يجب أن تنتقل جميع البيانات المرسلة عبر الشبكة — بما فيها نماذج تسجيل الدخول وحمولات <span class="term">API</span> وملفات تعريف الارتباط — عبر <span class="term">HTTPS/TLS</span>. أي نقطة نهاية <span class="term">HTTP</span> غير مشفّرة في تطبيق إنتاجي تمثّل خطرًا أمنيًا فوريًا.</p>
+    </div>
+</div>
+
+<!-- بيانات الاعتماد - الفصل 18 -->
+<div id="ch18-credentials" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch18">&#128272;</div>
+        <h2>بيانات الاعتماد الآمنة وتجزئة كلمات المرور</h2>
+    </div>
+
+    <p>تخزين بيانات الاعتماد بأمان من أكثر القرارات المعمارية أثرًا. الأسلوب الخاطئ — تخزين كلمات المرور كنص عادي — قد يؤدي إلى اختراق شامل للبيانات في أي خرق لقاعدة البيانات. الأسلوب الصحيح يستخدم <strong>خوارزميات التجزئة أحادية الاتجاه</strong> المصمّمة خصيصًا لمقاومة هجمات القوة الغاشمة.</p>
+
+    <h3>لماذا تعمل التجزئة؟</h3>
+    <p>خوارزميات التجزئة لا رجعة فيها — لا يمكنك استرداد كلمة المرور الأصلية من قيمة التجزئة. حين يسجّل المستخدم دخوله، تُجزَّأ بياناته وتُقارَن بالتجزئة المحفوظة. حتى موظفو MegaMerch لا يستطيعون استرداد كلمات مرور المستخدمين.</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>السيناريو</th>
+                <th>طريقة التخزين</th>
+                <th>النتيجة بعد الاختراق</th>
+                <th>المخاطرة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>الحالة #1</strong></td>
+                <td>نص عادي</td>
+                <td>جميع كلمات المرور مخترقة فورًا</td>
+                <td><span class="risk-badge high">حرج</span></td>
+            </tr>
+            <tr>
+                <td><strong>الحالة #2</strong></td>
+                <td>تجزئة <span class="term">MD5</span></td>
+                <td>كثير من كلمات المرور تُكسر عبر جداول قوس قزح</td>
+                <td><span class="risk-badge medium">مرتفع</span></td>
+            </tr>
+            <tr>
+                <td><strong>الحالة #3</strong></td>
+                <td>تجزئة <span class="term">BCrypt</span></td>
+                <td>كسر أي كلمة مرور مستبعد</td>
+                <td><span class="risk-badge low">منخفض</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>الخوارزميات الموصى بها</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch18);">
+            <h4><span class="term">BCrypt</span></h4>
+            <p>مشتق من <span class="term">Blowfish Cipher</span> و<span class="term">Unix Crypt</span>. مصمّم فريدًا <strong>ليصبح أبطأ كلما تحسّنت الأجهزة</strong> — مما يجعل هجمات القوة الغاشمة غير مجدية حسابيًا على الأجهزة الحديثة. المعيار الذهبي لتجزئة كلمات المرور.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch19);">
+            <h4><span class="term">PBKDF2</span></h4>
+            <p>يعتمد على <strong>تمديد المفتاح (<span class="term">key stretching</span>)</strong> — كل محاولة تجزئة إضافية تصبح أبطأ. يأخذ عدد تكرارات قابل للضبط — اضبطه دائمًا على الحد الأقصى لأجهزتك. بديل قوي حين لا يتوفر <span class="term">BCrypt</span>.</p>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128161; مبدأ التجزئة البطيئة</h4>
+        <p>حين يُجري مخترق هجوم قوة غاشمة على كلمات المرور، يؤتمت ملايين التخمينات في الثانية. <strong>خوارزمية تجزئة بطيئة</strong> كـ <span class="term">BCrypt</span> قادرة على جعل كسر كلمة مرور معقدة يستغرق سنوات على الأجهزة الحديثة — مما يجعلها عمليًا غير قابلة للكسر.</p>
+    </div>
+
+    <h3>المصادقة الثنائية (<span class="term">2FA</span>)</h3>
+    <p>بعيدًا عن التجزئة القوية، يجب على التطبيقات المُحكمة البنية أن <strong>تتيح <span class="term">2FA</span></strong> للمستخدمين الراغبين في طبقة حماية إضافية. قد لا تكون المصادقة عبر تطبيق الهاتف أو <span class="term">SMS</span> بنفس أمان الرموز المادية، لكنها تُلغي الغالبية العظمى من محاولات اختراق الحسابات عن بُعد — إذ سيحتاج المخترق إلى كلمة المرور وجهاز المستخدم المادي معًا.</p>
+</div>
+
+<!-- ملخص الفصل 18 -->
+<div id="ch18-summary" class="summary-banner ch18">
+    <h3>&#128274; ملخص الفصل 18</h3>
+    <ul>
+        <li>يجب أن تسبق البنية الأمنية البرمجة — إصلاح الأمن بعد دخول الإنتاج أغلى بـ 30–60 مرة</li>
+        <li>المتطلبات التجارية دائمًا تخفي مخاطر أمنية — حلّلها استباقيًا</li>
+        <li>يجب تشفير جميع البيانات أثناء النقل عبر <span class="term">TLS</span>؛ <span class="term">HTTP</span> في الإنتاج غير مقبول</li>
+        <li>يجب تجزئة كلمات المرور بخوارزميات بطيئة (<span class="term">BCrypt</span>، <span class="term">PBKDF2</span>) — لا تُخزَّن أبدًا كنص عادي</li>
+        <li>تقديم <span class="term">2FA</span> يقلل بشكل ملحوظ من مخاطر اختراق الحسابات للمستخدمين الذين يفعّلونه</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     الفصل 19 — مراجعة الكود من منظور أمني
+     ════════════════════════════════════════════════ -->
+<div id="chapter-19" class="chapter-header">
+    <div class="chapter-num ch19">الفصل 19</div>
+    <div class="chapter-title">مراجعة الكود من منظور أمني</div>
+    <div class="chapter-divider ch19"></div>
+</div>
+
+<!-- أهداف التعلم - الفصل 19 -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch19">1</div>
+            <div class="objective-text"><strong>التمييز</strong> بين الثغرات النمطية (<span class="term">XSS</span>، <span class="term">CSRF</span>، الحقن) والثغرات المنطقية المخصصة التي تستوجب فهمًا عميقًا للتطبيق — وشرح لماذا لا تستطيع الأدوات التلقائية اكتشاف الأخطاء المنطقية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch19">2</div>
+            <div class="objective-text"><strong>تطبيق</strong> إطار مراجعة الكود الأمني المكوّن من 5 خطوات — بدءًا من كود جانب العميل، ثم تتبّع نداءات <span class="term">API</span> إلى الخادم، ومتابعة التبعيات، وتغطية بقية قاعدة الكود.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch19">3</div>
+            <div class="objective-text"><strong>التعرف</strong> على الأنماط المضادة الأربعة الرئيسية للترميز الآمن — القوائم السوداء، الكود النموذجي، الثقة الافتراضية، الاقتران بين العميل والخادم — وشرح المخاطر التي يُفرزها كل منها.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch19">4</div>
+            <div class="objective-text"><strong>شرح</strong> لماذا تكون القوائم البيضاء دائمًا مفضّلة على القوائم السوداء في السياقات الأمنية، وإظهار الفرق العملي بين الأسلوبين في الكود.</div>
+        </div>
+    </div>
+</div>
+
+<!-- كيفية البدء - الفصل 19 -->
+<div id="ch19-howto" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#128270;</div>
+        <h2>كيفية البدء بمراجعة الكود الأمنية</h2>
+    </div>
+
+    <p>تتبع مراجعة الكود الأمنية سير العمل ذاته لمراجعة الكود الوظيفية — الاختلافات تظهر فيما تبحث عنه، لا في كيفية البدء. يجب أن تتم المراجعة دائمًا <strong>بعد</strong> مراجعة البنية المعمارية والموافقة عليها.</p>
+
+    <div class="story ch19">
+        <div class="story-label ch19">&#128214; من الكتاب — سير المراجعة المحلية عبر Git</div>
+        <p>سير مراجعة محلية شائع يمكن تنفيذه من الطرفية:</p>
+    </div>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num ch19">1</div>
+            <div><strong>استعادة الفرع الرئيسي</strong><br><code>git checkout master</code> — تأكد من البدء من الفرع المستقر الأساسي.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">2</div>
+            <div><strong>سحب آخر التغييرات</strong><br><code>git pull origin master</code> — جلب ودمج أحدث كود إنتاجي.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">3</div>
+            <div><strong>استعادة فرع الميزة</strong><br><code>git checkout &lt;username&gt;/feature</code> — التبديل إلى الفرع محل المراجعة.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">4</div>
+            <div><strong>تشغيل مقارنة الفروق مع master</strong><br><code>git diff origin/master...</code> — رؤية كل ملف تغيّر وكل سطر تعدّل.</div>
+        </li>
+    </ol>
+
+    <h3>الثغرات النمطية مقابل الثغرات المنطقية</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch19);">
+            <h4>الثغرات النمطية</h4>
+            <p>فئات معروفة: <span class="term">XSS</span>، <span class="term">CSRF</span>، حقن <span class="term">SQL</span>، <span class="term">XXE</span>. يمكن اكتشافها بالأدوات التلقائية والماسحات الأمنية. تشملها قوائم <span class="term">OWASP Top 10</span>.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4>الثغرات المنطقية المخصصة</h4>
+            <p>تستوجب فهمًا عميقًا لمنطق الأعمال في التطبيق وأدوار المستخدمين والسلوك المقصود. لا تستطيع الماسحات التلقائية اكتشافها. مثال: نقطة نهاية <span class="term">API</span> تسمح لمستخدم عادي بضبط <code>isMember: true</code> لتجاوز عملية موافقة المشرف.</p>
+        </div>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; الأخطاء المنطقية غير مرئية للماسحات</h4>
+        <p>لا تستطيع الأدوات الأمنية التلقائية اكتشاف الثغرات المنطقية. تستوجب مراجعًا بشريًا يفهم <strong>المستخدمين والوظائف والتأثير التجاري</strong> للميزة محل المراجعة. لهذا السبب لا يمكن الاستغناء عن مراجعة الكود البشرية بالأتمتة وحدها.</p>
+    </div>
+</div>
+
+<!-- أين تبدأ - الفصل 19 -->
+<div id="ch19-where" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#128205;</div>
+        <h2>من أين تبدأ: إطار المراجعة المكوّن من 5 خطوات</h2>
+    </div>
+
+    <p>عند مراجعة قاعدة كود غير مألوفة، يحدد ترتيب قراءة الكود مدى سرعة تحديد الأولويات. مسار منطقي للدخول هو البدء من حيث يتفاعل المستخدمون مع التطبيق والتوجه نحو الداخل.</p>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num ch19">1</div>
+            <div><strong>مراجعة كود جانب العميل أولًا</strong><br>اكتسب فهمًا لمنطق الأعمال والوظائف التي يراها المستخدم. هذا يُخبرك بما يمكن للمستخدمين فعله وأي البيانات تتدفق إلى الخادم.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">2</div>
+            <div><strong>تقييم طبقة API</strong><br>بالاستناد إلى معرفتك من مراجعة العميل، دقّق في نقاط نهاية <span class="term">API</span> التي يستدعيها المستخدمون. افهم التبعيات التي تعتمد عليها طبقة <span class="term">API</span>.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">3</div>
+            <div><strong>تتبع التبعيات في طبقة API</strong><br>راجع بعناية قواعد البيانات والمكتبات المساعدة ووظائف التسجيل وعمليات الملفات. هذا يغطي معظم الوظائف التي يراها المستخدم.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">4</div>
+            <div><strong>البحث عن APIs مكشوفة بغير قصد</strong><br>ابحث عن نقاط نهاية <span class="term">API</span> عامة قد تكون مكشوفة عن طريق الخطأ أو مخصصة لميزات مستقبلية لكنها متاحة الآن.</div>
+        </li>
+        <li>
+            <div class="step-num ch19">5</div>
+            <div><strong>مراجعة بقية قاعدة الكود</strong><br>في هذه المرحلة ستفهم بنية التطبيق بشكل طبيعي. غطِّ الكود المتبقي بترتيب تنازلي حسب الخطورة.</div>
+        </li>
+    </ol>
+</div>
+
+<!-- الأنماط المضادة - الفصل 19 -->
+<div id="ch19-antipatterns" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch19">&#128683;</div>
+        <h2>الأنماط المضادة للترميز الآمن</h2>
+    </div>
+
+    <p>الأنماط المضادة في الأمن هي حلول تبدو صحيحة لكنها ناقصة أو غير آمنة جوهريًا. التعرف عليها بسرعة يسرّع عملية المراجعة ويمنع الأخطاء الخطيرة من الوصول إلى الإنتاج.</p>
+
+    <h3>النمط المضاد 1: القوائم السوداء</h3>
+    <p>تحجب القائمة السوداء مجموعة محددة من المدخلات السيئة المعروفة. المشكلة: لا يمكنها أن تكون كاملة أبدًا. مدخلات سيئة جديدة لم تُتوقع عند إنشاء القائمة ستظهر دائمًا.</p>
+
+    <div class="code-box">
+<span class="c">// ✗ غير آمن — أسلوب القائمة السوداء</span>
+<span class="k">const</span> blacklist = [<span class="s">'http://www.evil.com'</span>, <span class="s">'http://www.badguys.net'</span>];
+<span class="k">const</span> <span class="n">isDomainAccepted</span> = <span class="k">function</span>(domain) {
+    <span class="k">return</span> !blacklist.includes(domain); <span class="c">// المهاجم يشتري نطاقًا جديدًا ببساطة</span>
+};
+
+<span class="c">// ✓ آمن — أسلوب القائمة البيضاء</span>
+<span class="k">const</span> whitelist = [<span class="s">'https://happy-site.com'</span>, <span class="s">'https://www.my-friends.com'</span>];
+<span class="k">const</span> <span class="n">isDomainAccepted</span> = <span class="k">function</span>(domain) {
+    <span class="k">return</span> whitelist.includes(domain); <span class="c">// فقط النطاقات المعروفة الجيدة تمر</span>
+};
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; القوائم البيضاء دائمًا على القوائم السوداء</h4>
+        <p>تسمح القائمة البيضاء فقط بالمدخلات المعتمدة صراحةً. لا يستطيع المهاجم تجاوز القائمة البيضاء بتسجيل نطاق جديد أو صياغة حمولة جديدة — يجب أن يكون ضمن القائمة المعتمدة. تتطلب القوائم البيضاء صيانة أكثر لكنها تقدم ضمانات أمنية أقوى جوهريًا.</p>
+    </div>
+
+    <h3>النمط المضاد 2: الكود النموذجي في الإنتاج</h3>
+    <p>الأطر والمكتبات تشحن بإعدادات افتراضية مصمّمة لسهولة التطوير لا للأمان. إطلاق كود نموذجي/افتراضي في الإنتاج دون تقييم يُعرّض التطبيق لإعدادات خاطئة معروفة.</p>
+
+    <div class="story ch19">
+        <div class="story-label ch19">&#128214; من الكتاب — حادثة MongoDB</div>
+        <p>خطأ في الإعداد بالإصدارات القديمة من <span class="term">MongoDB</span> جعل قواعد البيانات <strong>متاحة عبر الإنترنت افتراضيًا</strong> عند تثبيتها على خادم ويب — <strong>دون أي مصادقة إلزامية</strong>. النتيجة: عشرات الآلاف من قواعد بيانات <span class="term">MongoDB</span> اختُطفت بسكريبتات تلقائية تطالب بفدية بيتكوين.</p>
+        <p>سطران من الإعداد — لمنع الوصول الخارجي — كانا كافيين لتفادي الحادثة بأكملها.</p>
+    </div>
+
+    <h3>النمط المضاد 3: الثقة الافتراضية</h3>
+    <p>كثير من التطبيقات تُشغّل جميع وحدات جانب الخادم تحت حساب مستخدم واحد ذي صلاحيات واسعة. إن تعرّضت وحدة واحدة للاختراق، يرث المهاجم صلاحيات جميع الوحدات الأخرى — التسجيل ونظام الملفات وقاعدة البيانات وغيرها.</p>
+
+    <div class="secure-compare">
+        <div class="secure-side">
+            <div class="secure-side-header bad">&#10007; الثقة الافتراضية (غير آمن)</div>
+            <div class="secure-side-body bad">
+                <ul>
+                    <li>حساب مستخدم واحد بجميع الصلاحيات</li>
+                    <li>حقن SQL في وحدة واحد = وصول كامل للخادم</li>
+                    <li>ملفات السجل والقرص وقاعدة البيانات كلها مكشوفة</li>
+                    <li>لا عزل بين الوحدات</li>
+                </ul>
+            </div>
+        </div>
+        <div class="secure-side">
+            <div class="secure-side-header good">&#10003; أدنى الامتيازات (آمن)</div>
+            <div class="secure-side-body good">
+                <ul>
+                    <li>كل وحدة تعمل تحت حساب مستخدم خاص بها</li>
+                    <li>الصلاحيات محدودة بما تحتاجه الوحدة فقط</li>
+                    <li>حقن SQL في وحدة = خرق قاعدة البيانات فقط</li>
+                    <li>فشل وحدة واحدة لا يتسرب إلى الأخريات</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h3>النمط المضاد 4: الاقتران بين العميل والخادم</h3>
+    <p>حين يكون كود العميل والخادم مرتبطَين بإحكام — كقوالب <span class="term">PHP</span> التي تدمج منطق المصادقة — يتضاعف سطح الهجوم. يجب على الخادم التعامل مع هياكل <span class="term">HTML</span> وبيانات النماذج وحمولات المصادقة في آنٍ واحد، مما يجعل آليات الأمن متداخلة ويصعب إدارتها.</p>
+
+    <div class="info-box">
+        <h4>&#128161; فصل المخاوف = أمان</h4>
+        <p>يتواصل التطبيق ذو العميل والخادم المفصولَين بشكل صحيح عبر <strong>صيغة بيانات مُحدَّدة مسبقًا وذات نوع محدد</strong> (مثل <span class="term">JSON</span> عبر <span class="term">HTTPS</span>). يقبل الخادم فقط الحمولات المنظَّمة — ليس <span class="term">HTML</span> خامًا. يُزيل هذا فئة كاملة من ثغرات الحقن ويجعل آليات الأمن أبسط وأكثر اتساقًا.</p>
+    </div>
+</div>
+
+<!-- ملخص الفصل 19 -->
+<div id="ch19-summary" class="summary-banner ch19">
+    <h3>&#128270; ملخص الفصل 19</h3>
+    <ul>
+        <li>يجب أن تتبع مراجعة الكود الأمنية مراجعة البنية المعمارية — لا أن تسبقها</li>
+        <li>المراجعة البشرية لا غنى عنها لاكتشاف الثغرات المنطقية المخصصة</li>
+        <li>ابدأ المراجعات من جانب العميل وتتبّع الطريق للداخل عبر APIs والتبعيات والكود المتبقي</li>
+        <li>القوائم البيضاء دائمًا تتفوق على السوداء — الأمان الناقص أمان خطير</li>
+        <li>تجنب الكود النموذجي في الإنتاج والثقة الافتراضية والاقتران المحكم بين العميل والخادم</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ════════════════════════════════════════════════
+     الفصل 20 — اكتشاف الثغرات
+     ════════════════════════════════════════════════ -->
+<div id="chapter-20" class="chapter-header">
+    <div class="chapter-num ch20">الفصل 20</div>
+    <div class="chapter-title">اكتشاف الثغرات</div>
+    <div class="chapter-divider ch20"></div>
+</div>
+
+<!-- أهداف التعلم - الفصل 20 -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#127919;</div>
+        <h2>أهداف التعلم</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number ch20">1</div>
+            <div class="objective-text"><strong>التمييز</strong> بين الأشكال الثلاثة للأتمتة الأمنية — التحليل الساكن، والتحليل الديناميكي، واختبار انحدار الثغرات — وشرح ما يمكن لكل منها اكتشافه وما يعجز عنه.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch20">2</div>
+            <div class="objective-text"><strong>التعرف</strong> على أدوات التحليل الساكن الشائعة (<span class="term">Checkmarx</span>، <span class="term">PMD</span>، <span class="term">Bandit</span>، <span class="term">Brakeman</span>) وأنواع الثغرات التي تكتشفها — وشرح لماذا يواجه التحليل الساكن صعوبة مع اللغات ذات الكتابة الديناميكية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch20">3</div>
+            <div class="objective-text"><strong>شرح</strong> لماذا تُعدّ اختبارات انحدار الثغرات ضرورية، وإثبات كيف يمكن لاختبار انحدار بسيط منع ثغرة مُصلَحة من العودة خلسةً في تغيير كود مستقبلي.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number ch20">4</div>
+            <div class="objective-text"><strong>وصف</strong> برامج الإفصاح المسؤول ومنصات مكافآت الاكتشاف (<span class="term">HackerOne</span>، <span class="term">BugCrowd</span>) — وشرح لماذا تحفيز الباحثين الخارجيين على الإبلاغ عن الثغرات يحمي المؤسسات من حوادث الإفصاح العام.</div>
+        </div>
+    </div>
+</div>
+
+<!-- نظرة عامة - الفصل 20 -->
+<div class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128202;</div>
+        <h2>لماذا لا يزال اكتشاف الثغرات ضروريًا؟</h2>
+    </div>
+
+    <p>حتى مع البنية المعمارية الآمنة ومراجعة الكود الشاملة، لا تزال الثغرات تتسلّل. قد تنشأ من سلوك غير متوقع في بيئات مختلفة، أو تحديثات مكتبات خارجية، أو حالات حافة لم يتوقعها أي مراجع. تستهدف عمليات اكتشاف الثغرات <strong>كود الإنتاج</strong> وتصطاد ما أفلت من المراحل السابقة.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128269;</div>
+            <div class="mc-title">التحليل الساكن</div>
+            <div class="mc-desc">يفحص كود المصدر دون تنفيذه. سريع ورخيص. الأفضل للثغرات الشائعة في اللغات ذات الكتابة الساكنة.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9881;&#65039;</div>
+            <div class="mc-title">التحليل الديناميكي</div>
+            <div class="mc-desc">ينفّذ التطبيق ويحلّل المخرجات في وقت التشغيل. أبطأ لكنه يؤكد الثغرات الفعلية لا المفترضة.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128203;</div>
+            <div class="mc-title">اختبار الانحدار</div>
+            <div class="mc-desc">يختبر الثغرات التي سبق إصلاحها للتأكد من عدم عودتها. بسيط ورخيص وفعّال للغاية في منع الأخطاء المتكررة.</div>
+        </div>
+    </div>
+</div>
+
+<!-- التحليل الساكن - الفصل 20 -->
+<div id="ch20-static" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128269;</div>
+        <h2>التحليل الساكن</h2>
+    </div>
+
+    <p>تقرأ أدوات التحليل الساكن كود المصدر — دون تنفيذه — وتقيّمه بحثًا عن أخطاء الصياغة والإعدادات الخاطئة الشائعة وأنماط الثغرات المعروفة. تعمل محليًا أثناء التطوير (كـ <span class="term">linters</span>) أو عند كل دفع للمستودع في خط أنابيب <span class="term">CI/CD</span>.</p>
+
+    <h3>أدوات التحليل الساكن الشائعة</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>الأداة</th>
+                <th>اللغات</th>
+                <th>التكلفة</th>
+                <th>الأفضل لـ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Checkmarx</strong></td>
+                <td>معظم اللغات الرئيسية</td>
+                <td><span class="risk-badge medium">مدفوع</span></td>
+                <td>مستوى المؤسسات، تغطية كاملة لـ OWASP Top 10</td>
+            </tr>
+            <tr>
+                <td><strong>PMD</strong></td>
+                <td>Java</td>
+                <td><span class="risk-badge low">مجاني</span></td>
+                <td>فحوصات جودة الكود والأمان الخاصة بـ Java</td>
+            </tr>
+            <tr>
+                <td><strong>Bandit</strong></td>
+                <td>Python</td>
+                <td><span class="risk-badge low">مجاني</span></td>
+                <td>مشكلات أمان Python — الأسرار المُضمَّنة ومخاطر الحقن</td>
+            </tr>
+            <tr>
+                <td><strong>Brakeman</strong></td>
+                <td>Ruby</td>
+                <td><span class="risk-badge low">مجاني</span></td>
+                <td>فحص أمان Ruby on Rails</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>ما يمكن للتحليل الساكن اكتشافه</h3>
+    <ul class="clean-list ch20">
+        <li><strong><span class="term">XSS</span> العام</strong> — البحث عن التلاعب بـ <span class="term">DOM</span> عبر <code>innerHTML</code></li>
+        <li><strong><span class="term">XSS</span> المنعكس</strong> — البحث عن متغيرات مسحوبة مباشرة من معاملات <span class="term">URL</span></li>
+        <li><strong><span class="term">DOM XSS</span></strong> — البحث عن المصارف الخطرة كـ <code>setInterval()</code> التي تستقبل مدخلات المستخدم</li>
+        <li><strong>حقن SQL</strong> — البحث عن سلاسل مقدّمة من المستخدم تُضمَّن في الاستعلامات</li>
+        <li><strong><span class="term">CSRF</span></strong> — البحث عن طلبات <span class="term">HTTP GET</span> التي تُعدّل الحالة</li>
+        <li><strong><span class="term">ReDoS</span></strong> — البحث عن التعبيرات النمطية المكتوبة بشكل خاطئ</li>
+    </ul>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; قيود التحليل الساكن — اللغات الديناميكية</h4>
+        <p>يعمل التحليل الساكن بشكل أفضل على <strong>اللغات ذات الكتابة الساكنة</strong> (Java، C#) حيث تكون أنواع المتغيرات معروفة وقت التحليل. في اللغات ذات الكتابة الديناميكية كـ <strong><span class="term">JavaScript</span></strong>، المتغيرات قابلة للتغيير وتتغير نوعها في وقت التشغيل — مما يُصعّب جدًا على الأداة الساكنة تحديد تدفق البيانات، مؤديًا إلى كثير من الإيجابيات الزائفة والثغرات المفوّتة.</p>
+    </div>
+</div>
+
+<!-- التحليل الديناميكي - الفصل 20 -->
+<div id="ch20-dynamic" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#9881;&#65039;</div>
+        <h2>التحليل الديناميكي</h2>
+    </div>
+
+    <p>ينفّذ التحليل الديناميكي التطبيق في بيئة مشابهة للإنتاج ويحلّل المخرجات في وقت التشغيل. على عكس التحليل الساكن، يستطيع التحليل الديناميكي <strong>تأكيد الثغرات الفعلية</strong> لا المفترضة — لأنه يرصد ما يفعله التطبيق فعليًا، لا ما يُوحي به الكود أنه قد يفعله.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4><span class="term">IBM AppScan</span> (مدفوع)</h4>
+            <p>أداة تحليل ديناميكي على مستوى المؤسسات بدعم واسع للأطر. دقة عالية مع إعداد متعمق.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4><span class="term">Veracode</span> (مدفوع)</h4>
+            <p>تحليل ديناميكي وساكن قائم على السحابة. يتكامل مع خطوط أنابيب <span class="term">CI/CD</span>. معروف بمعدل إيجابيات زائفة منخفض.</p>
+        </div>
+    </div>
+
+    <div class="story ch20">
+        <div class="story-label ch20">&#128214; من الكتاب — المقايضات بين التحليل الساكن والديناميكي</div>
+        <p>التحليل الديناميكي <strong>رائع في رصد الثغرات الفعلية</strong>، بينما يرصد التحليل الساكن كثيرًا من الثغرات <em>المحتملة</em> لكن بوسائل محدودة لتأكيدها.</p>
+        <p>يمكن للأدوات الديناميكية اكتشاف ثغرات لا تظهر إلا في وقت التشغيل — كالبيانات الحساسة المخزّنة بشكل غير صحيح في الذاكرة، أو هجمات القناة الجانبية التي تعتمد على توقيت التنفيذ الفعلي. هذه الثغرات غير مرئية تمامًا للتحليل الساكن.</p>
+        <div class="dialogue">
+            المقايضة تكمن في الصيانة والتكلفة والأداء: يستلزم التحليل الديناميكي بيئة مشابهة للإنتاج وهو أبطأ بكثير من التحليل الساكن. لكن نتائجه أدق وأكثر قابلية للتنفيذ.
+        </div>
+    </div>
+</div>
+
+<!-- اختبار الانحدار - الفصل 20 -->
+<div id="ch20-regression" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128203;</div>
+        <h2>اختبار انحدار الثغرات</h2>
+    </div>
+
+    <p>تُكتب اختبارات الانحدار بعد إصلاح ثغرة لضمان عدم عودتها. سهلة الكتابة وسهلة الدمج في أجنحة الاختبار القائمة وتقدّم حماية طويلة الأمد من الثغرات المتكررة.</p>
+
+    <div class="story ch20">
+        <div class="story-label ch20">&#128214; من الكتاب — قصة Steve وJed وثغرة CSRF</div>
+        <p>يبني المهندس البرمجي <strong>Steve</strong> نقطة نهاية لإدارة الاشتراكات تقبل طلبات <span class="term">HTTP GET</span>:</p>
+    </div>
+
+    <div class="code-box">
+<span class="c">// ✗ ثغرة — نقطة نهاية GET تعدّل الحالة (خطر CSRF)</span>
+app.get(<span class="s">'/changeSubscriptionTier'</span>, <span class="k">function</span>(req, res) {
+    <span class="k">if</span> (!currentUser.isAuthenticated) { <span class="k">return</span> res.sendStatus(<span class="n">401</span>); }
+    <span class="k">if</span> (!req.params.newTier) { <span class="k">return</span> res.sendStatus(<span class="n">400</span>); }
+    modifySubscription(currentUser, req.params.newTier)
+    .then(() =&gt; res.sendStatus(<span class="n">200</span>))
+    .catch(() =&gt; res.sendStatus(<span class="n">400</span>));
+});
+    </div>
+
+    <p>يلاحظ صديق Steve، <strong>Jed</strong>، أن رابطًا كـ <code>GET /api/changeSubscriptionTier?newTier=corporation</code> يمكن إرساله لـ Steve — وحين يضغط Steve عليه، يُعدَّل اشتراكه خلسةً نيابةً عنه. هذه <strong>ثغرة <span class="term">CSRF</span></strong>. الحل: التحويل إلى <span class="term">HTTP POST</span>. ثم يكتب Steve اختبار انحدار:</p>
+
+    <div class="code-box">
+<span class="c">// ✓ اختبار انحدار — يتحقق من أن نقطة النهاية تقبل POST فقط</span>
+<span class="k">const</span> testTierChange = <span class="k">function</span>() {
+    requester.options(<span class="s">'http://app.com/api/changeSubscriptionTier'</span>)
+        .on(<span class="s">'response'</span>, <span class="k">function</span>(res) {
+            <span class="k">const</span> verbs = res.headers[<span class="s">'Allow'</span>].split(<span class="s">','</span>);
+            <span class="k">if</span> (verbs.length &gt; <span class="n">1</span>) { <span class="k">return</span> tester.fail(); }      <span class="c">// فعل واحد فقط مسموح</span>
+            <span class="k">if</span> (verbs[<span class="n">0</span>] !== <span class="s">'POST'</span>) { <span class="k">return</span> tester.fail(); }   <span class="c">// يجب أن يكون POST</span>
+        });
+};
+    </div>
+
+    <p>إن أعاد تغيير مستقبلي نسخة <span class="term">GET</span> من نقطة النهاية هذه — حتى عن طريق الخطأ — سيفشل اختبار الانحدار فورًا ويمنع دمج التغيير.</p>
+
+    <div class="key-point">
+        <h4>&#128273; متى تُشغَّل اختبارات الانحدار؟</h4>
+        <p>يجب تشغيل اختبارات انحدار الثغرات على <strong>خطاطيف الإيداع أو الدفع</strong> — برفض الإيداع أو الدفع إن فشل أي اختبار. التشغيل المجدوَل اليومي المنتظم خيار ثانوي قوي للبيئات ذات التحكم المعقد بالإصدارات.</p>
+    </div>
+</div>
+
+<!-- مكافآت الاكتشاف - الفصل 20 -->
+<div id="ch20-bounty" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon ch20">&#128176;</div>
+        <h2>الإفصاح المسؤول وبرامج مكافآت الاكتشاف</h2>
+    </div>
+
+    <p>حتى مع الأتمتة الداخلية القوية، لا تزال بعض الثغرات يكتشفها مستخدمو التطبيق أنفسهم. يمنح برنامج إفصاح مسؤول محدد جيدًا للمستخدمين التقنيين مسارًا آمنًا وقانونيًا للإبلاغ عما يجدون — بدلًا من الإفصاح العام أو الصمت.</p>
+
+    <h3>الإفصاح المسؤول</h3>
+    <p>يتضمن برنامج الإفصاح المسؤول الجيد:</p>
+    <ul class="clean-list ch20">
+        <li>قائمة واضحة بكيفية اختبار المستخدمين للتطبيق دون مخاطر قانونية</li>
+        <li>نموذج تقديم محدد لتقارير الثغرات</li>
+        <li>نافزة زمنية (أسابيع أو أشهر) يوافق فيها المُبلِّغ على عدم النشر ريثما يُطوَّر الإصلاح</li>
+        <li>التزام من المؤسسة بالتحقيق والردّ ضمن إطار زمني محدد</li>
+    </ul>
+
+    <h3>برامج مكافآت الاكتشاف</h3>
+    <p>تذهب برامج مكافآت الاكتشاف أبعد من ذلك — إذ <strong>تدفع مكافآت نقدية</strong> مقابل تقارير الثغرات الموثّقة والمُتحقَّق منها. توفر منصات مثل <strong><span class="term">HackerOne</span></strong> و<strong><span class="term">BugCrowd</span></strong> قوالب قانونية قابلة للتخصيص وواجهات تقديم وسير عمل للفرز.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--ch20);">
+            <h4>مختبرو الاختراق الخارجيون</h4>
+            <p>يمكن تكليفهم بمناطق محددة من التطبيق للاختبار المعمّق. يمكن تزويدهم بكود المصدر بموجب اتفاقية قانونية للحصول على نتائج أدق. الأفضل استخدامًا في المناطق عالية الخطورة أو المكتوبة حديثًا قبل الإطلاق في الإنتاج.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #7c3aed;">
+            <h4>صيّادو المكافآت</h4>
+            <p>باحثون أمنيون مستقلون يختبرون متى وأين يشاؤون. يوفرون تغطية واسعة وغير منهجية عبر التطبيق. الصيّادون الأفضل أكفاء للغاية ومدفوعون بالمكافأة المالية.</p>
+        </div>
+    </div>
+
+    <div class="teal-box">
+        <h4>&#128202; مخرج SSDL</h4>
+        <p>بدمج مراجعة البنية المعمارية ومراجعة الكود الأمنية والتحليل الساكن والتحليل الديناميكي واختبار الانحدار والإفصاح المسؤول وبرامج مكافآت الاكتشاف في <strong>دورة حياة تطوير البرمجيات الآمنة (<span class="term">SSDL</span>)</strong>، تستطيع المؤسسة إصدار تطبيقات ويب إنتاجية بثقة عالية وخوف ضئيل من اكتشاف أو استغلال ثغرات أمنية جدية.</p>
+    </div>
+</div>
+
+<!-- ملخص الفصل 20 -->
+<div id="ch20-summary" class="summary-banner ch20">
+    <h3>&#128202; ملخص الفصل 20</h3>
+    <ul>
+        <li>البنية الآمنة ومراجعة الكود لا تزال تترك فجوات — عمليات الاكتشاف التي تستهدف الإنتاج ضرورية</li>
+        <li>التحليل الساكن سريع ورخيص لكنه ينتج إيجابيات زائفة ويُفوّت الثغرات في وقت التشغيل والثغرات المنطقية</li>
+        <li>التحليل الديناميكي يؤكد الثغرات الفعلية في وقت التشغيل — أدق لكن أبطأ وأغلى</li>
+        <li>اختبارات انحدار الثغرات بسيطة ورخيصة وتمنع عودة الأخطاء المُصلَحة خلسةً</li>
+        <li>برامج الإفصاح المسؤول ومكافآت الاكتشاف توسّع نطاق التغطية إلى ما هو أبعد من الفرق الداخلية</li>
+        <li>دمج جميع التقنيات في SSDL يمنح المؤسسات أعلى مستوى من ضمانات الأمان</li>
+    </ul>
+</div>
+
+</main>
+
+<!-- ═══════════ الشريط الجانبي ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">المحتويات</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-ch-label">الفصل 17 — تأمين تطبيقات الويب</div>
+            <a href="#chapter-17"        class="sidebar-link active"><span class="sidebar-link-number">1</span>نظرة عامة على الفصل 17</a>
+            <a href="#ch17-defense"      class="sidebar-link"><span class="sidebar-link-number">2</span>عقلية الدفاع</a>
+            <a href="#ch17-pillars"      class="sidebar-link"><span class="sidebar-link-number">3</span>الركائز الثلاث</a>
+            <a href="#ch17-vuln-mgmt"    class="sidebar-link"><span class="sidebar-link-number">4</span>إدارة الثغرات</a>
+            <a href="#ch17-summary"      class="sidebar-link"><span class="sidebar-link-number">5</span>ملخص الفصل 17</a>
+
+            <div class="sidebar-ch-label">الفصل 18 — البنية الآمنة</div>
+            <a href="#chapter-18"        class="sidebar-link"><span class="sidebar-link-number">6</span>نظرة عامة على الفصل 18</a>
+            <a href="#ch18-requirements" class="sidebar-link"><span class="sidebar-link-number">7</span>تحليل المتطلبات</a>
+            <a href="#ch18-ssl"          class="sidebar-link"><span class="sidebar-link-number">8</span>SSL/TLS والبيانات المنقولة</a>
+            <a href="#ch18-credentials"  class="sidebar-link"><span class="sidebar-link-number">9</span>بيانات الاعتماد الآمنة</a>
+            <a href="#ch18-summary"      class="sidebar-link"><span class="sidebar-link-number">10</span>ملخص الفصل 18</a>
+
+            <div class="sidebar-ch-label">الفصل 19 — مراجعة الكود</div>
+            <a href="#chapter-19"        class="sidebar-link"><span class="sidebar-link-number">11</span>نظرة عامة على الفصل 19</a>
+            <a href="#ch19-howto"        class="sidebar-link"><span class="sidebar-link-number">12</span>كيفية البدء</a>
+            <a href="#ch19-where"        class="sidebar-link"><span class="sidebar-link-number">13</span>من أين تبدأ</a>
+            <a href="#ch19-antipatterns" class="sidebar-link"><span class="sidebar-link-number">14</span>الأنماط المضادة</a>
+            <a href="#ch19-summary"      class="sidebar-link"><span class="sidebar-link-number">15</span>ملخص الفصل 19</a>
+
+            <div class="sidebar-ch-label">الفصل 20 — اكتشاف الثغرات</div>
+            <a href="#chapter-20"        class="sidebar-link"><span class="sidebar-link-number">16</span>نظرة عامة على الفصل 20</a>
+            <a href="#ch20-static"       class="sidebar-link"><span class="sidebar-link-number">17</span>التحليل الساكن</a>
+            <a href="#ch20-dynamic"      class="sidebar-link"><span class="sidebar-link-number">18</span>التحليل الديناميكي</a>
+            <a href="#ch20-regression"   class="sidebar-link"><span class="sidebar-link-number">19</span>اختبار الانحدار</a>
+            <a href="#ch20-bounty"       class="sidebar-link"><span class="sidebar-link-number">20</span>برامج مكافآت الاكتشاف</a>
+            <a href="#ch20-summary"      class="sidebar-link"><span class="sidebar-link-number">21</span>ملخص الفصل 20</a>
+        </nav>
+    </div>
+</aside>
+
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- التذييل -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 &mdash; أمن تطبيقات الويب</div>
+        <div class="footer-links">
+            <a href="../index.html">الصفحة الرئيسية</a>
+            <a href="../week6/index-ar.html">الأسبوع 6</a>
+            <a href="../syllabus.html">الخطة الدراسية</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

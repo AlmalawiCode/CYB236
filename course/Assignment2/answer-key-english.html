@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2 — Answer Key | CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --accent-d:  #d35400;
+            --green:     #16a34a;
+            --green-bg:  #f0fdf4;
+            --green-bd:  #86efac;
+            --yellow:    #d97706;
+            --yellow-bg: #fffbeb;
+            --yellow-bd: #fde68a;
+            --blue:      #1d4ed8;
+            --blue-bg:   #eff6ff;
+            --blue-bd:   #bfdbfe;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+            --code-bg:   #1e293b;
+            --code-text: #e2e8f0;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #0f2340 0%, #1a3a5c 100%);
+            color: white;
+            padding: 44px 40px 36px;
+            text-align: center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 5px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        .confidential-badge {
+            display: inline-block;
+            background: rgba(220,38,38,0.2);
+            border: 1px solid rgba(220,38,38,0.4);
+            color: #fca5a5;
+            font-size: 0.78em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+        .header h1 { font-size: 1.9em; font-weight: 800; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1em; opacity: 0.85; margin-bottom: 6px; }
+        .header .chapter-ref {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        /* ── Info Bar ── */
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+            color: white;
+        }
+        .info-item {
+            text-align: center;
+            padding: 14px 10px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .info-item:last-child { border-right: none; }
+        .info-item strong { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 3px; }
+        .info-item span { font-size: 1.05em; font-weight: 700; }
+
+        /* ── Notice box ── */
+        .notice {
+            margin: 32px 40px 0;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 5px solid var(--red);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            font-size: 0.93em;
+        }
+        .notice strong { color: var(--red); }
+
+        /* ── Content ── */
+        .content { padding: 36px 40px 40px; }
+
+        /* ── Part header ── */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            margin: 36px 0 20px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+        .part-title { font-size: 1.05em; font-weight: 700; }
+        .part-pts {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ── Answer card ── */
+        .answer-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 22px;
+            overflow: hidden;
+        }
+        .answer-card-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            background: var(--bg);
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .q-num {
+            background: var(--primary);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-pts {
+            color: var(--accent);
+            font-size: 0.82em;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-text {
+            font-weight: 600;
+            font-size: 0.97em;
+            color: var(--text);
+        }
+        .answer-body { padding: 18px 20px; }
+
+        /* ── Model answer ── */
+        .model-answer {
+            background: var(--green-bg);
+            border: 1px solid var(--green-bd);
+            border-left: 4px solid var(--green);
+            border-radius: 0 10px 10px 0;
+            padding: 14px 18px;
+            margin-bottom: 14px;
+        }
+        .model-answer-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--green);
+            margin-bottom: 8px;
+        }
+        .model-answer p { font-size: 0.95em; margin-bottom: 8px; }
+        .model-answer p:last-child { margin-bottom: 0; }
+        .model-answer ul { padding-left: 20px; margin-top: 6px; }
+        .model-answer li { font-size: 0.94em; margin-bottom: 5px; }
+
+        /* ── Variable answer note ── */
+        .variable-note {
+            background: var(--yellow-bg);
+            border: 1px solid var(--yellow-bd);
+            border-left: 4px solid var(--yellow);
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            font-size: 0.9em;
+        }
+        .variable-note-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--yellow);
+            margin-bottom: 6px;
+        }
+
+        /* ── Grading notes ── */
+        .grading-notes {
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-bd);
+            border-left: 4px solid var(--blue);
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            font-size: 0.9em;
+        }
+        .grading-notes-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue);
+            margin-bottom: 6px;
+        }
+        .grading-notes ul { padding-left: 18px; }
+        .grading-notes li { margin-bottom: 4px; }
+
+        /* ── Code block ── */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.88em;
+            line-height: 1.6;
+            margin: 10px 0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* ── Table ── */
+        .ans-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        .ans-table th {
+            background: var(--primary);
+            color: white;
+            padding: 9px 14px;
+            text-align: left;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        .ans-table th:first-child { border-radius: 8px 0 0 0; }
+        .ans-table th:last-child { border-radius: 0 8px 0 0; }
+        .ans-table td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        .ans-table tr:nth-child(even) td { background: var(--bg); }
+        .ans-table td:first-child { font-weight: 600; color: var(--primary); }
+        .ans-table td code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* ── Screenshot criteria ── */
+        .ss-criteria {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+        }
+        .ss-criteria ul { padding-left: 18px; }
+        .ss-criteria li { margin-bottom: 5px; font-size: 0.93em; }
+        .ss-criteria li strong { color: var(--primary); }
+
+        /* ── Keywords tag ── */
+        .keywords { margin-top: 10px; }
+        .keyword {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 0.8em;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin: 3px 4px 3px 0;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 22px 40px;
+            font-size: 0.88em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        code { background: #e2e8f0; padding: 1px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <div class="header-label">Assignment 2</div>
+            <span class="confidential-badge">&#128274; Instructor Only</span>
+        </div>
+        <h1>Answer Key &amp; Grading Guide</h1>
+        <p class="subtitle">Burp Suite &amp; Web Traffic Analysis &nbsp;&middot;&nbsp; Labs 5 &middot; 6 &middot; 7</p>
+        <div class="chapter-ref">CYB 236 &mdash; Web Application Security &mdash; Spring 2026</div>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+        <div class="info-item"><strong>Total</strong><span>100 pts</span></div>
+        <div class="info-item"><strong>Questions</strong><span>12</span></div>
+        <div class="info-item"><strong>Screenshots</strong><span>4</span></div>
+        <div class="info-item"><strong>Parts</strong><span>A &middot; B &middot; C</span></div>
+    </div>
+
+    <!-- Confidentiality notice -->
+    <div class="notice">
+        <strong>&#9888; Confidential:</strong> This document is for instructor use only. Do not distribute to students before or during the assignment period.
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- ═══════════════════════════════════
+             PART A — Proxy & Traffic Interception
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part A</div>
+            <div class="part-title">Proxy &amp; Traffic Interception &mdash; Burp Suite Setup</div>
+            <div class="part-pts">20 pts</div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q1</span>
+                <span class="q-text">What is the default proxy listener address and port used by Burp Suite Community Edition? Where do you verify this setting inside Burp?</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>The default proxy listener address and port is <strong><code>127.0.0.1:8080</code></strong>.</p>
+                    <p>This is verified inside Burp Suite by navigating to <strong>Proxy &rarr; Proxy settings</strong> (or in v2025: <strong>Settings gear icon &rarr; Tools &rarr; Proxy</strong>). The listener should show <code>127.0.0.1:8080</code> with status <strong>Running</strong>.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>4 pts &mdash; States <code>127.0.0.1:8080</code> AND names the location in Burp (Proxy settings or equivalent).</li>
+                        <li>2 pts &mdash; Correct address/port but does not mention where to verify it.</li>
+                        <li>1 pt &mdash; States "localhost:8080" (technically correct but imprecise) without the Burp location.</li>
+                        <li>0 pts &mdash; Blank, wrong port, or wrong address.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">127.0.0.1</span>
+                    <span class="keyword">8080</span>
+                    <span class="keyword">Proxy settings</span>
+                    <span class="keyword">Running</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q2</span>
+                <span class="q-text">What Firefox extension did you install to route browser traffic through Burp Suite? Why is it preferred over Firefox's built-in proxy settings?</span>
+                <span class="q-pts">3 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>The extension is <strong>FoxyProxy</strong> (FoxyProxy Standard or FoxyProxy Basic).</p>
+                    <p>Advantages over Firefox's built-in proxy settings:</p>
+                    <ul>
+                        <li><strong>One-click toggle:</strong> Enable or disable the proxy from the toolbar icon instantly, instead of navigating to Settings &rarr; Network Settings each time.</li>
+                        <li><strong>Multiple profiles:</strong> Save different proxy configurations (e.g., Burp on 8080, ZAP on 8081) and switch between them instantly.</li>
+                        <li><strong>Visual indicator:</strong> The toolbar icon changes color to show whether traffic is being proxied, preventing accidental testing with the proxy off.</li>
+                    </ul>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>2 pts &mdash; Correctly names FoxyProxy.</li>
+                        <li>1 pt &mdash; Provides at least one valid advantage over built-in settings.</li>
+                        <li>0 pts &mdash; Blank or names a different/non-existent extension.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">FoxyProxy</span>
+                    <span class="keyword">one-click toggle</span>
+                    <span class="keyword">multiple profiles</span>
+                    <span class="keyword">toolbar icon</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q3</span>
+                <span class="q-text">Explain how Burp Suite's intercepting proxy works. Describe the complete path of an HTTP request from Firefox, through FoxyProxy, through Burp Suite, to the target web server &mdash; and back.</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>The complete path of an HTTP request through the Burp Suite intercepting proxy:</p>
+                    <ul>
+                        <li><strong>Step 1:</strong> The user types a URL in Firefox and presses Enter. Firefox generates an HTTP request.</li>
+                        <li><strong>Step 2:</strong> FoxyProxy (browser extension) intercepts the outgoing request and redirects it to <code>127.0.0.1:8080</code> instead of sending it directly to the target web server.</li>
+                        <li><strong>Step 3:</strong> Burp Suite is listening on <code>127.0.0.1:8080</code>. It receives the raw HTTP request and records it in the <strong>HTTP History</strong>.</li>
+                        <li><strong>Step 4:</strong> If <strong>Intercept is ON</strong>, Burp pauses the request and displays it to the user. The user can read, modify, or drop the request before clicking <strong>Forward</strong>. If Intercept is OFF, Burp forwards it automatically.</li>
+                        <li><strong>Step 5:</strong> Burp forwards the request (original or modified) to the actual target web server.</li>
+                        <li><strong>Step 6:</strong> The target server processes the request and sends its HTTP response back to Burp.</li>
+                        <li><strong>Step 7:</strong> Burp records the response in HTTP History and passes it back to Firefox.</li>
+                        <li><strong>Step 8:</strong> Firefox renders the page normally. From the user's perspective the page loads as usual, but Burp has a complete record of every raw request and response.</li>
+                    </ul>
+                    <p><strong>Key capabilities gained:</strong> Burp can record all traffic, pause and modify requests mid-flight, replay requests with Repeater, and build a Site Map of all discovered endpoints.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (8 pts)</div>
+                    <ul>
+                        <li>2 pts &mdash; Correctly describes FoxyProxy redirecting traffic to 127.0.0.1:8080.</li>
+                        <li>2 pts &mdash; Explains Burp receives, records, and optionally pauses (intercepts) the request.</li>
+                        <li>2 pts &mdash; Explains Burp forwards the request to the target server.</li>
+                        <li>2 pts &mdash; Explains the response flows back: server &rarr; Burp &rarr; Firefox.</li>
+                        <li>Partial credit per section if the concept is stated but imprecisely.</li>
+                        <li>0 pts &mdash; Blank or fundamentally incorrect (e.g., "Burp sends traffic directly to the internet").</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">intercepting proxy</span>
+                    <span class="keyword">127.0.0.1:8080</span>
+                    <span class="keyword">HTTP History</span>
+                    <span class="keyword">Intercept ON/OFF</span>
+                    <span class="keyword">Forward</span>
+                    <span class="keyword">modify request</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-1 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-1</span>
+                <span class="q-text">Screenshot &mdash; Burp Suite proxy listener showing <code>127.0.0.1:8080</code> as Running, with FoxyProxy active in Firefox</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>Burp Suite proxy settings visible</strong> showing the listener on <code>127.0.0.1:8080</code> with status <strong>Running</strong>.</li>
+                        <li><strong>FoxyProxy icon visible</strong> in the Firefox toolbar in its active/enabled state (colored icon, not greyed out).</li>
+                        <li>Both elements should be in the same screenshot or clearly from the same session.</li>
+                        <li>Accept if student provides two separate screenshots showing each element, as long as both are present.</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts &mdash; Burp listener Running + FoxyProxy active, both visible.<br>
+                        3 pts &mdash; Only one of the two elements visible (e.g., Burp settings but no FoxyProxy, or vice versa).<br>
+                        0 pts &mdash; Missing, or clearly downloaded from the internet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════
+             PART B — HTTP Analysis & Repeater
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part B</div>
+            <div class="part-title">HTTP Analysis &amp; Request Manipulation &mdash; DVWA</div>
+            <div class="part-pts">35 pts</div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q4</span>
+                <span class="q-text">What HTTP method did DVWA's login form use? Where do the credentials (username and password) appear in the raw request captured by Burp?</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>DVWA's login form uses the <strong>POST</strong> method.</p>
+                    <p>The credentials appear in the <strong>request body</strong> (not the URL):</p>
+                    <div class="code-block">POST /login.php HTTP/1.1
+Host: 10.0.2.15
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&amp;password=password&amp;Login=Login</div>
+                    <p>POST is more appropriate than GET for login forms because POST sends credentials in the request body, which is not visible in the URL, browser history, or server access logs. GET would embed the username and password in the URL query string, exposing them in multiple places.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>3 pts &mdash; Correctly identifies POST method.</li>
+                        <li>2 pts &mdash; States credentials appear in the request body (not the URL).</li>
+                        <li>Partial (1 pt each): Correct method but vague location, or correct location but wrong method.</li>
+                        <li>0 pts &mdash; Blank or says GET.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">POST</span>
+                    <span class="keyword">request body</span>
+                    <span class="keyword">login.php</span>
+                    <span class="keyword">x-www-form-urlencoded</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q5</span>
+                <span class="q-text">What is the name of the session cookie set by DVWA after login? Explain what an attacker could do if they steal this cookie value.</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>The session cookie is named <strong><code>PHPSESSID</code></strong>. It is a 32-character hexadecimal string generated by PHP to uniquely identify the user's session.</p>
+                    <p><strong>If an attacker steals this cookie:</strong></p>
+                    <ul>
+                        <li><strong>Session hijacking:</strong> The attacker sets the stolen <code>PHPSESSID</code> value in their own browser (e.g., using DevTools &rarr; Application &rarr; Cookies). The server recognizes this cookie as belonging to a valid logged-in session.</li>
+                        <li><strong>Full account access:</strong> The attacker gains the same access as the victim &mdash; they can browse DVWA, access vulnerability modules, and perform any action the victim's session allows, all without knowing the victim's password.</li>
+                    </ul>
+                    <p>This attack is called <strong>session hijacking</strong>.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>2 pts &mdash; Correctly names <code>PHPSESSID</code>.</li>
+                        <li>3 pts &mdash; Explains session hijacking: attacker impersonates the user without needing the password.</li>
+                        <li>Partial (1&ndash;2 pts): Correct cookie name but vague explanation ("they can hack the account").</li>
+                        <li>0 pts &mdash; Blank or wrong cookie name.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">PHPSESSID</span>
+                    <span class="keyword">session hijacking</span>
+                    <span class="keyword">impersonation</span>
+                    <span class="keyword">cookie theft</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q6</span>
+                <span class="q-text">List at least two security headers that are missing from DVWA's HTTP responses. For each header, name the specific attack it protects against.</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>DVWA is intentionally insecure and is missing most security headers. Accept any two from the following:</p>
+                    <table class="ans-table">
+                        <thead>
+                            <tr>
+                                <th>Missing Header</th>
+                                <th>Attack It Protects Against</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>Content-Security-Policy</code></td>
+                                <td><strong>Cross-Site Scripting (XSS)</strong> &mdash; restricts which scripts, styles, and resources the browser is allowed to load, blocking injected malicious scripts.</td>
+                            </tr>
+                            <tr>
+                                <td><code>X-Frame-Options</code></td>
+                                <td><strong>Clickjacking</strong> &mdash; prevents the page from being embedded in an <code>&lt;iframe&gt;</code> on a malicious site, stopping UI redress attacks.</td>
+                            </tr>
+                            <tr>
+                                <td><code>X-Content-Type-Options</code></td>
+                                <td><strong>MIME-sniffing attacks</strong> &mdash; prevents the browser from guessing a file's MIME type, which could cause a non-script file to be interpreted as executable JavaScript.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Strict-Transport-Security</code></td>
+                                <td><strong>Man-in-the-Middle / protocol downgrade</strong> &mdash; forces the browser to use HTTPS only, preventing interception on plain HTTP connections.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (8 pts &mdash; 4 pts per header)</div>
+                    <ul>
+                        <li>4 pts per header &mdash; Correctly names the header AND identifies the specific attack it prevents.</li>
+                        <li>2 pts per header &mdash; Correct header name but vague attack description ("it improves security").</li>
+                        <li>0 pts per header &mdash; Invented header name or completely wrong attack mapping.</li>
+                        <li>Accept any two from the table above. Also accept <code>X-XSS-Protection</code> (deprecated but still discussed in the lab).</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">Content-Security-Policy</span>
+                    <span class="keyword">X-Frame-Options</span>
+                    <span class="keyword">X-Content-Type-Options</span>
+                    <span class="keyword">Strict-Transport-Security</span>
+                    <span class="keyword">clickjacking</span>
+                    <span class="keyword">MIME sniffing</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q7</span>
+                <span class="q-text">In Burp's Repeater, you changed <code>id=1</code> to <code>id=1'</code>. What did the server respond with? Why is exposing database error messages a security problem, and what information does an attacker gain?</span>
+                <span class="q-pts">12 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p><strong>What the server responded with:</strong></p>
+                    <div class="code-block">You have an error in your SQL syntax; check the manual that
+corresponds to your MySQL server version for the right syntax
+to use near ''1''' at line 1</div>
+                    <p><strong>Why this is a security problem:</strong></p>
+                    <ul>
+                        <li><strong>Confirms the vulnerability:</strong> The SQL error proves that user input (<code>id</code> parameter) is injected directly into a SQL query without sanitization or parameterization. The attacker now knows SQL injection is possible.</li>
+                        <li><strong>Reveals the database engine:</strong> The error message explicitly mentions "MySQL server version," telling the attacker which database is in use. This lets them use MySQL-specific injection syntax.</li>
+                        <li><strong>Reveals query structure:</strong> The error message shows parts of the SQL query structure (e.g., the quoting pattern <code>''1'''</code>), helping the attacker craft precise injection payloads.</li>
+                        <li><strong>Facilitates further exploitation:</strong> With this information, the attacker can extract data from other tables, read files from the server, or potentially gain remote code execution &mdash; all through refined SQL injection payloads.</li>
+                    </ul>
+                    <p><strong>Best practice:</strong> Production applications should display a generic error page (e.g., "Something went wrong") and log detailed errors server-side only. Database errors should never be shown to users.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (12 pts)</div>
+                    <ul>
+                        <li>3 pts &mdash; Correctly describes or quotes the MySQL syntax error.</li>
+                        <li>3 pts &mdash; Explains that the error confirms user input is injected into SQL (vulnerability confirmation).</li>
+                        <li>3 pts &mdash; Explains what information the attacker gains (database type, query structure).</li>
+                        <li>3 pts &mdash; Explains the broader impact (enables further SQL injection, data extraction).</li>
+                        <li>Partial credit per criterion if concept is mentioned but not elaborated.</li>
+                        <li>0 pts &mdash; Blank or states "an error appeared" with no analysis.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">SQL syntax error</span>
+                    <span class="keyword">MySQL</span>
+                    <span class="keyword">SQL injection</span>
+                    <span class="keyword">no sanitization</span>
+                    <span class="keyword">query structure</span>
+                    <span class="keyword">information leakage</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-2 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-2</span>
+                <span class="q-text">Screenshot &mdash; Burp Suite Repeater showing the modified request (<code>id=1'</code>) and the SQL error in the response panel</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>Burp Repeater tab open</strong> with the request visible in the left panel.</li>
+                        <li><strong>Request shows <code>id=1'</code></strong> (the modified parameter with a single quote).</li>
+                        <li><strong>Response panel (right side)</strong> shows the MySQL syntax error message.</li>
+                        <li>The DVWA host IP should be visible in the Host header (not <code>localhost</code>).</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts &mdash; Both request (<code>id=1'</code>) and response (SQL error) visible in Repeater.<br>
+                        3 pts &mdash; Repeater open but only one panel clearly visible, or <code>id=1'</code> not visible in the request.<br>
+                        0 pts &mdash; Missing, or shows a different tool (not Repeater).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════
+             PART C — Intruder & Password Attacks
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part C</div>
+            <div class="part-title">Intruder &amp; Password Attacks &mdash; DVWA Brute Force</div>
+            <div class="part-pts">45 pts</div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q8</span>
+                <span class="q-text">Write the exact Intruder attack mode you selected. Explain why it was the correct choice when testing passwords with a known username.</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>The attack mode used was <strong>Sniper</strong>.</p>
+                    <p><strong>Why Sniper is correct:</strong> We have <strong>one payload list</strong> (the 15-password wordlist) and <strong>one payload position</strong> (the password field). The username is already known (<code>admin</code>) and stays fixed. Sniper cycles each wordlist entry through the single marked position one at a time &mdash; exactly what is needed for a single-parameter dictionary attack.</p>
+                    <p>The other modes are for different scenarios: <strong>Battering Ram</strong> inserts the same payload into all positions simultaneously; <strong>Pitchfork</strong> iterates multiple lists in parallel (matched pairs); <strong>Cluster Bomb</strong> tests all combinations of multiple lists. None of these are needed when fuzzing a single parameter.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>2 pts &mdash; Correctly names Sniper.</li>
+                        <li>2 pts &mdash; Explains why: one position, one list, username fixed.</li>
+                        <li>1 pt &mdash; Names Sniper but no explanation.</li>
+                        <li>0 pts &mdash; Blank or names a wrong mode.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">Sniper</span>
+                    <span class="keyword">one position</span>
+                    <span class="keyword">one wordlist</span>
+                    <span class="keyword">fixed username</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q9</span>
+                <span class="q-text">All 15 Intruder responses returned HTTP status code 200 OK. Explain how you identified which response contained the correct password. What was the password?</span>
+                <span class="q-pts">6 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>All 15 responses returned <strong>HTTP 200 OK</strong> &mdash; DVWA at Low security does not use a different status code for success vs. failure. Therefore, the status code could not distinguish them.</p>
+                    <p>The correct password was identified using the <strong>response length (Length column)</strong>:</p>
+                    <ul>
+                        <li>14 failed login attempts all returned the same response length (approximately ~4719 bytes) &mdash; the page containing the error message <em>"Username and/or password incorrect."</em></li>
+                        <li>1 successful login returned a <strong>noticeably different (larger) length</strong> (approximately ~4779 bytes) &mdash; the page containing the welcome message <em>"Welcome to the password protected area admin."</em></li>
+                    </ul>
+                    <p>The correct password was <strong><code>password</code></strong> (the 3rd entry in the wordlist).</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (6 pts)</div>
+                    <ul>
+                        <li>2 pts &mdash; Explains that HTTP status code was the same (200) for all responses.</li>
+                        <li>2 pts &mdash; Explains response length difference as the identification method.</li>
+                        <li>2 pts &mdash; Correctly states the password is <code>password</code>.</li>
+                        <li>Partial: States the password but cannot explain how they found it (max 3 pts).</li>
+                        <li>0 pts &mdash; Blank or wrong password.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">response length</span>
+                    <span class="keyword">HTTP 200</span>
+                    <span class="keyword">Length column</span>
+                    <span class="keyword">password</span>
+                    <span class="keyword">welcome message</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q10</span>
+                <span class="q-text">What happened when you switched DVWA to Medium security and re-ran the Intruder attack? What additional defense appeared at High security? How did each affect the attack?</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p><strong>Medium Security &mdash; Rate Limiting (server-side delay):</strong></p>
+                    <ul>
+                        <li>DVWA Medium adds a <strong>2-second server-side sleep</strong> before responding to each brute force login attempt.</li>
+                        <li>The attack still completes and the correct password can still be found, but each request takes 2+ seconds instead of milliseconds.</li>
+                        <li>For 15 passwords: ~30 seconds. For rockyou.txt (14 million passwords) at 2 sec/guess: <strong>over 324 days</strong> &mdash; making large-scale dictionary attacks impractical.</li>
+                    </ul>
+                    <p><strong>High Security &mdash; CSRF Token:</strong></p>
+                    <ul>
+                        <li>DVWA High adds a <strong><code>user_token</code> parameter</strong> (CSRF token) to every brute force request. This is a random value generated fresh with each page load and valid for only one request.</li>
+                        <li>The Intruder attack <strong>completely fails</strong>: the token captured in the original request is consumed by the first attempt, and all 14 remaining attempts are rejected because they reuse an already-consumed token.</li>
+                        <li>The correct password cannot be identified even though it is in the wordlist, because the server rejects every request after the first one.</li>
+                    </ul>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (8 pts)</div>
+                    <ul>
+                        <li>2 pts &mdash; Correctly describes Medium: server-side delay / sleep (mentions 2 seconds).</li>
+                        <li>2 pts &mdash; Explains the impact on large wordlists (impractical timing).</li>
+                        <li>2 pts &mdash; Correctly describes High: CSRF token (<code>user_token</code>) added.</li>
+                        <li>2 pts &mdash; Explains the impact: token is single-use, Intruder reuses it, all but one request fail.</li>
+                        <li>Partial credit: Mentions "it got slower" (1 pt for Medium); mentions "something extra appeared" (1 pt for High).</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">2-second delay</span>
+                    <span class="keyword">rate limiting</span>
+                    <span class="keyword">user_token</span>
+                    <span class="keyword">CSRF token</span>
+                    <span class="keyword">single-use</span>
+                    <span class="keyword">attack fails</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q11</span>
+                <span class="q-text">Complete the comparison table: Dictionary Attack vs Brute Force Attack</span>
+                <span class="q-pts">10 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <table class="ans-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Dictionary Attack</th>
+                                <th>Brute Force Attack</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Method used</td>
+                                <td>Uses a pre-compiled wordlist of common/leaked passwords (e.g., rockyou.txt). Tries each entry from the list against the target.</td>
+                                <td>Tries every possible combination of characters systematically (aaa, aab, aac... zzz). Does not rely on a wordlist.</td>
+                            </tr>
+                            <tr>
+                                <td>Speed</td>
+                                <td><strong>Fast</strong> &mdash; limited to the number of entries in the wordlist. A 15-entry list finishes in seconds; even rockyou.txt (14M) is finite.</td>
+                                <td><strong>Very slow</strong> &mdash; the number of combinations grows exponentially with password length and character set. A 6-char lowercase password: 26&#8310; = 308 million combinations.</td>
+                            </tr>
+                            <tr>
+                                <td>Coverage</td>
+                                <td><strong>Partial</strong> &mdash; only finds passwords that appear in the wordlist. Strong, unique passwords are missed.</td>
+                                <td><strong>100%</strong> &mdash; guaranteed to find any password eventually, given enough time and computing power.</td>
+                            </tr>
+                            <tr>
+                                <td>Which did you use in Lab 7?</td>
+                                <td colspan="2"><strong>Dictionary attack.</strong> We used a 15-entry custom wordlist loaded into Burp Intruder. This was practical because (1) the wordlist was short enough for Community Edition's 1 req/sec rate limit, (2) DVWA's default password (<code>password</code>) is a common entry found in any dictionary, and (3) it demonstrates the real-world technique where attackers target weak/common passwords first.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (10 pts &mdash; distributed across cells)</div>
+                    <ul>
+                        <li>2 pts &mdash; Dictionary "method": wordlist / pre-compiled list of known passwords.</li>
+                        <li>2 pts &mdash; Brute force "method": all possible character combinations.</li>
+                        <li>1.5 pts &mdash; Dictionary "speed": fast / limited to wordlist size.</li>
+                        <li>1.5 pts &mdash; Brute force "speed": very slow / exponential growth.</li>
+                        <li>1 pt &mdash; Dictionary "coverage": partial / only common passwords.</li>
+                        <li>1 pt &mdash; Brute force "coverage": 100% / guaranteed eventually.</li>
+                        <li>1 pt &mdash; Which used in Lab 7: dictionary attack + any valid reason.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q12</span>
+                <span class="q-text">Scenario: A company has no lockout, no rate limiting, and no CAPTCHA. An attacker uses Burp Intruder with rockyou.txt (14M passwords). What three defenses should the company implement?</span>
+                <span class="q-pts">7 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>Accept any three of the following defenses. Each defense must include a brief explanation of <em>how</em> it reduces the risk:</p>
+                    <table class="ans-table">
+                        <thead>
+                            <tr>
+                                <th>Defense</th>
+                                <th>How It Reduces the Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Account Lockout</td>
+                                <td>After N failed attempts (e.g., 5), the account is locked for a period or until admin reset. This directly stops automated bulk guessing &mdash; the attacker can only try a handful of passwords before being blocked.</td>
+                            </tr>
+                            <tr>
+                                <td>Rate Limiting</td>
+                                <td>Enforces a delay between login attempts from the same IP or account (e.g., 2-second wait). Slows Intruder from 1000 req/sec to 0.5 req/sec, making a 14M-entry attack take months instead of hours.</td>
+                            </tr>
+                            <tr>
+                                <td>CAPTCHA</td>
+                                <td>After failed attempts, a visual or behavioral challenge is presented that automated tools (Intruder) cannot solve. Forces human interaction, stopping bot-driven attacks.</td>
+                            </tr>
+                            <tr>
+                                <td>Multi-Factor Authentication (MFA)</td>
+                                <td>Even if the correct password is discovered, a second factor (TOTP code, hardware key, SMS) is required. The password alone is insufficient, rendering the entire dictionary attack useless.</td>
+                            </tr>
+                            <tr>
+                                <td>Strong Password Policy</td>
+                                <td>Enforce minimum length (e.g., 12+ characters), complexity, and check against known breached password lists at registration. If users cannot set "password" or "123456," those entries in rockyou.txt will never match.</td>
+                            </tr>
+                            <tr>
+                                <td>CSRF Tokens</td>
+                                <td>One-use random token per request prevents automated replay. Intruder must scrape a fresh token before each attempt, significantly complicating the attack.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (7 pts)</div>
+                    <ul>
+                        <li>Award ~2.3 pts per defense (round as needed for 3 defenses = 7 pts).</li>
+                        <li>Full credit per defense: names the defense AND explains how it specifically reduces the risk of a dictionary/Intruder attack.</li>
+                        <li>Half credit per defense: names the defense but explanation is vague ("it makes it more secure").</li>
+                        <li>0 pts per defense: invented or irrelevant defense (e.g., "install antivirus").</li>
+                        <li>Accept any combination from the table above. Also accept: IP blacklisting, geo-blocking, login attempt notifications, anomaly detection.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">account lockout</span>
+                    <span class="keyword">rate limiting</span>
+                    <span class="keyword">CAPTCHA</span>
+                    <span class="keyword">MFA</span>
+                    <span class="keyword">strong password policy</span>
+                    <span class="keyword">CSRF token</span>
+                    <span class="keyword">defense in depth</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-3 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-3</span>
+                <span class="q-text">Screenshot &mdash; Intruder results table showing all 15 responses, with the correct password entry visible (different response length)</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>Intruder attack results table visible</strong> with the Payload, Status, and Length columns showing.</li>
+                        <li><strong>All 15 rows present</strong> (or at least most of them, confirming the attack completed).</li>
+                        <li><strong>One row with a different Length value</strong> &mdash; this should be the <code>password</code> entry (approximately ~4779 bytes vs ~4719 bytes for failures).</li>
+                        <li>Ideally sorted by Length so the different entry stands out at the top or bottom.</li>
+                        <li>Accept if the student highlights or annotates the correct row.</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts &mdash; Results table visible, Length column shows one different entry, <code>password</code> identifiable.<br>
+                        3 pts &mdash; Results table visible but Length column not shown, or only partial results visible.<br>
+                        0 pts &mdash; Missing, or shows a different tool/screen.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-4 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-4</span>
+                <span class="q-text">Screenshot &mdash; DVWA High security Brute Force request in Burp showing the <code>user_token</code> CSRF parameter</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>Burp Suite Intercept or HTTP History panel</strong> showing a captured GET request from the DVWA Brute Force module.</li>
+                        <li><strong>URL contains <code>user_token=</code></strong> parameter (the CSRF token) &mdash; this is the additional parameter that appears only at High security.</li>
+                        <li><strong>Cookie header shows <code>security=high</code></strong> &mdash; confirming the security level is set to High.</li>
+                        <li>The DVWA host IP should be visible in the Host header or URL.</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts &mdash; Request visible with <code>user_token</code> parameter and <code>security=high</code> in cookie.<br>
+                        3 pts &mdash; Request visible but <code>user_token</code> not clearly visible, or <code>security=high</code> not confirmed.<br>
+                        0 pts &mdash; Missing, or shows Low/Medium security request without the token.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end .content -->
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; Web Application Security &mdash; King Abdulaziz University</p>
+        <p>Assignment 2: Answer Key &nbsp;&middot;&nbsp; Burp Suite &amp; Web Traffic Analysis &nbsp;&middot;&nbsp; Labs 5&ndash;7 &nbsp;&middot;&nbsp; Spring 2026</p>
+    </div>
+
+</div><!-- end .container -->
+</body>
+</html>

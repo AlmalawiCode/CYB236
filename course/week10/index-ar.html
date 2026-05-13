@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مذكرة الدروس — الفصول 25–27 | CYB 236</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-50: #ecfdf5;
+            --primary-600: #059669;
+            --primary-700: #047857;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+            /* ── ألوان الفصول 25-27 ── */
+            --ch: #059669;
+            --ch-light: #ecfdf5;
+            --ch-mid: #6ee7b7;
+            --ch-dark: #064e3b;
+
+            --dark: var(--neutral-900);
+            --dark2: var(--neutral-800);
+            --gray: var(--neutral-500);
+            --text: var(--neutral-700);
+            --light: var(--neutral-50);
+            --border: var(--neutral-200);
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.9;
+            color: var(--text);
+            background: var(--light);
+            font-size: 16px;
+            direction: rtl;
+        }
+
+        /* المصطلحات التقنية الإنجليزية */
+        .term {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+            display: inline-block;
+            background: var(--primary-50);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary-700);
+        }
+
+        /* ───── شريط التنقل ───── */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #059669, #047857);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            direction: ltr;
+        }
+
+        .nav-brand-text { font-weight: 600; font-size: 15px; }
+        .nav-links { display: flex; gap: 8px; }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover { background: var(--neutral-100); color: var(--neutral-800); }
+        .nav-link.active { background: var(--primary-50); color: var(--primary-700); }
+
+        .lang-switch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--neutral-300);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .lang-switch:hover { background: var(--neutral-200); }
+
+        /* ───── الغلاف ───── */
+        .cover {
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #065f46 100%);
+            color: white;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cover-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cover-breadcrumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .cover-breadcrumb a { color: #d4d4d4; text-decoration: none; }
+        .cover-breadcrumb span { color: #a3a3a3; }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ch-mid);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cover-badge-dot { width: 8px; height: 8px; background: var(--ch); border-radius: 50%; }
+
+        .cover h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .cover .sub { font-size: 20px; color: #d4d4d4; margin-bottom: 30px; }
+
+        .cover-chips { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .cover-chip {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            background: rgba(5,150,105,0.4);
+        }
+
+        /* ───── الحاوية ───── */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ───── الشريط الجانبي ───── */
+        .sidebar { position: sticky; top: 86px; height: fit-content; }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--neutral-200);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+            background: var(--ch-light);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ch);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            padding: 12px;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+
+        .sidebar-link:hover { background: var(--ch-light); color: var(--ch-dark); }
+        .sidebar-link.active { background: var(--ch-light); color: var(--ch); }
+
+        .sidebar-link-number {
+            width: 26px; height: 26px;
+            background: var(--neutral-100);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--neutral-500);
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .sidebar-link.active .sidebar-link-number { background: var(--ch); color: white; }
+
+        .sidebar-sep {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neutral-400);
+            padding: 12px 12px 6px;
+        }
+
+        /* ───── المحتوى ───── */
+        .content { min-width: 0; }
+
+        /* ───── رأس الفصل ───── */
+        .chapter-header { padding: 8px 0 30px; text-align: center; }
+
+        .chapter-num {
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+            background: var(--ch-light);
+            color: var(--ch);
+        }
+
+        .chapter-title { font-size: 2.2em; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; }
+
+        .chapter-divider {
+            height: 4px;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            width: 80px;
+            background: var(--ch);
+        }
+
+        /* ───── قسم الموضوع ───── */
+        .topic {
+            margin-bottom: 32px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--neutral-200);
+            padding: 34px;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--neutral-100);
+        }
+
+        .topic-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+            background: var(--ch-light);
+        }
+
+        h2 { font-size: 1.55em; font-weight: 700; color: var(--dark); }
+        h3 { font-size: 1.2em; color: var(--dark2); margin: 24px 0 10px; }
+        p { margin-bottom: 14px; font-size: 1.02em; }
+        strong { color: var(--dark); }
+
+        /* ───── الأهداف التعليمية ───── */
+        .objectives-grid { display: grid; gap: 16px; }
+
+        .objective-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--neutral-50);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .objective-number {
+            width: 40px; height: 40px;
+            background: var(--ch);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .objective-text { color: var(--neutral-700); font-size: 15px; line-height: 1.6; }
+
+        /* ───── صندوق القصة ───── */
+        .story {
+            background: var(--ch-light);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin: 24px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #a7f3d0;
+            border-right: 5px solid var(--ch);
+        }
+
+        .story-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 8px;
+            background: #d1fae5;
+            color: var(--ch);
+        }
+
+        .story p { margin-bottom: 10px; }
+        .story p:last-child { margin-bottom: 0; }
+
+        /* ───── نقطة رئيسية ───── */
+        .key-point {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-right: 5px solid var(--green);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-point h4 { color: var(--green); margin-bottom: 6px; font-size: 1em; }
+        .key-point p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── تحذير ───── */
+        .warning {
+            background: linear-gradient(135deg, var(--red-light), #fecaca);
+            border-right: 5px solid var(--red);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .warning h4 { color: var(--red); margin-bottom: 6px; font-size: 1em; }
+        .warning p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق معلومات ───── */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-right: 5px solid #3b82f6;
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 { color: #1d4ed8; margin-bottom: 6px; font-size: 1em; }
+        .info-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── صندوق زمردي ───── */
+        .emerald-box {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-right: 5px solid var(--ch);
+            border-radius: 14px 0 0 14px;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .emerald-box h4 { color: var(--ch); margin-bottom: 6px; font-size: 1em; }
+        .emerald-box p { margin-bottom: 0; font-size: 1em; }
+
+        /* ───── قائمة نظيفة ───── */
+        .clean-list { list-style: none; padding: 0; margin: 16px 0; }
+
+        .clean-list li {
+            padding: 10px 36px 10px 0;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.02em;
+        }
+
+        .clean-list li:last-child { border-bottom: none; }
+
+        .clean-list li::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 14px;
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            background: var(--ch-light);
+            border: 1px solid #a7f3d0;
+        }
+
+        /* ───── شبكة المقارنة ───── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .compare-card {
+            background: var(--neutral-50);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid;
+        }
+
+        .compare-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .compare-card p { font-size: 0.95em; margin-bottom: 0; }
+
+        /* ───── شبكة الخريطة ───── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--ch);
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover { transform: translateY(-3px); }
+        .map-card .mc-icon { font-size: 2em; margin-bottom: 8px; }
+        .map-card .mc-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin-bottom: 4px; }
+        .map-card .mc-desc { color: var(--gray); font-size: 0.85em; }
+
+        /* ───── قائمة الخطوات ───── */
+        .step-list { list-style: none; padding: 0; margin: 20px 0; }
+
+        .step-list li {
+            display: flex;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            width: 32px; height: 32px;
+            background: var(--ch);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95em;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* ───── صندوق الكود ───── */
+        .code-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.9;
+            color: #e2e8f0;
+            overflow-x: auto;
+            white-space: pre;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-box .k { color: #93c5fd; }
+        .code-box .s { color: #86efac; }
+        .code-box .n { color: #fbbf24; }
+        .code-box .c { color: #64748b; font-style: italic; }
+        .code-box .tag { color: #f472b6; }
+        .code-box .attr { color: #a5b4fc; }
+
+        /* ───── جدول البيانات ───── */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: 20px 0; }
+
+        .data-table th {
+            text-align: right;
+            padding: 10px 16px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+
+        .data-table td { padding: 14px 16px; background: white; font-size: 0.98em; }
+        .data-table tr td:last-child { border-radius: 10px 0 0 10px; }
+        .data-table tr td:first-child { border-radius: 0 10px 10px 0; }
+        .data-table tbody tr { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* ───── فاصل القسم ───── */
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--ch-light), var(--ch), var(--ch-light));
+            margin: 48px 0;
+            border-radius: 3px;
+        }
+
+        /* ───── لافتة الملخص ───── */
+        .summary-banner {
+            background: linear-gradient(135deg, var(--ch-dark), var(--ch));
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .summary-banner h3 { color: white; font-size: 1.3em; margin-bottom: 14px; }
+        .summary-banner ul { list-style: none; padding: 0; }
+
+        .summary-banner li {
+            padding: 8px 28px 8px 0;
+            position: relative;
+            opacity: 0.95;
+            font-size: 1.02em;
+        }
+
+        .summary-banner li::before { content: '\2713'; position: absolute; right: 0; font-weight: 700; }
+
+        /* ───── التذييل ───── */
+        .footer { background: var(--neutral-900); color: white; padding: 48px 40px; margin-top: 20px; }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand { font-weight: 700; font-size: 18px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--neutral-400); text-decoration: none; font-size: 14px; }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- شريط التنقل -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <a href="../index.html" class="nav-brand">
+            <div class="nav-brand-icon">CYB</div>
+            <span class="nav-brand-text">CYB 236: أمن تطبيقات الويب</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="lang-switch">English</a>
+            <a href="../index.html" class="nav-link">الصفحة الرئيسية</a>
+            <a href="../week9/index-ar.html" class="nav-link">الأسبوع 9</a>
+            <a href="index-ar.html" class="nav-link active">الأسبوع 10</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════ الغلاف ══════════════════════ -->
+<header class="cover">
+    <div class="cover-inner">
+        <div class="cover-breadcrumb">
+            <a href="../index.html">CYB 236</a>
+            <span>›</span>
+            <span>الأسبوع 10</span>
+            <span>›</span>
+            <span>الجزء الثالث — التطوير الآمن IV</span>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-badge-dot"></div>
+            الأسبوع 10 &nbsp;·&nbsp; التطوير الآمن IV
+        </div>
+        <h1>الدفاع ضد الحقن وهجمات <span class="term">DoS</span> ومخاطر الجهات الخارجية</h1>
+        <p class="sub">تحديد المعاملات · تقييد الصلاحيات · فحص التبعيات · عزل التكاملات</p>
+        <div class="cover-chips">
+            <div class="cover-chip">ف.25 الدفاع ضد الحقن</div>
+            <div class="cover-chip">ف.26 الدفاع ضد DoS</div>
+            <div class="cover-chip">ف.27 تأمين التبعيات الخارجية</div>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════ المحتوى ══════════════════════ -->
+<div class="container">
+<div class="main-layout">
+
+<!-- ═══════════ المحتوى الرئيسي ═══════════ -->
+<main class="content">
+
+<!-- ════════ رأس الفصل ════════ -->
+<div class="chapter-header">
+    <div class="chapter-num">الفصول 25 – 27</div>
+    <div class="chapter-title">الدفاع ضد الحقن وهجمات DoS ومخاطر الجهات الخارجية</div>
+    <div class="chapter-divider"></div>
+</div>
+
+<!-- ════════ نظرة عامة ════════ -->
+<div id="overview" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>نظرة عامة — إكمال صورة الدفاع</h2>
+    </div>
+
+    <p>يختتم الأسبوع 10 الجزء الثالث من المقرر — النصف الدفاعي من الكتاب. بعد أن تناولنا الدفاع ضد <span class="term">XSS</span> و<span class="term">CSRF</span> و<span class="term">XXE</span> في الأسبوع 9، ننتقل الآن إلى فئات الهجوم الثلاث المتبقية: <strong>الحقن (Injection)</strong>، و<strong>حجب الخدمة (DoS)</strong>، و<strong>استغلال تبعيات الجهات الخارجية</strong>. يقدّم كل فصل تقنيات ملموسة وأنماط برمجية وقرارات معمارية تُقلّل من مخاطر هذه الفئات أو تُزيلها.</p>
+
+    <div class="map-grid">
+        <div class="map-card">
+            <div class="mc-icon">&#128200;</div>
+            <div class="mc-title">ف.25 — الدفاع ضد الحقن</div>
+            <div class="mc-desc">اكتشاف مخاطر حقن SQL، واستخدام العبارات المُجهَّزة، وتطبيق مبدأ الصلاحية الدنيا، وقائمة الأوامر البيضاء.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#9889;</div>
+            <div class="mc-title">ف.26 — الدفاع ضد DoS</div>
+            <div class="mc-desc">منع DoS عبر التعابير النمطية، وتصنيف مخاطر DoS المنطقي، والتخفيف من DDoS عبر خدمات النطاق الترددي والتوجيه للثقب الأسود.</div>
+        </div>
+        <div class="map-card">
+            <div class="mc-icon">&#128230;</div>
+            <div class="mc-title">ف.27 — أمن الجهات الخارجية</div>
+            <div class="mc-desc">تقييم أشجار التبعيات، وفحص قواعد بيانات CVE تلقائيًا، وعزل الحزم الخطرة، وتثبيت الإصدارات بالتغليف المُحكم.</div>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128203; الدفاع المتعدد الطبقات عبر جميع فئات الهجوم</h4>
+        <p>لا يكفي ضبط واحد وحده. التطبيقات الأكثر صمودًا تجمع بين ممارسات البرمجة الآمنة، والقيود المعمارية (كمبدأ الصلاحية الدنيا)، والفحص التلقائي، والسجلات المراقَبة — بحيث إن أخفقت طبقة واحدة، تبقى الطبقات الأخرى في مكانها.</p>
+    </div>
+</div>
+
+<!-- ════════ الأهداف التعليمية ════════ -->
+<div id="objectives" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127919;</div>
+        <h2>الأهداف التعليمية</h2>
+    </div>
+    <div class="objectives-grid">
+        <div class="objective-card">
+            <div class="objective-number">1</div>
+            <div class="objective-text"><strong>اكتشاف</strong> مخاطر حقن SQL في قاعدة الكود الحالية من خلال تحديد استيراد محوّلات قواعد البيانات، وبناء الاستعلامات الخام، وأنماط التسلسل النصي غير الآمن.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">2</div>
+            <div class="objective-text"><strong>تطبيق</strong> العبارات المُجهَّزة لتجميع استعلامات SQL مسبقًا وشرح سبب عدم إمكانية تغيير نية الاستعلام بيانات المستخدم عبر التحديد المسبق للمعاملات.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">3</div>
+            <div class="objective-text"><strong>تطبيق</strong> مبدأ الصلاحية الدنيا عبر وحدات التطبيق للحدّ من الضرر في حال استغلال ثغرة حقن، وإنشاء قائمة بيضاء بالأوامر التي يمكن للمستخدم الوصول إليها من جانب الخادم.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">4</div>
+            <div class="objective-text"><strong>تصنيف</strong> مخاطر DoS باعتبارها طيفًا لا ثنائيًا، والتمييز بين Regex DoS والـ DoS المنطقي، وشرح سبب احتمال حجب تخفيفات DDoS لحركة المرور الشرعية.</div>
+        </div>
+        <div class="objective-card">
+            <div class="objective-number">5</div>
+            <div class="objective-text"><strong>تأمين</strong> تكاملات الجهات الخارجية من خلال تقييم أشجار التبعيات الكاملة، وتشغيل فحوصات CVE التلقائية، وعزل الحزم على خوادم منفصلة، وتثبيت الإصدارات بالتغليف المُحكم.</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--              الفصل 25 — الدفاع ضد الحقن              -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ اكتشاف حقن SQL ════════ -->
+<div id="inj-detect" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128200;</div>
+        <h2>ف.25 — اكتشاف حقن SQL في قاعدة الكود</h2>
+    </div>
+
+    <p>قبل الدفاع ضد حقن SQL، يجب أولًا <strong>تحديد أماكن بناء استعلامات SQL</strong> في قاعدة الكود. في معظم تطبيقات الويب الحديثة، تجري عمليات SQL من جانب الخادم، بعد طبقة التوجيه — لذا يمكن تجاهل مجلد العميل عادةً. غير أن مسارات التحليل وخدمات الخلفية يجب تضمينها لأنها تتفاعل مع قواعد البيانات بشكل متكرر.</p>
+
+    <h3>البحث عن استدعاءات SQL عبر محوّلات متعددة</h3>
+    <p>كثيرًا ما تستخدم التطبيقات أكثر من محوّل SQL واحد. أسهل طريقة للبحث عن كل استدعاءات SQL في مشروع Node.js هي البحث عن عبارات استيراد المحوّل:</p>
+
+    <div class="code-box">
+<span class="c">// ابحث عن هذه الاستيرادات لتحديد جميع عمليات SQL في قاعدة الكود</span>
+<span class="k">const</span> sql   = require(<span class="s">'mssql'</span>);   <span class="c">// SQL Server عبر محوّل NodeMSSQL</span>
+<span class="k">const</span> mysql = require(<span class="s">'mysql'</span>);   <span class="c">// MySQL عبر محوّل mysql</span>
+
+<span class="c">// يُنهي كلا المحوّلَين الاستعلامات عادةً بـ .query(x)</span>
+<span class="c">// بعض المحوّلات تستخدم صياغة أكثر وضوحًا — ابحث عنها أيضًا:</span>
+<span class="k">const</span> <span class="n">getUserByUsername</span> = <span class="k">function</span>(username) {
+    <span class="k">const</span> q = <span class="k">new</span> sql();
+    q.select(<span class="s">'*'</span>);
+    q.from(<span class="s">'users'</span>);
+    q.where(<span class="s">`username = ${username}`</span>);   <span class="c">// ✗ غير آمن — تضمين مباشر</span>
+};
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; محوّلات DSL قد تُخفي استدعاءات SQL</h4>
+        <p>تستخدم بعض البرامج الخادمية لغة مخصصة (DSL) تُولّد SQL نيابةً عنك. قد لا تبدو هذه الاستدعاءات كـ SQL خام، لكنها لا تزال تُنفّذ استعلامات تحت الغطاء. تحقق دائمًا من وثائق ORM ومكتبة التحليل لديك لفهم طريقة تفاعلها مع قاعدة البيانات.</p>
+    </div>
+
+    <div class="key-point">
+        <h4>&#128273; ابدأ ببحث شامل</h4>
+        <p>أنشئ قائمة بكل محوّل SQL وORM وDSL مستخدم في تطبيقك — بما في ذلك تلك المستخدمة من قِبَل التبعيات الخارجية. أي موقع تلمس فيه بيانات المستخدم استعلامًا يُعدّ نقطة حقن محتملة.</p>
+    </div>
+</div>
+
+<!-- ════════ العبارات المُجهَّزة ════════ -->
+<div id="inj-prepared" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128274;</div>
+        <h2>العبارات المُجهَّزة — خط الدفاع الأول</h2>
+    </div>
+
+    <p>العبارات المُجهَّزة هي الدفاع الأكثر شيوعًا وفاعلية ضد حقن SQL. تعمل عن طريق <strong>تجميع الاستعلام أولًا</strong> باستخدام متغيرات وهمية، ثم تمرير القيم الفعلية بشكل منفصل. لأن نية الاستعلام تُثبَّت قبل معالجة أي بيانات مستخدم، يصبح من المستحيل على المدخلات تغيير ما يفعله الاستعلام.</p>
+
+    <h3>كيف تعمل العبارات المُجهَّزة</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>تجميع الاستعلام بعناصر نائبة</strong><br>
+                تستقبل قاعدة البيانات بنية الاستعلام وتُجمّعها — مثلًا: <code>SELECT name FROM products WHERE price &lt;= ?</code>. يُعدّ <code>?</code> متغيرًا وهميًا. في هذه المرحلة، تُثبَّت نية الاستعلام بشكل نهائي.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>تمرير قيم المتغيرات بشكل منفصل</strong><br>
+                تُمرَّر بيانات المستخدم إلى الاستعلام المُجمَّع مسبقًا. تعامل قاعدة البيانات هذه البيانات كقيمة عادية — ليس كصياغة SQL. لا يمكن لأي إدخال مُصمَّم تحويل <code>SELECT</code> إلى <code>DELETE</code>.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>التنفيذ وإلغاء التخصيص</strong><br>
+                يُنفَّذ الاستعلام بالقيم المرتبطة، ثم يُلغى تخصيص العبارة المُجمَّعة لتحرير مساحة ذاكرتها.
+            </div>
+        </li>
+    </ol>
+
+    <h3>مثال على عبارة مُجهَّزة في MySQL</h3>
+
+    <div class="code-box">
+<span class="c">-- ✓ آمن: نية الاستعلام تُجمَّع قبل تطبيق بيانات المستخدم</span>
+PREPARE q FROM <span class="s">'SELECT name, barCode FROM products WHERE price &lt;= ?'</span>;
+SET @price = <span class="n">12</span>;           <span class="c">-- قيمة يوفرها المستخدم</span>
+EXECUTE q USING @price;   <span class="c">-- تملأ القيمة العنصر النائب ? بعد التجميع</span>
+DEALLOCATE PREPARE q;
+
+<span class="c">-- حتى لو كانت @price = "5; UPDATE users SET balance=10000"</span>
+<span class="c">-- لن يُنفَّذ UPDATE — فهو لم يُجمَّع قط</span>
+    </div>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; الاستعلام التقليدي (غير آمن)</h4>
+            <p>تُرسَل بيانات المستخدم وسلسلة الاستعلام معًا كسلسلة واحدة. يمكن لمدخل مُصمَّم الهروب من الاستعلام وحقن أوامر SQL جديدة.</p>
+            <p style="margin-top:10px;"><code>'SELECT name FROM products WHERE price &lt;= ' + price + ';'</code></p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; العبارة المُجهَّزة (آمن)</h4>
+            <p>يُجمَّع الاستعلام أولًا. تملأ بيانات المستخدم عنصرًا نائبًا بعد التجميع. لا يمكن لأي إدخال مُصمَّم تغيير بنية الاستعلام.</p>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128273; مدعوم في كل مكان</h4>
+        <p>العبارات المُجهَّزة مدعومة في كل قاعدة بيانات SQL كبرى تقريبًا: MySQL وOracle وPostgreSQL وMicrosoft SQL Server وغيرها. التكلفة الوحيدة هي ذهاب وإياب إضافي إلى قاعدة البيانات للتجميع — وهو أمر لا يكاد يُذكر في معظم التطبيقات.</p>
+    </div>
+</div>
+
+<!-- ════════ الدفاعات الخاصة بقواعد البيانات ════════ -->
+<div id="inj-db" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128451;</div>
+        <h2>الدفاعات الخاصة بقواعد البيانات</h2>
+    </div>
+
+    <p>إضافةً إلى العبارات المُجهَّزة، توفر قواعد بيانات SQL الكبرى <strong>دوالّ ترميز وإفلات مدمجة</strong> تُطهّر مجموعات الأحرف الخطرة. يجب استخدامها عندما يتعذّر تحديد معاملات الاستعلام بالكامل — لكن يجب التعامل معها كـ <em>تخفيف</em>، لا كدفاع شامل.</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>قاعدة البيانات</th>
+                <th>الدالة / الأسلوب</th>
+                <th>ما تُفلته</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Oracle (Java)</strong></td>
+                <td><code>ESAPI.encoder().encodeForSQL(new OracleCodec(), str)</code></td>
+                <td>يُرمّز الأحرف الخطرة في سياقات Oracle SQL</td>
+            </tr>
+            <tr>
+                <td><strong>MySQL</strong></td>
+                <td><code>SELECT QUOTE('test''case')</code></td>
+                <td>يُفلت الشرطات المائلة العكسية والاقتباسات المفردة وNULL — يعيد سلسلة مُقتبَسة بشكل صحيح</td>
+            </tr>
+            <tr>
+                <td><strong>MySQL</strong></td>
+                <td><code>mysql_real_escape_string()</code></td>
+                <td>يُفلت الشرطات المائلة العكسية والاقتباسات المفردة/المزدوجة و<code>\n</code> و<code>\r</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; ليست دفاعًا شاملًا</h4>
+        <p>تُقلّل أدوات التطهير الخاصة بقاعدة البيانات من مخاطر الحقن لكن لا ينبغي أن تكون <em>الدفاع الوحيد</em>. لا تحمي من جميع أنواع الحقن، وتعتمد على تحديد المطوّر لكل مدخل خطر وإفلاته بشكل صحيح. افضّل دائمًا العبارات المُجهَّزة كضبط أساسي.</p>
+    </div>
+</div>
+
+<!-- ════════ أهداف الحقن العامة ════════ -->
+<div id="inj-generic" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128269;</div>
+        <h2>أهداف الحقن العامة</h2>
+    </div>
+
+    <p>الحقن لا يقتصر على SQL. أي مكوّن يقبل مدخلات نصية ويمرّرها إلى <strong>مترجم أو مُجمِّع أو أداة سطر أوامر</strong> يُعدّ هدفًا محتملًا للحقن. عند مراجعة قاعدة الكود، انتبه بشكل خاص للأهداف عالية المخاطر التالية:</p>
+
+    <ul class="clean-list">
+        <li><strong>قواعد بيانات SQL</strong> — الهدف الأكثر شيوعًا؛ استخدم العبارات المُجهَّزة والمُرمِّزات الخاصة بقاعدة البيانات</li>
+        <li><strong>جدولة المهام</strong> — الوظائف المجدولة التي تقبل معاملات ديناميكية يمكن التلاعب بها لتشغيل أوامر غير مقصودة</li>
+        <li><strong>مكتبات الضغط / التحسين</strong> — أدوات CLI كـ FFMPEG التي تقبل مسارات الملفات أو خياراتها من مدخلات المستخدم</li>
+        <li><strong>سكريبتات النسخ الاحتياطي عن بُعد</strong> — سكريبتات تستدعي نظام التشغيل المُضيف بحجج يتحكم فيها المستخدم</li>
+        <li><strong>أنظمة السجلات</strong> — حقن السجلات يمكنه إتلاف ملفات السجل أو استغلال مُحلِّلات السجل المنبثقة</li>
+        <li><strong>أي استدعاء لنظام التشغيل</strong> — أوامر الصدفة المُنشأة ببيانات يتحكم فيها المستخدم هي نواقل حقن أوامر</li>
+        <li><strong>أي مترجم أو مُجمِّع</strong> — دوالّ نمط eval التي تُنفّذ سلاسل يوفرها المستخدم</li>
+        <li><strong>التبعيات الخارجية</strong> — التبعيات الفرعية قد تتفاعل هي نفسها مع CLIs أو قواعد البيانات بطرق خطرة</li>
+    </ul>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — الحقن خارج قواعد البيانات</div>
+        <p>قد يستخدم تطبيق لاستضافة الفيديو FFMPEG لضغط الفيديو، يُستدعى من نقطة نهاية Node.js API. إذا جاءت أسماء الملفات أو خيارات الضغط المُمرَّرة إلى FFMPEG مباشرةً من مدخلات المستخدم دون تطهير، يمكن للمهاجم حقن أوامر صدفة تُنفَّذ بصلاحيات عملية خادم الويب.</p>
+    </div>
+</div>
+
+<!-- ════════ مبدأ الصلاحية الدنيا ════════ -->
+<div id="inj-pola" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128275;</div>
+        <h2>مبدأ الصلاحية الدنيا (PoLA)</h2>
+    </div>
+
+    <p>ينصّ <strong>مبدأ الصلاحية الدنيا</strong> (المعروف أيضًا بمبدأ الامتياز الأدنى) على أن كل وحدة في النظام يجب أن تصل فقط إلى <em>البيانات والوظائف اللازمة لتشغيل تلك الوحدة بشكل صحيح</em> — لا أكثر. تطبيق هذا المبدأ لا يمنع الحقن، لكنه يُقلّص بشكل كبير الضرر الذي يمكن للمهاجم إحداثه إذا اكتشف ثغرة حقن واستغلّها.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — مثال النسخ الاحتياطي عبر CLI</div>
+        <p>تخيّل أداة CLI تُنشئ نسخًا احتياطية تلقائية لصور ملفات تعريف المستخدمين. إذا كانت تعمل بـ <strong>صلاحيات المدير</strong>، فإن هجوم حقن ناجح ضدها قد يُفضح الخادم بأكمله. بدلًا من ذلك، إذا عملت الأداة فقط بأدنى صلاحيات قراءة الملفات اللازمة لمهمة النسخ الاحتياطي، فإن حجم الضرر عند الاختراق يكون أصغر بكثير.</p>
+    </div>
+
+    <h3>تطبيق PoLA في الممارسة العملية</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; بدون PoLA</h4>
+            <p>مستخدم قاعدة بيانات واحد بصلاحيات مدير كاملة تستخدمه جميع الوحدات. الحقن في أي وحدة يمنح المهاجم تحكمًا كاملًا في قاعدة البيانات — قراءةً وكتابةً وحذفًا وتعديلًا للمخطط.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; مع PoLA</h4>
+            <p>كل وحدة لها دور قاعدة بيانات خاص مقتصر على العمليات التي تحتاجها فعلًا. الحقن في وحدة البحث يُتيح فقط <code>SELECT</code> — لا <code>UPDATE</code> أو <code>DROP</code>.</p>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128273; PoLA يزداد أهميةً مع نموّ التطبيقات</h4>
+        <p>كلما ازداد تعقيد التطبيق، تعددت تفاعلاته بين الوحدات، وزادت أهمية PoLA. قد تبدو إدارة حسابات ومفاتيح إضافية عبئًا على المطوّرين، لكنها ضرورية لاحتواء الاختراقات في الأنظمة الإنتاجية.</p>
+    </div>
+</div>
+
+<!-- ════════ القائمة البيضاء للأوامر ════════ -->
+<div id="inj-whitelist" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9989;</div>
+        <h2>القائمة البيضاء للأوامر</h2>
+    </div>
+
+    <p>السماح للعميل بإرسال أوامر عشوائية لتنفيذها على الخادم هو نمط معماري عالي المخاطر ينبغي تجنّبه كليًا. عندما يكون تنفيذ الأوامر من جانب الخادم حتميًا، يجب تعريف <strong>قائمة بيضاء بالأوامر المسموح بها</strong> وتطبيقها — ولا يجوز استخدام قائمة سوداء قط.</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>&#10060; بلا قائمة بيضاء (مُعرَّض للخطر)</h4>
+            <p>أي أمر تدعمه مكتبة CLI قابل للتنفيذ من قِبَل العميل. يستطيع المهاجم استدعاء أوامر لم تُعدّ للمستخدمين أبدًا، أو تسلسل أوامر لإنشاء سلوك غير مقصود.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>&#9989; نهج القائمة البيضاء (آمن)</h4>
+            <p>تُسمح فقط الأوامر الواردة في مصفوفة مُعرَّفة مسبقًا. يُرفض فورًا أي أمر غير موجود في القائمة بحالة 400 قبل التنفيذ.</p>
+        </div>
+    </div>
+
+    <div class="code-box">
+<span class="k">const</span> cli      = require(<span class="s">'../util/cli'</span>);
+<span class="k">const</span> commands = [<span class="s">'print'</span>, <span class="s">'cut'</span>, <span class="s">'copy'</span>, <span class="s">'paste'</span>, <span class="s">'refresh'</span>];
+
+<span class="c">// ✓ آمن — تُمرَّر فقط الأوامر المُدرجة في القائمة البيضاء إلى CLI</span>
+<span class="k">const</span> <span class="n">postCommands</span> = <span class="k">function</span>(req, res) {
+    <span class="k">const</span> userCommands = req.body.commands;
+    userCommands.forEach((c) => {
+        <span class="k">if</span> (!commands.includes(c)) { <span class="k">return</span> res.sendStatus(<span class="n">400</span>); }
+    });
+    cli.run(req.body.commands);
+};
+    </div>
+
+    <div class="info-box">
+        <h4>&#128161; القائمة البيضاء مقابل القائمة السوداء</h4>
+        <p>نهج القائمة السوداء خطير لأن التطبيقات تتطوّر — أمر جديد يُضاف لاحقًا قد يُتيح للمستخدم وصولًا غير مقصود، ولن تحمي القائمة السوداء منه ما لم تُحدَّث يدويًا. القائمة البيضاء بالمقابل تُطبّق سياسة <em>الرفض الافتراضي</em>: الأوامر الجديدة تُحظر حتى تُوافَق عليها صراحةً.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--                الفصل 26 — الدفاع ضد DoS                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ Regex DoS ════════ -->
+<div id="dos-regex" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128269;</div>
+        <h2>ف.26 — الحماية من Regex DoS</h2>
+    </div>
+
+    <p>Regex DoS هو أسهل أشكال DoS منعًا، لكنه يستلزم معرفة ما تبحث عنه. يستهدف الهجوم <strong>التعابير النمطية ذات التراجع الأسّي</strong> — الأنماط التي، عند تغذيتها بمدخل مُصمَّم بعناية، تجعل محرك التعابير النمطية يقضي وقتًا طويلًا جدًا في محاولة كل تركيبة مطابقة ممكنة.</p>
+
+    <h3>ما الذي يجعل التعبير النمطي "شريرًا"</h3>
+    <p>تتضمن أنماط التعابير النمطية الخطرة عادةً <strong>مجموعة متكررة مع مُحدِّد جشع</strong>:</p>
+
+    <div class="code-box">
+<span class="c">// نمط يمكنه التسبب في تراجع أسّي:</span>
+(<span class="n">a</span>[<span class="n">ab</span>]*)+
+<span class="c">// + يعني: جد جميع المطابقات المحتملة قبل الإرجاع (جشع)</span>
+<span class="c">// * يعني: طابق التعبير الفرعي أكبر عدد ممكن من المرات</span>
+<span class="c">// معًا: يجرّب المحرك عددًا أسّيًا من المسارات</span>
+    </div>
+
+    <h3>ثلاث خطوات لمنع Regex DoS</h3>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>استخدم أداة تحليل ثابت أو مُختبِر أداء للتعابير النمطية</strong><br>
+                يمكن لأدوات المصدر المفتوح فحص تعابيرك النمطية بحثًا عن الأنماط "الشريرة" وتنبيهك إليها قبل وصولها إلى الإنتاج. الاختبار اليدوي للأداء بمدخلات معاكِسة فعّال أيضًا في رصد التعابير الإشكالية.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>لا تسمح أبدًا بتعابير نمطية يُوفّرها المستخدم في تطبيقك</strong><br>
+                السماح للمستخدمين برفع أو إنشاء تعابير نمطية خطر بالغ. لا توجد طريقة موثوقة لتقييم التعابير النمطية العشوائية التي يوفّرها المستخدمون بأمان دون جهد كبير — تجنّب هذا النمط كليًا.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>راجع تكاملات الجهات الخارجية</strong><br>
+                تأكد أن أي تطبيق تتكامل معه لا يستخدم تعابير نمطية يوفّرها المستخدم أو تعابير نمطية مكتوبة بشكل رديء داخليًا. Regex DoS في تبعية يُؤثّر على تطبيقك تمامًا مثل ذلك في كودك الخاص.
+            </div>
+        </li>
+    </ol>
+</div>
+
+<!-- ════════ DoS المنطقي ════════ -->
+<div id="dos-logical" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#9889;</div>
+        <h2>الحماية من DoS المنطقي</h2>
+    </div>
+
+    <p>DoS المنطقي أصعب اكتشافًا ومنعًا من Regex DoS. يستهدف منطق التطبيق الذي يسمح عن غير قصد للمهاجم (أو حتى المستخدم الشرعي) باستهلاك قدر غير متناسب من موارد الخادم أو العميل — كنقطة نهاية API مُكلِفة حسابيًا يمكن استدعاؤها بشكل متكرر.</p>
+
+    <h3>مخاطر DoS طيف لا ثنائية</h3>
+    <p>على خلاف XSS — حيث تكون الثغرة إما موجودة أو غير موجودة — تقع مخاطر DoS على مقياس متدرّج:</p>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>خطر منخفض ("آمن")</h4>
+            <p>استغلال هذا الكود يتطلب مهاجمًا بموارد ضخمة. حتى لو استُهدف، يكون تأثيره ضئيلًا. يُعدّ آمنًا للأغراض العملية.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: #f59e0b;">
+            <h4>خطر متوسط</h4>
+            <p>يمكن إساءة استخدام المنطق في ظروف معينة — مثلًا، ملحوظ فقط على الأجهزة ضعيفة الطاقة، أو بجهد منسّق فقط. ينبغي إعطاؤه أولوية للمعالجة.</p>
+        </div>
+    </div>
+
+    <div class="emerald-box">
+        <h4>&#128161; أخطئ نحو الحذر</h4>
+        <p>عند تصنيف مخاطر DoS، الأسلم معاملة الكود متوسط الخطر على أنه مُعرَّض للخطر. دالة بطيئة على الأجهزة المحمولة اليوم قد تصبح هدف DDoS غدًا إذا نما التطبيق في الحجم أو الشهرة.</p>
+    </div>
+
+    <h3>تحديد المجالات عالية المخاطر</h3>
+    <p>للحماية من DoS المنطقي، حدّد الأجزاء من قاعدة الكود التي تتفاعل مع موارد النظام الحيوية:</p>
+
+    <ul class="clean-list">
+        <li>العمليات الثقيلة على المعالج التي تُشغَّل بواسطة نقاط نهاية API (الحسابات المُكثِّفة، معالجة الصور)</li>
+        <li>استعلامات قاعدة البيانات بلا حدود للنتائج — مثلًا، استعلام يمكنه إرجاع ملايين الصفوف</li>
+        <li>الدوالّ العودية بلا حدود صارمة للعمق</li>
+        <li>الوظائف غير المتزامنة في الخلفية (النسخ الاحتياطية، تحويل الملفات) القابلة لتكرار التشغيل عبر API</li>
+        <li>حلقات العرض من جانب العميل التي تنمو مع حجم مجموعة بيانات يوفّرها المستخدم</li>
+    </ul>
+</div>
+
+<!-- ════════ DDoS ════════ -->
+<div id="dos-ddos" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#127760;</div>
+        <h2>هجمات DDoS والشبكات الروبوتية</h2>
+    </div>
+
+    <p>هجمات الحرمان الموزّع من الخدمة (DDoS) أصعب بكثير في الدفاع مقارنةً بهجمات DoS من مهاجم واحد، لأنها تنشأ من <strong>مصادر متعددة في وقت واحد</strong>، يتحكم فيها مهاجم مركزي. بدلًا من استهداف ثغرة في الكود، تُغرق معظم هجمات DDoS الهدف عبر حجم ضخم من الحركة التي تبدو شرعية.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — كيف تعمل الشبكات الروبوتية</div>
+        <p>يُوزّع مهاجم DDoS برمجيات خبيثة عبر قنوات شرعية (مُرفقة ببرامج، روابط تصيّد، إلخ). تعمل هذه البرمجيات الخبيثة بصمت على الأجهزة المصابة — أجهزة كمبيوتر شخصية وهواتف محمولة وأجهزة IoT كأجهزة توجيه وأجهزة ذكية — وتفتح بابًا خلفيًا. يستطيع المهاجم بعد ذلك أن يأمر آلاف هذه الأجهزة "الزومبي" بإغراق خادم الهدف في وقت واحد. تُسمى هذه الشبكة من الأجهزة المخترقة <strong>بوتنت</strong> (robot + network).</p>
+    </div>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; لا يمكن منع DDoS كليًا</h4>
+        <p>لأن حركة DDoS تُحاكي الحركة الشرعية بأساليب عديدة، لا يوجد فلتر مثالي. الهدف هو التخفيف — تقليل الأثر على المستخدمين الشرعيين مع حجب أكبر قدر ممكن من الحركة الخبيثة. أي تخفيف مُهاجِم يحجب ما يكفي من الحركة الخبيثة سيُخاطر أيضًا بحجب بعض المستخدمين الشرعيين.</p>
+    </div>
+</div>
+
+<!-- ════════ تقنيات التخفيف من DDoS ════════ -->
+<div id="dos-mitigation" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128737;</div>
+        <h2>تقنيات التخفيف من DDoS</h2>
+    </div>
+
+    <p>رغم عدم إمكانية منع DDoS كليًا، تُقلّل عدة تقنيات تأثيره بشكل ملحوظ:</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>التقنية</th>
+                <th>كيف تعمل</th>
+                <th>المقايضة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>خدمات إدارة النطاق الترددي</strong></td>
+                <td>خدمات خارجية تعترض جميع الحركة قبل وصولها إلى خادمك. يُحلَّل كل حزمة في الوقت الفعلي وتُحجب إذا طابقت أنماطًا خبيثة. فعّالة جدًا للهجمات عالية الحجم.</td>
+                <td>التكلفة؛ قد تحجب المستخدمين الشرعيين بسبب إيجابيات كاذبة</td>
+            </tr>
+            <tr>
+                <td><strong>التوجيه للثقب الأسود</strong></td>
+                <td>تُعاد توجيه الحركة المشبوهة أو المتكررة إلى خادم وهمي ("ثقب أسود") يبدو نشطًا لكنه لا ينجز عمليات حقيقية. تستمر الحركة الشرعية إلى الخادم الفعلي.</td>
+                <td>قد تُوجَّه الحركة الشرعية إلى الثقب الأسود إذا كانت دقة الاستهداف غير كافية</td>
+            </tr>
+            <tr>
+                <td><strong>تحديد معدل الطلبات</strong></td>
+                <td>تحديد عدد الطلبات التي يمكن لعنوان IP واحد أو مستخدم تقديمها خلال نافذة زمنية. سهل التطبيق وفعّال ضد الهجمات منخفضة التعقيد.</td>
+                <td>عناوين IP المشتركة (NAT، البروكسيات) قد تتسبب في حجب مستخدمين أبرياء</td>
+            </tr>
+            <tr>
+                <td><strong>السجلات الشاملة</strong></td>
+                <td>تسجيل جميع الطلبات مع الطوابع الزمنية وأوقات الاستجابة. تسجيل الوظائف غير المتزامنة في الخلفية يدويًا. يُتيح الكشف عن أنماط DoS التي كانت ستمرّ دون أن تُلاحَظ.</td>
+                <td>يتطلب بنية تحتية للتخزين والمراقبة</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128273; اعرف خط الأساس قبل نشر التخفيفات</h4>
+        <p>فلاتر DDoS شديدة العدوانية ستحجب المستخدمين الشرعيين. قبل تطبيق إجراءات التخفيف، اجمع مقاييس تفصيلية عن سلوك المستخدم الطبيعي — معدلات الطلبات، والأنماط الجغرافية، وأنواع الأجهزة. يُتيح هذا الخط الأساسي ضبط الفلاتر لتقليل الإيجابيات الكاذبة مع زيادة الحماية.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--           الفصل 27 — أمن الجهات الخارجية              -->
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<!-- ════════ أشجار التبعيات ════════ -->
+<div id="tp-trees" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128230;</div>
+        <h2>ف.27 — تقييم أشجار التبعيات</h2>
+    </div>
+
+    <p>نادرًا ما تستخدم تطبيقات الويب الحديثة تبعياتها الخارجية المباشرة فحسب. لكل تبعية في الغالب تبعياتها الخاصة — تُسمى <strong>تبعيات الجهة الرابعة</strong> — والتي قد تملك هي الأخرى تبعياتها، وهكذا. تُسمى السلسلة الكاملة <strong>شجرة التبعيات</strong>.</p>
+
+    <div class="story">
+        <div class="story-label">&#128214; من الكتاب — مشكلة التبعيات في العالم الحقيقي</div>
+        <p>تخيّل تطبيقًا يستخدم jQuery مباشرةً، لكنه يستخدم أيضًا إطار SPA ومكتبة مكوّنات UI — وكلاهما يتطلب jQuery أيضًا، لكن بإصدار أقدم. في تطبيق كبير بـ 100 تبعية خارجية، يمكن أن يُنتج هذا النمط شجرة تبعيات تضم <strong>آلاف أو عشرات آلاف</strong> الحزم والإصدارات الفريدة.</p>
+    </div>
+
+    <div class="code-box">
+<span class="c"># استخدم npm ls لعرض شجرة التبعيات الكاملة</span>
+npm ls
+
+<span class="c"># مثال على الإخراج — كل عنصر بادئ هو تبعية فرعية:</span>
+@fortawesome/ember-fontawesome@0.1.14
+@fortawesome/fontawesome-svg-core@1.2.19
+    @fortawesome/fontawesome-common-types@0.2.19 deduped
+    broccoli-file-creator@1.2.0
+    broccoli-plugin@1.3.1 deduped
+    mkdirp@0.5.1 deduped
+    broccoli-merge-trees@2.0.1
+        merge-trees@1.0.1
+    </div>
+
+    <h3>لماذا تهمّ فوارق الإصدارات</h3>
+
+    <div class="compare-grid">
+        <div class="compare-card" style="border-top-color: var(--red);">
+            <h4>الخطر في العالم الحقيقي</h4>
+            <p>تطبيقك يستخدم jQuery 3.4.0 (آمن)، لكن إطار SPA الخاص بك يستخدم jQuery 2.2.1 (مُعرَّض للثغرات). حتى لو كان الاستيراد من المستوى الأعلى آمنًا، إصدار التبعية الفرعية لا يزال مُحمَّلًا وقابلًا للاستغلال.</p>
+        </div>
+        <div class="compare-card" style="border-top-color: var(--green);">
+            <h4>الهدف</h4>
+            <p>كل تبعية فريدة بكل إصدار فريد يجب تقييمها بشكل مستقل. الثغرة في إصدار تبعية فرعية خطيرة بالقدر ذاته كثغرة في تبعية مباشرة.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ════════ الفحص التلقائي لـ CVE ════════ -->
+<div id="tp-automated" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128202;</div>
+        <h2>التقييم التلقائي للتبعيات وفحص CVE</h2>
+    </div>
+
+    <p>مراجعة آلاف التبعيات يدويًا أمر غير عملي. الأدوات التلقائية ضرورة لا غنى عنها. النهج الأكثر فاعلية هو <strong>نمذجة شجرة التبعيات كبنية بيانات</strong> ثم مقارنتها بقاعدة بيانات CVE (الثغرات والتعرضات الشائعة) المعروفة.</p>
+
+    <h3>الأدوات والأوامر</h3>
+
+    <div class="code-box">
+<span class="c"># عرض شجرة التبعيات الكاملة حتى عمق محدد</span>
+npm list --depth=<span class="n">5</span>
+
+<span class="c"># تشغيل تدقيق تلقائي يقارن شجرتك بـ CVEs المعروفة</span>
+npm audit
+
+<span class="c"># Snyk — ماسح ثغرات خارجي شهير</span>
+snyk test
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>المورد</th>
+                <th>ما يوفّره</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>قاعدة البيانات الوطنية للثغرات (NIST)</strong></td>
+                <td>قاعدة بيانات CVE ممولة حكوميًا وطويلة الأمد. موثوقة لمقارنة إصدارات التبعيات بالثغرات المعروفة.</td>
+            </tr>
+            <tr>
+                <td><strong>Snyk</strong></td>
+                <td>ماسح خارجي يتكامل مع npm وMaven وpip ومديري الحزم الآخرين. يوفر توجيه المعالجة إلى جانب تقارير الثغرات.</td>
+            </tr>
+            <tr>
+                <td><strong>npm audit</strong></td>
+                <td>أمر npm مدمج يفحص حزمك المثبتة في مقابل قاعدة بيانات تنبيهات npm ويُبلّغ عن الثغرات المعروفة.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-point">
+        <h4>&#128273; أتمتة الفحص عند كل إضافة تبعية</h4>
+        <p>لا ينبغي أن يكون فحص CVE نشاطًا يُجرى مرة واحدة. في كل مرة تُضاف أو تُحدَّث تبعية، يجب إعادة فحص الشجرة بالكامل. ادمج فحص CVE في خط أنابيب CI/CD حتى تجري فحوصات الثغرات تلقائيًا قبل نشر أي كود.</p>
+    </div>
+</div>
+
+<!-- ════════ فصل الاهتمامات ════════ -->
+<div id="tp-separation" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128736;</div>
+        <h2>التكامل الآمن — فصل الاهتمامات</h2>
+    </div>
+
+    <p>إحدى أكثر التقنيات المعمارية فاعلية للحدّ من مخاطر تبعية خارجية مخترقة هي <strong>تشغيلها على خادم معزول خاص بها</strong>. يتواصل تطبيقك الرئيسي معها عبر HTTP، مُرسِلًا ومستقبِلًا حمولات JSON.</p>
+
+    <ol class="step-list">
+        <li>
+            <div class="step-num">1</div>
+            <div>
+                <strong>نشر التبعية الخطرة على خادمها الخاص</strong><br>
+                تعمل التبعية في بيئة لا تملك وصولًا إلى قاعدة بيانات تطبيقك أو نظام ملفاته أو شبكته الداخلية. إذا اختُرقت الحزمة، يكون المهاجم محصورًا في ذلك الخادم.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">2</div>
+            <div>
+                <strong>التواصل عبر HTTP + JSON فقط</strong><br>
+                تضمن حمولات JSON عدم إمكانية تنفيذ سكريبتات على خادم التطبيق الرئيسي من خلال قناة الاتصال وحدها. تتصرف التبعية كدالة عديمة الحالة — مدخل يدخل، ومخرج يخرج.
+            </div>
+        </li>
+        <li>
+            <div class="step-num">3</div>
+            <div>
+                <strong>تهيئة قواعد جدار الحماية لخادم التبعية</strong><br>
+                قيّد ما يمكن لخادم التبعية الاتصال به. بدون جدار حماية مُهيَّأ بشكل صحيح، يمكن لتبعية مخترقة الوصول إلى قاعدة بياناتك أو خدماتك الداخلية، مما يُبطل العزل.
+            </div>
+        </li>
+    </ol>
+
+    <div class="warning">
+        <h4>&#9888;&#65039; للعزل تكاليفه</h4>
+        <p>تشغيل التبعيات على خوادم منفصلة يُدخل زمن تأخير (ذهاب وإياب HTTP إضافي) وتعقيدًا تشغيليًا (المزيد من الخوادم لإدارتها). علاوةً على ذلك، أي بيانات سرية تُرسَل إلى خادم التبعية يمكن اعتراضها أو تسجيلها إذا اختُرقت الحزمة. العزل يُقلّل المخاطر — لا يُزيلها.</p>
+    </div>
+</div>
+
+<!-- ════════ إدارة الحزم الآمنة ════════ -->
+<div id="tp-packages" class="topic">
+    <div class="topic-header">
+        <div class="topic-icon">&#128274;</div>
+        <h2>إدارة الحزم الآمنة — تثبيت الإصدار والتغليف المُحكم</h2>
+    </div>
+
+    <p>عندما تُراجع تبعية وتتحقق من أنها آمنة بإصدار محدد، تريد <strong>منع تغيير ذلك الإصدار دون علمك</strong>. يوفر npm ومديرو الحزم المماثلون أدوات لهذا الغرض.</p>
+
+    <h3>الإصدار الدلالي وخطر علامة الإقحام</h3>
+    <p>يستخدم npm الإصدار الدلالي بثلاثة أرقام: <code>major.minor.patch</code>. افتراضيًا، يُضيف npm علامة إقحام (<code>^</code>) قبل كل إصدار تبعية، مما يُوجّه npm لتثبيت دائم لأحدث إصلاح:</p>
+
+    <div class="code-box">
+<span class="c">// package.json — السلوك الافتراضي مع علامة الإقحام</span>
+<span class="s">"dependencies"</span>: {
+    <span class="s">"myLib"</span>: <span class="s">"^1.0.23"</span>   <span class="c">// قد يُرقَّى تلقائيًا إلى 1.0.24 أو 1.0.25 إلخ.</span>
+}
+
+<span class="c">// أزِل علامة الإقحام لتثبيت الإصدار المُراجَع تمامًا:</span>
+<span class="s">"dependencies"</span>: {
+    <span class="s">"myLib"</span>: <span class="s">"1.0.23"</span>    <span class="c">// يستخدم دائمًا 1.0.23 تحديدًا</span>
+}
+    </div>
+
+    <h3>التغليف المُحكم — تثبيت الشجرة بأكملها</h3>
+    <p>تثبيت الإصدار على المستوى الأعلى يتحكم فقط في تبعياتك المباشرة. التبعيات الفرعية قد تتغير. <strong>التغليف المُحكم</strong> يُثبّت شجرة التبعيات بأكملها:</p>
+
+    <div class="code-box">
+<span class="c"># أنشئ ملف تغليف مُحكم يُثبّت جميع الإصدارات في الشجرة</span>
+npm shrinkwrap
+
+<span class="c"># ينشئ هذا الأمر npm-shrinkwrap.json</span>
+<span class="c"># من هذه النقطة، كل تبعية وتبعية فرعية</span>
+<span class="c"># مُثبَّتة على الإصدار الدقيق الذي تمت مراجعته</span>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>التقنية</th>
+                <th>ما تُثبّته</th>
+                <th>القيد</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>إزالة علامة الإقحام (^)</strong></td>
+                <td>التبعيات المباشرة من المستوى الأعلى فقط</td>
+                <td>لا تُثبّت إصدارات التبعيات الفرعية</td>
+            </tr>
+            <tr>
+                <td><strong>npm shrinkwrap</strong></td>
+                <td>شجرة التبعيات بأكملها (جميع المستويات)</td>
+                <td>قد يُعيد الصانع النشر باستخدام رقم إصدار موجود — لا يستطيع shrinkwrap اكتشاف ذلك</td>
+            </tr>
+            <tr>
+                <td><strong>مراجع Git SHA</strong></td>
+                <td>عمليات إيداع محددة في مستودع Git</td>
+                <td>أكثر تعقيدًا في الإدارة؛ يتطلب الوصول إلى مستودعات المصدر</td>
+            </tr>
+            <tr>
+                <td><strong>مرآة npm خاصة</strong></td>
+                <td>نسختك الخاصة من كل إصدار حزمة مُراجَع</td>
+                <td>أعلى أمانًا، لكن أعلى تكلفةً تشغيليةً</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="emerald-box">
+        <h4>&#128273; الدفاع المتعمق للتبعيات</h4>
+        <p>النهج الأكثر أمانًا يجمع عدة تقنيات: غلّف شجرة التبعيات بـ shrinkwrap، واستخدم مراجع Git SHA للحزم الأكثر أهمية، وفكّر في تشغيل مرآة npm خاصة للبيئات عالية الأمان. لا تُزيل أي تقنية وحدها خطر تبعية مخترقة — يجب تطبيقها بشكل متراكب.</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ════════ الملخص ════════ -->
+<div id="summary" class="summary-banner">
+    <h3>&#128737; ملخص الفصول 25–27 — الدفاع ضد الحقن وDoS والتبعيات الخارجية</h3>
+    <ul>
+        <li>اكتشف مخاطر حقن SQL بإيجاد جميع استيرادات محوّلات قواعد البيانات وبناء الاستعلامات الخام في قاعدة الكود — بما فيها تلك الموجودة في مسارات التحليل وخدمات الخلفية</li>
+        <li>العبارات المُجهَّزة تُجمِّع الاستعلامات قبل تطبيق بيانات المستخدم — لا يمكن لأي مدخل مستخدم تغيير نية الاستعلام، مما يُزيل معظم مخاطر حقن SQL</li>
+        <li>المُرمِّزات الخاصة بقواعد البيانات (Oracle ESAPI وMySQL QUOTE و mysql_real_escape_string) تُقلّل من مخاطر الحقن لكنها تخفيفات لا دفاعًا شاملًا</li>
+        <li>أهداف الحقن تتجاوز SQL — جدولة المهام وCLIs والسجلات واستدعاءات نظام التشغيل وأي مترجم كلها أسطح حقن محتملة</li>
+        <li>مبدأ الصلاحية الدنيا يُحدّد ضرر الاختراق بضمان وصول كل وحدة فقط إلى البيانات والوظائف التي تحتاجها فعلًا</li>
+        <li>عندما يجب ربط مدخلات المستخدم بأوامر جانب الخادم، طبّق قائمة بيضاء — لا قائمة سوداء أبدًا — بالعمليات المسموح بها</li>
+        <li>يُمنع Regex DoS بفحص التعابير النمطية "الشريرة" (المجموعات المتكررة مع المُحدِّدات الجشعة) وعدم السماح أبدًا بتعابير نمطية يوفّرها المستخدم</li>
+        <li>مخاطر DoS طيف — صنّف الكود كخطر مرتفع/متوسط/منخفض بدلًا من ثنائية آمن/مُعرَّض؛ أخطئ نحو الحذر</li>
+        <li>لا يمكن منع DDoS كليًا — خفّفه بخدمات إدارة النطاق الترددي والتوجيه للثقب الأسود وتحديد معدل الطلبات، مستخدمًا خط أساس حركة المرور الشرعية لضبط الفلاتر</li>
+        <li>أشجار التبعيات قد تضم آلاف الحزم — الفحص التلقائي لـ CVE (npm audit وSnyk وNIST NVD) ضروري ويجب تشغيله عند كل تغيير في التبعيات</li>
+        <li>عزل الحزم الخارجية الخطرة على خادمها الخاص يتواصل عبر HTTP + JSON لاحتواء أثر تبعية مخترقة</li>
+        <li>ثبّت شجرة تبعياتك بأكملها مع npm shrinkwrap؛ استخدم مراجع Git SHA أو مرآة npm خاصة للبيئات عالية الأمان</li>
+    </ul>
+</div>
+
+</main>
+
+<!-- ═══════════ الشريط الجانبي ═══════════ -->
+<aside class="sidebar">
+    <div class="sidebar-card">
+        <div class="sidebar-header">
+            <div class="sidebar-title">الفصول 25–27 — المحتويات</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#overview"         class="sidebar-link active"><span class="sidebar-link-number">1</span>نظرة عامة</a>
+            <a href="#objectives"       class="sidebar-link"><span class="sidebar-link-number">2</span>الأهداف التعليمية</a>
+
+            <div class="sidebar-sep">ف.25 — الدفاع ضد الحقن</div>
+            <a href="#inj-detect"       class="sidebar-link"><span class="sidebar-link-number">3</span>اكتشاف حقن SQL</a>
+            <a href="#inj-prepared"     class="sidebar-link"><span class="sidebar-link-number">4</span>العبارات المُجهَّزة</a>
+            <a href="#inj-db"           class="sidebar-link"><span class="sidebar-link-number">5</span>دفاعات قواعد البيانات</a>
+            <a href="#inj-generic"      class="sidebar-link"><span class="sidebar-link-number">6</span>أهداف الحقن العامة</a>
+            <a href="#inj-pola"         class="sidebar-link"><span class="sidebar-link-number">7</span>مبدأ الصلاحية الدنيا</a>
+            <a href="#inj-whitelist"    class="sidebar-link"><span class="sidebar-link-number">8</span>القائمة البيضاء للأوامر</a>
+
+            <div class="sidebar-sep">ف.26 — الدفاع ضد DoS</div>
+            <a href="#dos-regex"        class="sidebar-link"><span class="sidebar-link-number">9</span>الحماية من Regex DoS</a>
+            <a href="#dos-logical"      class="sidebar-link"><span class="sidebar-link-number">10</span>الحماية من DoS المنطقي</a>
+            <a href="#dos-ddos"         class="sidebar-link"><span class="sidebar-link-number">11</span>هجمات DDoS والبوتنت</a>
+            <a href="#dos-mitigation"   class="sidebar-link"><span class="sidebar-link-number">12</span>التخفيف من DDoS</a>
+
+            <div class="sidebar-sep">ف.27 — أمن الجهات الخارجية</div>
+            <a href="#tp-trees"         class="sidebar-link"><span class="sidebar-link-number">13</span>أشجار التبعيات</a>
+            <a href="#tp-automated"     class="sidebar-link"><span class="sidebar-link-number">14</span>الفحص التلقائي لـ CVE</a>
+            <a href="#tp-separation"    class="sidebar-link"><span class="sidebar-link-number">15</span>فصل الاهتمامات</a>
+            <a href="#tp-packages"      class="sidebar-link"><span class="sidebar-link-number">16</span>إدارة الحزم الآمنة</a>
+
+            <div class="sidebar-sep">الخاتمة</div>
+            <a href="#summary"          class="sidebar-link"><span class="sidebar-link-number">17</span>الملخص الشامل</a>
+        </nav>
+    </div>
+</aside>
+
+</div><!-- /main-layout -->
+</div><!-- /container -->
+
+<!-- التذييل -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">CYB 236 — أمن تطبيقات الويب</div>
+        <div class="footer-links">
+            <a href="../index.html">الصفحة الرئيسية</a>
+            <a href="../week9/index-ar.html">الأسبوع 9</a>
+            <a href="../syllabus.html">المنهج الدراسي</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

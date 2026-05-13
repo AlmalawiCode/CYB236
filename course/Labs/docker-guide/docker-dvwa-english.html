@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker &amp; DVWA — Complete Guide</title>
+    <style>
+        :root {
+            --primary-color: #c0392b;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --light-bg: #f7fafc;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+            --kali-blue: #1a5f4a;
+            --kali-dark: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #922b21 0%, #4a1010 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">🐳</text></svg>');
+            background-size: 150px;
+            opacity: 0.3;
+        }
+
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; position: relative; }
+
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 25px 40px;
+            background: linear-gradient(135deg, #922b21 0%, #6b1f17 100%);
+            color: white;
+        }
+
+        .lab-info-item { text-align: center; padding: 15px; background: rgba(255,255,255,0.15); border-radius: 10px; backdrop-filter: blur(10px); }
+        .lab-info-item strong { display: block; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.1em; font-weight: 600; }
+
+        .content { padding: 40px; }
+
+        .toc {
+            background: linear-gradient(135deg, #fde8e8 0%, #f9c0c0 100%);
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-bottom: 40px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; }
+        .toc ol { columns: 2; column-gap: 30px; padding-left: 20px; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: var(--primary-color); text-decoration: none; transition: all 0.3s ease; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        section { margin-bottom: 40px; }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 { color: var(--primary-color); font-size: 1.4em; margin: 25px 0 15px 0; display: flex; align-items: center; gap: 8px; }
+        h4 { color: var(--dark-text); font-size: 1.15em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { padding-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        .alert { padding: 20px 25px; border-radius: 12px; margin: 20px 0; display: flex; gap: 15px; align-items: flex-start; }
+        .alert-icon { font-size: 1.5em; flex-shrink: 0; }
+        .alert-info    { background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%); border-left: 5px solid var(--info-color); }
+        .alert-warning { background: linear-gradient(135deg, #fffff0 0%, #fefcbf 100%); border-left: 5px solid var(--warning-color); }
+        .alert-danger  { background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%); border-left: 5px solid var(--danger-color); }
+        .alert-success { background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); border-left: 5px solid var(--accent-color); }
+        .alert h4 { margin: 0 0 8px 0; color: inherit; }
+        .alert p, .alert ul { margin: 0; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        th { background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%); color: white; padding: 15px 20px; text-align: left; font-weight: 600; }
+        td { padding: 12px 20px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: #edf2f7; }
+
+        code { background: #1a202c; color: #68d391; padding: 3px 8px; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; }
+        pre { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); color: #e2e8f0; padding: 20px; border-radius: 12px; overflow-x: auto; margin: 15px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        pre code { background: none; color: #68d391; padding: 0; }
+
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 15px; padding-left: 50px; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; width: 35px; height: 35px; background: linear-gradient(135deg, #922b21 0%, #6b1f17 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(146,43,33,0.3); }
+
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 10px 0 10px 35px; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '☐'; position: absolute; left: 0; font-size: 1.2em; color: var(--primary-color); }
+
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .card h4 { color: var(--primary-color); margin-top: 0; margin-bottom: 10px; }
+        .card p { margin: 0; font-size: 0.9em; color: #555; }
+
+        /* Level badges for DVWA security levels */
+        .level-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.85em; margin-right: 8px; }
+        .level-low      { background: #fed7d7; color: #c0392b; }
+        .level-medium   { background: #fefcbf; color: #b7791f; }
+        .level-high     { background: #c6f6d5; color: #276749; }
+        .level-impossible { background: #bee3f8; color: #2c5282; }
+
+        /* Concept diagram boxes */
+        .concept-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0;
+            margin: 25px 0;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #922b21 0%, #6b1f17 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-align: center;
+            min-width: 110px;
+        }
+
+        .concept-box.gray { background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%); }
+        .concept-box.green { background: linear-gradient(135deg, #276749 0%, #1a4731 100%); }
+        .concept-box.blue { background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%); }
+
+        .concept-arrow { font-size: 1.5em; color: #a0aec0; padding: 0 8px; }
+
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%); padding: 15px 20px; font-weight: 600; color: var(--danger-color); display: flex; align-items: center; gap: 10px; }
+        .troubleshoot-solution { padding: 20px; background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); }
+
+        .credentials-box { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; margin: 25px 0; }
+        .credentials-box h4 { color: #68d391; margin-bottom: 15px; }
+        .credential-item { display: inline-block; margin: 10px 20px; padding: 10px 20px; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .credential-item strong { color: #a0aec0; display: block; font-size: 0.85em; margin-bottom: 5px; }
+        .credential-item span { font-family: 'Consolas', monospace; font-size: 1.3em; color: #68d391; }
+
+        .footer { background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%); color: white; padding: 30px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        a { color: var(--primary-color); text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+        a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        .lang-switch { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .lang-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 50px; font-size: 1em; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.4); transition: all 0.3s ease; text-decoration: none; }
+        .lang-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(16,185,129,0.5); color: white; text-decoration: none; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 30px 20px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 25px; }
+            .toc ol { columns: 1; }
+            .concept-flow { flex-direction: column; }
+        }
+
+        @media print { body { background: white; padding: 0; } .container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+
+    <div class="lang-switch">
+        <a href="docker-dvwa-arabic.html" class="lang-btn">🌍 العربية (Arabic)</a>
+    </div>
+
+    <div class="container">
+
+        <header class="header">
+            <h1>🐳 Docker &amp; DVWA — Complete Guide</h1>
+            <p class="subtitle">CYB236 &mdash; Understanding, Running &amp; Troubleshooting Docker and DVWA</p>
+        </header>
+
+        <div class="lab-info">
+            <div class="lab-info-item"><strong>Type</strong><span>Reference Guide</span></div>
+            <div class="lab-info-item"><strong>Applies To</strong><span>Labs 1 – 10</span></div>
+            <div class="lab-info-item"><strong>Environment</strong><span>Kali Linux</span></div>
+            <div class="lab-info-item"><strong>Level</strong><span>Beginner</span></div>
+        </div>
+
+        <div class="content">
+
+            <nav class="toc">
+                <h2>📋 Table of Contents</h2>
+                <ol>
+                    <li><a href="#what-docker">What is Docker?</a></li>
+                    <li><a href="#docker-concepts">Docker Key Concepts</a></li>
+                    <li><a href="#container-vs-vm">Container vs. Virtual Machine</a></li>
+                    <li><a href="#what-dvwa">What is DVWA?</a></li>
+                    <li><a href="#dvwa-modules">DVWA Vulnerability Modules</a></li>
+                    <li><a href="#dvwa-levels">DVWA Security Levels</a></li>
+                    <li><a href="#port-mapping">Understanding Port Mapping</a></li>
+                    <li><a href="#credentials">DVWA Default Credentials</a></li>
+                    <li><a href="#lifecycle">Docker Container Lifecycle</a></li>
+                    <li><a href="#part1">Listing Containers</a></li>
+                    <li><a href="#part2">Starting DVWA</a></li>
+                    <li><a href="#part3">Stopping &amp; Removing Containers</a></li>
+                    <li><a href="#part4">Two Containers Conflict</a></li>
+                    <li><a href="#troubleshooting">Common Problems &amp; Solutions</a></li>
+                    <li><a href="#cheatsheet">Quick Reference Cheat Sheet</a></li>
+                </ol>
+            </nav>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- WHAT IS DOCKER -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="what-docker">
+                <h2>🐳 What is Docker?</h2>
+                <p><strong>Docker</strong> is an open-source platform that allows you to package, distribute, and run applications inside lightweight, isolated environments called <strong>containers</strong>. Instead of installing software directly on your operating system — which can cause dependency conflicts, break other tools, or leave messy leftovers — Docker wraps each application with everything it needs to run (code, libraries, settings) into one self-contained unit.</p>
+
+                <p>Think of Docker as a <strong>shipping container in the real world</strong>: the same container can be loaded onto any ship, truck, or train without caring what is underneath. In the same way, a Docker container runs the same way on any machine that has Docker installed, regardless of the underlying operating system.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>📦 Consistent Environment</h4>
+                        <p>DVWA runs exactly the same on every student's Kali machine — no "it works on mine but not yours" problems.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔒 Isolation</h4>
+                        <p>The vulnerable web app runs inside a container, safely separated from your real Kali system.</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚡ Fast Setup</h4>
+                        <p>One command starts a fully configured web server with a database, PHP, and DVWA — no manual installation.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 Easy Reset</h4>
+                        <p>Remove and recreate the container to get a completely fresh DVWA installation in seconds.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>Why Docker in Security Labs?</h4>
+                        <p>Running a vulnerable application like DVWA directly on your host system is risky. Docker keeps it isolated: if something goes wrong inside the container, your Kali system is unaffected. You can also destroy and recreate it instantly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- DOCKER KEY CONCEPTS -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="docker-concepts">
+                <h2>🔑 Docker Key Concepts</h2>
+                <p>Before working with Docker, you need to understand these four core terms:</p>
+
+                <table>
+                    <tr>
+                        <th>Term</th>
+                        <th>What It Is</th>
+                        <th>Real-World Analogy</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Image</strong></td>
+                        <td>A read-only template — a blueprint for creating containers. It contains the OS, app, and all dependencies, frozen in time.</td>
+                        <td>A recipe or a blueprint for a house</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Container</strong></td>
+                        <td>A live, running instance created from an image. You can start, stop, and restart it. Multiple containers can be made from the same image.</td>
+                        <td>The actual house built from the blueprint</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Hub</strong></td>
+                        <td>An online registry where Docker images are published and shared publicly. Like GitHub, but for Docker images.</td>
+                        <td>An app store for pre-built environments</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Daemon</strong></td>
+                        <td>The background service that manages all Docker operations on your machine. It must be running for any Docker command to work.</td>
+                        <td>The factory manager that builds and runs containers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Engine</strong></td>
+                        <td>The full Docker software — includes the daemon, CLI, and API. When you run <code>sudo docker ...</code>, you are talking to the engine.</td>
+                        <td>The entire factory building</td>
+                    </tr>
+                </table>
+
+                <h3>🔗 How They Connect</h3>
+                <div class="concept-flow">
+                    <div class="concept-box blue">Docker Hub<br><small>Image Registry</small></div>
+                    <div class="concept-arrow">→ pull →</div>
+                    <div class="concept-box gray">Image<br><small>Local Blueprint</small></div>
+                    <div class="concept-arrow">→ run →</div>
+                    <div class="concept-box green">Container<br><small>Running App</small></div>
+                </div>
+                <p style="text-align:center; color: #718096; font-size:0.9em;">When you run <code>docker run vulnerables/web-dvwa</code>, Docker pulls the image from Docker Hub (if not cached), then creates and starts a container from it.</p>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- CONTAINER VS VM -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="container-vs-vm">
+                <h2>⚖️ Container vs. Virtual Machine</h2>
+                <p>Both containers and virtual machines (VMs) provide isolation, but they work very differently. Understanding this difference helps you know why Docker is used alongside — not instead of — VirtualBox in this course.</p>
+
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>🐳 Docker Container</th>
+                        <th>📦 Virtual Machine (VirtualBox)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>What it virtualizes</strong></td>
+                        <td>The application and its libraries only</td>
+                        <td>An entire computer including the OS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Startup time</strong></td>
+                        <td>Seconds</td>
+                        <td>Minutes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Disk space</strong></td>
+                        <td>Megabytes (DVWA image ≈ 500 MB)</td>
+                        <td>Gigabytes (Kali VM ≈ 20+ GB)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RAM usage</strong></td>
+                        <td>Very low — shares the host kernel</td>
+                        <td>High — needs its own OS memory</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Isolation level</strong></td>
+                        <td>Process-level (shares host kernel)</td>
+                        <td>Full OS-level (completely separate)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use in this course</strong></td>
+                        <td>Run DVWA &amp; Juice Shop quickly</td>
+                        <td>Run Kali Linux as your main lab OS</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>In This Course</h4>
+                        <p>You run <strong>Kali Linux inside VirtualBox</strong> (a VM), and then run <strong>DVWA inside Docker</strong> (a container) inside that Kali VM. Docker containers are nested inside your virtual machine.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- WHAT IS DVWA -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="what-dvwa">
+                <h2>🎯 What is DVWA?</h2>
+                <p><strong>DVWA (Damn Vulnerable Web Application)</strong> is a deliberately insecure PHP/MySQL web application designed specifically for security students and professionals to practice web application attacks in a <strong>legal, safe, and controlled environment</strong>. Every vulnerability in DVWA is intentional — the developers built it broken on purpose.</p>
+
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Full Name</strong></td>
+                        <td>Damn Vulnerable Web Application</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Technology</strong></td>
+                        <td>PHP + MySQL (Apache web server)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>Practice common web vulnerabilities legally</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Image</strong></td>
+                        <td><code>vulnerables/web-dvwa</code> on Docker Hub</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Default Port</strong></td>
+                        <td>80 (HTTP)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Access URL</strong></td>
+                        <td><code>http://localhost</code> or <code>http://127.0.0.1</code></td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-danger">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>Legal Warning</h4>
+                        <p>DVWA must <strong>only</strong> be used in isolated lab environments on machines you control. Never expose it to the internet or a real network. The vulnerabilities in DVWA are real and can be exploited by others if exposed publicly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- DVWA MODULES -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="dvwa-modules">
+                <h2>🧩 DVWA Vulnerability Modules</h2>
+                <p>DVWA includes a set of <strong>vulnerability modules</strong>, each demonstrating a different type of web attack. You will use most of these in CYB236:</p>
+
+                <table>
+                    <tr>
+                        <th>Module</th>
+                        <th>Vulnerability Type</th>
+                        <th>What You Learn</th>
+                    </tr>
+                    <tr>
+                        <td>🔐 <strong>Brute Force</strong></td>
+                        <td>Authentication weakness</td>
+                        <td>Automated password guessing using wordlists (used in Lab 07 with Burp Intruder)</td>
+                    </tr>
+                    <tr>
+                        <td>💉 <strong>Command Injection</strong></td>
+                        <td>OS Command Injection</td>
+                        <td>Injecting system commands through a web form to execute on the server</td>
+                    </tr>
+                    <tr>
+                        <td>🔗 <strong>CSRF</strong></td>
+                        <td>Cross-Site Request Forgery</td>
+                        <td>Tricking a logged-in user's browser into sending unauthorized requests</td>
+                    </tr>
+                    <tr>
+                        <td>📂 <strong>File Inclusion</strong></td>
+                        <td>Local/Remote File Inclusion (LFI/RFI)</td>
+                        <td>Including unintended files (like <code>/etc/passwd</code>) through URL parameters</td>
+                    </tr>
+                    <tr>
+                        <td>📤 <strong>File Upload</strong></td>
+                        <td>Unrestricted File Upload</td>
+                        <td>Uploading malicious files (e.g., PHP shell) to gain server access</td>
+                    </tr>
+                    <tr>
+                        <td>🤖 <strong>Insecure CAPTCHA</strong></td>
+                        <td>Broken authentication control</td>
+                        <td>Bypassing CAPTCHA verification due to server-side logic flaws</td>
+                    </tr>
+                    <tr>
+                        <td>💾 <strong>SQL Injection</strong></td>
+                        <td>SQL Injection</td>
+                        <td>Manipulating database queries through input fields to dump data</td>
+                    </tr>
+                    <tr>
+                        <td>🔍 <strong>SQL Injection (Blind)</strong></td>
+                        <td>Blind SQL Injection</td>
+                        <td>Extracting database data when the application shows no direct error output</td>
+                    </tr>
+                    <tr>
+                        <td>🪪 <strong>Weak Session IDs</strong></td>
+                        <td>Predictable session tokens</td>
+                        <td>Understanding how weak session IDs can be predicted and hijacked</td>
+                    </tr>
+                    <tr>
+                        <td>📜 <strong>XSS (DOM)</strong></td>
+                        <td>DOM-based Cross-Site Scripting</td>
+                        <td>Injecting scripts through the browser's DOM without hitting the server</td>
+                    </tr>
+                    <tr>
+                        <td>📢 <strong>XSS (Reflected)</strong></td>
+                        <td>Reflected Cross-Site Scripting</td>
+                        <td>Injecting scripts that are immediately reflected back in the response</td>
+                    </tr>
+                    <tr>
+                        <td>💬 <strong>XSS (Stored)</strong></td>
+                        <td>Stored Cross-Site Scripting</td>
+                        <td>Injecting scripts that are permanently stored and served to other users</td>
+                    </tr>
+                    <tr>
+                        <td>🔎 <strong>JavaScript</strong></td>
+                        <td>Client-side logic abuse</td>
+                        <td>Manipulating client-side JavaScript to bypass validation</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- DVWA SECURITY LEVELS -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="dvwa-levels">
+                <h2>🛡️ DVWA Security Levels</h2>
+                <p>Every module in DVWA can be run at <strong>four security levels</strong>. This allows you to first understand the vulnerability at its simplest form, then see how real-world defenses make it progressively harder to exploit.</p>
+
+                <p>You can change the security level from the <strong>DVWA Security</strong> menu on the left sidebar after logging in.</p>
+
+                <table>
+                    <tr>
+                        <th>Level</th>
+                        <th>Description</th>
+                        <th>When to Use</th>
+                    </tr>
+                    <tr>
+                        <td><span class="level-badge level-low">Low</span></td>
+                        <td>No security controls at all. Input is passed directly to the backend with zero validation or sanitization. Exploits work with trivial payloads.</td>
+                        <td>Learning the attack for the first time. All lab exercises start here.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="level-badge level-medium">Medium</span></td>
+                        <td>Basic defenses are applied (e.g., blacklisting some characters, simple input filtering). These defenses are common but flawed — they can be bypassed.</td>
+                        <td>Understanding why basic defenses fail and how attackers bypass them.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="level-badge level-high">High</span></td>
+                        <td>Stronger defenses are in place (e.g., whitelisting, parameterized queries, token-based CSRF protection). Exploitation requires more advanced techniques.</td>
+                        <td>Seeing what "better" security looks like and how it can still sometimes be defeated.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="level-badge level-impossible">Impossible</span></td>
+                        <td>The vulnerability is fully patched. The source code represents best-practice secure development. Exploitation is not possible.</td>
+                        <td>Studying how to write secure code. Comparing with Low level to understand what was wrong.</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>Always Start at Low</h4>
+                        <p>Unless your instructor specifies otherwise, always set DVWA to <strong>Low</strong> security before starting a lab exercise. Higher levels may prevent the expected attack from working, causing confusion.</p>
+                    </div>
+                </div>
+
+                <h3>📄 Viewing the Source Code</h3>
+                <p>One of DVWA's most powerful teaching features is the <strong>"View Source"</strong> button at the bottom of each module page. It shows you the actual PHP code running behind the module at each security level — so you can see exactly what makes the code vulnerable or secure.</p>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- PORT MAPPING -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="port-mapping">
+                <h2>🔌 Understanding Port Mapping</h2>
+                <p>When you run DVWA with the command <code>docker run -d -p 80:80 ...</code>, the <code>-p 80:80</code> part tells Docker how to connect your Kali machine to the container. This is called <strong>port mapping</strong> (or port publishing).</p>
+
+                <h3>What is a Port?</h3>
+                <p>A <strong>port</strong> is a numbered communication channel on a computer. When a browser talks to a web server, it uses specific port numbers:</p>
+
+                <table>
+                    <tr>
+                        <th>Port</th>
+                        <th>Protocol</th>
+                        <th>Used For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>80</strong></td>
+                        <td>HTTP</td>
+                        <td>Standard unencrypted web traffic — used by DVWA and Juice Shop</td>
+                    </tr>
+                    <tr>
+                        <td><strong>443</strong></td>
+                        <td>HTTPS</td>
+                        <td>Encrypted web traffic (SSL/TLS)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3000</strong></td>
+                        <td>HTTP (custom)</td>
+                        <td>Used by some apps like Juice Shop (alternate port)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>8080</strong></td>
+                        <td>HTTP (alternate)</td>
+                        <td>Common alternative to port 80 for web apps and Burp Suite proxy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3306</strong></td>
+                        <td>MySQL</td>
+                        <td>Database connections — used internally by DVWA</td>
+                    </tr>
+                </table>
+
+                <h3>How <code>-p 80:80</code> Works</h3>
+                <div class="concept-flow">
+                    <div class="concept-box blue">Your Browser<br><small>http://localhost</small></div>
+                    <div class="concept-arrow">→ port 80 →</div>
+                    <div class="concept-box gray">Kali Linux<br><small>Host port 80</small></div>
+                    <div class="concept-arrow">→ mapped to →</div>
+                    <div class="concept-box green">Docker Container<br><small>Container port 80</small></div>
+                </div>
+
+                <p>The format is <code>HOST_PORT:CONTAINER_PORT</code>. Both are 80 here, but you could use a different host port to avoid conflicts — for example <code>-p 8081:80</code> would make DVWA available at <code>http://localhost:8081</code>.</p>
+
+                <h3>What is <code>localhost</code>?</h3>
+                <p><code>localhost</code> and <code>127.0.0.1</code> are both special addresses that always refer to <strong>your own machine</strong>. When the browser on your Kali VM requests <code>http://localhost</code>, it connects to port 80 on Kali itself — which Docker then forwards into the DVWA container.</p>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>Why Port Conflicts Happen</h4>
+                        <p>Only one process can listen on a given host port at a time. If DVWA is already using host port 80 and you try to start Juice Shop on port 80 too, Docker refuses. This is the most common error in this course.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- CREDENTIALS -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="credentials">
+                <h2>🔑 DVWA Default Credentials</h2>
+                <p>After DVWA starts, open your browser and go to <code>http://localhost</code>. Use these credentials to log in:</p>
+
+                <div class="credentials-box">
+                    <h4>🔑 DVWA Login</h4>
+                    <div class="credential-item">
+                        <strong>Username</strong>
+                        <span>admin</span>
+                    </div>
+                    <div class="credential-item">
+                        <strong>Password</strong>
+                        <span>password</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>First Time: Initialize the Database</h4>
+                        <p>The very first time you open DVWA (or after recreating the container), you will land on a setup page instead of the login screen. Scroll to the bottom and click <strong>"Create / Reset Database"</strong>. DVWA will redirect you to the login page automatically.</p>
+                    </div>
+                </div>
+
+                <h3>After Login — Set Security Level</h3>
+                <ol class="steps">
+                    <li>Log in with <code>admin</code> / <code>password</code></li>
+                    <li>Click <strong>"DVWA Security"</strong> in the left sidebar</li>
+                    <li>Set the security level to <strong>Low</strong> (unless instructed otherwise)</li>
+                    <li>Click <strong>"Submit"</strong></li>
+                    <li>You are now ready to use any vulnerability module</li>
+                </ol>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- DOCKER LIFECYCLE -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="lifecycle">
+                <h2>🔄 Docker Container Lifecycle</h2>
+                <p>A Docker container passes through distinct states. Understanding these states explains why you sometimes need <code>start</code> instead of <code>run</code>, or why a container name conflict occurs.</p>
+
+                <div class="concept-flow" style="flex-wrap:wrap; gap: 10px;">
+                    <div class="concept-box blue" style="min-width:120px;">No Container<br><small>Nothing exists yet</small></div>
+                    <div class="concept-arrow">→ docker run →</div>
+                    <div class="concept-box green" style="min-width:120px;">Running<br><small>docker ps shows it</small></div>
+                    <div class="concept-arrow">→ docker stop/kill →</div>
+                    <div class="concept-box gray" style="min-width:120px;">Stopped (Exited)<br><small>docker ps -a shows it</small></div>
+                    <div class="concept-arrow">→ docker rm →</div>
+                    <div class="concept-box blue" style="min-width:120px;">No Container<br><small>Fully deleted</small></div>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>State</th>
+                        <th>What It Means</th>
+                        <th>Command to Check</th>
+                    </tr>
+                    <tr>
+                        <td><strong>No container</strong></td>
+                        <td>Container has never been created, or was removed with <code>docker rm</code>. Use <code>docker run</code> to create it.</td>
+                        <td><code>docker ps -a</code> shows nothing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Running</strong></td>
+                        <td>Container is active and serving requests. DVWA is accessible in the browser.</td>
+                        <td><code>docker ps</code> → STATUS: Up</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stopped / Exited</strong></td>
+                        <td>Container exists on disk but is not running. Use <code>docker start</code> (not <code>docker run</code>) to bring it back.</td>
+                        <td><code>docker ps -a</code> → STATUS: Exited</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>run vs. start — The Most Common Mistake</h4>
+                        <p><code>docker run</code> <strong>creates a brand-new container</strong> from an image. If a container with that name already exists (even if stopped), <code>run</code> will fail with a "name already in use" error. Use <code>docker start dvwa</code> to restart an existing stopped container.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- PART 1: LIST -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="part1">
+                <h2>📋 Listing Containers</h2>
+                <p>Always start here when DVWA is not working. Know what is running before doing anything else.</p>
+
+                <h3>▶ Show Only Running Containers</h3>
+                <pre><code>sudo docker ps</code></pre>
+
+                <p>This shows containers that are currently <strong>active</strong>. The output columns mean:</p>
+
+                <table>
+                    <tr><th>Column</th><th>Meaning</th></tr>
+                    <tr><td><code>CONTAINER ID</code></td><td>Short unique ID (e.g. <code>a1b2c3d4e5f6</code>)</td></tr>
+                    <tr><td><code>IMAGE</code></td><td>The image used (e.g. <code>vulnerables/web-dvwa</code>)</td></tr>
+                    <tr><td><code>STATUS</code></td><td>How long running (e.g. <code>Up 3 minutes</code>)</td></tr>
+                    <tr><td><code>PORTS</code></td><td>Port mapping (e.g. <code>0.0.0.0:80->80/tcp</code>)</td></tr>
+                    <tr><td><code>NAMES</code></td><td>Container name (e.g. <code>dvwa</code>)</td></tr>
+                </table>
+
+                <h3>📂 Show ALL Containers (Including Stopped)</h3>
+                <pre><code>sudo docker ps -a</code></pre>
+                <p>The <code>-a</code> flag includes stopped and exited containers. Use this to find a previously created DVWA container that is not currently running.</p>
+
+                <h3>🔍 Inspect a Specific Container</h3>
+                <pre><code>sudo docker inspect dvwa</code></pre>
+                <p>Shows detailed JSON information about the container: network settings, mounts, environment variables, and more. Useful for advanced debugging.</p>
+
+                <h3>📊 Show Container Resource Usage</h3>
+                <pre><code>sudo docker stats dvwa</code></pre>
+                <p>Shows live CPU and memory usage. Press <code>Ctrl+C</code> to exit.</p>
+
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <div>
+                        <h4>Reading the Output</h4>
+                        <p>If <code>STATUS</code> says <strong>Up</strong> → DVWA is running. If it says <strong>Exited</strong> → run <code>docker start dvwa</code>. If there is no row at all → run <code>docker run ...</code> to create it.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- PART 2: START -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="part2">
+                <h2>🚀 Starting DVWA</h2>
+
+                <h3>Option A — First Time (No Container Exists)</h3>
+                <p>If <code>docker ps -a</code> shows no DVWA container, create and start it:</p>
+                <pre><code>sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
+
+                <table>
+                    <tr><th>Flag</th><th>Meaning</th></tr>
+                    <tr><td><code>run</code></td><td>Create a new container from an image and start it</td></tr>
+                    <tr><td><code>-d</code></td><td>Detached: run in background, return the terminal to you</td></tr>
+                    <tr><td><code>-p 80:80</code></td><td>Map host port 80 → container port 80</td></tr>
+                    <tr><td><code>--name dvwa</code></td><td>Name the container "dvwa" for easy reference later</td></tr>
+                    <tr><td><code>vulnerables/web-dvwa</code></td><td>The Docker Hub image to use</td></tr>
+                </table>
+
+                <h3>Option B — Container Exists but is Stopped</h3>
+                <p>If <code>docker ps -a</code> shows <code>STATUS: Exited</code>, restart it without recreating:</p>
+                <pre><code>sudo docker start dvwa</code></pre>
+
+                <h3>Option C — Restart a Running Container</h3>
+                <p>If DVWA is running but behaving oddly (e.g., database errors), restart it in place:</p>
+                <pre><code>sudo docker restart dvwa</code></pre>
+
+                <h3>Verify Access</h3>
+                <ol class="steps">
+                    <li>Run <code>sudo docker ps</code> — confirm <code>dvwa</code> shows <code>STATUS: Up</code></li>
+                    <li>Open Firefox in Kali</li>
+                    <li>Go to <code>http://localhost</code></li>
+                    <li>If you see the setup page, click <strong>"Create / Reset Database"</strong></li>
+                    <li>Log in with <code>admin</code> / <code>password</code></li>
+                </ol>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- PART 3: STOP & REMOVE -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="part3">
+                <h2>🛑 Stopping &amp; Removing Containers</h2>
+
+                <h3>Graceful Stop</h3>
+                <p>Sends a termination signal and waits up to 10 seconds for the container to shut down cleanly:</p>
+                <pre><code>sudo docker stop dvwa</code></pre>
+
+                <h3>Force Kill</h3>
+                <p>Immediately terminates the container — no waiting. Use when <code>stop</code> does not respond:</p>
+                <pre><code>sudo docker kill dvwa</code></pre>
+
+                <h3>Remove a Stopped Container</h3>
+                <p>Deletes the container from disk. The image is not deleted — you can <code>docker run</code> again to recreate:</p>
+                <pre><code>sudo docker rm dvwa</code></pre>
+
+                <h3>Force Stop and Remove in One Command</h3>
+                <pre><code>sudo docker rm -f dvwa</code></pre>
+
+                <h3>Remove All Stopped Containers at Once</h3>
+                <pre><code>sudo docker container prune</code></pre>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>stop vs. kill vs. rm</h4>
+                        <ul>
+                            <li><code>stop</code> — politely asks the container to stop (SIGTERM, then SIGKILL after 10 s)</li>
+                            <li><code>kill</code> — immediately kills the container (SIGKILL)</li>
+                            <li><code>rm</code> — deletes the container from the system (container must already be stopped)</li>
+                            <li><code>rm -f</code> — kills and deletes in one step</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- PART 4: TWO CONTAINERS -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="part4">
+                <h2>⚠️ Two Containers Conflict (Port Already in Use)</h2>
+                <p>This is the most common problem in this course. <strong>Lab 02 uses Juice Shop</strong> on port 80. <strong>Labs 03–10 use DVWA</strong> on port 80. Only one can own port 80 at a time.</p>
+
+                <pre><code>docker: Error response from daemon: driver failed programming external connectivity...
+Bind for 0.0.0.0:80 failed: port is already allocated.</code></pre>
+
+                <h3>Diagnose the Conflict</h3>
+                <pre><code>sudo docker ps</code></pre>
+                <p>Look at the <code>PORTS</code> column. Whichever container shows <code>0.0.0.0:80->80/tcp</code> is occupying port 80.</p>
+
+                <h3>Fix It: Stop the Conflicting Container, Then Start DVWA</h3>
+                <pre><code>sudo docker stop juice-shop
+sudo docker start dvwa</code></pre>
+
+                <h3>Switching Between Applications</h3>
+                <table>
+                    <tr><th>Goal</th><th>Commands</th></tr>
+                    <tr><td>Switch to DVWA</td><td><code>sudo docker stop juice-shop &amp;&amp; sudo docker start dvwa</code></td></tr>
+                    <tr><td>Switch to Juice Shop</td><td><code>sudo docker stop dvwa &amp;&amp; sudo docker start juice-shop</code></td></tr>
+                    <tr><td>Stop everything</td><td><code>sudo docker stop $(sudo docker ps -q)</code></td></tr>
+                </table>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- TROUBLESHOOTING -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="troubleshooting">
+                <h2>🔧 Common Problems &amp; Solutions</h2>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ "port is already allocated"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> Another container (Juice Shop or something else) is bound to port 80.</p>
+                        <pre><code>sudo docker ps
+sudo docker stop juice-shop
+sudo docker start dvwa</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ "The container name /dvwa is already in use"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> A stopped container named "dvwa" already exists. You tried to <code>docker run</code> again instead of <code>docker start</code>.</p>
+                        <p><strong>Fix — just start the existing one:</strong></p>
+                        <pre><code>sudo docker start dvwa</code></pre>
+                        <p><strong>Fix — or remove it and recreate:</strong></p>
+                        <pre><code>sudo docker rm dvwa
+sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ DVWA shows "Cannot connect to the database"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> MySQL inside the container has not finished initializing (takes ~10–15 seconds after start).</p>
+                        <p><strong>Fix:</strong> Wait 15 seconds, refresh the browser. If it persists:</p>
+                        <pre><code>sudo docker restart dvwa</code></pre>
+                        <p>Then go to <code>http://localhost/setup.php</code> → click <strong>Create / Reset Database</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ Browser shows "This site can't be reached" or Connection Refused</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> DVWA container is not running, or wrong URL.</p>
+                        <pre><code>sudo docker ps          # Check if dvwa is Up
+sudo docker start dvwa  # If not running</code></pre>
+                        <p>Make sure you use <code>http://localhost</code> (not <code>https://</code>).</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ Container is stuck — docker stop does nothing</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> The container is frozen and ignoring the SIGTERM signal.</p>
+                        <pre><code>sudo docker kill dvwa
+sudo docker start dvwa</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ "Cannot connect to the Docker daemon" or "docker: command not found"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> Docker is not installed, or the Docker daemon is not running.</p>
+                        <pre><code>sudo apt update &amp;&amp; sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ "Permission denied" when running docker commands</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> You forgot <code>sudo</code>, or your user is not in the docker group.</p>
+                        <p><strong>Fix — always use sudo in Kali:</strong></p>
+                        <pre><code>sudo docker ps</code></pre>
+                        <p><strong>Or add your user to the docker group (permanent fix):</strong></p>
+                        <pre><code>sudo usermod -aG docker $USER
+newgrp docker</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ DVWA login fails with correct credentials</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> The database was not initialized after container start.</p>
+                        <p><strong>Fix:</strong> Visit <code>http://localhost/setup.php</code> and click <strong>"Create / Reset Database"</strong>. Then log in with <code>admin</code> / <code>password</code>.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ Burp Suite cannot intercept DVWA traffic when using localhost</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>Cause:</strong> Browsers automatically bypass the proxy for <code>localhost</code> and <code>127.0.0.1</code>. This is a built-in browser security rule — loopback addresses are never sent through a proxy, so Burp Suite never sees the requests even when FoxyProxy is enabled.</p>
+
+                        <p><strong>Fix — use the machine's real IP address instead of localhost:</strong></p>
+
+                        <p><strong>Step 1:</strong> Find your Kali machine's actual IP address:</p>
+                        <pre><code>hostname -i</code></pre>
+                        <p>This returns an IP such as <code>10.0.2.15</code> or <code>192.168.x.x</code> — the real network address of your Kali VM.</p>
+
+                        <p><strong>Step 2:</strong> Open DVWA in the browser using that IP instead of localhost:</p>
+                        <pre><code>http://10.0.2.15</code></pre>
+                        <p>Replace <code>10.0.2.15</code> with whatever <code>hostname -i</code> returned on your machine.</p>
+
+                        <p><strong>Step 3:</strong> Make sure Burp Suite proxy is configured to listen on <code>127.0.0.1:8080</code> (default), and FoxyProxy is set to route traffic through <code>127.0.0.1</code> port <code>8080</code>.</p>
+
+                        <p><strong>Step 4:</strong> Now browse to DVWA using the real IP. Burp Suite will intercept the requests normally.</p>
+
+                        <div class="alert alert-info" style="margin-top:15px;">
+                            <span class="alert-icon">💡</span>
+                            <div>
+                                <h4>Why does this work?</h4>
+                                <p>When you use the real IP (<code>10.x.x.x</code>), the browser treats the request as a normal network request and sends it through the configured proxy (Burp Suite). When you use <code>localhost</code> or <code>127.0.0.1</code>, the browser short-circuits directly to the loopback interface — skipping the proxy entirely.</p>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" style="margin-top:10px;">
+                            <span class="alert-icon">⚠️</span>
+                            <div>
+                                <h4>The IP may change between sessions</h4>
+                                <p>VirtualBox assigns the IP dynamically. Always run <code>hostname -i</code> at the start of each lab session to confirm the current IP before using it in the browser.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════ -->
+            <!-- CHEAT SHEET -->
+            <!-- ══════════════════════════════════════════ -->
+            <section id="cheatsheet">
+                <h2>⚡ Quick Reference Cheat Sheet</h2>
+
+                <table>
+                    <tr><th>What You Want to Do</th><th>Command</th></tr>
+                    <tr><td>See running containers</td><td><code>sudo docker ps</code></td></tr>
+                    <tr><td>See ALL containers (including stopped)</td><td><code>sudo docker ps -a</code></td></tr>
+                    <tr><td>Start DVWA — first time</td><td><code>sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></td></tr>
+                    <tr><td>Start DVWA — container already exists</td><td><code>sudo docker start dvwa</code></td></tr>
+                    <tr><td>Restart DVWA (already running)</td><td><code>sudo docker restart dvwa</code></td></tr>
+                    <tr><td>Stop DVWA gracefully</td><td><code>sudo docker stop dvwa</code></td></tr>
+                    <tr><td>Force kill DVWA (frozen)</td><td><code>sudo docker kill dvwa</code></td></tr>
+                    <tr><td>Remove DVWA container permanently</td><td><code>sudo docker rm dvwa</code></td></tr>
+                    <tr><td>Force stop and remove in one command</td><td><code>sudo docker rm -f dvwa</code></td></tr>
+                    <tr><td>Stop ALL running containers</td><td><code>sudo docker stop $(sudo docker ps -q)</code></td></tr>
+                    <tr><td>Switch from Juice Shop → DVWA</td><td><code>sudo docker stop juice-shop &amp;&amp; sudo docker start dvwa</code></td></tr>
+                    <tr><td>Switch from DVWA → Juice Shop</td><td><code>sudo docker stop dvwa &amp;&amp; sudo docker start juice-shop</code></td></tr>
+                    <tr><td>View live container resource usage</td><td><code>sudo docker stats dvwa</code></td></tr>
+                    <tr><td>View container logs</td><td><code>sudo docker logs dvwa</code></td></tr>
+                    <tr><td>Open DVWA in browser</td><td><code>http://localhost</code> or <code>http://127.0.0.1</code></td></tr>
+                    <tr><td>Reset DVWA database</td><td>Go to <code>http://localhost/setup.php</code> → Create / Reset Database</td></tr>
+                    <tr><td>Check Docker service status</td><td><code>sudo systemctl status docker</code></td></tr>
+                    <tr><td>List locally downloaded images</td><td><code>sudo docker images</code></td></tr>
+                    <tr><td>Find machine IP (for Burp Suite interception)</td><td><code>hostname -i</code></td></tr>
+                    <tr><td>Open DVWA via real IP (bypasses proxy restriction)</td><td><code>http://&lt;IP from hostname -i&gt;</code></td></tr>
+                </table>
+
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <div>
+                        <h4>Golden Rule</h4>
+                        <p>Always run <code>sudo docker ps -a</code> first. Know what state your containers are in before doing anything else. Most problems are solved in under 30 seconds once you see the container status.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="footer">
+            <p><strong>Docker &amp; DVWA — Complete Guide</strong></p>
+            <p>For questions or issues, contact your instructor.</p>
+            <p><strong>CYB236 - Web Application Security</strong></p>
+            <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                King Abdulaziz University &mdash; Faculty of Computing and Information Technology (FCIT)<br>
+                General Intermediate Diploma in Cybersecurity<br>
+                <em>Prepared by Dr. Abdulmohsen Almalawi</em>
+            </p>
+        </footer>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المختبر 01: تثبيت كالي لينكس على VirtualBox</title>
+    <style>
+        :root {
+            --primary-color: #1a5f4a;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --light-bg: #f7fafc;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+            --kali-blue: #1a5f4a;
+            --kali-dark: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #1a5f4a 0%, #0d3127 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">🐉</text></svg>');
+            background-size: 150px;
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.3em;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .kali-logo {
+            width: 120px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        /* Bilingual term styling */
+        .term {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+            display: inline;
+        }
+
+        .term-en {
+            color: var(--kali-blue);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        /* Lab Info Box */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 25px 40px;
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #134436 100%);
+            color: white;
+        }
+
+        .lab-info-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lab-info-item strong {
+            display: block;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .lab-info-item span {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* Content */
+        .content {
+            padding: 40px;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: linear-gradient(135deg, #d4edda 0%, #a8d5b5 100%);
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-bottom: 40px;
+            border-right: 5px solid var(--kali-blue);
+        }
+
+        .toc h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .toc ol {
+            columns: 2;
+            column-gap: 30px;
+            padding-right: 20px;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+            break-inside: avoid;
+        }
+
+        .toc a {
+            color: var(--kali-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--kali-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h4 {
+            color: var(--dark-text);
+            font-size: 1.15em;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .alert-icon {
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-right: 5px solid var(--info-color);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fffff0 0%, #fefcbf 100%);
+            border-right: 5px solid var(--warning-color);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-right: 5px solid var(--danger-color);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-right: 5px solid var(--accent-color);
+        }
+
+        .alert h4 {
+            margin: 0 0 8px 0;
+            color: inherit;
+        }
+
+        .alert p {
+            margin: 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: right;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        tr:hover {
+            background-color: #edf2f7;
+        }
+
+        /* Code blocks */
+        code {
+            background: #1a202c;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        pre {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            direction: ltr;
+            text-align: left;
+        }
+
+        pre code {
+            background: none;
+            color: #68d391;
+            padding: 0;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-right: 50px;
+            position: relative;
+            min-height: 40px;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #134436 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(26, 95, 74, 0.3);
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 10px 35px 10px 0;
+            position: relative;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            right: 0;
+            font-size: 1.2em;
+            color: var(--kali-blue);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card h4 {
+            color: var(--kali-blue);
+            margin-top: 0;
+        }
+
+        /* OS Tabs */
+        .os-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .os-tab {
+            padding: 12px 25px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .os-tab:hover {
+            border-color: var(--kali-blue);
+            background: #ebf8ff;
+        }
+
+        .os-tab.active {
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #134436 100%);
+            color: white;
+            border-color: var(--kali-blue);
+        }
+
+        .os-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .os-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Links */
+        a {
+            color: var(--kali-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .button-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #134436 100%);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 95, 74, 0.3);
+        }
+
+        .button-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(54, 123, 240, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Credentials Box */
+        .credentials-box {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .credentials-box h4 {
+            color: #68d391;
+            margin-bottom: 15px;
+        }
+
+        .credential-item {
+            display: inline-block;
+            margin: 10px 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+
+        .credential-item strong {
+            color: #a0aec0;
+            display: block;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .credential-item span {
+            font-family: 'Consolas', monospace;
+            font-size: 1.3em;
+            color: #68d391;
+        }
+
+        /* Troubleshooting */
+        .troubleshoot-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .troubleshoot-header {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--danger-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .troubleshoot-solution {
+            padding: 20px;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        /* Language Switch Button */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        .lang-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Glossary box */
+        .glossary-box {
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+            border-radius: 15px;
+            padding: 20px 25px;
+            margin: 20px 0;
+            border-right: 5px solid #805ad5;
+        }
+
+        .glossary-box h4 {
+            color: #553c9a;
+            margin-bottom: 15px;
+        }
+
+        .glossary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #d6bcfa;
+        }
+
+        .glossary-item:last-child {
+            border-bottom: none;
+        }
+
+        .glossary-ar {
+            font-weight: 600;
+            color: #553c9a;
+        }
+
+        .glossary-en {
+            font-family: 'Consolas', monospace;
+            color: #6b46c1;
+            direction: ltr;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .toc ol {
+                columns: 1;
+            }
+
+            .os-tabs {
+                flex-direction: column;
+            }
+
+            .os-tab {
+                justify-content: center;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .os-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switch Button -->
+    <div class="lang-switch">
+        <a href="lab01-english.html" class="lang-btn">
+            🌍 English (الإنجليزية)
+        </a>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <img src="https://www.kali.org/images/kali-dragon-icon.svg" alt="شعار كالي لينكس" class="kali-logo" onerror="this.style.display='none'">
+            <h1>🔐 المختبر 01: تثبيت كالي لينكس على VirtualBox</h1>
+            <p class="subtitle">CYB236 - أساسيات الأمن السيبراني (Cybersecurity Fundamentals)</p>
+        </header>
+
+        <!-- Lab Info -->
+        <div class="lab-info">
+            <div class="lab-info-item">
+                <strong>رقم المختبر (Lab Number)</strong>
+                <span>01</span>
+            </div>
+            <div class="lab-info-item">
+                <strong>مستوى الصعوبة (Difficulty)</strong>
+                <span>مبتدئ (Beginner)</span>
+            </div>
+            <div class="lab-info-item">
+                <strong>المدة الزمنية (Duration)</strong>
+                <span>45-60 دقيقة</span>
+            </div>
+            <div class="lab-info-item">
+                <strong>المتطلبات السابقة (Prerequisites)</strong>
+                <span>لا يوجد (None)</span>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+
+            <!-- Glossary -->
+            <div class="glossary-box">
+                <h4>📖 قاموس المصطلحات التقنية (Technical Terms Glossary)</h4>
+                <div class="glossary-item">
+                    <span class="glossary-ar">الجهاز الافتراضي</span>
+                    <span class="glossary-en">Virtual Machine (VM)</span>
+                </div>
+                <div class="glossary-item">
+                    <span class="glossary-ar">اختبار الاختراق</span>
+                    <span class="glossary-en">Penetration Testing</span>
+                </div>
+                <div class="glossary-item">
+                    <span class="glossary-ar">الافتراضية</span>
+                    <span class="glossary-en">Virtualization</span>
+                </div>
+                <div class="glossary-item">
+                    <span class="glossary-ar">اللقطة</span>
+                    <span class="glossary-en">Snapshot</span>
+                </div>
+                <div class="glossary-item">
+                    <span class="glossary-ar">نظام التشغيل المضيف</span>
+                    <span class="glossary-en">Host Operating System</span>
+                </div>
+                <div class="glossary-item">
+                    <span class="glossary-ar">الذاكرة العشوائية</span>
+                    <span class="glossary-en">RAM (Random Access Memory)</span>
+                </div>
+                <div class="glossary-item">
+                    <span class="glossary-ar">المعالج</span>
+                    <span class="glossary-en">CPU (Central Processing Unit)</span>
+                </div>
+                <div class="glossary-item">
+                    <span class="glossary-ar">سطر الأوامر / الطرفية</span>
+                    <span class="glossary-en">Terminal / Command Line</span>
+                </div>
+            </div>
+
+            <!-- Table of Contents -->
+            <nav class="toc">
+                <h2>📋 جدول المحتويات (Table of Contents)</h2>
+                <ol>
+                    <li><a href="#introduction">المقدمة (Introduction)</a></li>
+                    <li><a href="#objectives">أهداف التعلم (Learning Objectives)</a></li>
+                    <li><a href="#kali">ما هو كالي لينكس؟ (What is Kali Linux?)</a></li>
+                    <li><a href="#virtualbox">ما هو VirtualBox؟</a></li>
+                    <li><a href="#requirements">متطلبات النظام (System Requirements)</a></li>
+                    <li><a href="#part1">الجزء الأول: تثبيت VirtualBox (Part 1: Installing VirtualBox)</a></li>
+                    <li><a href="#part2">الجزء الثاني: تحميل كالي لينكس (Part 2: Downloading Kali Linux)</a></li>
+                    <li><a href="#part3">الجزء الثالث: استيراد كالي لينكس (Part 3: Importing Kali Linux)</a></li>
+                    <li><a href="#part4">الجزء الرابع: التشغيل الأول (Part 4: First Boot)</a></li>
+                    <li><a href="#verification">مهام التحقق (Verification Tasks)</a></li>
+                    <li><a href="#troubleshooting">استكشاف الأخطاء (Troubleshooting)</a></li>
+                    <li><a href="#summary">الملخص (Summary)</a></li>
+                </ol>
+            </nav>
+
+            <!-- Introduction -->
+            <section id="introduction">
+                <h2>📖 المقدمة (Introduction)</h2>
+                <p>مرحباً بك في أول مختبر للأمن السيبراني! في هذا المختبر، ستتعلم كيفية إعداد بيئة <span class="term">اختبار الاختراق <span class="term-en">(Penetration Testing)</span></span> الاحترافية من خلال تثبيت <strong>كالي لينكس (Kali Linux)</strong> كـ <span class="term">جهاز افتراضي <span class="term-en">(Virtual Machine)</span></span> على برنامج <strong>Oracle VirtualBox</strong>. هذه مهارة أساسية يجب على كل محترف في مجال الأمن السيبراني إتقانها.</p>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>لماذا نستخدم الأجهزة الافتراضية؟ (Why Virtual Machines?)</h4>
+                        <p>تتيح لك <span class="term">الأجهزة الافتراضية <span class="term-en">(Virtual Machines - VMs)</span></span> تشغيل أنظمة تشغيل متعددة على جهاز كمبيوتر واحد بأمان. هذا ضروري لـ:</p>
+                        <ul>
+                            <li>اختبار أدوات الأمان دون التأثير على نظامك الرئيسي</li>
+                            <li>إنشاء بيئات مختبر معزولة <span class="term-en">(Isolated Lab Environments)</span></li>
+                            <li>تعلم أنظمة تشغيل مختلفة</li>
+                            <li>أخذ <span class="term">لقطات <span class="term-en">(Snapshots)</span></span> لاستعادة الحالات السابقة</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Objectives -->
+            <section id="objectives">
+                <h2>🎯 أهداف التعلم (Learning Objectives)</h2>
+                <p>بنهاية هذا المختبر، ستكون قادراً على:</p>
+                <ul class="checklist">
+                    <li>فهم ما هو كالي لينكس (Kali Linux) والغرض منه في الأمن السيبراني (Cybersecurity)</li>
+                    <li>تثبيت (Install) برنامج Oracle VirtualBox على نظام Windows أو macOS</li>
+                    <li>تحميل (Download) صورة الجهاز الافتراضي (VM Image) الرسمية لكالي لينكس</li>
+                    <li>استيراد (Import) وتكوين (Configure) كالي لينكس كجهاز افتراضي في VirtualBox</li>
+                    <li>تشغيل (Boot) وتسجيل الدخول (Login) بنجاح إلى جهاز كالي لينكس الافتراضي</li>
+                    <li>التنقل في واجهة (Interface) كالي لينكس الأساسية</li>
+                </ul>
+            </section>
+
+            <!-- What is Kali Linux -->
+            <section id="kali">
+                <h2>🐉 ما هو كالي لينكس؟ (What is Kali Linux?)</h2>
+
+                <table>
+                    <tr>
+                        <th>الميزة (Feature)</th>
+                        <th>الوصف (Description)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>النوع (Type)</strong></td>
+                        <td>توزيعة لينكس مبنية على Debian<br><span class="term-en">(Debian-based Linux Distribution)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>الغرض (Purpose)</strong></td>
+                        <td>اختبار الاختراق والأبحاث الأمنية<br><span class="term-en">(Penetration Testing & Security Research)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>الإصدار الحالي (Current Version)</strong></td>
+                        <td>Kali Linux 2025.4</td>
+                    </tr>
+                    <tr>
+                        <td><strong>سطح المكتب الافتراضي (Default Desktop)</strong></td>
+                        <td>Xfce</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الموقع الرسمي (Official Website)</strong></td>
+                        <td><a href="https://www.kali.org" target="_blank">https://www.kali.org</a></td>
+                    </tr>
+                </table>
+
+                <p><strong>كالي لينكس (Kali Linux)</strong> هو توزيعة لينكس مفتوحة المصدر <span class="term-en">(Open Source)</span> مبنية على Debian ومصممة خصيصاً لـ:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🔍 اختبار الاختراق (Penetration Testing)</h4>
+                        <p>اختبار أمان الأنظمة من خلال محاكاة الهجمات الحقيقية</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔬 الأبحاث الأمنية (Security Research)</h4>
+                        <p>تحليل الثغرات <span class="term-en">(Vulnerabilities)</span> ونقاط الضعف الأمنية</p>
+                    </div>
+                    <div class="card">
+                        <h4>💻 التحقيق الجنائي الرقمي (Digital Forensics)</h4>
+                        <p>التحقيق الرقمي وجمع الأدلة <span class="term-en">(Evidence Collection)</span></p>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 الهندسة العكسية (Reverse Engineering)</h4>
+                        <p>تحليل سلوك البرامج والبرمجيات الخبيثة <span class="term-en">(Malware)</span></p>
+                    </div>
+                </div>
+
+                <h3>أدوات الأمان المثبتة مسبقاً (Pre-installed Security Tools)</h3>
+                <p>يأتي كالي لينكس مع <strong>مئات من أدوات الأمان المثبتة مسبقاً</strong>، بما في ذلك:</p>
+
+                <table>
+                    <tr>
+                        <th>الأداة (Tool)</th>
+                        <th>الغرض (Purpose)</th>
+                    </tr>
+                    <tr>
+                        <td><code>Nmap</code></td>
+                        <td>فحص واكتشاف الشبكات (Network Scanning & Discovery)</td>
+                    </tr>
+                    <tr>
+                        <td><code>Metasploit Framework</code></td>
+                        <td>إطار عمل الاستغلال (Exploitation Framework)</td>
+                    </tr>
+                    <tr>
+                        <td><code>Burp Suite</code></td>
+                        <td>اختبار تطبيقات الويب (Web Application Testing)</td>
+                    </tr>
+                    <tr>
+                        <td><code>Wireshark</code></td>
+                        <td>محلل بروتوكولات الشبكة (Network Protocol Analyzer)</td>
+                    </tr>
+                    <tr>
+                        <td><code>John the Ripper</code></td>
+                        <td>كسر كلمات المرور (Password Cracking)</td>
+                    </tr>
+                    <tr>
+                        <td><code>Hydra</code></td>
+                        <td>أداة اختراق تسجيل الدخول (Login Cracker)</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-danger">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>تنبيه قانوني هام (Important Legal Notice)</h4>
+                        <p>يجب استخدام هذه الأدوات <strong>فقط</strong> لـ:</p>
+                        <ul>
+                            <li>الأغراض التعليمية <span class="term-en">(Educational Purposes)</span></li>
+                            <li>اختبار الأمان المصرح به <span class="term-en">(Authorized Security Testing)</span></li>
+                            <li>أنظمتك الخاصة</li>
+                        </ul>
+                        <p><strong>الوصول غير المصرح به إلى أنظمة الكمبيوتر غير قانوني!</strong><br>
+                        <span class="term-en">(Unauthorized access to computer systems is illegal!)</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What is VirtualBox -->
+            <section id="virtualbox">
+                <h2>📦 ما هو VirtualBox؟ (What is VirtualBox?)</h2>
+                <p><strong>Oracle VirtualBox</strong> هو برنامج <span class="term">افتراضية <span class="term-en">(Virtualization Software)</span></span> مجاني ومفتوح المصدر يتيح لك تشغيل كالي لينكس كـ <span class="term">جهاز افتراضي <span class="term-en">(Virtual Machine)</span></span> على جهاز الكمبيوتر الخاص بك دون تعديل <span class="term">نظام التشغيل المضيف <span class="term-en">(Host Operating System)</span></span>.</p>
+
+                <h3>فوائد استخدام VirtualBox (Benefits of Using VirtualBox)</h3>
+                <table>
+                    <tr>
+                        <th>الفائدة (Benefit)</th>
+                        <th>الوصف (Description)</th>
+                    </tr>
+                    <tr>
+                        <td>✅ <strong>مجاني (Free)</strong></td>
+                        <td>برنامج مجاني ومفتوح المصدر بالكامل <span class="term-en">(Open Source)</span></td>
+                    </tr>
+                    <tr>
+                        <td>✅ <strong>متعدد المنصات (Cross-platform)</strong></td>
+                        <td>يعمل على Windows و macOS و Linux</td>
+                    </tr>
+                    <tr>
+                        <td>✅ <strong>اللقطات (Snapshots)</strong></td>
+                        <td>حفظ واستعادة حالات الجهاز الافتراضي في أي وقت</td>
+                    </tr>
+                    <tr>
+                        <td>✅ <strong>العزل (Isolation)</strong></td>
+                        <td>الأجهزة الافتراضية معزولة تماماً عن نظامك المضيف</td>
+                    </tr>
+                    <tr>
+                        <td>✅ <strong>سهل الاستخدام (Easy to Use)</strong></td>
+                        <td>واجهة رسومية سهلة الاستخدام <span class="term-en">(GUI - Graphical User Interface)</span></td>
+                    </tr>
+                </table>
+
+                <div style="text-align: center; margin: 25px 0;">
+                    <a href="https://www.virtualbox.org/" target="_blank" class="button-link">
+                        🌐 زيارة الموقع الرسمي لـ VirtualBox
+                    </a>
+                </div>
+            </section>
+
+            <!-- System Requirements -->
+            <section id="requirements">
+                <h2>💻 متطلبات النظام (System Requirements)</h2>
+                <p>قبل البدء، تأكد من أن جهاز الكمبيوتر الخاص بك يفي بهذه المتطلبات:</p>
+
+                <table>
+                    <tr>
+                        <th>المكون (Component)</th>
+                        <th>الحد الأدنى (Minimum)</th>
+                        <th>الموصى به (Recommended)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>المعالج (CPU)</strong></td>
+                        <td>معالج 64-bit مع دعم الافتراضية<br><span class="term-en">(Virtualization Support)</span></td>
+                        <td>Intel i5/AMD Ryzen 5 أو أفضل</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الذاكرة العشوائية (RAM)</strong></td>
+                        <td>8 جيجابايت (GB)</td>
+                        <td>16 جيجابايت أو أكثر</td>
+                    </tr>
+                    <tr>
+                        <td><strong>التخزين (Storage)</strong></td>
+                        <td>50 جيجابايت مساحة فارغة</td>
+                        <td>100+ جيجابايت SSD</td>
+                    </tr>
+                    <tr>
+                        <td><strong>نظام التشغيل (Operating System)</strong></td>
+                        <td>Windows 10/11 أو macOS 10.15+</td>
+                        <td>أحدث إصدار (Latest Version)</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">🔧</span>
+                    <div>
+                        <h4>هام: تفعيل الافتراضية (Enable Virtualization)</h4>
+                        <p>يجب تفعيل <span class="term">الافتراضية <span class="term-en">(Virtualization)</span></span> في إعدادات <span class="term">BIOS/UEFI</span> لجهاز الكمبيوتر. للتحقق على Windows:</p>
+                        <ol>
+                            <li>افتح <strong>مدير المهام</strong> <span class="term-en">(Task Manager)</span> بالضغط على (Ctrl + Shift + Esc)</li>
+                            <li>انتقل إلى علامة التبويب <strong>الأداء</strong> <span class="term-en">(Performance)</span></li>
+                            <li>انقر على <strong>وحدة المعالجة المركزية</strong> <span class="term-en">(CPU)</span></li>
+                            <li>ابحث عن <strong>"Virtualization: Enabled"</strong></li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Part 1: Installing VirtualBox -->
+            <section id="part1">
+                <h2>🛠️ الجزء الأول: تثبيت VirtualBox (Part 1: Installing VirtualBox)</h2>
+
+                <p>أولاً، نحتاج إلى تثبيت <span class="term-en">(Install)</span> برنامج VirtualBox على جهاز الكمبيوتر الخاص بك. اختر نظام التشغيل الخاص بك أدناه:</p>
+
+                <div class="os-tabs">
+                    <div class="os-tab active" onclick="showOS('windows')">
+                        🪟 Windows (ويندوز)
+                    </div>
+                    <div class="os-tab" onclick="showOS('mac')">
+                        🍎 macOS (ماك)
+                    </div>
+                </div>
+
+                <!-- Windows Instructions -->
+                <div id="windows-content" class="os-content active">
+                    <h3>🪟 التثبيت على Windows (Windows Installation)</h3>
+
+                    <h4>الخطوة 1: تحميل VirtualBox (Step 1: Download VirtualBox)</h4>
+                    <ol class="steps">
+                        <li>افتح متصفح الويب <span class="term-en">(Web Browser)</span> الخاص بك (Chrome أو Firefox أو Edge)</li>
+                        <li>انتقل إلى صفحة تحميل <span class="term-en">(Download Page)</span> VirtualBox الرسمية:
+                            <br><br>
+                            <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank" class="button-link">
+                                ⬇️ صفحة تحميل VirtualBox (VirtualBox Downloads Page)
+                            </a>
+                        </li>
+                        <li>انقر على <strong>"Windows hosts"</strong> لتحميل المثبت <span class="term-en">(Installer)</span></li>
+                        <li>احفظ الملف في مجلد التنزيلات <span class="term-en">(Downloads folder)</span></li>
+                    </ol>
+
+                    <h4>الخطوة 2: تشغيل المثبت (Step 2: Run the Installer)</h4>
+                    <ol class="steps">
+                        <li>افتح مجلد <strong>التنزيلات</strong> <span class="term-en">(Downloads)</span></li>
+                        <li>ابحث عن الملف المسمى <code>VirtualBox-x.x.x-xxxxxx-Win.exe</code></li>
+                        <li><strong>انقر نقراً مزدوجاً</strong> <span class="term-en">(Double-click)</span> على المثبت لتشغيله</li>
+                        <li>إذا ظهرت رسالة التحكم في حساب المستخدم <span class="term-en">(UAC - User Account Control)</span>، انقر <strong>نعم</strong> <span class="term-en">(Yes)</span></li>
+                    </ol>
+
+                    <h4>الخطوة 3: معالج التثبيت (Step 3: Installation Wizard)</h4>
+                    <ol class="steps">
+                        <li><strong>شاشة الترحيب (Welcome Screen):</strong> انقر <strong>Next</strong></li>
+                        <li><strong>الإعداد المخصص (Custom Setup):</strong> احتفظ بالإعدادات الافتراضية <span class="term-en">(Default Settings)</span>، انقر <strong>Next</strong></li>
+                        <li><strong>تحذير الشبكة (Network Warning):</strong> سيظهر تحذير حول قطع اتصال الشبكة مؤقتاً - هذا طبيعي! انقر <strong>Yes</strong></li>
+                        <li><strong>التبعيات المفقودة (Missing Dependencies):</strong> إذا طُلب منك، انقر <strong>Yes</strong> لتثبيت Python Core</li>
+                        <li><strong>جاهز للتثبيت (Ready to Install):</strong> انقر <strong>Install</strong></li>
+                        <li><strong>انتظر</strong> حتى يكتمل التثبيت</li>
+                        <li>انقر <strong>Finish</strong> لإغلاق المثبت</li>
+                    </ol>
+
+                    <h4>الخطوة 4: التحقق من التثبيت (Step 4: Verify Installation)</h4>
+                    <ol class="steps">
+                        <li>انقر على <strong>قائمة ابدأ</strong> <span class="term-en">(Start Menu)</span></li>
+                        <li>اكتب <code>VirtualBox</code></li>
+                        <li>انقر على <strong>Oracle VM VirtualBox</strong></li>
+                        <li>يجب أن تفتح نافذة <strong>VirtualBox Manager</strong></li>
+                    </ol>
+
+                    <div class="alert alert-success">
+                        <span class="alert-icon">✅</span>
+                        <div>
+                            <h4>تم بنجاح! (Success!)</h4>
+                            <p>تم تثبيت VirtualBox الآن على جهاز Windows الخاص بك!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- macOS Instructions -->
+                <div id="mac-content" class="os-content">
+                    <h3>🍎 التثبيت على macOS (macOS Installation)</h3>
+
+                    <h4>الخطوة 1: تحميل VirtualBox (Step 1: Download VirtualBox)</h4>
+                    <ol class="steps">
+                        <li>افتح متصفح الويب <span class="term-en">(Web Browser)</span> الخاص بك (Safari أو Chrome أو Firefox)</li>
+                        <li>انتقل إلى صفحة تحميل VirtualBox الرسمية:
+                            <br><br>
+                            <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank" class="button-link">
+                                ⬇️ صفحة تحميل VirtualBox (VirtualBox Downloads Page)
+                            </a>
+                        </li>
+                        <li>انقر على <strong>"macOS / Intel hosts"</strong> للتحميل
+                            <br><em>(لأجهزة M1/M2/M3، انظر الملاحظة أدناه)</em>
+                        </li>
+                    </ol>
+
+                    <div class="alert alert-warning">
+                        <span class="alert-icon">📝</span>
+                        <div>
+                            <h4>ملاحظة لمستخدمي Apple Silicon (M1/M2/M3)</h4>
+                            <p>إذا كان لديك جهاز Mac بمعالج Apple Silicon، قد تحتاج إلى استخدام برنامج افتراضية بديل مثل <strong>UTM</strong> أو <strong>Parallels</strong>. راجع <a href="https://www.kali.org/docs/virtualization/" target="_blank">وثائق كالي (Kali Documentation)</a> لدعم ARM.</p>
+                        </div>
+                    </div>
+
+                    <h4>الخطوة 2: تثبيت VirtualBox (Step 2: Install VirtualBox)</h4>
+                    <ol class="steps">
+                        <li>افتح <strong>Finder</strong> وانتقل إلى مجلد <strong>التنزيلات</strong> <span class="term-en">(Downloads)</span></li>
+                        <li>ابحث عن الملف المسمى <code>VirtualBox-x.x.x-xxxxxx-macOS.dmg</code></li>
+                        <li><strong>انقر نقراً مزدوجاً</strong> على ملف <code>.dmg</code> لتحميله <span class="term-en">(Mount)</span></li>
+                        <li><strong>انقر نقراً مزدوجاً</strong> على <code>VirtualBox.pkg</code> لبدء المثبت</li>
+                        <li>انقر <strong>Continue</strong> على شاشة الترحيب</li>
+                        <li>انقر <strong>Install</strong></li>
+                        <li>أدخل <strong>كلمة مرور Mac</strong> <span class="term-en">(Mac Password)</span> عند المطالبة</li>
+                        <li>انقر <strong>Install Software</strong></li>
+                    </ol>
+
+                    <h4>الخطوة 3: السماح بامتداد النظام (Step 3: Allow System Extension) - هام!</h4>
+                    <div class="alert alert-danger">
+                        <span class="alert-icon">⚠️</span>
+                        <div>
+                            <h4>إعدادات أمان macOS (macOS Security Settings)</h4>
+                            <p>يتطلب macOS السماح بـ <span class="term">امتداد النظام <span class="term-en">(System Extension)</span></span> الخاص بـ VirtualBox:</p>
+                            <ol>
+                                <li>قد تظهر نافذة منبثقة تقول إن امتداد النظام تم حظره <span class="term-en">(blocked)</span></li>
+                                <li>انتقل إلى <strong>System Preferences</strong> (تفضيلات النظام) ← <strong>Security & Privacy</strong> (الأمان والخصوصية)</li>
+                                <li>انقر على علامة التبويب <strong>General</strong> (عام)</li>
+                                <li>انقر <strong>Allow</strong> (السماح) بجانب الرسالة حول Oracle</li>
+                                <li>قد تحتاج إلى <strong>إعادة تشغيل Mac</strong> <span class="term-en">(Restart)</span></li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <h4>الخطوة 4: التحقق من التثبيت (Step 4: Verify Installation)</h4>
+                    <ol class="steps">
+                        <li>افتح <strong>Finder</strong></li>
+                        <li>انتقل إلى <strong>Applications</strong> (التطبيقات)</li>
+                        <li><strong>انقر نقراً مزدوجاً</strong> على <strong>VirtualBox</strong></li>
+                        <li>يجب أن تفتح نافذة <strong>VirtualBox Manager</strong></li>
+                    </ol>
+
+                    <div class="alert alert-success">
+                        <span class="alert-icon">✅</span>
+                        <div>
+                            <h4>تم بنجاح! (Success!)</h4>
+                            <p>تم تثبيت VirtualBox الآن على جهاز Mac الخاص بك!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Part 2: Downloading Kali Linux -->
+            <section id="part2">
+                <h2>📥 الجزء الثاني: تحميل كالي لينكس (Part 2: Downloading Kali Linux)</h2>
+                <p>الآن بعد تثبيت VirtualBox، دعنا نحمل صورة <span class="term">الجهاز الافتراضي <span class="term-en">(Virtual Machine Image)</span></span> لكالي لينكس.</p>
+
+                <h3>الخطوة 1: الذهاب إلى صفحة تحميل كالي (Step 1: Go to Kali Download Page)</h3>
+                <ol class="steps">
+                    <li>افتح متصفح الويب الخاص بك</li>
+                    <li>انتقل إلى صفحة تحميل كالي لينكس الرسمية:
+                        <br><br>
+                        <a href="https://www.kali.org/get-kali/#kali-virtual-machines" target="_blank" class="button-link">
+                            🐉 تحميل كالي لينكس - الأجهزة الافتراضية (Kali Linux Downloads - Virtual Machines)
+                        </a>
+                    </li>
+                </ol>
+
+                <h3>الخطوة 2: اختيار صورة VirtualBox (Step 2: Select VirtualBox Image)</h3>
+                <ol class="steps">
+                    <li>في صفحة التحميل، ابحث عن قسم <strong>"Virtual Machines"</strong> (الأجهزة الافتراضية)</li>
+                    <li>ابحث عن خيار <strong>VirtualBox</strong></li>
+                    <li>انقر على زر <strong>Download</strong> (تحميل) للإصدار <strong>64-bit</strong></li>
+                </ol>
+
+                <table>
+                    <tr>
+                        <th>معلومات الملف (File Information)</th>
+                        <th>التفاصيل (Details)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>الصيغة (Format)</strong></td>
+                        <td><code>.7z</code> (أرشيف مضغوط 7-Zip)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>يحتوي على (Contains)</strong></td>
+                        <td>ملف <code>.vbox</code> + قرص افتراضي <code>.vmdk</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>الحجم (Size)</strong></td>
+                        <td>~3-4 جيجابايت (مضغوط)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>المعمارية (Architecture)</strong></td>
+                        <td>64-bit (amd64)</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">⏳</span>
+                    <div>
+                        <h4>وقت التحميل (Download Time)</h4>
+                        <p>قد يستغرق التحميل 10-30 دقيقة حسب سرعة الإنترنت لديك. يرجى الصبر!</p>
+                    </div>
+                </div>
+
+                <h3>الخطوة 3: التحقق من التحميل - موصى به (Step 3: Verify Download - Recommended)</h3>
+                <div class="alert alert-warning">
+                    <span class="alert-icon">🔒</span>
+                    <div>
+                        <h4>أفضل ممارسات الأمان (Security Best Practice)</h4>
+                        <p>تحقق دائماً من الملفات المحملة للتأكد من عدم التلاعب بها. قارن رمز <span class="term">SHA256 Checksum</span> المعروض في صفحة التحميل مع ملفك:</p>
+                        <p><strong>Windows (PowerShell):</strong></p>
+                        <pre><code>Get-FileHash .\kali-linux-*-virtualbox-amd64.7z -Algorithm SHA256</code></pre>
+                        <p><strong>macOS (Terminal):</strong></p>
+                        <pre><code>shasum -a 256 ~/Downloads/kali-linux-*-virtualbox-amd64.7z</code></pre>
+                    </div>
+                </div>
+
+                <h3>الخطوة 4: فك ضغط الأرشيف (Step 4: Extract the Archive)</h3>
+                <p>الملف المحمّل هو أرشيف مضغوط بصيغة <code>.7z</code>. يجب فك ضغطه قبل إضافته إلى VirtualBox.</p>
+                <ol class="steps">
+                    <li>إذا لم يكن لديك برنامج 7-Zip:
+                        <ul>
+                            <li><strong>Windows:</strong> حمّله من <a href="https://www.7-zip.org/" target="_blank">7-zip.org</a> وثبّته</li>
+                            <li><strong>macOS:</strong> ثبّت <a href="https://www.keka.io/" target="_blank">Keka</a> أو استخدم: <code>brew install p7zip</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>انقر بزر الماوس الأيمن</strong> على ملف <code>.7z</code> المحمّل</li>
+                    <li>اختر <strong>7-Zip</strong> &rarr; <strong>Extract Here</strong> (فك الضغط هنا)</li>
+                    <li>انتظر حتى يكتمل فك الضغط &mdash; سيُنشئ مجلدًا يحتوي على ملفات الجهاز الافتراضي</li>
+                </ol>
+                <div class="alert alert-info">
+                    <span class="alert-icon">📂</span>
+                    <div>
+                        <h4>بعد فك الضغط (After Extraction)</h4>
+                        <p>ستجد مجلدًا يحتوي على ملف <code>.vbox</code> وملف <code>.vmdk</code>. ملف <code>.vbox</code> هو إعدادات VirtualBox، وملف <code>.vmdk</code> هو القرص الصلب الافتراضي.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Part 3: Adding Kali Linux -->
+            <section id="part3">
+                <h2>📦 الجزء الثالث: إضافة كالي لينكس إلى VirtualBox (Part 3: Adding Kali Linux)</h2>
+                <p>الآن سنقوم بإضافة صورة كالي لينكس المستخرجة كـ <span class="term">جهاز افتراضي <span class="term-en">(Virtual Machine)</span></span> في VirtualBox.</p>
+
+                <h3>الخطوة 1: فتح VirtualBox (Step 1: Open VirtualBox)</h3>
+                <ol class="steps">
+                    <li>قم بتشغيل <strong>Oracle VM VirtualBox</strong> من:
+                        <ul>
+                            <li><strong>Windows:</strong> قائمة ابدأ (Start Menu) &rarr; VirtualBox</li>
+                            <li><strong>macOS:</strong> التطبيقات (Applications) &rarr; VirtualBox</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>الخطوة 2: إضافة جهاز كالي لينكس (Step 2: Add Kali Linux VM)</h3>
+                <ol class="steps">
+                    <li>في VirtualBox، انتقل إلى <strong>Machine</strong> (جهاز) &rarr; <strong>Add</strong> (إضافة)
+                        <br><em>أو استخدم اختصار لوحة المفاتيح: <code>Ctrl + A</code> (Windows) / <code>Cmd + A</code> (macOS)</em>
+                    </li>
+                    <li>انتقل إلى <strong>المجلد المستخرج</strong> من الخطوة السابقة</li>
+                    <li>اختر ملف <code>.vbox</code> (مثال: <code>kali-linux-*-virtualbox-amd64.vbox</code>)</li>
+                    <li>انقر <strong>Open</strong> (فتح)</li>
+                </ol>
+
+                <h3>الخطوة 3: مراجعة إعدادات الجهاز الافتراضي (Step 3: Review VM Settings)</h3>
+                <p>ستظهر إعدادات <span class="term-en">(Settings)</span> الجهاز الافتراضي. راجعها وعدّلها اختيارياً:</p>
+
+                <table>
+                    <tr>
+                        <th>الإعداد (Setting)</th>
+                        <th>الافتراضي (Default)</th>
+                        <th>الموصى به (Recommended)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>الاسم (Name)</strong></td>
+                        <td>Kali Linux</td>
+                        <td>احتفظ به أو خصصه (Keep or customize)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>المعالج (CPU)</strong></td>
+                        <td>2 نواة (cores)</td>
+                        <td>زيادة إلى 4 إن أمكن</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الذاكرة (RAM)</strong></td>
+                        <td>2048 ميجابايت (MB)</td>
+                        <td>زيادة إلى 4096 ميجابايت إن أمكن</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الشبكة (Network)</strong></td>
+                        <td>NAT</td>
+                        <td>احتفظ بـ NAT</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>نصيحة للأداء (Performance Tip)</h4>
+                        <p>إذا كان جهاز الكمبيوتر الخاص بك يحتوي على 16 جيجابايت أو أكثر من <span class="term">الذاكرة العشوائية <span class="term-en">(RAM)</span></span>، خصص <strong>4 جيجابايت (4096 MB)</strong> لكالي للحصول على أداء أفضل.</p>
+                    </div>
+                </div>
+
+                <h3>الخطوة 4: التحقق من إضافة الجهاز (Step 4: Verify the VM is Added)</h3>
+                <ol class="steps">
+                    <li>يجب أن يظهر <strong>"Kali Linux"</strong> الآن في <strong>VirtualBox Manager</strong></li>
+                    <li>الجهاز الافتراضي جاهز &mdash; لا حاجة لانتظار الاستيراد لأن الملفات مستخرجة مسبقًا</li>
+                </ol>
+
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <div>
+                        <h4>تم بنجاح! (Success!)</h4>
+                        <p>تمت إضافة الجهاز الافتراضي لكالي لينكس بنجاح!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Part 4: First Boot and Login -->
+            <section id="part4">
+                <h2>🚀 الجزء الرابع: التشغيل الأول وتسجيل الدخول (Part 4: First Boot and Login)</h2>
+
+                <h3>الخطوة 1: تشغيل الجهاز الافتراضي (Step 1: Start the Virtual Machine)</h3>
+                <ol class="steps">
+                    <li>في <strong>VirtualBox Manager</strong>، اختر <strong>Kali Linux</strong></li>
+                    <li>انقر على زر <strong>Start</strong> (السهم الأخضر) أو انقر نقراً مزدوجاً على Kali Linux</li>
+                </ol>
+
+                <h3>الخطوة 2: انتظار التشغيل (Step 2: Wait for Boot)</h3>
+                <ol class="steps">
+                    <li>ستفتح نافذة جديدة تعرض عملية <span class="term">التشغيل <span class="term-en">(Boot Process)</span></span> لكالي لينكس</li>
+                    <li>انتظر حتى يكتمل تشغيل النظام (سترى شاشة تسجيل الدخول <span class="term-en">Login Screen</span>)</li>
+                </ol>
+
+                <h3>الخطوة 3: تسجيل الدخول (Step 3: Log In)</h3>
+                <p>استخدم <strong>بيانات الاعتماد الافتراضية</strong> <span class="term-en">(Default Credentials)</span>:</p>
+
+                <div class="credentials-box">
+                    <h4>🔑 بيانات تسجيل الدخول الافتراضية (Default Login Credentials)</h4>
+                    <div class="credential-item">
+                        <strong>اسم المستخدم (Username)</strong>
+                        <span>kali</span>
+                    </div>
+                    <div class="credential-item">
+                        <strong>كلمة المرور (Password)</strong>
+                        <span>kali</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>تحذير أمني (Security Warning)</h4>
+                        <p>كلمة المرور الافتراضية <code>kali</code> معروفة للجميع. في بيئة الإنتاج <span class="term-en">(Production Environment)</span>، يجب عليك <strong>تغيير كلمة المرور فوراً!</strong></p>
+                    </div>
+                </div>
+
+                <h3>الخطوة 4: استكشاف سطح المكتب (Step 4: Explore the Desktop)</h3>
+                <p>بعد تسجيل الدخول، سترى <span class="term">سطح مكتب <span class="term-en">(Desktop)</span></span> كالي لينكس مع:</p>
+                <ul>
+                    <li><strong>قائمة التطبيقات</strong> <span class="term-en">(Applications Menu)</span> - الزاوية العلوية اليسرى - للوصول إلى جميع أدوات الأمان</li>
+                    <li><strong>شريط النظام</strong> <span class="term-en">(System Tray)</span> - الزاوية العلوية اليمنى - الشبكة والصوت والطاقة</li>
+                    <li><strong>مدير الملفات</strong> <span class="term-en">(File Manager)</span> - تصفح الملفات</li>
+                    <li><strong>الطرفية</strong> <span class="term-en">(Terminal)</span> - واجهة سطر الأوامر <span class="term-en">(Command Line Interface)</span></li>
+                </ul>
+
+                <h3>الخطوة 5: تغيير كلمة المرور - موصى به (Step 5: Change Password - Recommended)</h3>
+                <ol class="steps">
+                    <li>افتح <strong>Terminal</strong> (الطرفية) - انقر على أيقونة الطرفية أو انقر بالزر الأيمن على سطح المكتب ← Open Terminal Here</li>
+                    <li>اكتب الأمر التالي واضغط <strong>Enter</strong>:
+                        <pre><code>passwd</code></pre>
+                    </li>
+                    <li>أدخل كلمة المرور الحالية: <code>kali</code></li>
+                    <li>أدخل كلمة المرور الجديدة (مرتين)</li>
+                </ol>
+            </section>
+
+            <!-- Verification Tasks -->
+            <section id="verification">
+                <h2>✅ مهام التحقق (Verification Tasks)</h2>
+                <p>أكمل هذه المهام للتحقق من أن <span class="term">جهاز كالي لينكس الافتراضي <span class="term-en">(Kali Linux Virtual Machine)</span></span> يعمل بشكل صحيح:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>المهمة 1: فحص الشبكة (Task 1: Check Network)</h4>
+                        <p>افتح <span class="term-en">Terminal</span> وشغّل:</p>
+                        <pre><code>ping -c 4 google.com</code></pre>
+                        <p><strong>المتوقع (Expected):</strong> يجب أن ترى ردود <span class="term-en">ping replies</span> مع أوقات الاستجابة.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>المهمة 2: تحديث النظام (Task 2: Update System)</h4>
+                        <p>افتح <span class="term-en">Terminal</span> وشغّل:</p>
+                        <pre><code>sudo apt update</code></pre>
+                        <p><strong>المتوقع (Expected):</strong> يتصل النظام بالمستودعات <span class="term-en">(Repositories)</span> ويعرض التحديثات المتاحة.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>المهمة 3: فحص الأدوات (Task 3: Check Tools)</h4>
+                        <p>تحقق من تثبيت أدوات الأمان:</p>
+                        <pre><code>nmap --version</code></pre>
+                        <pre><code>msfconsole --version</code></pre>
+                        <p><strong>المتوقع (Expected):</strong> تظهر معلومات الإصدار <span class="term-en">(Version Info)</span>.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>المهمة 4: إنشاء لقطة (Task 4: Create Snapshot)</h4>
+                        <p>في VirtualBox: <strong>Machine</strong> ← <strong>Take Snapshot</strong></p>
+                        <p>سمّها <strong>"Clean Install"</strong> (تثبيت نظيف)</p>
+                        <p><strong>لماذا (Why):</strong> للاستعادة إلى هذه الحالة إذا حدث خطأ.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="troubleshooting">
+                <h2>🔧 استكشاف الأخطاء وإصلاحها (Troubleshooting)</h2>
+                <p>إذا واجهت مشاكل، تحقق من هذه المشاكل الشائعة وحلولها:</p>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">
+                        ❌ خطأ "VT-x is not available" (VT-x غير متاح)
+                    </div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>المشكلة (Problem):</strong> <span class="term">الافتراضية <span class="term-en">(Virtualization)</span></span> معطلة في <span class="term-en">BIOS/UEFI</span>.</p>
+                        <p><strong>الحل (Solution):</strong></p>
+                        <ol>
+                            <li>أعد تشغيل <span class="term-en">(Restart)</span> جهاز الكمبيوتر</li>
+                            <li>ادخل إعداد <span class="term-en">BIOS/UEFI</span> (اضغط F2 أو F10 أو F12 أو Del أثناء التشغيل)</li>
+                            <li>ابحث عن إعدادات الافتراضية (<span class="term-en">VT-x, AMD-V, SVM, أو Virtualization Technology</span>)</li>
+                            <li>فعّل <span class="term-en">(Enable)</span> الافتراضية</li>
+                            <li>احفظ <span class="term-en">(Save)</span> واخرج من <span class="term-en">BIOS</span></li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">
+                        ❌ شاشة سوداء بعد التشغيل (Black Screen After Boot)
+                    </div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>المشكلة (Problem):</strong> مشكلة في إعدادات العرض <span class="term-en">(Display Settings)</span>.</p>
+                        <p><strong>الحل (Solution):</strong></p>
+                        <ol>
+                            <li>أوقف تشغيل <span class="term-en">(Power Off)</span> الجهاز الافتراضي</li>
+                            <li>انتقل إلى <strong>Settings</strong> ← <strong>Display</strong></li>
+                            <li>زِد <strong>Video Memory</strong> إلى 128 ميجابايت</li>
+                            <li>عطّل <span class="term-en">(Disable)</span> <strong>3D Acceleration</strong></li>
+                            <li>حاول التشغيل مرة أخرى</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">
+                        ❌ أداء بطيء (Slow Performance)
+                    </div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>المشكلة (Problem):</strong> موارد <span class="term-en">(Resources)</span> غير كافية مخصصة للجهاز الافتراضي.</p>
+                        <p><strong>الحل (Solution):</strong></p>
+                        <ol>
+                            <li>أوقف تشغيل الجهاز الافتراضي</li>
+                            <li>انتقل إلى <strong>Settings</strong> ← <strong>System</strong></li>
+                            <li>زِد <strong>RAM</strong> (الذاكرة) إلى 4096 ميجابايت</li>
+                            <li>انتقل إلى <strong>Settings</strong> ← <strong>Processor</strong></li>
+                            <li>زِد أنوية <strong>CPU</strong> (المعالج) إلى 2-4</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">
+                        ❌ الشبكة لا تعمل (Network Not Working)
+                    </div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>المشكلة (Problem):</strong> مشكلة في تكوين <span class="term">محول الشبكة <span class="term-en">(Network Adapter)</span></span>.</p>
+                        <p><strong>الحل (Solution):</strong></p>
+                        <ol>
+                            <li>أوقف تشغيل الجهاز الافتراضي</li>
+                            <li>انتقل إلى <strong>Settings</strong> ← <strong>Network</strong></li>
+                            <li>تأكد من تفعيل <span class="term-en">(Enabled)</span> <strong>Adapter 1</strong></li>
+                            <li>اضبط "Attached to" على <strong>NAT</strong></li>
+                            <li>انقر <strong>OK</strong> وشغّل الجهاز الافتراضي</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">
+                        ❌ فشل الاستيراد (Import Failed)
+                    </div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>المشكلة (Problem):</strong> تحميل تالف <span class="term-en">(Corrupted Download)</span> أو فشل فك الضغط أو مساحة قرص غير كافية.</p>
+                        <p><strong>الحل (Solution):</strong></p>
+                        <ol>
+                            <li>احذف <span class="term-en">(Delete)</span> ملف <code>.7z</code> المحمل والمجلد المستخرج</li>
+                            <li>أعد التحميل من <a href="https://www.kali.org/get-kali/" target="_blank">موقع كالي الرسمي (Official Kali Website)</a></li>
+                            <li>تحقق من رمز <span class="term-en">SHA256 Checksum</span></li>
+                            <li>تأكد من وجود 50 جيجابايت على الأقل من المساحة الفارغة <span class="term-en">(Free Space)</span></li>
+                            <li>تأكد من تثبيت برنامج 7-Zip بشكل صحيح لفك الضغط</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary">
+                <h2>📝 الملخص (Summary)</h2>
+                <p><strong>تهانينا! (Congratulations!)</strong> لقد أكملت المختبر 01 بنجاح. في هذا المختبر، قمت بـ:</p>
+
+                <table>
+                    <tr>
+                        <th>المهمة المكتملة (Completed Task)</th>
+                        <th>الحالة (Status)</th>
+                    </tr>
+                    <tr>
+                        <td>تعلم ما هو كالي لينكس والغرض منه (Learned about Kali Linux)</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>تثبيت Oracle VirtualBox (Installed VirtualBox)</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>تحميل صورة كالي لينكس (Downloaded Kali Linux VM Image)</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>استيراد كالي لينكس كجهاز افتراضي (Imported Kali as VM)</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>تشغيل وتسجيل الدخول (Booted and Logged In)</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>إنشاء لقطة للتثبيت النظيف (Created Clean Install Snapshot)</td>
+                        <td>✅</td>
+                    </tr>
+                </table>
+
+                <h3>📚 موارد إضافية (Additional Resources)</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>🐉 كالي لينكس (Kali Linux)</h4>
+                        <p><a href="https://www.kali.org/" target="_blank">الموقع الرسمي (Official Website)</a></p>
+                        <p><a href="https://www.kali.org/docs/" target="_blank">التوثيق (Documentation)</a></p>
+                        <p><a href="https://www.kali.org/tools/" target="_blank">قائمة الأدوات (Tools List)</a></p>
+                    </div>
+                    <div class="card">
+                        <h4>📦 VirtualBox</h4>
+                        <p><a href="https://www.virtualbox.org/" target="_blank">الموقع الرسمي (Official Website)</a></p>
+                        <p><a href="https://www.virtualbox.org/manual/" target="_blank">دليل المستخدم (User Manual)</a></p>
+                    </div>
+                </div>
+
+                <h3>❓ أسئلة المختبر (Lab Questions)</h3>
+                <p>أجب عن الأسئلة التالية في تقرير المختبر الخاص بك:</p>
+                <ol>
+                    <li>ما هو اسم المستخدم <span class="term-en">(Username)</span> وكلمة المرور <span class="term-en">(Password)</span> الافتراضية لكالي لينكس؟</li>
+                    <li>لماذا من المهم استخدام الأجهزة الافتراضية <span class="term-en">(Virtual Machines)</span> لاختبار الأمان؟</li>
+                    <li>ما هو الغرض من أخذ لقطة <span class="term-en">(Snapshot)</span> بعد التثبيت النظيف؟</li>
+                    <li>اذكر ثلاث أدوات أمان <span class="term-en">(Security Tools)</span> تأتي مثبتة مسبقاً مع كالي لينكس.</li>
+                    <li>ماذا يفعل الأمر <code>passwd</code>؟</li>
+                </ol>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>نهاية المختبر 01 (End of Lab 01)</strong></p>
+            <p>للأسئلة أو المشاكل، تواصل مع المدرس (For questions, contact your instructor)</p>
+            <p><strong>CYB236 - أمن تطبيقات الويب</strong></p>
+            <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                جامعة الملك عبدالعزيز &mdash; كلية الحاسبات وتقنية المعلومات<br>
+                الدبلوم المتوسط العام في الأمن السيبراني<br>
+                <em>إعداد: د. عبدالمحسن المعلوي</em>
+            </p>
+        </footer>
+    </div>
+
+    <!-- JavaScript for OS Tabs -->
+    <script>
+        function showOS(os) {
+            // Hide all content
+            document.querySelectorAll('.os-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active from all tabs
+            document.querySelectorAll('.os-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected content
+            document.getElementById(os + '-content').classList.add('active');
+
+            // Mark tab as active
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

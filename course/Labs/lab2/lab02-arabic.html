@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المختبر 02: مقدمة في استطلاع تطبيقات الويب</title>
+    <style>
+        :root {
+            --primary-color: #2980b9;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --light-bg: #f7fafc;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+            --kali-blue: #2980b9;
+            --kali-dark: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        /* Bilingual term styling */
+        .term-en {
+            color: var(--kali-blue);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">🔍</text></svg>');
+            background-size: 150px;
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.3em;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .header .chapter-ref {
+            display: inline-block;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Lab Info Box */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 25px 40px;
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #1a5276 100%);
+            color: white;
+        }
+
+        .lab-info-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+        }
+
+        .lab-info-item strong {
+            display: block;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .lab-info-item span {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* Content */
+        .content { padding: 40px; }
+
+        /* Table of Contents */
+        .toc {
+            background: linear-gradient(135deg, #e8f4fd 0%, #d1eaf9 100%);
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-bottom: 40px;
+            border-right: 5px solid var(--kali-blue);
+            border-left: none;
+        }
+
+        .toc h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border: none;
+        }
+
+        .toc ol {
+            columns: 2;
+            column-gap: 30px;
+            padding-right: 20px;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+            break-inside: avoid;
+        }
+
+        .toc a {
+            color: var(--kali-blue);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        section { margin-bottom: 40px; }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--kali-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            color: var(--dark-text);
+            font-size: 1.15em;
+            margin: 20px 0 10px 0;
+        }
+
+        p { margin-bottom: 15px; }
+
+        ul, ol {
+            margin-right: 25px;
+            margin-left: 0;
+            margin-bottom: 15px;
+        }
+
+        li { margin-bottom: 6px; }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .alert-icon { font-size: 1.5em; flex-shrink: 0; }
+
+        .alert-info {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border-right: 5px solid var(--info-color);
+            border-left: none;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fffff0 0%, #fefcbf 100%);
+            border-right: 5px solid var(--warning-color);
+            border-left: none;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-right: 5px solid var(--danger-color);
+            border-left: none;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-right: 5px solid var(--accent-color);
+            border-left: none;
+        }
+
+        .alert h4 { margin: 0 0 8px 0; color: inherit; }
+        .alert p { margin: 0; }
+        .alert ul { margin-top: 8px; margin-bottom: 0; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: #edf2f7; }
+
+        /* Code blocks */
+        code {
+            background: #1a202c;
+            color: #68d391;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        pre {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            direction: ltr;
+            text-align: left;
+        }
+
+        pre code { background: none; color: #68d391; padding: 0; display: inline; }
+
+        .command-label {
+            display: block;
+            color: #a0aec0;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-right: 50px;
+            padding-left: 0;
+            position: relative;
+            min-height: 40px;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            right: 0; top: 0;
+            left: auto;
+            width: 35px; height: 35px;
+            background: linear-gradient(135deg, var(--kali-blue) 0%, #1a5276 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(41, 128, 185, 0.3);
+        }
+
+        /* Checklist */
+        .checklist { list-style: none; padding: 0; }
+
+        .checklist li {
+            padding: 10px 35px 10px 0;
+            position: relative;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            right: 0;
+            left: auto;
+            font-size: 1.2em;
+            color: var(--kali-blue);
+        }
+
+        /* Expected Output */
+        .expected-output {
+            background: #f7fafc;
+            border: 2px dashed var(--kali-blue);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .expected-output h4 {
+            color: var(--kali-blue);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        /* Deliverable Box */
+        .deliverable {
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+            border-right: 5px solid #805ad5;
+            border-left: none;
+            border-radius: 12px 0 0 12px;
+            padding: 20px 25px;
+            margin: 20px 0;
+        }
+
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* Fill-in fields */
+        .fill-in {
+            background: #fafbfc;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .fill-in label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--secondary-color);
+            font-size: 0.95em;
+        }
+
+        .fill-in input[type="text"],
+        .fill-in textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: inherit;
+            margin-bottom: 12px;
+            resize: vertical;
+        }
+
+        /* Troubleshooting */
+        .troubleshoot-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .troubleshoot-header {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--danger-color);
+        }
+
+        .troubleshoot-solution {
+            padding: 20px;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        /* Language Switch Button */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        .lang-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 30px 20px; }
+            .header h1 { font-size: 1.8em; }
+            .content { padding: 25px; }
+            .toc ol { columns: 1; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Language Switch Button -->
+<div class="lang-switch">
+    <a href="lab02-english.html" class="lang-btn">
+        English (الإنجليزية)
+    </a>
+</div>
+
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1>المختبر 02: مقدمة في استطلاع تطبيقات الويب</h1>
+        <p class="subtitle">CYB236 - أمن تطبيقات الويب</p>
+        <div class="chapter-ref">يغطي: الفصل 2 (الاستطلاع) والفصل 3 (بنية الويب الحديثة)</div>
+    </header>
+
+    <!-- Lab Info -->
+    <div class="lab-info">
+        <div class="lab-info-item">
+            <strong>رقم المختبر</strong>
+            <span>02</span>
+        </div>
+        <div class="lab-info-item">
+            <strong>المستوى</strong>
+            <span>مبتدئ</span>
+        </div>
+        <div class="lab-info-item">
+            <strong>المدة</strong>
+            <span>45-50 دقيقة</span>
+        </div>
+        <div class="lab-info-item">
+            <strong>المتطلبات</strong>
+            <span>المختبر 01 (Kali VM)</span>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Table of Contents -->
+        <nav class="toc">
+            <h2>فهرس المحتويات</h2>
+            <ol>
+                <li><a href="#introduction">المقدمة</a></li>
+                <li><a href="#objectives">أهداف التعلم</a></li>
+                <li><a href="#setup">الجزء 1: إعداد Juice Shop</a></li>
+                <li><a href="#task1">المهمة 1: تحديد التقنيات المستخدمة</a></li>
+                <li><a href="#task2">المهمة 2: استكشاف طلبات REST API</a></li>
+                <li><a href="#task3">المهمة 3: قراءة بيانات JSON</a></li>
+                <li><a href="#task4">المهمة 4: فحص التخزين في المتصفح</a></li>
+                <li><a href="#troubleshooting">استكشاف الأخطاء</a></li>
+                <li><a href="#report">إنشاء التقرير</a></li>
+            </ol>
+        </nav>
+
+        <!-- Introduction -->
+        <section id="introduction">
+            <h2>المقدمة</h2>
+
+            <p>في هذا المختبر ستخطو خطواتك الأولى في <strong>استطلاع تطبيقات الويب</strong> (<span class="term-en">Web Application Reconnaissance</span>) &mdash; وهي مرحلة جمع المعلومات التي تحدث <em>قبل</em> أي اختبار أمني. ستستكشف تطبيق ويب مستهدف باستخدام <strong>متصفح الويب</strong> فقط وأدوات <strong>المطور</strong> (<span class="term-en">Developer Tools</span>) المدمجة فيه.</p>
+
+            <p>التطبيق المستهدف هو <strong>OWASP Juice Shop</strong>، وهو متجر عصائر إلكتروني مصمم عمداً ليكون معرضاً للثغرات، مبني بتقنيات حديثة درستها في الفصل 3.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>ما هو OWASP Juice Shop؟</h4>
+                    <p>Juice Shop هو تطبيق ويب حديث مصمم خصيصاً لتعليم الأمن السيبراني. يستخدم:</p>
+                    <ul>
+                        <li><strong>Angular</strong> &mdash; إطار عمل تطبيقات الصفحة الواحدة (<span class="term-en">SPA</span>)</li>
+                        <li><strong>Node.js / Express</strong> &mdash; خادم ويب بلغة JavaScript</li>
+                        <li><strong>REST API</strong> بصيغة بيانات <strong>JSON</strong></li>
+                        <li>قاعدة بيانات <strong>SQLite</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>تنبيه قانوني مهم</h4>
+                    <p>يجب إجراء الاستطلاع <strong>فقط</strong> على التطبيقات التي تملكها أو لديك إذن كتابي لاختبارها. في هذا المختبر، يعمل Juice Shop <strong>محلياً على جهازك</strong>، لذا أنت مخوّل بالكامل.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Objectives -->
+        <section id="objectives">
+            <h2>أهداف التعلم</h2>
+            <p>بنهاية هذا المختبر، ستتمكن من:</p>
+            <ul class="checklist">
+                <li>إعداد وتشغيل OWASP Juice Shop باستخدام Docker على Kali Linux</li>
+                <li>تحديد التقنيات المستخدمة في تطبيق ويب باستخدام أدوات المتصفح</li>
+                <li>استخدام أدوات المطور (<span class="term-en">Developer Tools</span>) لمراقبة طلبات REST API</li>
+                <li>قراءة وفهم بيانات JSON المتبادلة بين العميل والخادم</li>
+                <li>فحص التخزين في المتصفح (الكوكيز، <span class="term-en">localStorage</span>، <span class="term-en">sessionStorage</span>)</li>
+            </ul>
+
+            <h3>الأدوات المستخدمة في هذا المختبر</h3>
+            <table>
+                <tr>
+                    <th>الأداة</th>
+                    <th>الاستخدام</th>
+                </tr>
+                <tr>
+                    <td><code>Docker</code></td>
+                    <td>تشغيل تطبيق Juice Shop محلياً</td>
+                </tr>
+                <tr>
+                    <td><code>Firefox</code> + أدوات المطور (<span class="term-en">F12</span>)</td>
+                    <td>فحص طلبات الشبكة وبيانات JSON والتخزين</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Part 1: Setup -->
+        <section id="setup">
+            <h2>الجزء 1: إعداد OWASP Juice Shop</h2>
+
+            <p>سنقوم بتشغيل Juice Shop باستخدام <strong>Docker</strong> داخل جهازك الافتراضي Kali.</p>
+
+            <h3>الخطوة 1: تثبيت Docker</h3>
+            <p>افتح الطرفية (<span class="term-en">Terminal</span>) في Kali VM ونفّذ هذه الأوامر واحداً تلو الآخر:</p>
+
+<pre><code><span class="command-label"># تحديث الحزم وتثبيت Docker</span>
+sudo apt update
+sudo apt install -y docker.io
+
+<span class="command-label"># تشغيل Docker</span>
+sudo systemctl start docker
+sudo systemctl enable docker</code></pre>
+
+            <h3>الخطوة 2: تحميل وتشغيل Juice Shop</h3>
+
+<pre><code><span class="command-label"># تحميل Juice Shop (قد يستغرق بضع دقائق)</span>
+sudo docker pull bkimminich/juice-shop
+
+<span class="command-label"># تشغيل Juice Shop على المنفذ 3000</span>
+sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></pre>
+
+            <h3>الخطوة 3: فتحه في Firefox</h3>
+
+            <ol class="steps">
+                <li>افتح <strong>Firefox</strong> في Kali VM</li>
+                <li>انتقل إلى <code>http://localhost:3000</code></li>
+                <li>يجب أن ترى الصفحة الرئيسية لـ Juice Shop &mdash; متجر إلكتروني لبيع العصائر. أغلق <strong>لافتة الترحيب</strong> و<strong>إشعار الكوكيز</strong>.</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>نقطة تحقق</h4>
+                    <p>إذا كنت ترى الصفحة الرئيسية لـ Juice Shop مع صور المنتجات (مثل Apple Juice و Banana Juice وغيرها)، فأنت جاهز للمتابعة!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task 1: Technology Stack -->
+        <section id="task1">
+            <h2>المهمة 1: تحديد التقنيات المستخدمة</h2>
+
+            <p>مهمتك الأولى هي معرفة <strong>ما هي التقنيات</strong> التي بُني بها هذا التطبيق.</p>
+
+            <h3>1A: فحص رؤوس الاستجابة في Firefox</h3>
+
+            <ol class="steps">
+                <li>في Firefox، تأكد أنك على صفحة <code>http://localhost:3000</code></li>
+                <li>اضغط <strong>F12</strong> لفتح أدوات المطور. انقر على تبويب <strong>Network</strong> (الشبكة).</li>
+                <li>اضغط <strong>Ctrl + R</strong> لإعادة تحميل الصفحة. انقر على <strong>أول طلب</strong> في القائمة.</li>
+                <li>في لوحة التفاصيل، انقر على <strong>Headers</strong> (الرؤوس) وانزل إلى قسم <strong>Response Headers</strong> (رؤوس الاستجابة).</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>رؤوس مهمة يجب البحث عنها</h4>
+                    <ul>
+                        <li><code>X-Content-Type-Options</code> &mdash; يجب أن ترى <strong>nosniff</strong></li>
+                        <li><code>X-Frame-Options</code> &mdash; يجب أن ترى <strong>SAMEORIGIN</strong></li>
+                        <li><code>Access-Control-Allow-Origin</code> &mdash; يجب أن ترى <strong>*</strong> (يسمح لأي موقع بإرسال طلبات &mdash; مشكلة أمنية!)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>1B: فحص مصدر الصفحة لمعرفة إطار العمل</h3>
+
+            <ol class="steps">
+                <li>انقر بزر الماوس الأيمن على الصفحة واختر <strong>View Page Source</strong> (عرض مصدر الصفحة) أو اضغط <strong>Ctrl + U</strong></li>
+                <li>انزل إلى الأسفل وابحث عن وسوم <code>&lt;script&gt;</code>: <code>runtime.js</code>، <code>polyfills.js</code>، <code>vendor.js</code>، <code>main.js</code></li>
+                <li>ابحث أيضاً عن وسم <code>&lt;app-root&gt;</code> في قسم <code>&lt;body&gt;</code></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>تلميح</h4>
+                    <p>الملفات <code>runtime.js</code> و <code>polyfills.js</code> و <code>vendor.js</code> و <code>main.js</code> ووسم <code>&lt;app-root&gt;</code> هي العلامة المميزة لإطار عمل <strong>Angular</strong> (إطار عمل SPA من الفصل 3).</p>
+                </div>
+            </div>
+
+            <!-- Task 1 Fill-in -->
+            <div class="deliverable">
+                <h4>المهمة 1 &mdash; أدخل إجاباتك:</h4>
+            </div>
+            <div class="fill-in">
+                <label>برنامج خادم الويب:</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="">
+                <label>إطار العمل من جانب العميل:</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="">
+                <label>اذكر رأس استجابة أمني وجدته ووظيفته:</label>
+                <input type="text" class="task-answer" data-task="1" placeholder="">
+            </div>
+        </section>
+
+        <!-- Task 2: REST APIs in Browser -->
+        <section id="task2">
+            <h2>المهمة 2: استكشاف طلبات REST API في المتصفح</h2>
+
+            <p>تتواصل تطبيقات الويب الحديثة من خلال <strong>REST API</strong>. لنشاهد ذلك يحدث مباشرة.</p>
+
+            <h3>2A: فتح تبويب الشبكة</h3>
+
+            <ol class="steps">
+                <li>اضغط <strong>F12</strong> لفتح أدوات المطور، انقر على تبويب <strong>Network</strong> (الشبكة)</li>
+                <li>انقر على زر فلتر <strong>XHR</strong> لعرض طلبات API فقط</li>
+                <li>اضغط <strong>Ctrl + R</strong> لإعادة تحميل الصفحة</li>
+            </ol>
+
+            <h3>2B: مراقبة طلبات API</h3>
+
+            <p>بدون النقر على أي شيء، فقط بتحميل الصفحة الرئيسية، يجب أن ترى عدة طلبات API. إليك بعض الطلبات الرئيسية:</p>
+
+            <table>
+                <tr>
+                    <th>طريقة HTTP</th>
+                    <th>مسار URL</th>
+                    <th>الوظيفة</th>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/rest/admin/application-version</code></td>
+                    <td>الحصول على إصدار Juice Shop</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/rest/products/search?q=</code></td>
+                    <td>البحث في جميع المنتجات</td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td><code>/rest/user/whoami</code></td>
+                    <td>التحقق من تسجيل دخول المستخدم</td>
+                </tr>
+            </table>
+
+            <h3>2C: النقر على منتج</h3>
+
+            <p>انقر على أي بطاقة منتج في الصفحة الرئيسية. راقب تبويب Network &mdash; يجب أن ترى طلبات جديدة إلى <code>/rest/products/{id}/reviews</code>. لاحظ أن المراجعات تحتوي على <strong>عناوين بريد إلكتروني</strong> (مثل <code>admin@juice-sh.op</code>) &mdash; وهذا يعتبر <strong>كشف بيانات حساسة</strong>.</p>
+
+            <!-- Task 2 Fill-in -->
+            <div class="deliverable">
+                <h4>المهمة 2 &mdash; أدخل إجاباتك:</h4>
+            </div>
+            <div class="fill-in">
+                <label>كم عدد طلبات API التي رأيتها عند تحميل الصفحة الرئيسية؟</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="">
+                <label>اذكر نقطة نهاية API إضافية رأيتها عند النقر على منتج:</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="">
+                <label>ما البيانات الحساسة التي وجدتها مكشوفة في المراجعات؟</label>
+                <input type="text" class="task-answer" data-task="2" placeholder="">
+            </div>
+        </section>
+
+        <!-- Task 3: JSON Data -->
+        <section id="task3">
+            <h2>المهمة 3: قراءة بيانات JSON</h2>
+
+            <p>تستخدم واجهات REST API صيغة <strong>JSON</strong> (<span class="term-en">JavaScript Object Notation</span>) لتبادل البيانات بين العميل والخادم. JSON هي صيغة نصية خفيفة تنظم البيانات باستخدام أزواج المفتاح والقيمة. لنفحص بيانات JSON التي يرسلها Juice Shop.</p>
+
+            <h3>3A: عرض JSON لإصدار التطبيق</h3>
+
+            <ol class="steps">
+                <li>في تبويب <strong>Network</strong> (مع فلتر <strong>XHR</strong>)، ابحث عن طلب <code>application-version</code> وانقر عليه</li>
+                <li>انقر على تبويب <strong>Response</strong> (الاستجابة) لرؤية بيانات JSON:</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>استجابة JSON المتوقعة:</h4>
+<pre><code>{"version":"19.1.1"}</code></pre>
+            </div>
+
+            <h3>3B: عرض JSON لبحث المنتجات</h3>
+
+            <ol class="steps">
+                <li>انقر على طلب <code>/rest/products/search?q=</code>، ثم انقر على <strong>Response</strong></li>
+                <li>سترى استجابة JSON تحتوي على جميع المنتجات. كل منتج يبدو هكذا:</li>
+            </ol>
+
+            <div class="expected-output">
+                <h4>مثال على كائن منتج:</h4>
+<pre><code>{
+  "id": 1,
+  "name": "Apple Juice (1000ml)",
+  "price": 1.99,
+  "image": "apple_juice.jpg"
+}</code></pre>
+            </div>
+
+            <!-- Task 3 Fill-in -->
+            <div class="deliverable">
+                <h4>المهمة 3 &mdash; أدخل إجاباتك:</h4>
+            </div>
+            <div class="fill-in">
+                <label>ما إصدار Juice Shop الذي يعمل؟</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="">
+                <label>كم عدد المنتجات التي تعيدها واجهة البحث API؟</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="">
+                <label>اذكر مشكلة أمنية واحدة حول نقاط نهاية API هذه:</label>
+                <input type="text" class="task-answer" data-task="3" placeholder="">
+            </div>
+        </section>
+
+        <!-- Task 4: Client-Side Storage -->
+        <section id="task4">
+            <h2>المهمة 4: فحص التخزين في المتصفح</h2>
+
+            <p>يمكن للمتصفحات تخزين البيانات محلياً باستخدام الكوكيز (<span class="term-en">Cookies</span>) و <span class="term-en">localStorage</span> و <span class="term-en">sessionStorage</span>. لنرى ما يخزنه Juice Shop في متصفحك.</p>
+
+            <h3>4A: فتح مفتش التخزين</h3>
+
+            <ol class="steps">
+                <li>اضغط <strong>F12</strong> لفتح أدوات المطور</li>
+                <li>انقر على تبويب <strong>Storage</strong> (التخزين) — إذا كان مخفياً، انقر على أيقونة <strong>&laquo;</strong> في نهاية شريط التبويبات</li>
+                <li>وسّع <strong>Cookies</strong> &larr; <code>http://localhost:3000</code> لرؤية جميع الكوكيز</li>
+                <li>افحص أيضاً <strong>Local Storage</strong> و <strong>Session Storage</strong></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">💡</span>
+                <div>
+                    <h4>ما يجب أن تراه</h4>
+                    <p>تحت Cookies، يجب أن ترى 3 إدخالات: <code>language</code> و <code>welcomebanner_status</code> و <code>cookieconsent_status</code>. تحقق من أعمدة <strong>HttpOnly</strong> و <strong>Secure</strong>.</p>
+                </div>
+            </div>
+
+            <!-- Task 4 Fill-in -->
+            <div class="deliverable">
+                <h4>المهمة 4 &mdash; أدخل إجاباتك:</h4>
+            </div>
+            <div class="fill-in">
+                <label>قيمة كوكي <code>language</code>:</label>
+                <input type="text" class="task-answer" data-task="4" placeholder="">
+                <label>هل علامتا HttpOnly و Secure مفعّلتان على أي كوكيز؟ (نعم / لا)</label>
+                <input type="text" class="task-answer" data-task="4" placeholder="">
+                <label>لماذا يعتبر عدم وجود علامة Secure على الكوكيز خطراً أمنياً؟</label>
+                <input type="text" class="task-answer" data-task="4" placeholder="">
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting">
+            <h2>استكشاف الأخطاء</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; أمر Docker غير موجود</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> نفّذ <code>sudo apt update && sudo apt install -y docker.io</code> ثم <code>sudo systemctl start docker</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; "Cannot connect to the Docker daemon"</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> نفّذ <code>sudo systemctl start docker</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; صفحة Juice Shop لا تُحمّل</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تحقق من تشغيل الحاوية: <code>sudo docker ps</code>. إذا لم تكن مدرجة، شغّلها: <code>sudo docker start juice-shop</code>.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; المنفذ 3000 قيد الاستخدام</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> نفّذ <code>sudo docker stop juice-shop && sudo docker rm juice-shop</code>، ثم أعد تنفيذ أمر docker run من الجزء 1.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Generate Report -->
+        <section id="report">
+            <h2>إنشاء التقرير</h2>
+
+            <p>أدخل معلوماتك أدناه وانقر على <strong>إنشاء تقرير PDF</strong>. سيتم جمع جميع إجاباتك من المهام 1&ndash;4 في تقرير قابل للطباعة.</p>
+
+            <div id="report-section" style="border: 2px solid var(--kali-blue); border-radius: 15px; padding: 30px; margin: 20px 0; background: #fafbfc;">
+                <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--kali-blue);">
+                    <h3 style="color: var(--secondary-color); margin: 0;">CYB236 &mdash; المختبر 02: تقرير ملخص الاستطلاع</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color);">اسم الطالب:</label>
+                        <input type="text" id="student-name" placeholder="أدخل اسمك الكامل" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color);">الرقم الجامعي:</label>
+                        <input type="text" id="student-id" placeholder="أدخل رقمك الجامعي" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em;">
+                    </div>
+                </div>
+
+                <!-- Report preview area -->
+                <div id="report-preview" style="display: none; background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 25px; margin-bottom: 20px;">
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button disabled style="background:#9ca3af; color:white; border:none; padding:15px 40px; font-size:1.1em; font-weight:600; border-radius:10px; cursor:not-allowed; opacity:0.7;">&#128196; إنشاء تقرير PDF &mdash; غير متاح</button>
+                    <p style="color:#e53e3e; font-size:0.87em; margin-top:10px; text-align:center; font-weight:600;">&#9888; إنشاء التقرير غير متاح في النسخة العربية &mdash; يجب تقديم التقارير باللغة الإنجليزية.<br><span style="color:#718096; font-weight:400;">Reports must be submitted in English. Please use the English version of this lab.</span></p>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- end content -->
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; أمن تطبيقات الويب</p>
+        <p>المختبر 02: مقدمة في استطلاع تطبيقات الويب</p>
+    </div>
+
+</div><!-- end container -->
+
+<script>
+function generateReport() {
+    alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من المختبر.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this lab.');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(ls:*)",
+      "WebFetch(domain:www.kali.org)",
+      "Bash(python3:*)",
+      "Bash(cd /home/abdul/claudeProjects/CYB236/course/Labs && \\\\\n  mv lab3/ lab3_temp/ && \\\\\n  mv lab4/ lab3/ && mv lab3/lab04-english.html lab3/lab03-english.html && \\\\\n  mv lab5/ lab4/ && mv lab4/lab05-english.html lab4/lab04-english.html && \\\\\n  mv lab3_temp/ lab5/ && mv lab5/lab03-english.html lab5/lab05-english.html)",
+      "Bash(for w in 1 2 3 4 5 6; do \n  echo \"=== week$w ===\"\n  grep -i \"title\\\\|h1\\\\|chapter\" /home/abdul/claudeProjects/CYB236/course/week$w/index.html 2>/dev/null | grep -v \"style\\\\|class\\\\|meta\\\\|svg\" | head -5\ndone)",
+      "Bash(git -C /home/abdul/claudeProjects/CYB236/course show HEAD:Labs/lab5/lab05-english.html 2>/dev/null | head -5 || echo \"No git history\")",
+      "Bash(git -C /home/abdul/claudeProjects/CYB236/course log --oneline -5 2>/dev/null || echo \"No commits\")"
+    ]
+  }
+}

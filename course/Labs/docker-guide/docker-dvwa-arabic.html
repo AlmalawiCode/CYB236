@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker و DVWA — الدليل الشامل</title>
+    <style>
+        :root {
+            --primary-color: #c0392b;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --light-bg: #f7fafc;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+            --kali-dark: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #922b21 0%, #4a1010 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .term-en {
+            color: var(--primary-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; }
+
+        .header { background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%); color: white; padding: 40px; text-align: center; position: relative; overflow: hidden; }
+        .header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">🐳</text></svg>'); background-size: 150px; opacity: 0.3; }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.1em; opacity: 0.9; position: relative; }
+
+        .lab-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; padding: 25px 40px; background: linear-gradient(135deg, #922b21 0%, #6b1f17 100%); color: white; }
+        .lab-info-item { text-align: center; padding: 15px; background: rgba(255,255,255,0.15); border-radius: 10px; backdrop-filter: blur(10px); }
+        .lab-info-item strong { display: block; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.1em; font-weight: 600; }
+
+        .content { padding: 40px; }
+
+        .toc { background: linear-gradient(135deg, #fde8e8 0%, #f9c0c0 100%); border-radius: 15px; padding: 25px 30px; margin-bottom: 40px; border-right: 5px solid var(--primary-color); }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; }
+        .toc ol { columns: 2; column-gap: 30px; padding-right: 20px; padding-left: 0; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: var(--primary-color); text-decoration: none; transition: all 0.3s ease; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        section { margin-bottom: 40px; }
+
+        h2 { color: var(--secondary-color); font-size: 1.8em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid var(--primary-color); display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.4em; margin: 25px 0 15px 0; display: flex; align-items: center; gap: 8px; }
+        h4 { color: var(--dark-text); font-size: 1.15em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { padding-right: 20px; padding-left: 0; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        .alert { padding: 20px 25px; border-radius: 12px; margin: 20px 0; display: flex; gap: 15px; align-items: flex-start; }
+        .alert-icon { font-size: 1.5em; flex-shrink: 0; }
+        .alert-info    { background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%); border-right: 5px solid var(--info-color); }
+        .alert-warning { background: linear-gradient(135deg, #fffff0 0%, #fefcbf 100%); border-right: 5px solid var(--warning-color); }
+        .alert-danger  { background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%); border-right: 5px solid var(--danger-color); }
+        .alert-success { background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); border-right: 5px solid var(--accent-color); }
+        .alert h4 { margin: 0 0 8px 0; color: inherit; }
+        .alert p, .alert ul { margin: 0; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        th { background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%); color: white; padding: 15px 20px; text-align: right; font-weight: 600; }
+        td { padding: 12px 20px; border-bottom: 1px solid var(--border-color); text-align: right; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: #edf2f7; }
+
+        code { background: #1a202c; color: #68d391; padding: 3px 8px; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; direction: ltr; display: inline-block; }
+        pre { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); color: #e2e8f0; padding: 20px; border-radius: 12px; overflow-x: auto; margin: 15px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); direction: ltr; text-align: left; }
+        pre code { background: none; color: #68d391; padding: 0; direction: ltr; }
+
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 15px; padding-right: 50px; padding-left: 0; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; right: 0; top: 0; width: 35px; height: 35px; background: linear-gradient(135deg, #922b21 0%, #6b1f17 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(146,43,33,0.3); }
+
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin: 20px 0; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .card h4 { color: var(--primary-color); margin-top: 0; margin-bottom: 10px; }
+        .card p { margin: 0; font-size: 0.9em; color: #555; }
+
+        .level-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.85em; margin-left: 8px; }
+        .level-low      { background: #fed7d7; color: #c0392b; }
+        .level-medium   { background: #fefcbf; color: #b7791f; }
+        .level-high     { background: #c6f6d5; color: #276749; }
+        .level-impossible { background: #bee3f8; color: #2c5282; }
+
+        .concept-flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; margin: 25px 0; background: #f7fafc; border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); direction: ltr; }
+        .concept-box { background: linear-gradient(135deg, #922b21 0%, #6b1f17 100%); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.9em; text-align: center; min-width: 110px; }
+        .concept-box.gray  { background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%); }
+        .concept-box.green { background: linear-gradient(135deg, #276749 0%, #1a4731 100%); }
+        .concept-box.blue  { background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%); }
+        .concept-arrow { font-size: 1.5em; color: #a0aec0; padding: 0 8px; }
+
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%); padding: 15px 20px; font-weight: 600; color: var(--danger-color); display: flex; align-items: center; gap: 10px; }
+        .troubleshoot-solution { padding: 20px; background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); }
+
+        .credentials-box { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; margin: 25px 0; }
+        .credentials-box h4 { color: #68d391; margin-bottom: 15px; }
+        .credential-item { display: inline-block; margin: 10px 20px; padding: 10px 20px; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .credential-item strong { color: #a0aec0; display: block; font-size: 0.85em; margin-bottom: 5px; }
+        .credential-item span { font-family: 'Consolas', monospace; font-size: 1.3em; color: #68d391; direction: ltr; display: inline-block; }
+
+        .footer { background: linear-gradient(135deg, var(--kali-dark) 0%, #374151 100%); color: white; padding: 30px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        a { color: var(--primary-color); text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+        a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        .lang-switch { position: fixed; top: 20px; left: 20px; z-index: 1000; }
+        .lang-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 50px; font-size: 1em; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.4); transition: all 0.3s ease; text-decoration: none; }
+        .lang-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(16,185,129,0.5); color: white; text-decoration: none; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 30px 20px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 25px; }
+            .toc ol { columns: 1; }
+            .concept-flow { flex-direction: column; }
+        }
+
+        @media print { body { background: white; padding: 0; } .container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+
+    <div class="lang-switch">
+        <a href="docker-dvwa-english.html" class="lang-btn">🌍 English</a>
+    </div>
+
+    <div class="container">
+
+        <header class="header">
+            <h1>🐳 Docker و DVWA — الدليل الشامل</h1>
+            <p class="subtitle">CYB236 &mdash; فهم Docker و DVWA وتشغيلهما واستكشاف أخطائهما</p>
+        </header>
+
+        <div class="lab-info">
+            <div class="lab-info-item"><strong>النوع</strong><span>دليل مرجعي</span></div>
+            <div class="lab-info-item"><strong>يُطبَّق على</strong><span>المختبرات 1 – 10</span></div>
+            <div class="lab-info-item"><strong>البيئة</strong><span>Kali Linux</span></div>
+            <div class="lab-info-item"><strong>المستوى</strong><span>مبتدئ</span></div>
+        </div>
+
+        <div class="content">
+
+            <nav class="toc">
+                <h2>📋 جدول المحتويات</h2>
+                <ol>
+                    <li><a href="#what-docker">ما هو Docker؟</a></li>
+                    <li><a href="#docker-concepts">المفاهيم الأساسية في Docker</a></li>
+                    <li><a href="#container-vs-vm">الحاوية مقابل الجهاز الافتراضي</a></li>
+                    <li><a href="#what-dvwa">ما هو DVWA؟</a></li>
+                    <li><a href="#dvwa-modules">وحدات الثغرات في DVWA</a></li>
+                    <li><a href="#dvwa-levels">مستويات الأمان في DVWA</a></li>
+                    <li><a href="#port-mapping">فهم تمرير المنافذ</a></li>
+                    <li><a href="#credentials">بيانات دخول DVWA الافتراضية</a></li>
+                    <li><a href="#lifecycle">دورة حياة حاوية Docker</a></li>
+                    <li><a href="#part1">عرض الحاويات</a></li>
+                    <li><a href="#part2">تشغيل DVWA</a></li>
+                    <li><a href="#part3">إيقاف الحاويات وحذفها</a></li>
+                    <li><a href="#part4">تعارض الحاويتين</a></li>
+                    <li><a href="#troubleshooting">المشكلات الشائعة وحلولها</a></li>
+                    <li><a href="#cheatsheet">ورقة المراجعة السريعة</a></li>
+                </ol>
+            </nav>
+
+            <!-- ما هو Docker -->
+            <section id="what-docker">
+                <h2>🐳 ما هو Docker؟</h2>
+                <p>
+                    <strong>Docker</strong> منصة مفتوحة المصدر تتيح لك تغليف التطبيقات وتوزيعها وتشغيلها داخل بيئات معزولة وخفيفة الوزن تُعرف بـ <strong>الحاويات (Containers)</strong>.
+                    بدلاً من تثبيت التطبيق مباشرةً على نظام التشغيل — مما قد يُسبب تعارضات في المكتبات أو يُعطِّل أدوات أخرى — يُغلِّف Docker كل تطبيق مع كل ما يحتاجه
+                    (الشيفرة، المكتبات، الإعدادات) داخل وحدة مكتفية بذاتها.
+                </p>
+                <p>
+                    فكِّر في Docker كـ <strong>حاوية شحن في العالم الحقيقي</strong>: يمكن تحميل الحاوية ذاتها على أي سفينة أو شاحنة أو قطار دون أن تُعنى بما يوجد تحتها.
+                    وبالمثل، تعمل حاوية Docker بالطريقة نفسها على أي جهاز مثبَّت عليه Docker بغض النظر عن نظام التشغيل.
+                </p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>📦 بيئة موحَّدة</h4>
+                        <p>يعمل DVWA بالطريقة ذاتها على جهاز كل طالب — لا مشكلات "يعمل عندي ولا يعمل عندك".</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔒 عزل آمن</h4>
+                        <p>يعمل التطبيق المعرَّض للثغرات داخل حاوية، معزولاً بأمان عن نظام Kali الحقيقي.</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚡ إعداد سريع</h4>
+                        <p>أمر واحد يُشغِّل خادم ويب متكامل مع قاعدة بيانات وPHP وDVWA — دون أي تثبيت يدوي.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 إعادة ضبط سهلة</h4>
+                        <p>احذف الحاوية وأعِد إنشاءها للحصول على نسخة DVWA جديدة تماماً في ثوانٍ.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>لماذا Docker في مختبرات الأمن؟</h4>
+                        <p>تشغيل تطبيق معرَّض للثغرات مثل DVWA مباشرةً على النظام الأصلي محفوف بالمخاطر. يبقيه Docker معزولاً: إذا حدث خطأ داخل الحاوية، يبقى نظام Kali سليماً. كما يمكنك تدمير الحاوية وإعادة إنشائها فورياً.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- المفاهيم الأساسية -->
+            <section id="docker-concepts">
+                <h2>🔑 المفاهيم الأساسية في Docker</h2>
+                <p>قبل العمل مع Docker، عليك فهم هذه المصطلحات الأربعة الجوهرية:</p>
+
+                <table>
+                    <tr>
+                        <th>المصطلح</th>
+                        <th>ما هو؟</th>
+                        <th>التشبيه الواقعي</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Image (صورة)</strong></td>
+                        <td>قالب للقراءة فقط — مخطط لإنشاء الحاويات. يحتوي على نظام التشغيل والتطبيق وجميع الاعتمادات، محجوزاً في الوقت.</td>
+                        <td>وصفة طبخ أو مخطط بناء منزل</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Container (حاوية)</strong></td>
+                        <td>نسخة حية جارية تُنشأ من صورة. يمكن تشغيلها وإيقافها وإعادة تشغيلها. يمكن إنشاء حاويات متعددة من الصورة ذاتها.</td>
+                        <td>المنزل الفعلي المبني من المخطط</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Hub</strong></td>
+                        <td>سجل إلكتروني حيث تُنشر صور Docker ويتم تشاركها علناً. مثل GitHub لكن لصور Docker.</td>
+                        <td>متجر تطبيقات للبيئات الجاهزة</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Daemon</strong></td>
+                        <td>الخدمة التي تعمل في الخلفية وتُدير جميع عمليات Docker على جهازك. يجب تشغيلها لأي أمر Docker.</td>
+                        <td>مدير المصنع الذي يبني الحاويات ويشغِّلها</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Engine</strong></td>
+                        <td>برنامج Docker الكامل — يشمل الخدمة وواجهة الأوامر والAPI. عند كتابة <code>sudo docker ...</code> تتواصل مع المحرك.</td>
+                        <td>مبنى المصنع بأكمله</td>
+                    </tr>
+                </table>
+
+                <h3>🔗 كيف ترتبط ببعضها؟</h3>
+                <div class="concept-flow">
+                    <div class="concept-box blue">Docker Hub<br><small>سجل الصور</small></div>
+                    <div class="concept-arrow">← pull ←</div>
+                    <div class="concept-box gray">Image<br><small>مخطط محلي</small></div>
+                    <div class="concept-arrow">← run ←</div>
+                    <div class="concept-box green">Container<br><small>تطبيق يعمل</small></div>
+                </div>
+                <p style="text-align:center; color: #718096; font-size:0.9em;">عند تنفيذ <code>docker run vulnerables/web-dvwa</code>، يسحب Docker الصورة من Docker Hub (إن لم تكن موجودة محلياً)، ثم ينشئ حاوية منها ويشغِّلها.</p>
+            </section>
+
+            <!-- الحاوية مقابل VM -->
+            <section id="container-vs-vm">
+                <h2>⚖️ الحاوية مقابل الجهاز الافتراضي (VM)</h2>
+                <p>يوفر كل منهما عزلاً، لكنهما يعملان بشكل مختلف تماماً. يساعدك فهم هذا الفرق على إدراك سبب استخدام Docker بجانب VirtualBox في هذا المقرر — لا بديلاً عنه.</p>
+
+                <table>
+                    <tr>
+                        <th>الخاصية</th>
+                        <th>🐳 حاوية Docker</th>
+                        <th>📦 جهاز افتراضي (VirtualBox)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ما الذي يُحاكيه؟</strong></td>
+                        <td>التطبيق ومكتباته فقط</td>
+                        <td>جهاز كامل بما فيه نظام التشغيل</td>
+                    </tr>
+                    <tr>
+                        <td><strong>وقت الإقلاع</strong></td>
+                        <td>ثوانٍ</td>
+                        <td>دقائق</td>
+                    </tr>
+                    <tr>
+                        <td><strong>مساحة القرص</strong></td>
+                        <td>ميغابايتات (صورة DVWA ≈ 500 MB)</td>
+                        <td>جيغابايتات (Kali VM ≈ 20+ GB)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>استهلاك الذاكرة</strong></td>
+                        <td>منخفض جداً — يشارك نواة النظام المضيف</td>
+                        <td>مرتفع — يحتاج ذاكرة نظام تشغيل مستقلة</td>
+                    </tr>
+                    <tr>
+                        <td><strong>مستوى العزل</strong></td>
+                        <td>عزل على مستوى العملية (يشارك النواة)</td>
+                        <td>عزل كامل على مستوى نظام التشغيل</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الاستخدام في المقرر</strong></td>
+                        <td>تشغيل DVWA وJuice Shop بسرعة</td>
+                        <td>تشغيل Kali Linux كبيئة المختبر الرئيسية</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>في هذا المقرر</h4>
+                        <p>أنت تُشغِّل <strong>Kali Linux داخل VirtualBox</strong> (جهاز افتراضي)، ثم تُشغِّل <strong>DVWA داخل Docker</strong> (حاوية) داخل Kali. حاويات Docker متداخلة داخل جهازك الافتراضي.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ما هو DVWA -->
+            <section id="what-dvwa">
+                <h2>🎯 ما هو DVWA؟</h2>
+                <p>
+                    <strong>DVWA (Damn Vulnerable Web Application)</strong> هو تطبيق ويب PHP/MySQL معرَّض للثغرات عمداً، مُصمَّم خصيصاً لطلاب وممارسي أمن المعلومات لتدريب هجمات تطبيقات الويب في <strong>بيئة قانونية وآمنة ومضبوطة</strong>.
+                    كل ثغرة في DVWA مقصودة — طوَّره المطوِّرون معطوباً عن سبق إصرار وترصُّد.
+                </p>
+
+                <table>
+                    <tr><th>الخاصية</th><th>التفاصيل</th></tr>
+                    <tr><td><strong>الاسم الكامل</strong></td><td>Damn Vulnerable Web Application</td></tr>
+                    <tr><td><strong>التقنية</strong></td><td>PHP + MySQL (خادم Apache)</td></tr>
+                    <tr><td><strong>الغرض</strong></td><td>ممارسة ثغرات الويب الشائعة بشكل قانوني</td></tr>
+                    <tr><td><strong>صورة Docker</strong></td><td><code>vulnerables/web-dvwa</code> على Docker Hub</td></tr>
+                    <tr><td><strong>المنفذ الافتراضي</strong></td><td>80 (HTTP)</td></tr>
+                    <tr><td><strong>عنوان الوصول</strong></td><td><code>http://localhost</code> أو <code>http://127.0.0.1</code></td></tr>
+                </table>
+
+                <div class="alert alert-danger">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>تحذير قانوني</h4>
+                        <p>يجب استخدام DVWA <strong>فقط</strong> في بيئات مختبرية معزولة على أجهزة تتحكم فيها. لا تعرِّضه للإنترنت أو شبكة حقيقية. الثغرات في DVWA حقيقية ويمكن استغلالها من قِبَل آخرين إذا نُشر علناً.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- وحدات DVWA -->
+            <section id="dvwa-modules">
+                <h2>🧩 وحدات الثغرات في DVWA</h2>
+                <p>يتضمن DVWA مجموعة من <strong>وحدات الثغرات</strong>، تُظهر كل منها نوعاً مختلفاً من هجمات الويب. ستستخدم معظمها في CYB236:</p>
+
+                <table>
+                    <tr>
+                        <th>الوحدة</th>
+                        <th>نوع الثغرة</th>
+                        <th>ما ستتعلمه</th>
+                    </tr>
+                    <tr>
+                        <td>🔐 <strong>Brute Force</strong></td>
+                        <td>ضعف في المصادقة</td>
+                        <td>تخمين كلمات المرور آلياً باستخدام قوائم الكلمات (المختبر 07 مع Burp Intruder)</td>
+                    </tr>
+                    <tr>
+                        <td>💉 <strong>Command Injection</strong></td>
+                        <td>حقن أوامر نظام التشغيل</td>
+                        <td>حقن أوامر النظام عبر نموذج ويب لتنفيذها على الخادم</td>
+                    </tr>
+                    <tr>
+                        <td>🔗 <strong>CSRF</strong></td>
+                        <td>تزوير الطلبات عبر المواقع</td>
+                        <td>خداع متصفح مستخدم مُسجَّل دخوله لإرسال طلبات غير مصرَّح بها</td>
+                    </tr>
+                    <tr>
+                        <td>📂 <strong>File Inclusion</strong></td>
+                        <td>تضمين الملفات المحلية/البعيدة</td>
+                        <td>تضمين ملفات غير مقصودة (مثل <code>/etc/passwd</code>) عبر معاملات URL</td>
+                    </tr>
+                    <tr>
+                        <td>📤 <strong>File Upload</strong></td>
+                        <td>رفع ملفات غير مقيَّد</td>
+                        <td>رفع ملفات خبيثة (كـ PHP shell) للوصول إلى الخادم</td>
+                    </tr>
+                    <tr>
+                        <td>🤖 <strong>Insecure CAPTCHA</strong></td>
+                        <td>ضعف في التحقق</td>
+                        <td>تجاوز التحقق بـ CAPTCHA بسبب ثغرات منطق الخادم</td>
+                    </tr>
+                    <tr>
+                        <td>💾 <strong>SQL Injection</strong></td>
+                        <td>حقن SQL</td>
+                        <td>التلاعب باستعلامات قاعدة البيانات عبر حقول الإدخال لاستخراج البيانات</td>
+                    </tr>
+                    <tr>
+                        <td>🔍 <strong>SQL Injection (Blind)</strong></td>
+                        <td>حقن SQL الأعمى</td>
+                        <td>استخراج بيانات قاعدة البيانات حين لا يُظهر التطبيق أخطاء مباشرة</td>
+                    </tr>
+                    <tr>
+                        <td>🪪 <strong>Weak Session IDs</strong></td>
+                        <td>رموز جلسة متوقَّعة</td>
+                        <td>فهم كيفية تخمين رموز الجلسة الضعيفة واختطافها</td>
+                    </tr>
+                    <tr>
+                        <td>📜 <strong>XSS (DOM)</strong></td>
+                        <td>XSS على مستوى DOM</td>
+                        <td>حقن سكريبتات عبر DOM المتصفح دون الوصول إلى الخادم</td>
+                    </tr>
+                    <tr>
+                        <td>📢 <strong>XSS (Reflected)</strong></td>
+                        <td>XSS المنعكس</td>
+                        <td>حقن سكريبتات تُعاد فوراً في الاستجابة</td>
+                    </tr>
+                    <tr>
+                        <td>💬 <strong>XSS (Stored)</strong></td>
+                        <td>XSS المخزَّن</td>
+                        <td>حقن سكريبتات تُخزَّن دائماً وتُقدَّم لمستخدمين آخرين</td>
+                    </tr>
+                    <tr>
+                        <td>🔎 <strong>JavaScript</strong></td>
+                        <td>إساءة استخدام المنطق من جانب العميل</td>
+                        <td>التلاعب بـ JavaScript من جانب العميل لتجاوز التحقق</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- مستويات الأمان -->
+            <section id="dvwa-levels">
+                <h2>🛡️ مستويات الأمان في DVWA</h2>
+                <p>يمكن تشغيل كل وحدة في DVWA على <strong>أربعة مستويات أمان</strong>. يتيح ذلك لك فهم الثغرة بأبسط أشكالها أولاً، ثم رؤية كيف تجعل الدفاعات الحقيقية استغلالها أصعب تدريجياً.</p>
+                <p>يمكنك تغيير مستوى الأمان من قائمة <strong>"DVWA Security"</strong> في الشريط الجانبي الأيسر بعد تسجيل الدخول.</p>
+
+                <table>
+                    <tr><th>المستوى</th><th>الوصف</th><th>متى تستخدمه</th></tr>
+                    <tr>
+                        <td><span class="level-badge level-low">Low</span></td>
+                        <td>لا ضوابط أمان على الإطلاق. يُمرَّر الإدخال مباشرةً إلى الخلفية دون أي تحقق أو تطهير. تعمل الاستغلالات بحمولات بسيطة.</td>
+                        <td>تعلُّم الهجوم للمرة الأولى. جميع تمارين المختبر تبدأ من هنا.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="level-badge level-medium">Medium</span></td>
+                        <td>تُطبَّق دفاعات أساسية (مثل القائمة السوداء لبعض الأحرف، فلترة مدخلات بسيطة). هذه الدفاعات شائعة لكنها معيبة — يمكن تجاوزها.</td>
+                        <td>فهم سبب فشل الدفاعات الأساسية وكيف يتحايل عليها المهاجمون.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="level-badge level-high">High</span></td>
+                        <td>دفاعات أقوى (مثل القائمة البيضاء، الاستعلامات المُعلَّمة، حماية CSRF بالرموز). الاستغلال يتطلب أساليب أكثر تقدماً.</td>
+                        <td>رؤية ما يبدو عليه أمن أفضل، وكيف يمكن أحياناً هزيمته.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="level-badge level-impossible">Impossible</span></td>
+                        <td>الثغرة مُصلَحة بالكامل. تمثِّل الشيفرة المصدرية أفضل ممارسات التطوير الآمن. الاستغلال مستحيل.</td>
+                        <td>دراسة كيفية كتابة شيفرة آمنة. المقارنة مع مستوى Low لفهم الخطأ.</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>ابدأ دائماً من Low</h4>
+                        <p>ما لم يحدد المدرب خلاف ذلك، اضبط DVWA دائماً على مستوى <strong>Low</strong> قبل بدء أي تمرين. المستويات الأعلى قد تمنع الهجوم المتوقَّع من العمل مما يُسبب ارتباكاً.</p>
+                    </div>
+                </div>
+
+                <h3>📄 عرض الشيفرة المصدرية</h3>
+                <p>من أقوى ميزات DVWA التعليمية زرّ <strong>"View Source"</strong> في أسفل صفحة كل وحدة. يعرض الشيفرة PHP الفعلية التي تعمل خلف الوحدة عند كل مستوى أمان — حتى ترى بالضبط ما يجعل الشيفرة معرَّضة للثغرات أو آمنة.</p>
+            </section>
+
+            <!-- فهم تمرير المنافذ -->
+            <section id="port-mapping">
+                <h2>🔌 فهم تمرير المنافذ (Port Mapping)</h2>
+                <p>عند تشغيل DVWA بالأمر <code>docker run -d -p 80:80 ...</code>، يُخبر الجزء <code>-p 80:80</code> Docker بكيفية ربط جهاز Kali بالحاوية. يُسمى هذا <strong>تمرير المنافذ (Port Mapping)</strong>.</p>
+
+                <h3>ما هو المنفذ؟</h3>
+                <p>المنفذ <strong>(Port)</strong> هو قناة اتصال مُرقَّمة على الجهاز. عند تواصل المتصفح مع خادم الويب، يستخدم أرقام منافذ محددة:</p>
+
+                <table>
+                    <tr><th>المنفذ</th><th>البروتوكول</th><th>الاستخدام</th></tr>
+                    <tr><td><strong>80</strong></td><td>HTTP</td><td>حركة الويب غير المشفَّرة — يستخدمه DVWA وJuice Shop</td></tr>
+                    <tr><td><strong>443</strong></td><td>HTTPS</td><td>حركة الويب المشفَّرة (SSL/TLS)</td></tr>
+                    <tr><td><strong>3000</strong></td><td>HTTP (مخصص)</td><td>يستخدمه بعض التطبيقات مثل Juice Shop كمنفذ بديل</td></tr>
+                    <tr><td><strong>8080</strong></td><td>HTTP (بديل)</td><td>بديل شائع للمنفذ 80، يستخدمه Burp Suite كـ Proxy</td></tr>
+                    <tr><td><strong>3306</strong></td><td>MySQL</td><td>اتصالات قاعدة البيانات — يستخدمه DVWA داخلياً</td></tr>
+                </table>
+
+                <h3>كيف يعمل <code>-p 80:80</code>؟</h3>
+                <div class="concept-flow">
+                    <div class="concept-box blue">متصفحك<br><small>http://localhost</small></div>
+                    <div class="concept-arrow">→ منفذ 80 →</div>
+                    <div class="concept-box gray">Kali Linux<br><small>منفذ المضيف 80</small></div>
+                    <div class="concept-arrow">→ يُمرَّر إلى →</div>
+                    <div class="concept-box green">حاوية Docker<br><small>منفذ الحاوية 80</small></div>
+                </div>
+                <p>الصيغة هي <code>منفذ_المضيف:منفذ_الحاوية</code>. كلاهما 80 هنا، لكن يمكنك استخدام منفذ مضيف مختلف لتجنب التعارضات — مثلاً <code>-p 8081:80</code> يجعل DVWA متاحاً على <code>http://localhost:8081</code>.</p>
+
+                <h3>ما هو <code>localhost</code>؟</h3>
+                <p><code>localhost</code> و<code>127.0.0.1</code> كلاهما عناوان خاصة تُشير دائماً إلى <strong>جهازك الخاص</strong>. عند طلب المتصفح في Kali الخاص بك <code>http://localhost</code>، يتصل بالمنفذ 80 على Kali نفسه — والذي يُعيد Docker توجيهه إلى حاوية DVWA.</p>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">💡</span>
+                    <div>
+                        <h4>لماذا تحدث تعارضات المنافذ؟</h4>
+                        <p>يمكن لعملية واحدة فقط الاستماع على منفذ مضيف معين في آنٍ واحد. إذا كان DVWA يستخدم المنفذ 80 وحاولت تشغيل Juice Shop على المنفذ 80 أيضاً، يرفض Docker ذلك. هذا أكثر الأخطاء شيوعاً في هذا المقرر.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- بيانات الدخول -->
+            <section id="credentials">
+                <h2>🔑 بيانات دخول DVWA الافتراضية</h2>
+                <p>بعد تشغيل DVWA، افتح المتصفح وانتقل إلى <code>http://localhost</code>. استخدم هذه البيانات لتسجيل الدخول:</p>
+
+                <div class="credentials-box">
+                    <h4>🔑 بيانات دخول DVWA</h4>
+                    <div class="credential-item"><strong>اسم المستخدم</strong><span>admin</span></div>
+                    <div class="credential-item"><strong>كلمة المرور</strong><span>password</span></div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>المرة الأولى: تهيئة قاعدة البيانات</h4>
+                        <p>في المرة الأولى (أو بعد إعادة إنشاء الحاوية)، ستصل إلى صفحة الإعداد بدلاً من صفحة الدخول. انتقل إلى أسفل الصفحة واضغط <strong>"Create / Reset Database"</strong>. سيُعيد DVWA توجيهك تلقائياً إلى صفحة الدخول.</p>
+                    </div>
+                </div>
+
+                <h3>بعد الدخول — ضبط مستوى الأمان</h3>
+                <ol class="steps">
+                    <li>سجِّل الدخول بـ <code>admin</code> / <code>password</code></li>
+                    <li>اضغط <strong>"DVWA Security"</strong> في الشريط الجانبي</li>
+                    <li>اضبط مستوى الأمان على <strong>Low</strong> (ما لم يُحدد خلاف ذلك)</li>
+                    <li>اضغط <strong>"Submit"</strong></li>
+                    <li>أنت الآن جاهز لاستخدام أي وحدة ثغرات</li>
+                </ol>
+            </section>
+
+            <!-- دورة حياة الحاوية -->
+            <section id="lifecycle">
+                <h2>🔄 دورة حياة حاوية Docker</h2>
+                <p>تمرُّ حاوية Docker بحالات متميزة. فهم هذه الحالات يُفسِّر لك سبب استخدام <code>start</code> أحياناً بدلاً من <code>run</code>، وسبب حدوث تعارض في اسم الحاوية.</p>
+
+                <div class="concept-flow" style="flex-wrap:wrap; gap: 10px;">
+                    <div class="concept-box blue" style="min-width:120px;">لا حاوية<br><small>لا شيء موجود</small></div>
+                    <div class="concept-arrow">← docker run ←</div>
+                    <div class="concept-box green" style="min-width:120px;">جارية<br><small>docker ps يُظهرها</small></div>
+                    <div class="concept-arrow">← stop/kill ←</div>
+                    <div class="concept-box gray" style="min-width:120px;">متوقفة (Exited)<br><small>docker ps -a يُظهرها</small></div>
+                    <div class="concept-arrow">← docker rm ←</div>
+                    <div class="concept-box blue" style="min-width:120px;">لا حاوية<br><small>محذوفة نهائياً</small></div>
+                </div>
+
+                <table>
+                    <tr><th>الحالة</th><th>ما تعنيه</th><th>أمر التحقق</th></tr>
+                    <tr>
+                        <td><strong>لا حاوية</strong></td>
+                        <td>لم تُنشأ الحاوية قط، أو حُذفت بـ <code>docker rm</code>. استخدم <code>docker run</code> لإنشائها.</td>
+                        <td><code>docker ps -a</code> لا يُظهر شيئاً</td>
+                    </tr>
+                    <tr>
+                        <td><strong>جارية</strong></td>
+                        <td>الحاوية نشطة وتخدم الطلبات. DVWA متاح في المتصفح.</td>
+                        <td><code>docker ps</code> ← STATUS: Up</td>
+                    </tr>
+                    <tr>
+                        <td><strong>متوقفة / Exited</strong></td>
+                        <td>الحاوية موجودة على القرص لكنها لا تعمل. استخدم <code>docker start</code> (وليس <code>docker run</code>) لإعادة تشغيلها.</td>
+                        <td><code>docker ps -a</code> ← STATUS: Exited</td>
+                    </tr>
+                </table>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>run مقابل start — الخطأ الأكثر شيوعاً</h4>
+                        <p><code>docker run</code> <strong>ينشئ حاوية جديدة كلياً</strong> من صورة. إذا كانت حاوية بهذا الاسم موجودة (حتى لو متوقفة)، سيفشل <code>run</code> بخطأ "الاسم مستخدَم". استخدم <code>docker start dvwa</code> لإعادة تشغيل حاوية متوقفة موجودة.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- عرض الحاويات -->
+            <section id="part1">
+                <h2>📋 عرض الحاويات</h2>
+                <p>ابدأ دائماً من هنا عند عدم عمل DVWA. اعرف ما يعمل قبل فعل أي شيء آخر.</p>
+
+                <h3>▶ عرض الحاويات الجارية فقط</h3>
+                <pre><code>sudo docker ps</code></pre>
+                <p>يعرض الحاويات <strong>النشطة</strong> حالياً. أعمدة الناتج تعني:</p>
+                <table>
+                    <tr><th>العمود</th><th>المعنى</th></tr>
+                    <tr><td><code>CONTAINER ID</code></td><td>معرِّف مختصر (مثل <code>a1b2c3d4e5f6</code>)</td></tr>
+                    <tr><td><code>IMAGE</code></td><td>الصورة المستخدمة (مثل <code>vulnerables/web-dvwa</code>)</td></tr>
+                    <tr><td><code>STATUS</code></td><td>مدة التشغيل (مثل <code>Up 3 minutes</code>)</td></tr>
+                    <tr><td><code>PORTS</code></td><td>تمرير المنافذ (مثل <code>0.0.0.0:80->80/tcp</code>)</td></tr>
+                    <tr><td><code>NAMES</code></td><td>اسم الحاوية (مثل <code>dvwa</code>)</td></tr>
+                </table>
+
+                <h3>📂 عرض جميع الحاويات (بما فيها المتوقفة)</h3>
+                <pre><code>sudo docker ps -a</code></pre>
+                <p>الخيار <code>-a</code> يشمل الحاويات المتوقفة والخارجة. استخدمه للعثور على حاوية DVWA من جلسات سابقة.</p>
+
+                <h3>🔍 فحص حاوية بعينها</h3>
+                <pre><code>sudo docker inspect dvwa</code></pre>
+                <p>يعرض معلومات JSON مفصَّلة عن الحاوية: إعدادات الشبكة، التحميلات، متغيرات البيئة. مفيد لتصحيح الأخطاء المتقدم.</p>
+
+                <h3>📊 عرض استهلاك الموارد مباشرةً</h3>
+                <pre><code>sudo docker stats dvwa</code></pre>
+                <p>يعرض استهلاك CPU والذاكرة في الوقت الفعلي. اضغط <code>Ctrl+C</code> للخروج.</p>
+
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <div>
+                        <h4>قراءة الناتج</h4>
+                        <p>إذا قال <code>STATUS</code> كلمة <strong>Up</strong> → DVWA يعمل. إذا قال <strong>Exited</strong> → نفِّذ <code>docker start dvwa</code>. إذا لم يكن هناك صف → نفِّذ <code>docker run ...</code> لإنشائه.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- تشغيل DVWA -->
+            <section id="part2">
+                <h2>🚀 تشغيل DVWA</h2>
+
+                <h3>الخيار أ — المرة الأولى (لا حاوية موجودة)</h3>
+                <p>إذا لم يُظهر <code>docker ps -a</code> أي حاوية DVWA، أنشئها وشغِّلها:</p>
+                <pre><code>sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
+                <table>
+                    <tr><th>الخيار</th><th>المعنى</th></tr>
+                    <tr><td><code>run</code></td><td>أنشئ حاوية جديدة من صورة وشغِّلها</td></tr>
+                    <tr><td><code>-d</code></td><td>منفصل: شغِّل في الخلفية وأعِد الطرفية إليك</td></tr>
+                    <tr><td><code>-p 80:80</code></td><td>مرِّر منفذ المضيف 80 → منفذ الحاوية 80</td></tr>
+                    <tr><td><code>--name dvwa</code></td><td>سمِّ الحاوية "dvwa" للرجوع إليها بسهولة</td></tr>
+                    <tr><td><code>vulnerables/web-dvwa</code></td><td>الصورة المستخدمة من Docker Hub</td></tr>
+                </table>
+
+                <h3>الخيار ب — الحاوية موجودة لكنها متوقفة</h3>
+                <p>إذا أظهر <code>docker ps -a</code> الحالة <code>Exited</code>، أعِد تشغيلها دون إعادة إنشاء:</p>
+                <pre><code>sudo docker start dvwa</code></pre>
+
+                <h3>الخيار ج — إعادة تشغيل حاوية جارية</h3>
+                <p>إذا كانت DVWA تعمل لكنها تتصرف بشكل غريب (مثل أخطاء قاعدة البيانات):</p>
+                <pre><code>sudo docker restart dvwa</code></pre>
+
+                <h3>التحقق من إمكانية الوصول</h3>
+                <ol class="steps">
+                    <li>نفِّذ <code>sudo docker ps</code> — تأكد من ظهور <code>dvwa</code> بحالة <code>Up</code></li>
+                    <li>افتح Firefox في Kali</li>
+                    <li>انتقل إلى <code>http://localhost</code></li>
+                    <li>إذا ظهرت صفحة الإعداد، اضغط <strong>"Create / Reset Database"</strong></li>
+                    <li>سجِّل الدخول بـ <code>admin</code> / <code>password</code></li>
+                </ol>
+            </section>
+
+            <!-- إيقاف الحاويات -->
+            <section id="part3">
+                <h2>🛑 إيقاف الحاويات وحذفها</h2>
+
+                <h3>الإيقاف الآمن</h3>
+                <p>يُرسل إشارة إنهاء وينتظر حتى 10 ثوانٍ لإغلاق الحاوية بأمان:</p>
+                <pre><code>sudo docker stop dvwa</code></pre>
+
+                <h3>الإيقاف القسري</h3>
+                <p>يُنهي الحاوية فوراً — بلا انتظار. استخدمه حين لا يستجيب <code>stop</code>:</p>
+                <pre><code>sudo docker kill dvwa</code></pre>
+
+                <h3>حذف حاوية متوقفة</h3>
+                <p>يحذف الحاوية من القرص. لا تُحذف الصورة — يمكنك <code>docker run</code> مجدداً لإعادة الإنشاء:</p>
+                <pre><code>sudo docker rm dvwa</code></pre>
+
+                <h3>إيقاف وحذف بأمر واحد</h3>
+                <pre><code>sudo docker rm -f dvwa</code></pre>
+
+                <h3>حذف جميع الحاويات المتوقفة دفعةً واحدة</h3>
+                <pre><code>sudo docker container prune</code></pre>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <h4>stop مقابل kill مقابل rm</h4>
+                        <ul>
+                            <li><code>stop</code> — يطلب بأدب من الحاوية التوقف (SIGTERM، ثم SIGKILL بعد 10 ثوانٍ)</li>
+                            <li><code>kill</code> — يُنهي الحاوية فوراً (SIGKILL)</li>
+                            <li><code>rm</code> — يحذف الحاوية من النظام (يجب أن تكون متوقفة)</li>
+                            <li><code>rm -f</code> — يقتل ويحذف في خطوة واحدة</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- تعارض الحاويتين -->
+            <section id="part4">
+                <h2>⚠️ تعارض الحاويتين (المنفذ مستخدَم)</h2>
+                <p>هذه هي المشكلة الأكثر شيوعاً في المقرر. <strong>المختبر 02 يستخدم Juice Shop</strong> على المنفذ 80. <strong>المختبرات 03–10 تستخدم DVWA</strong> على المنفذ 80. يمكن لحاوية واحدة فقط امتلاك المنفذ 80 في آنٍ واحد.</p>
+
+                <pre><code>docker: Error response from daemon: driver failed programming external connectivity...
+Bind for 0.0.0.0:80 failed: port is already allocated.</code></pre>
+
+                <h3>تشخيص التعارض</h3>
+                <pre><code>sudo docker ps</code></pre>
+                <p>انظر إلى عمود <code>PORTS</code>. أيُّ حاوية تُظهر <code>0.0.0.0:80->80/tcp</code> هي التي تشغل المنفذ 80.</p>
+
+                <h3>الإصلاح: أوقِف الحاوية المتعارضة ثم شغِّل DVWA</h3>
+                <pre><code>sudo docker stop juice-shop
+sudo docker start dvwa</code></pre>
+
+                <h3>التبديل بين التطبيقين</h3>
+                <table>
+                    <tr><th>الهدف</th><th>الأوامر</th></tr>
+                    <tr><td>التبديل إلى DVWA</td><td><code>sudo docker stop juice-shop &amp;&amp; sudo docker start dvwa</code></td></tr>
+                    <tr><td>التبديل إلى Juice Shop</td><td><code>sudo docker stop dvwa &amp;&amp; sudo docker start juice-shop</code></td></tr>
+                    <tr><td>إيقاف كل شيء</td><td><code>sudo docker stop $(sudo docker ps -q)</code></td></tr>
+                </table>
+            </section>
+
+            <!-- المشكلات الشائعة -->
+            <section id="troubleshooting">
+                <h2>🔧 المشكلات الشائعة وحلولها</h2>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ خطأ "port is already allocated"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> حاوية أخرى (Juice Shop أو غيرها) مرتبطة بالمنفذ 80.</p>
+                        <pre><code>sudo docker ps
+sudo docker stop juice-shop
+sudo docker start dvwa</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ خطأ "The container name /dvwa is already in use"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> حاوية متوقفة باسم "dvwa" موجودة. حاولت <code>docker run</code> بدلاً من <code>docker start</code>.</p>
+                        <p><strong>الإصلاح — شغِّل الموجودة فقط:</strong></p>
+                        <pre><code>sudo docker start dvwa</code></pre>
+                        <p><strong>أو احذفها وأعِد الإنشاء:</strong></p>
+                        <pre><code>sudo docker rm dvwa
+sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ DVWA تعرض "Cannot connect to the database"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> MySQL داخل الحاوية لم ينتهِ من التهيئة بعد (يستغرق 10–15 ثانية).</p>
+                        <p><strong>الإصلاح:</strong> انتظر 15 ثانية ثم حدِّث المتصفح. إذا استمرت المشكلة:</p>
+                        <pre><code>sudo docker restart dvwa</code></pre>
+                        <p>ثم انتقل إلى <code>http://localhost/setup.php</code> → اضغط <strong>Create / Reset Database</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ المتصفح يعرض "This site can't be reached" أو رفض الاتصال</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> حاوية DVWA لا تعمل، أو عنوان خاطئ.</p>
+                        <pre><code>sudo docker ps          # تحقق إذا كانت dvwa تعمل
+sudo docker start dvwa  # إذا لم تكن تعمل</code></pre>
+                        <p>تأكد من استخدام <code>http://localhost</code> (وليس <code>https://</code>).</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ الحاوية متجمِّدة — docker stop لا يفعل شيئاً</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> الحاوية مُعلَّقة وتتجاهل إشارة SIGTERM.</p>
+                        <pre><code>sudo docker kill dvwa
+sudo docker start dvwa</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ "Cannot connect to the Docker daemon" أو "docker: command not found"</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> Docker غير مثبَّت أو الخدمة لا تعمل.</p>
+                        <pre><code>sudo apt update &amp;&amp; sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ خطأ "Permission denied" عند تشغيل أوامر docker</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> نسيت <code>sudo</code>، أو المستخدم غير مضاف إلى مجموعة docker.</p>
+                        <p><strong>الإصلاح — استخدم sudo دائماً في Kali:</strong></p>
+                        <pre><code>sudo docker ps</code></pre>
+                        <p><strong>أو أضِف المستخدم إلى مجموعة docker (حل دائم):</strong></p>
+                        <pre><code>sudo usermod -aG docker $USER
+newgrp docker</code></pre>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ فشل تسجيل الدخول إلى DVWA رغم صحة البيانات</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> لم تُهيَّأ قاعدة البيانات بعد بدء تشغيل الحاوية.</p>
+                        <p><strong>الإصلاح:</strong> انتقل إلى <code>http://localhost/setup.php</code> واضغط <strong>"Create / Reset Database"</strong>. ثم سجِّل الدخول بـ <code>admin</code> / <code>password</code>.</p>
+                    </div>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <div class="troubleshoot-header">❌ Burp Suite لا يعترض حركة DVWA عند استخدام localhost</div>
+                    <div class="troubleshoot-solution">
+                        <p><strong>السبب:</strong> تتجاوز المتصفحات البروكسي تلقائياً عند استخدام <code>localhost</code> أو <code>127.0.0.1</code>. هذه قاعدة أمان مدمجة في المتصفح — عناوين الـ Loopback لا تُرسَل أبداً عبر البروكسي، لذا لن يرى Burp Suite الطلبات حتى لو كان FoxyProxy مفعَّلاً.</p>
+
+                        <p><strong>الإصلاح — استخدم عنوان IP الحقيقي للجهاز بدلاً من localhost:</strong></p>
+
+                        <p><strong>الخطوة 1:</strong> اكتشف عنوان IP الحقيقي لجهاز Kali:</p>
+                        <pre><code>hostname -i</code></pre>
+                        <p>يعيد هذا الأمر عنواناً مثل <code>10.0.2.15</code> أو <code>192.168.x.x</code> — وهو العنوان الشبكي الفعلي لجهازك الافتراضي.</p>
+
+                        <p><strong>الخطوة 2:</strong> افتح DVWA في المتصفح باستخدام ذلك العنوان بدلاً من localhost:</p>
+                        <pre><code>http://10.0.2.15</code></pre>
+                        <p>استبدل <code>10.0.2.15</code> بالعنوان الذي أعاده <code>hostname -i</code> على جهازك.</p>
+
+                        <p><strong>الخطوة 3:</strong> تأكد من إعداد بروكسي Burp Suite للاستماع على <code>127.0.0.1:8080</code> (الافتراضي)، ومن إعداد FoxyProxy لتوجيه الحركة عبر <code>127.0.0.1</code> المنفذ <code>8080</code>.</p>
+
+                        <p><strong>الخطوة 4:</strong> تصفَّح DVWA باستخدام عنوان IP الحقيقي. سيعترض Burp Suite الطلبات بشكل طبيعي.</p>
+
+                        <div class="alert alert-info" style="margin-top:15px;">
+                            <span class="alert-icon">💡</span>
+                            <div>
+                                <h4>لماذا يعمل هذا؟</h4>
+                                <p>عند استخدام عنوان IP الحقيقي (<code>10.x.x.x</code>)، يتعامل المتصفح مع الطلب كطلب شبكة عادي ويُرسله عبر البروكسي المُعدَّ (Burp Suite). أما عند استخدام <code>localhost</code> أو <code>127.0.0.1</code>، فيختصر المتصفح الطريق مباشرةً إلى واجهة Loopback — متجاوزاً البروكسي كلياً.</p>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" style="margin-top:10px;">
+                            <span class="alert-icon">⚠️</span>
+                            <div>
+                                <h4>قد يتغير عنوان IP بين الجلسات</h4>
+                                <p>يُخصِّص VirtualBox العنوان ديناميكياً. نفِّذ دائماً <code>hostname -i</code> في بداية كل جلسة مختبر لتأكيد العنوان الحالي قبل استخدامه في المتصفح.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ورقة المراجعة -->
+            <section id="cheatsheet">
+                <h2>⚡ ورقة المراجعة السريعة</h2>
+
+                <table>
+                    <tr><th>ما تريد فعله</th><th>الأمر</th></tr>
+                    <tr><td>عرض الحاويات الجارية</td><td><code>sudo docker ps</code></td></tr>
+                    <tr><td>عرض جميع الحاويات (بما فيها المتوقفة)</td><td><code>sudo docker ps -a</code></td></tr>
+                    <tr><td>تشغيل DVWA — المرة الأولى</td><td><code>sudo docker run -d -p 80:80 --name dvwa vulnerables/web-dvwa</code></td></tr>
+                    <tr><td>تشغيل DVWA — الحاوية موجودة مسبقاً</td><td><code>sudo docker start dvwa</code></td></tr>
+                    <tr><td>إعادة تشغيل DVWA (جارية)</td><td><code>sudo docker restart dvwa</code></td></tr>
+                    <tr><td>إيقاف DVWA بأمان</td><td><code>sudo docker stop dvwa</code></td></tr>
+                    <tr><td>إيقاف DVWA قسراً (متجمِّدة)</td><td><code>sudo docker kill dvwa</code></td></tr>
+                    <tr><td>حذف حاوية DVWA نهائياً</td><td><code>sudo docker rm dvwa</code></td></tr>
+                    <tr><td>إيقاف وحذف بأمر واحد</td><td><code>sudo docker rm -f dvwa</code></td></tr>
+                    <tr><td>إيقاف جميع الحاويات الجارية</td><td><code>sudo docker stop $(sudo docker ps -q)</code></td></tr>
+                    <tr><td>التبديل من Juice Shop إلى DVWA</td><td><code>sudo docker stop juice-shop &amp;&amp; sudo docker start dvwa</code></td></tr>
+                    <tr><td>التبديل من DVWA إلى Juice Shop</td><td><code>sudo docker stop dvwa &amp;&amp; sudo docker start juice-shop</code></td></tr>
+                    <tr><td>عرض استهلاك الموارد مباشرةً</td><td><code>sudo docker stats dvwa</code></td></tr>
+                    <tr><td>عرض سجلات الحاوية</td><td><code>sudo docker logs dvwa</code></td></tr>
+                    <tr><td>فتح DVWA في المتصفح</td><td><code>http://localhost</code> أو <code>http://127.0.0.1</code></td></tr>
+                    <tr><td>إعادة تهيئة قاعدة بيانات DVWA</td><td>افتح <code>http://localhost/setup.php</code> → Create / Reset Database</td></tr>
+                    <tr><td>فحص حالة خدمة Docker</td><td><code>sudo systemctl status docker</code></td></tr>
+                    <tr><td>عرض الصور المحمَّلة محلياً</td><td><code>sudo docker images</code></td></tr>
+                    <tr><td>معرفة IP الجهاز (لاعتراض Burp Suite)</td><td><code>hostname -i</code></td></tr>
+                    <tr><td>فتح DVWA بعنوان IP الحقيقي (يتجاوز قيد البروكسي)</td><td><code>http://&lt;العنوان من hostname -i&gt;</code></td></tr>
+                </table>
+
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <div>
+                        <h4>القاعدة الذهبية</h4>
+                        <p>نفِّذ دائماً <code>sudo docker ps -a</code> أولاً. اعرف حالة حاوياتك قبل فعل أي شيء آخر. معظم المشكلات تُحَلُّ في أقل من 30 ثانية بمجرد رؤية حالة الحاوية.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="footer">
+            <p><strong>Docker و DVWA — الدليل الشامل</strong></p>
+            <p>للاستفسارات، تواصل مع المدرب.</p>
+            <p><strong>CYB236 - أمن تطبيقات الويب</strong></p>
+            <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                جامعة الملك عبدالعزيز &mdash; كلية الحاسبات وتقنية المعلومات<br>
+                الدبلوم المتوسط في الأمن السيبراني<br>
+                <em>إعداد: د. عبدالمحسن المعلوي</em>
+            </p>
+        </footer>
+
+    </div>
+</body>
+</html>

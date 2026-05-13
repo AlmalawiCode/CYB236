@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 05: Burp Suite &ndash; Proxy, FoxyProxy &amp; Traffic Interception</title>
+    <style>
+        :root {
+            --primary-color: #2980b9;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">&#128269;</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.15em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Lab Info Bar */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.82em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* Content */
+        .content { padding: 40px; }
+
+        /* TOC */
+        .toc {
+            background: linear-gradient(135deg, #e8f4fd 0%, #bee3f8 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-left: 5px solid #2980b9;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-left: 20px; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #1a5276; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* Sections */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #2980b9; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* Alert Boxes */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-left: 5px solid var(--info-color); }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-left: 5px solid var(--warning-color); }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-left: 5px solid var(--danger-color); }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-left: 5px solid var(--accent-color); }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 14px 18px; text-align: left; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* Code */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        pre code { background: none; color: #68d391; padding: 0; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+        .output-text { color: #fbd38d; }
+
+        /* Steps */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-left: 50px; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; width: 35px; height: 35px; background: linear-gradient(135deg,#2980b9,#1a5276); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(41,128,185,0.3); }
+
+        /* Checklist */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 0 9px 35px; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '&#9744;'; position: absolute; left: 0; font-size: 1.2em; color: #2980b9; }
+
+        /* Concept Banner */
+        .concept-banner { background: linear-gradient(135deg,#1c1917,#292524); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #90cdf4; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* Deliverable */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-left: 5px solid #805ad5; border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* Fill-in */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.93em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(41,128,185,0.1); }
+
+        /* Troubleshooting */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* Summary box */
+        .summary-box { background: linear-gradient(135deg,#1c1917,#292524); color: white; border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+        .summary-box h3 { color: #90cdf4; margin-top: 0; border: none; }
+        .summary-box table { box-shadow: none; border-radius: 8px; overflow: hidden; }
+        .summary-box th { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .summary-box td { color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; }
+        .summary-box tr:nth-child(even) td { background: rgba(255,255,255,0.05); }
+
+        /* ── PROXY DIAGRAM ── */
+        .proxy-diagram { margin: 24px 0; }
+
+        .diagram-scenario {
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 18px;
+        }
+        .diagram-scenario.no-proxy {
+            background: linear-gradient(135deg,#fff5f5,#fed7d7);
+            border: 2px solid #e53e3e;
+        }
+        .diagram-scenario.with-proxy {
+            background: linear-gradient(135deg,#f0fff4,#c6f6d5);
+            border: 2px solid #38a169;
+        }
+        .scenario-title {
+            font-weight: 700;
+            font-size: 1em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .no-proxy .scenario-title { color: #c53030; }
+        .with-proxy .scenario-title { color: #276749; }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .flow-node {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 100px;
+        }
+        .flow-node .node-icon { font-size: 1.8em; display: block; margin-bottom: 4px; }
+        .flow-node .node-name { font-weight: 700; font-size: 0.88em; color: #1a202c; }
+        .flow-node .node-sub { font-size: 0.75em; color: #718096; margin-top: 3px; font-family: 'Consolas','Monaco',monospace; }
+
+        .flow-node.browser-node { border: 2px solid #2980b9; }
+        .flow-node.burp-node   { border: 2px solid #d69e2e; background: #fffff0; }
+        .flow-node.foxy-node   { border: 2px solid #805ad5; background: #faf5ff; }
+        .flow-node.site-node   { border: 2px solid #38a169; background: #f0fff4; }
+
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 4px;
+            color: #4a5568;
+            flex-shrink: 0;
+        }
+        .flow-arrow .arr { font-size: 1.6em; line-height: 1; color: #4a5568; }
+        .flow-arrow .arr-lbl { font-size: 0.7em; color: #718096; text-align: center; max-width: 72px; margin-top: 3px; line-height: 1.3; }
+
+        .burp-caps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+            justify-content: center;
+        }
+        .burp-cap {
+            background: #276749;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .no-proxy .flow-arrow .arr { color: #c53030; }
+        .no-proxy .flow-arrow .arr-lbl { color: #c53030; }
+
+        /* IP Address comparison table */
+        .ip-table { background: #f7fafc; border-radius: 12px; overflow: hidden; margin: 18px 0; }
+
+        /* Footer */
+        .footer { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.7em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+            .flow-row { gap: 6px; }
+            .flow-node { min-width: 80px; padding: 10px 10px; }
+        }
+
+        /* ── Language Switch ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Language Switch -->
+<div class="lang-switch">
+    <a href="lab05-arabic.html" class="lang-btn">
+        &#127760; عربي
+    </a>
+</div>
+
+<div class="container">
+
+    <header class="header">
+        <h1>&#128269; Lab 05: Burp Suite &mdash; Proxy, FoxyProxy &amp; Traffic Interception</h1>
+        <p class="subtitle">CYB236 &mdash; Web Application Security</p>
+        <div class="chapter-ref">Chapter 4 &mdash; What is Burp Suite &bull; How Proxies Work &bull; FoxyProxy &bull; First Interception</div>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>Lab Number</strong><span>05</span></div>
+        <div class="lab-info-item"><strong>Difficulty</strong><span>Beginner</span></div>
+        <div class="lab-info-item"><strong>Duration</strong><span>30&ndash;40 min</span></div>
+        <div class="lab-info-item"><strong>Environment</strong><span>Kali Linux</span></div>
+        <div class="lab-info-item"><strong>Next</strong><span>Lab 06</span></div>
+    </div>
+
+    <div class="content">
+
+        <nav class="toc">
+            <h2>&#128203; Table of Contents</h2>
+            <ol>
+                <li><a href="#intro">What is Burp Suite?</a></li>
+                <li><a href="#proxy-concept">How a Proxy Works</a></li>
+                <li><a href="#why-foxyproxy">Why FoxyProxy?</a></li>
+                <li><a href="#part1">Part 1: Launch Burp Suite</a></li>
+                <li><a href="#part2">Part 2: Verify the Proxy Listener</a></li>
+                <li><a href="#part3">Part 3: Install FoxyProxy</a></li>
+                <li><a href="#part4">Part 4: Configure FoxyProxy</a></li>
+                <li><a href="#part5">Part 5: IP Address Configuration</a></li>
+                <li><a href="#part6">Part 6: Intercept Your First Request</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#deliverables">Deliverables &amp; Summary</a></li>
+            </ol>
+        </nav>
+
+        <!-- Introduction -->
+        <section id="intro">
+            <h2>&#128161; What is Burp Suite?</h2>
+
+            <p><strong>Burp Suite</strong> is a web application security testing platform developed by <strong>PortSwigger</strong>. It is the industry-standard tool used by penetration testers, bug bounty hunters, and security researchers to find vulnerabilities in web applications.</p>
+
+            <p>At its core, Burp Suite works as an <strong>intercepting proxy</strong>: it sits between your browser and any website, giving you complete visibility and control over every HTTP request and response that passes through.</p>
+
+            <h3>Burp Suite Editions</h3>
+            <table>
+                <tr><th>Edition</th><th>Cost</th><th>Key Features</th></tr>
+                <tr><td><strong>Community</strong></td><td>Free</td><td>Proxy, HTTP History, Repeater, Intruder (limited), Site Map &mdash; sufficient for this course</td></tr>
+                <tr><td><strong>Professional</strong></td><td>Paid</td><td>All Community features + automated scanner, unlimited Intruder, advanced tools</td></tr>
+                <tr><td><strong>Enterprise</strong></td><td>Paid</td><td>CI/CD integration, scheduled scanning, enterprise reporting</td></tr>
+            </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Burp Suite is Pre-installed in Kali Linux</h4>
+                    <p>You do not need to install Burp Suite. It ships with Kali Linux. Launch it from the terminal with <code>burpsuite</code> or from the application menu: <strong>Applications &rarr; Web Application Analysis &rarr; burpsuite</strong>.</p>
+                </div>
+            </div>
+
+            <h3>Key Tools Inside Burp Suite</h3>
+            <table>
+                <tr><th>Tool</th><th>What It Does</th></tr>
+                <tr><td><strong>Proxy</strong></td><td>Intercepts and records every HTTP request/response between browser and server</td></tr>
+                <tr><td><strong>HTTP History</strong></td><td>Log of every request captured by the proxy, with full headers and body</td></tr>
+                <tr><td><strong>Intercept</strong></td><td>Pauses a request mid-flight so you can read or modify it before it reaches the server</td></tr>
+                <tr><td><strong>Repeater</strong></td><td>Send any captured request again with modifications &mdash; test vulnerabilities manually</td></tr>
+                <tr><td><strong>Site Map</strong></td><td>Builds a tree of all discovered URLs and endpoints during your session</td></tr>
+            </table>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Authorized Use Only</h4>
+                    <p>Burp Suite is a powerful security tool. Using it against any system you do not own or have written permission to test is illegal. In this course, all testing is performed against systems you run yourself on your own machine.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Proxy Concept -->
+        <section id="proxy-concept">
+            <h2>&#128257; How a Proxy Works</h2>
+
+            <p>To understand Burp Suite, you need to understand what a <strong>proxy</strong> is and why it gives you power over HTTP traffic.</p>
+
+            <h3>The Normal Connection (Without a Proxy)</h3>
+            <p>When you type a URL in Firefox and press Enter, your browser sends an HTTP request directly to the web server. The server responds, and the page loads. <strong>You see only the rendered page &mdash; not the raw request or response.</strong></p>
+
+            <h3>The Proxy Connection (With Burp Suite)</h3>
+            <p>When you route Firefox through Burp Suite, <strong>every request passes through Burp first</strong>. Burp receives it, records it, optionally modifies it, then forwards it to the server. The server's response comes back to Burp, which records it and passes it back to Firefox. You see everything in raw detail.</p>
+
+            <!-- Proxy Diagram -->
+            <div class="proxy-diagram">
+
+                <div class="diagram-scenario no-proxy">
+                    <div class="scenario-title">&#10060; Without Proxy &mdash; No Visibility</div>
+                    <div class="flow-row">
+                        <div class="flow-node browser-node">
+                            <span class="node-icon">&#127760;</span>
+                            <div class="node-name">Firefox</div>
+                            <div class="node-sub">Browser</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">direct request<br>(invisible)</div>
+                        </div>
+                        <div class="flow-node site-node">
+                            <span class="node-icon">&#128187;</span>
+                            <div class="node-name">Website</div>
+                            <div class="node-sub">Target Server</div>
+                        </div>
+                    </div>
+                    <p style="text-align:center; margin-top:12px; font-size:0.88em; color:#c53030; font-style:italic;">Firefox talks directly to the server. You cannot see, pause, or modify the raw HTTP traffic.</p>
+                </div>
+
+                <div class="diagram-scenario with-proxy">
+                    <div class="scenario-title">&#9989; With Burp Suite Proxy &mdash; Full Visibility &amp; Control</div>
+                    <div class="flow-row">
+                        <div class="flow-node browser-node">
+                            <span class="node-icon">&#127760;</span>
+                            <div class="node-name">Firefox</div>
+                            <div class="node-sub">Browser</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">routed by<br>FoxyProxy</div>
+                        </div>
+                        <div class="flow-node foxy-node">
+                            <span class="node-icon">&#129418;</span>
+                            <div class="node-name">FoxyProxy</div>
+                            <div class="node-sub">Browser Extension</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">sends to<br>127.0.0.1:8080</div>
+                        </div>
+                        <div class="flow-node burp-node">
+                            <span class="node-icon">&#128269;</span>
+                            <div class="node-name">Burp Suite</div>
+                            <div class="node-sub">127.0.0.1:8080</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">forwards to<br>target</div>
+                        </div>
+                        <div class="flow-node site-node">
+                            <span class="node-icon">&#128187;</span>
+                            <div class="node-name">Website</div>
+                            <div class="node-sub">Target Server</div>
+                        </div>
+                    </div>
+                    <div class="burp-caps">
+                        <span class="burp-cap">&#10003; Records all traffic</span>
+                        <span class="burp-cap">&#10003; Can pause (intercept) requests</span>
+                        <span class="burp-cap">&#10003; Can modify requests</span>
+                        <span class="burp-cap">&#10003; Builds site map</span>
+                        <span class="burp-cap">&#10003; Replay requests with Repeater</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <h3>Step-by-Step: What Happens When You Load a Page Through Burp</h3>
+            <ol class="steps">
+                <li>You type a URL in Firefox and press Enter</li>
+                <li>FoxyProxy (browser extension) intercepts the outgoing request and redirects it to <code>127.0.0.1:8080</code> instead of the website directly</li>
+                <li>Burp Suite is listening on <code>127.0.0.1:8080</code> &mdash; it receives the raw HTTP request</li>
+                <li>Burp records the request in its HTTP History. If Intercept is ON, it <strong>pauses here</strong> and waits for you to read/modify/forward it</li>
+                <li>Burp forwards the request to the actual target server</li>
+                <li>The server sends its HTTP response back to Burp</li>
+                <li>Burp records the response and passes it back to Firefox</li>
+                <li>Firefox renders the page as normal &mdash; but Burp has a full copy of everything</li>
+            </ol>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>Key Insight</h4>
+                    <p>Burp Suite does not change what Firefox <em>displays</em> &mdash; it changes what you can <em>see and control</em>. From Firefox's perspective, the page loads normally. But Burp has a complete record of every raw request and response, including cookies, hidden fields, and parameters that never appear in the browser UI.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why FoxyProxy -->
+        <section id="why-foxyproxy">
+            <h2>&#129418; Why FoxyProxy?</h2>
+
+            <p>Firefox has a built-in proxy setting: <strong>Settings &rarr; Network Settings &rarr; Manual proxy configuration</strong>. You could use that. So why install FoxyProxy instead?</p>
+
+            <table>
+                <tr><th>Feature</th><th>Firefox Built-in Proxy</th><th>FoxyProxy Extension</th></tr>
+                <tr><td>Enable/Disable</td><td>Requires opening Settings &rarr; Network Settings each time</td><td><strong>One click</strong> on the toolbar icon</td></tr>
+                <tr><td>Multiple Profiles</td><td>One proxy at a time, manual switching</td><td><strong>Save multiple profiles</strong>, switch instantly</td></tr>
+                <tr><td>Visual indicator</td><td>No icon change when proxy is active</td><td><strong>Icon changes color</strong> when proxy is ON</td></tr>
+                <tr><td>Pattern matching</td><td>Basic exclusions only</td><td>Route only specific URLs through proxy</td></tr>
+                <tr><td>After-lab cleanup</td><td>Easy to forget to remove &rarr; no internet</td><td>Easier to notice and disable</td></tr>
+            </table>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Always Disable FoxyProxy After the Lab</h4>
+                    <p>When FoxyProxy is active and pointing to Burp Suite, <strong>all your Firefox traffic goes through Burp</strong>. If you close Burp but leave FoxyProxy on, Firefox will have no internet access. Always click the FoxyProxy icon and select <strong>"Disable FoxyProxy"</strong> at the end of every lab session.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 1 -->
+        <section id="part1">
+            <h2>&#9881;&#65039; Part 1: Launch Burp Suite</h2>
+
+            <h3>Step 1: Open Burp Suite</h3>
+            <p>Open a terminal in Kali Linux and run:</p>
+<pre><code>burpsuite</code></pre>
+            <p>Or find it in the application menu: <strong>Applications &rarr; Web Application Analysis &rarr; burpsuite</strong></p>
+
+            <h3>Step 2: Create a Temporary Project</h3>
+            <ol class="steps">
+                <li>On the welcome screen, select <strong>Temporary project</strong></li>
+                <li>Click <strong>Next</strong></li>
+                <li>Select <strong>Use Burp defaults</strong></li>
+                <li>Click <strong>Start Burp</strong></li>
+                <li>Wait for the Burp dashboard to fully load (this may take 30&ndash;60 seconds)</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Temporary vs Saved Projects</h4>
+                    <p>A <strong>Temporary project</strong> stores everything in memory and is discarded when you close Burp. For course labs this is fine. Professional testers use saved projects to keep records of engagements across sessions.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Burp Starts Slowly</h4>
+                    <p>Burp Suite is a Java application and can take 30&ndash;90 seconds to fully load, especially in a VM. If it appears frozen, wait. If you get a Java error: run <code>sudo apt install -y default-jre</code> in a terminal, then try again.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 2 -->
+        <section id="part2">
+            <h2>&#128270; Part 2: Verify the Proxy Listener</h2>
+
+            <p>Before configuring the browser, confirm that Burp Suite is actively listening for incoming traffic.</p>
+
+            <ol class="steps">
+                <li>In Burp Suite, click the <strong>Proxy</strong> tab at the top</li>
+                <li>Click <strong>Proxy settings</strong> (or <strong>Options</strong> in older versions)</li>
+                <li>Under <strong>Proxy Listeners</strong>, confirm you see an entry for <code>127.0.0.1:8080</code> with the status <strong>Running</strong></li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>What You Should See</h4>
+                    <p>The listener entry should show: <strong>Interface:</strong> <code>127.0.0.1:8080</code> &nbsp;&mdash;&nbsp; <strong>Running:</strong> checked. This means Burp is ready to receive proxy traffic on that address and port.</p>
+                </div>
+            </div>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>What Does 127.0.0.1:8080 Mean?</h4>
+                    <p><code>127.0.0.1</code> is the <strong>loopback address</strong> &mdash; it always means "this machine." Port <code>8080</code> is the port Burp listens on. When you tell FoxyProxy to send traffic to <code>127.0.0.1:8080</code>, it sends it to Burp Suite running on your own computer. No traffic leaves the machine to reach Burp &mdash; it stays local.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 3 -->
+        <section id="part3">
+            <h2>&#129418; Part 3: Install FoxyProxy</h2>
+
+            <ol class="steps">
+                <li>Open <strong>Firefox</strong></li>
+                <li>In the address bar, type: <code>about:addons</code> and press Enter</li>
+                <li>Click the <strong>search icon</strong> (or go to the Extensions tab and search)</li>
+                <li>Search for: <strong>FoxyProxy Standard</strong></li>
+                <li>Click the result from the official listing</li>
+                <li>Click <strong>Add to Firefox</strong></li>
+                <li>In the permission dialog, click <strong>Add</strong></li>
+                <li>FoxyProxy icon will appear in the Firefox toolbar (a fox icon)</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>FoxyProxy Standard vs Basic</h4>
+                    <p>Install <strong>FoxyProxy Standard</strong> (not Basic). Standard supports URL pattern matching, which lets you route only specific traffic through Burp while keeping other browser traffic unaffected.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 4 -->
+        <section id="part4">
+            <h2>&#9881;&#65039; Part 4: Configure FoxyProxy</h2>
+
+            <h3>Step 1: Open FoxyProxy Options</h3>
+            <ol class="steps">
+                <li>Click the <strong>FoxyProxy icon</strong> in the Firefox toolbar</li>
+                <li>Click <strong>Options</strong> (opens a settings tab)</li>
+            </ol>
+
+            <h3>Step 2: Add the Burp Proxy Profile</h3>
+            <ol class="steps">
+                <li>Click <strong>Add</strong> to create a new proxy entry</li>
+                <li>Fill in the fields exactly as follows:
+                    <table style="margin-top:10px;">
+                        <tr><th>Field</th><th>Value</th><th>Why</th></tr>
+                        <tr><td><strong>Title</strong></td><td>Burp Proxy</td><td>A memorable name for this profile</td></tr>
+                        <tr><td><strong>Proxy Type</strong></td><td>HTTP</td><td>Burp uses HTTP proxy protocol</td></tr>
+                        <tr><td><strong>IP Address</strong></td><td><code>127.0.0.1</code></td><td>Burp is running on this machine (loopback)</td></tr>
+                        <tr><td><strong>Port</strong></td><td><code>8080</code></td><td>Burp's default proxy listener port</td></tr>
+                    </table>
+                </li>
+            </ol>
+
+            <h3>Step 3: Set the URL Pattern</h3>
+            <ol class="steps">
+                <li>In the proxy entry, find the <strong>URL Patterns</strong> section</li>
+                <li>Add a pattern: <code>*</code></li>
+                <li>This wildcard routes <strong>all</strong> browser traffic through Burp &mdash; nothing is excluded</li>
+            </ol>
+
+            <h3>Step 4: Save and Activate</h3>
+            <ol class="steps">
+                <li>Click <strong>Save</strong></li>
+                <li>Click the <strong>FoxyProxy icon</strong> in the toolbar</li>
+                <li>Select <strong>Burp Proxy</strong> to activate it</li>
+                <li>The FoxyProxy icon changes &mdash; this confirms the proxy is now active</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Configuration Summary</h4>
+                    <p>FoxyProxy is now configured to send all Firefox traffic to <code>127.0.0.1:8080</code> &mdash; where Burp Suite is listening. The browser and the proxy are now connected.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 5: IP Addresses -->
+        <section id="part5">
+            <h2>&#127757; Part 5: Understanding the IP Address Configuration</h2>
+
+            <p>There are two different IP addresses involved in this setup, and they serve completely different purposes. Confusing them is one of the most common causes of Burp not working.</p>
+
+            <h3>The Two Addresses</h3>
+            <table>
+                <tr><th>Address</th><th>What It Is</th><th>Used For</th></tr>
+                <tr>
+                    <td><code>127.0.0.1</code></td>
+                    <td>Loopback (this machine)</td>
+                    <td><strong>FoxyProxy's proxy address</strong> &mdash; tells the browser to send traffic to Burp, which is running locally</td>
+                </tr>
+                <tr>
+                    <td>Your machine IP<br><small>(e.g., <code>10.0.2.15</code>)</small></td>
+                    <td>Your Kali machine's network IP</td>
+                    <td><strong>The target URL</strong> &mdash; the address you type in Firefox to reach a locally running app like DVWA</td>
+                </tr>
+            </table>
+
+            <h3>How to Get Your Machine IP</h3>
+<pre><code><span class="command-label"># Run this in a terminal to find your Kali IP address</span>
+hostname -I</code></pre>
+<pre><code><span class="output-text">10.0.2.15</span></code></pre>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Why Not Use localhost or 127.0.0.1 as the Target URL?</h4>
+                    <p>When your browser sends a request to <code>http://127.0.0.1</code> or <code>http://localhost</code>, some browsers and operating systems treat this as a <strong>"local" destination and bypass the proxy entirely</strong>. The request goes directly to the local app, never passing through Burp. You will see no traffic in Burp's HTTP history.</p>
+                    <p style="margin-top:8px;">Using <code>http://10.0.2.15</code> (the real IP) forces the request to go through the proxy because it looks like a normal network request.</p>
+                </div>
+            </div>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>The Rule to Remember</h4>
+                    <p>
+                        <strong>FoxyProxy destination</strong> (where traffic goes to reach Burp) = <code>127.0.0.1:8080</code><br>
+                        <strong>Browser target URL</strong> (the app you want to test) = <code>http://&lt;your-IP&gt;</code> from <code>hostname -I</code>
+                    </p>
+                </div>
+            </div>
+
+            <h3>Visual Summary</h3>
+            <div style="background:#f7fafc; border-radius:12px; padding:20px; margin:14px 0; font-family:'Consolas','Monaco',monospace; font-size:0.9em; line-height:2;">
+                <p style="margin:0;">Firefox types: &nbsp;<strong style="color:#2980b9;">http://10.0.2.15</strong> &nbsp;&larr; your machine IP (target app)</p>
+                <p style="margin:0;">FoxyProxy routes to: &nbsp;<strong style="color:#d69e2e;">127.0.0.1:8080</strong> &nbsp;&larr; Burp listener</p>
+                <p style="margin:0;">Burp forwards to: &nbsp;<strong style="color:#38a169;">http://10.0.2.15</strong> &nbsp;&larr; the actual target</p>
+                <p style="margin:0; margin-top:8px; font-family:'Tajawal', 'Amiri', 'Segoe UI',sans-serif; font-size:0.95em; color:#4a5568;">Result: Burp sits in the middle and sees everything &#9989;</p>
+            </div>
+        </section>
+
+        <!-- Part 6: First Interception -->
+        <section id="part6">
+            <h2>&#127919; Part 6: Intercept Your First Request</h2>
+
+            <p>Now you will verify the entire setup by intercepting a live HTTP request. This confirms FoxyProxy, Burp Suite, and the IP configuration are all working correctly.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>What You Need for This Exercise</h4>
+                    <p>You need any locally running HTTP web application. If you have DVWA running (<code>sudo docker start dvwa</code>), use that. Otherwise, any HTTP page served locally will work. The important thing is to use the machine IP (<code>hostname -I</code>) not <code>localhost</code> in the browser.</p>
+                </div>
+            </div>
+
+            <h3>Step 1: Confirm Burp and FoxyProxy Are Both Active</h3>
+            <ul>
+                <li>Burp Suite is open and the proxy listener shows <code>127.0.0.1:8080</code> as <strong>Running</strong></li>
+                <li>FoxyProxy icon shows the <strong>Burp Proxy</strong> profile is active</li>
+            </ul>
+
+            <h3>Step 2: Get Your Machine IP</h3>
+<pre><code>hostname -I</code></pre>
+            <p>Note the IP address shown (e.g., <code>10.0.2.15</code>).</p>
+
+            <h3>Step 3: Turn Intercept ON in Burp</h3>
+            <ol class="steps">
+                <li>In Burp Suite, click the <strong>Proxy</strong> tab</li>
+                <li>Click the <strong>Intercept</strong> sub-tab</li>
+                <li>If the button reads <strong>"Intercept is off"</strong>, click it once</li>
+                <li>It should now read <strong>"Intercept is on"</strong> (highlighted)</li>
+            </ol>
+
+            <h3>Step 4: Trigger a Request from Firefox</h3>
+            <ol class="steps">
+                <li>In Firefox, type <code>http://&lt;your-ip&gt;</code> in the address bar (e.g., <code>http://10.0.2.15</code>)</li>
+                <li>Press Enter</li>
+                <li>Firefox will <strong>freeze and not load the page</strong> &mdash; this is expected and correct</li>
+                <li>Firefox is waiting because Burp has caught the request mid-flight</li>
+            </ol>
+
+            <h3>Step 5: Inspect the Intercepted Request in Burp</h3>
+            <ol class="steps">
+                <li>Switch to Burp Suite &rarr; <strong>Proxy</strong> &rarr; <strong>Intercept</strong></li>
+                <li>You will see the raw HTTP request in the panel:</li>
+            </ol>
+
+<pre><code><span class="output-text">GET / HTTP/1.1
+Host: 10.0.2.15
+User-Agent: Mozilla/5.0 ...
+Accept: text/html,application/xhtml+xml...
+Connection: keep-alive</span></code></pre>
+
+            <p>This is the <strong>raw HTTP request</strong> exactly as your browser sent it. You can read every header, modify any value, or block it entirely.</p>
+
+            <h3>Step 6: Forward the Request</h3>
+            <ol class="steps">
+                <li>Click <strong>Forward</strong> in Burp's Intercept panel</li>
+                <li>Firefox will receive the response and the page will load</li>
+                <li>Repeat clicking Forward if the page makes additional requests (CSS, JS, images)</li>
+            </ol>
+
+            <h3>Step 7: Verify HTTP History</h3>
+            <ol class="steps">
+                <li>In Burp, click <strong>Proxy</strong> &rarr; <strong>HTTP history</strong> sub-tab</li>
+                <li>You should see rows of captured requests</li>
+                <li>Click any row to see the full request and response in the panels below</li>
+            </ol>
+
+            <h3>Step 8: Turn Intercept OFF</h3>
+            <ol class="steps">
+                <li>Click the Intercept button so it reads <strong>"Intercept is off"</strong></li>
+                <li>Now traffic flows freely through Burp without pausing &mdash; Burp still records everything in HTTP history, but does not block each request</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>Setup Complete</h4>
+                    <p>If you saw an HTTP request in Burp's Intercept panel and requests appeared in HTTP History, your entire proxy chain is working: <strong>Firefox &rarr; FoxyProxy &rarr; Burp Suite &rarr; Target</strong>. You are ready to use Burp Suite for security testing in Lab 06.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting">
+            <h2>&#128295; Troubleshooting</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Burp Suite won't start or shows a Java error</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Run in terminal: <code>sudo apt install -y default-jre</code>, then try <code>burpsuite</code> again. If Burp loads but is very slow, close other applications to free RAM &mdash; Burp needs at least 1&nbsp;GB.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Firefox can't load any pages after enabling FoxyProxy</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> FoxyProxy is active but Burp is not running (or not listening). Make sure Burp Suite is open and the proxy listener shows <code>127.0.0.1:8080</code> as <strong>Running</strong>. Also confirm Intercept is <strong>OFF</strong> &mdash; if it is ON, the browser waits for you to click Forward on every single request.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; No requests appearing in Burp's HTTP History</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong></p>
+                    <ul>
+                        <li>Confirm FoxyProxy is enabled and the <strong>Burp Proxy</strong> profile is selected (not "Disable FoxyProxy")</li>
+                        <li>Confirm you are browsing to <code>http://&lt;your-ip&gt;</code> (from <code>hostname -I</code>), not <code>localhost</code> or <code>127.0.0.1</code></li>
+                        <li>Confirm Burp's proxy listener is on <code>127.0.0.1:8080</code> and shows <strong>Running</strong></li>
+                        <li>Use <code>http://</code> not <code>https://</code> &mdash; HTTPS requires installing Burp's CA certificate</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Firefox is frozen and nothing happens after typing the URL</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Burp's Intercept is <strong>ON</strong>. Go to Burp &rarr; Proxy &rarr; Intercept and click <strong>Forward</strong> to release the request (or turn Intercept OFF). The browser freezes whenever Intercept is ON and Burp is holding a request waiting for you to act on it.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; After the lab, Firefox has no internet access</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> FoxyProxy is still routing traffic to Burp, which is no longer running. Click the <strong>FoxyProxy icon</strong> in the Firefox toolbar and select <strong>"Disable FoxyProxy"</strong>. This must be done at the end of every lab session.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Intercepted request shows wrong host or localhost instead of IP</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>Solution:</strong> Make sure you typed <code>http://&lt;your-ip&gt;</code> in the Firefox address bar (not <code>localhost</code>). The <strong>Host</strong> header in the intercepted request should show your IP address (e.g., <code>Host: 10.0.2.15</code>), not <code>localhost</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deliverables -->
+        <section id="deliverables">
+            <h2>&#128196; Deliverables &amp; Summary</h2>
+
+            <div class="deliverable">
+                <h4>&#9997;&#65039; Lab 05 &mdash; Questions &amp; Screenshots</h4>
+            </div>
+            <div class="fill-in">
+                <label>1. In your own words, explain what Burp Suite is and what role it plays between the browser and the website:</label>
+                <textarea class="task-answer" rows="3" placeholder="Burp Suite is an intercepting proxy — it sits between the browser and the web server, capturing every HTTP request and response. It lets a security tester read, pause, modify, and replay traffic that would otherwise be invisible inside the browser."></textarea>
+
+                <label>2. What is the default address and port that Burp Suite listens on? What does this address mean?</label>
+                <input type="text" class="task-answer" placeholder="127.0.0.1:8080. 127.0.0.1 is the loopback (localhost) address — it means 'this machine.' Port 8080 is the port Burp listens on for incoming proxy traffic.">
+
+                <label>3. Why do we install FoxyProxy instead of using Firefox's built-in proxy settings?</label>
+                <textarea class="task-answer" rows="3" placeholder="FoxyProxy lets you toggle the proxy on and off with one click on the toolbar icon. The built-in setting requires opening Settings → Network Settings every time. FoxyProxy also supports multiple proxy profiles and has a visual indicator, making it much easier to use during security testing."></textarea>
+
+                <label>4. What command finds your Kali machine IP address? Why must you use that IP (not localhost) as the target URL in Firefox?</label>
+                <textarea class="task-answer" rows="3" placeholder="Command: hostname -I. Reason: browsers may bypass the proxy for localhost/127.0.0.1 destinations (treating them as local loopback, not network requests). Using the machine's real IP forces traffic through the proxy so Burp can intercept it."></textarea>
+
+                <label>5. Screenshot &mdash; Burp Suite proxy listener showing 127.0.0.1:8080 as Running:</label>
+                <input type="file" id="ss-listener" accept="image/*" onchange="previewImg(this,'prev-listener')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-listener" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Listener screenshot">
+
+                <label>6. Screenshot &mdash; FoxyProxy configured with Burp Proxy profile (showing IP 127.0.0.1, Port 8080):</label>
+                <input type="file" id="ss-foxy" accept="image/*" onchange="previewImg(this,'prev-foxy')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-foxy" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="FoxyProxy screenshot">
+
+                <label>7. Screenshot &mdash; An intercepted HTTP request visible in Burp's Intercept panel:</label>
+                <input type="file" id="ss-intercept" accept="image/*" onchange="previewImg(this,'prev-intercept')" style="display:block;width:100%;padding:10px;border:2px dashed #cbd5e0;border-radius:8px;background:#f7fafc;margin-bottom:8px;cursor:pointer;font-size:0.9em;">
+                <img id="prev-intercept" style="display:none;max-width:100%;border:1px solid var(--border-color);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:12px;" alt="Intercept screenshot">
+            </div>
+
+            <div class="summary-box">
+                <h3>&#128203; Lab 05 Summary</h3>
+                <table>
+                    <tr><th>Component</th><th>Role</th><th>Address / Port</th></tr>
+                    <tr><td>Firefox</td><td>Browser (client) generating HTTP requests</td><td>&mdash;</td></tr>
+                    <tr><td>FoxyProxy</td><td>Browser extension that routes all traffic to Burp</td><td>Configured: <code>127.0.0.1:8080</code></td></tr>
+                    <tr><td>Burp Suite</td><td>Intercepting proxy &mdash; records, pauses, modifies traffic</td><td>Listens on <code>127.0.0.1:8080</code></td></tr>
+                    <tr><td>Target App (DVWA etc.)</td><td>Web application being tested</td><td><code>http://&lt;your-ip&gt;</code></td></tr>
+                </table>
+                <p style="margin-top:14px; opacity:0.9; font-size:0.92em;">In <strong>Lab 06</strong> you will apply this setup against DVWA to capture, analyze, and modify real HTTP requests from a vulnerable web application.</p>
+            </div>
+
+            <!-- Report Generator -->
+            <h3>Generate Your Lab Report</h3>
+            <div style="border:2px solid #2980b9;border-radius:15px;padding:28px;margin:18px 0;background:#fafbfc;">
+                <div style="text-align:center;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #2980b9;">
+                    <h3 style="color:var(--secondary-color);margin:0;">CYB236 &mdash; Lab 05 Report</h3>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student Name: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="Full name (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Student ID: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="Student ID (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;color:var(--secondary-color);">Email: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="Student email (required)" style="width:100%;padding:9px;border:1px solid var(--border-color);border-radius:8px;font-size:1em;">
+                </div>
+                <div style="text-align:center;">
+                    <button onclick="generateReport()" style="background:linear-gradient(135deg,#2980b9,#1a5276);color:white;border:none;padding:14px 38px;font-size:1.05em;font-weight:600;border-radius:10px;cursor:pointer;box-shadow:0 4px 15px rgba(41,128,185,0.4);">
+                        &#128196; Generate PDF Report
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- end content -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; Web Application Security</p>
+        <p>Lab 05: Burp Suite &mdash; Proxy, FoxyProxy &amp; Traffic Interception &bull; Continue with Lab 06</p>
+    </div>
+
+</div><!-- end container -->
+
+<script>
+var ssData = {};
+
+function previewImg(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        ssData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    var name  = document.getElementById('student-name').value.trim();
+    var sid   = document.getElementById('student-id').value.trim();
+    var email = document.getElementById('student-email').value.trim();
+    if (!name)  { alert('Student Name is required.'); return; }
+    if (!sid)   { alert('Student ID is required.'); return; }
+    if (!email) { alert('Email is required.'); return; }
+
+    var answers = [];
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers.push({ label: lbl, value: f.value.trim() || '(not answered)' });
+    });
+
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g,'').replace(/\s+/g,'_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
+    var w = window.open('','_blank');
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab05_'+safeName+'_'+safeSid+'</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
+    h += 'h1{color:#2980b9;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#e8f4fd;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #bee3f8}';
+    h += '.ar{margin-bottom:14px;border-left:4px solid #2980b9;padding-left:12px}';
+    h += '.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += '.ss{margin-top:16px;page-break-inside:avoid}.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 \u2014 Lab 05: Burp Suite \u2014 Proxy, FoxyProxy &amp; Interception</h1>';
+    h += '<p class="sub">Web Application Security</p>';
+    h += '<div class="si"><div><strong>Student Name:</strong> '+name+'</div><div><strong>Student ID:</strong> '+sid+'</div><div><strong>Email:</strong> '+email+'</div></div>';
+
+    answers.forEach(function(a) {
+        h += '<div class="ar"><div class="al">'+a.label+'</div><div class="av">'+a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div>';
+    });
+
+    var ssLabels = {'prev-listener':'Screenshot \u2014 Proxy Listener','prev-foxy':'Screenshot \u2014 FoxyProxy Configuration','prev-intercept':'Screenshot \u2014 Intercepted Request'};
+    Object.keys(ssLabels).forEach(function(k) {
+        if (ssData[k]) {
+            h += '<div class="ss"><div class="ss-lbl">'+ssLabels[k]+'</div><img src="'+ssData[k]+'"></div>';
+        }
+    });
+
+    h += '<div class="fn">CYB236 \u2014 Lab 05 \u2014 Web Application Security</div></body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.onload = function() { w.print(); };
+}
+</script>
+</body>
+</html>

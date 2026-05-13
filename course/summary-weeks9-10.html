@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Application Security — Attack &amp; Defense Summary | CYB 236</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+
+        /* ══════════════════════════════════════
+           BASE
+        ══════════════════════════════════════ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* ══════════════════════════════════════
+           PAGE WRAPPER
+        ══════════════════════════════════════ */
+        .page {
+            max-width: 860px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        }
+
+        /* ══════════════════════════════════════
+           COVER HEADER
+        ══════════════════════════════════════ */
+        .cover {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #1e4d6b 70%, #0e7490 100%);
+            padding: 60px 56px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: -80px; right: -80px;
+            width: 340px; height: 340px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .cover::after {
+            content: '';
+            position: absolute;
+            bottom: -60px; left: -60px;
+            width: 260px; height: 260px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .cover-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-badge {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #7dd3fc;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 100px;
+        }
+
+        .cover-weeks {
+            display: flex;
+            gap: 10px;
+        }
+
+        .week-tag {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .cover h1 {
+            color: white;
+            font-size: 38px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover h1 span {
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover-sub {
+            color: #94a3b8;
+            font-size: 15px;
+            font-weight: 500;
+            max-width: 520px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 36px;
+        }
+
+        .attack-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .pill-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ══════════════════════════════════════
+           INTRO STRIP
+        ══════════════════════════════════════ */
+        .intro-strip {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 28px 56px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .intro-icon {
+            font-size: 2.2em;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .intro-text {
+            font-size: 14.5px;
+            color: #475569;
+            line-height: 1.75;
+        }
+
+        .intro-text strong { color: #1e293b; }
+
+        /* ══════════════════════════════════════
+           BODY
+        ══════════════════════════════════════ */
+        .body { padding: 40px 56px 56px; }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 24px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        /* ══════════════════════════════════════
+           ATTACK CARDS
+        ══════════════════════════════════════ */
+        .attack-card {
+            border-radius: 20px;
+            margin-bottom: 28px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            padding: 22px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .card-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.25);
+        }
+
+        .card-title-wrap {}
+        .card-number {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            opacity: 0.75;
+            margin-bottom: 2px;
+        }
+
+        .card-title {
+            font-size: 1.25em;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .card-title small {
+            display: block;
+            font-size: 0.65em;
+            font-weight: 600;
+            opacity: 0.8;
+            letter-spacing: 0;
+            margin-top: 1px;
+        }
+
+        .card-body {
+            padding: 24px 28px 28px;
+            background: white;
+        }
+
+        .card-section-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #f1f5f9;
+        }
+
+        .what-text {
+            font-size: 14.5px;
+            color: #334155;
+            line-height: 1.75;
+            margin-bottom: 20px;
+        }
+
+        .analogy-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .analogy-icon { font-size: 1.3em; flex-shrink: 0; margin-top: 1px; }
+
+        .analogy-text {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .protect-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .protect-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .protect-list li:last-child { border-bottom: none; }
+
+        .protect-check {
+            width: 22px; height: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 900;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ══════════════════════════════════════
+           COLOUR THEMES
+        ══════════════════════════════════════ */
+
+        /* XSS — Rose/Red */
+        .c-xss .card-header  { background: linear-gradient(135deg, #be123c, #e11d48); }
+        .c-xss .card-section-title { color: #be123c; }
+        .c-xss .protect-check { background: #e11d48; }
+
+        /* CSRF — Orange */
+        .c-csrf .card-header { background: linear-gradient(135deg, #c2410c, #ea580c); }
+        .c-csrf .card-section-title { color: #c2410c; }
+        .c-csrf .protect-check { background: #ea580c; }
+
+        /* XXE — Amber */
+        .c-xxe .card-header  { background: linear-gradient(135deg, #b45309, #d97706); }
+        .c-xxe .card-section-title { color: #b45309; }
+        .c-xxe .protect-check { background: #d97706; }
+
+        /* Injection — Violet */
+        .c-inj .card-header  { background: linear-gradient(135deg, #6d28d9, #7c3aed); }
+        .c-inj .card-section-title { color: #6d28d9; }
+        .c-inj .protect-check { background: #7c3aed; }
+
+        /* DoS — Blue */
+        .c-dos .card-header  { background: linear-gradient(135deg, #1d4ed8, #2563eb); }
+        .c-dos .card-section-title { color: #1d4ed8; }
+        .c-dos .protect-check { background: #2563eb; }
+
+        /* Third-Party — Teal */
+        .c-tp  .card-header  { background: linear-gradient(135deg, #0f766e, #0d9488); }
+        .c-tp  .card-section-title { color: #0f766e; }
+        .c-tp  .protect-check { background: #0d9488; }
+
+        /* ══════════════════════════════════════
+           CLOSING BANNER
+        ══════════════════════════════════════ */
+        .closing {
+            background: linear-gradient(135deg, #0f172a, #1e3a5f);
+            border-radius: 18px;
+            padding: 32px 36px;
+            margin-top: 40px;
+            color: white;
+        }
+
+        .closing h3 {
+            font-size: 1.15em;
+            font-weight: 800;
+            margin-bottom: 14px;
+            color: #7dd3fc;
+            letter-spacing: -0.01em;
+        }
+
+        .closing-rules {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 24px;
+        }
+
+        .closing-rules li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: #cbd5e1;
+            line-height: 1.55;
+        }
+
+        .closing-rules li::before {
+            content: '→';
+            color: #38bdf8;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ══════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════ */
+        .doc-footer {
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* ══════════════════════════════════════
+           LANGUAGE SWITCHER
+        ══════════════════════════════════════ */
+        .lang-switch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 100px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .lang-switch-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ══════════════════════════════════════
+           PRINT STYLES
+        ══════════════════════════════════════ */
+        @media print {
+            body { background: white; font-size: 13px; }
+
+            .page {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .cover { padding: 36px 40px 30px; }
+            .cover h1 { font-size: 28px; }
+            .cover h1 span { -webkit-text-fill-color: white; color: white; }
+
+            .intro-strip,
+            .body { padding-left: 40px; padding-right: 40px; }
+
+            .attack-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+
+            .closing { break-inside: avoid; }
+
+            .cover::before, .cover::after { display: none; }
+            .lang-switch-btn { display: none; }
+        }
+
+        @media (max-width: 680px) {
+            .cover, .intro-strip, .body { padding-left: 24px; padding-right: 24px; }
+            .cover h1 { font-size: 26px; }
+            .cover-top { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .closing-rules { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- ══════════ COVER ══════════ -->
+    <div class="cover">
+        <div class="cover-top">
+            <div class="cover-badge">CYB 236 &nbsp;·&nbsp; Web Application Security</div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <div class="cover-weeks">
+                    <span class="week-tag">Week 9</span>
+                    <span class="week-tag">Week 10</span>
+                </div>
+                <a href="summary-weeks9-10-ar.html" class="lang-switch-btn">&#x1F1F8;&#x1F1E6;&nbsp; عربي</a>
+            </div>
+        </div>
+
+        <h1>Six Attacks.<br><span>Know Them. Stop Them.</span></h1>
+        <p class="cover-sub">A plain-language guide to the six most common web application attacks and how to defend against each one — no programming experience required.</p>
+
+        <div class="attack-pills">
+            <div class="pill" style="background:rgba(225,29,72,0.3);">
+                <div class="pill-dot" style="background:#f43f5e;"></div> XSS
+            </div>
+            <div class="pill" style="background:rgba(234,88,12,0.3);">
+                <div class="pill-dot" style="background:#fb923c;"></div> CSRF
+            </div>
+            <div class="pill" style="background:rgba(217,119,6,0.3);">
+                <div class="pill-dot" style="background:#fbbf24;"></div> XXE
+            </div>
+            <div class="pill" style="background:rgba(124,58,237,0.3);">
+                <div class="pill-dot" style="background:#a78bfa;"></div> Injection
+            </div>
+            <div class="pill" style="background:rgba(37,99,235,0.3);">
+                <div class="pill-dot" style="background:#60a5fa;"></div> DoS / DDoS
+            </div>
+            <div class="pill" style="background:rgba(13,148,136,0.3);">
+                <div class="pill-dot" style="background:#2dd4bf;"></div> Third-Party
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ INTRO ══════════ -->
+    <div class="intro-strip">
+        <div class="intro-icon">&#128218;</div>
+        <div class="intro-text">
+            In Weeks 9 and 10, we shifted from <strong>attacking</strong> web applications to <strong>defending</strong> them.
+            This summary covers all six attack types you have studied — what each one is, how an attacker uses it, and the key principles for stopping it.
+            <strong>No code. No syntax. Just the ideas you need to think like a defender.</strong>
+        </div>
+    </div>
+
+    <!-- ══════════ ATTACKS ══════════ -->
+    <div class="body">
+
+        <div class="section-label">The Six Attacks — What They Are &amp; How to Stop Them</div>
+
+        <!-- ─── 1. XSS ─── -->
+        <div class="attack-card c-xss">
+            <div class="card-header">
+                <div class="card-icon">&#128187;</div>
+                <div class="card-title-wrap">
+                    <div class="card-number">Attack 01 &nbsp;·&nbsp; Week 9</div>
+                    <div class="card-title">Cross-Site Scripting
+                        <small>XSS</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-section-title">What Is It?</div>
+                <p class="what-text">
+                    An attacker hides a harmful script inside content they submit to a website — such as a comment, a message, or a form field. When another user views that content, the hidden script runs silently in their browser. It can steal their login session, copy their personal data, or even show them a fake page designed to trick them — all without the victim realising anything happened.
+                </p>
+
+                <div class="card-section-title">Real-World Analogy</div>
+                <div class="analogy-box">
+                    <div class="analogy-icon">&#128214;</div>
+                    <div class="analogy-text">Imagine someone leaves a note in a shared office notebook. The note looks normal, but when a colleague reads it, it secretly photographs them and sends the photo to a stranger. The victim never notices — the note just looks like ordinary text.</div>
+                </div>
+
+                <div class="card-section-title">How to Protect</div>
+                <ul class="protect-list">
+                    <li><div class="protect-check">✓</div><span><strong>Treat all user input as plain text — never as instructions.</strong> Whatever a user types should be displayed on screen as text, not acted upon as code.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Block scripts and HTML tags from user submissions.</strong> A comment box should accept words and sentences — not code tags or script commands.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Tell the browser to only run code from trusted sources.</strong> Configure your website so the browser refuses to run any script that does not come from your own server.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ─── 2. CSRF ─── -->
+        <div class="attack-card c-csrf">
+            <div class="card-header">
+                <div class="card-icon">&#128274;</div>
+                <div class="card-title-wrap">
+                    <div class="card-number">Attack 02 &nbsp;·&nbsp; Week 9</div>
+                    <div class="card-title">Cross-Site Request Forgery
+                        <small>CSRF</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-section-title">What Is It?</div>
+                <p class="what-text">
+                    An attacker tricks a logged-in user into performing an action on a website they did not intend — such as transferring money, changing their email address, or deleting their account. This happens because the user's browser automatically sends their login credentials with every request. The attacker crafts a disguised link or a hidden page that sends a request on behalf of the victim, and the website cannot tell the difference.
+                </p>
+
+                <div class="card-section-title">Real-World Analogy</div>
+                <div class="analogy-box">
+                    <div class="analogy-icon">&#128214;</div>
+                    <div class="analogy-text">A stranger hands you a pen and gently guides your hand to sign a document — you think you're doing something routine, but you just signed over your house. You were physically present and the signature is real, but the action was not something you chose.</div>
+                </div>
+
+                <div class="card-section-title">How to Protect</div>
+                <ul class="protect-list">
+                    <li><div class="protect-check">✓</div><span><strong>Require a secret, unique code for every important action.</strong> Before processing any sensitive request (a transfer, a change, a deletion), the website should verify a one-time code that only the real user could have received.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Never let a simple link cause an important change.</strong> Clicking a link should only ever view information — never delete, transfer, or modify it. Changes must require an intentional form submission.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Verify that every request came from your own website.</strong> Check where each request originated before acting on it — requests from unknown or external sources should be rejected.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ─── 3. XXE ─── -->
+        <div class="attack-card c-xxe">
+            <div class="card-header">
+                <div class="card-icon">&#128196;</div>
+                <div class="card-title-wrap">
+                    <div class="card-number">Attack 03 &nbsp;·&nbsp; Week 9</div>
+                    <div class="card-title">XML External Entity
+                        <small>XXE</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-section-title">What Is It?</div>
+                <p class="what-text">
+                    Some websites accept documents in a format called XML. This format supports a feature that allows a document to reference external files. An attacker exploits this by sending a manipulated document that instructs the server to open its own private files — such as passwords, configuration settings, or system information — and send them back to the attacker. What starts as reading a document ends as the server exposing its own secrets.
+                </p>
+
+                <div class="card-section-title">Real-World Analogy</div>
+                <div class="analogy-box">
+                    <div class="analogy-icon">&#128214;</div>
+                    <div class="analogy-text">You hand a form to an office assistant and ask them to fill it in. Hidden inside the form are instructions that say "also, please photocopy all documents in the confidential cabinet and give them to the person who brought this form." The assistant, following instructions blindly, complies.</div>
+                </div>
+
+                <div class="card-section-title">How to Protect</div>
+                <ul class="protect-list">
+                    <li><div class="protect-check">✓</div><span><strong>Disable the "external file" feature in your document processor.</strong> One simple configuration setting tells the server to ignore any instruction in a document that references external files. This single step eliminates the risk.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Switch to a simpler document format where possible.</strong> Modern alternatives do not support this dangerous feature at all — removing the risk entirely rather than having to configure around it.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Never let users define their own document rules.</strong> The ability to write custom rules inside a submitted document is the root cause. Remove that ability.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ─── 4. INJECTION ─── -->
+        <div class="attack-card c-inj">
+            <div class="card-header">
+                <div class="card-icon">&#128200;</div>
+                <div class="card-title-wrap">
+                    <div class="card-number">Attack 04 &nbsp;·&nbsp; Week 10</div>
+                    <div class="card-title">Injection
+                        <small>SQL Injection &amp; Command Injection</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-section-title">What Is It?</div>
+                <p class="what-text">
+                    An attacker types special commands into an ordinary input field — a login box, a search bar, or a contact form. If the website passes that input directly to its database or to the server's operating system without checking it first, the database or system follows the attacker's commands. This can result in the attacker reading all stored data, modifying records, deleting entire databases, or taking control of the server.
+                </p>
+
+                <div class="card-section-title">Real-World Analogy</div>
+                <div class="analogy-box">
+                    <div class="analogy-icon">&#128214;</div>
+                    <div class="analogy-text">A cashier asks "What is your name?" You reply: "Ahmed. By the way, also give me everything in the register." If the cashier follows every instruction spoken to them without question, you just robbed the store — using only words.</div>
+                </div>
+
+                <div class="card-section-title">How to Protect</div>
+                <ul class="protect-list">
+                    <li><div class="protect-check">✓</div><span><strong>Always keep the question separate from the answer.</strong> The website should decide what it wants to ask the database first — then supply the user's input as a separate value, never mixed into the question itself.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Give each part of the app only the access it needs.</strong> The section of the website that displays news articles does not need permission to delete user accounts. Limiting access limits the damage when something goes wrong.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Never let a user's input become a command.</strong> If a user types something into a search box, it should be treated as search text — not as an instruction to the server or database.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ─── 5. DoS ─── -->
+        <div class="attack-card c-dos">
+            <div class="card-header">
+                <div class="card-icon">&#9889;</div>
+                <div class="card-title-wrap">
+                    <div class="card-number">Attack 05 &nbsp;·&nbsp; Week 10</div>
+                    <div class="card-title">Denial of Service
+                        <small>DoS &amp; DDoS</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-section-title">What Is It?</div>
+                <p class="what-text">
+                    An attacker overwhelms a website with so many fake requests that real users cannot get through — the website becomes too busy to respond. In a <strong>Distributed DoS (DDoS)</strong> attack, the attacker controls thousands of infected devices worldwide (known as a botnet) and uses them all simultaneously to flood the target. Because the traffic looks like it comes from many real people, it is very difficult to block. The goal is not to steal data — it is simply to shut the website down.
+                </p>
+
+                <div class="card-section-title">Real-World Analogy</div>
+                <div class="analogy-box">
+                    <div class="analogy-icon">&#128214;</div>
+                    <div class="analogy-text">Someone organises thousands of people to call a restaurant's phone line every second, non-stop. The staff are too busy answering fake calls to take real reservations. Real customers can never get through — not because anything is broken, but because the line is always occupied.</div>
+                </div>
+
+                <div class="card-section-title">How to Protect</div>
+                <ul class="protect-list">
+                    <li><div class="protect-check">✓</div><span><strong>Use a traffic filtering service.</strong> Specialist services sit in front of your website and inspect every request before it arrives. Requests that look suspicious or come in harmful patterns are blocked before they reach your server.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Watch for sudden, unusual spikes in traffic.</strong> Normal websites have predictable patterns. A sudden ten-fold increase in requests at 3am is a warning sign that should be investigated immediately.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Avoid features that can be forced to run slowly.</strong> Some functions in a website require much more processing power than others. Attackers can repeatedly trigger these functions to exhaust the server. Design these features with limits on how often they can be used.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ─── 6. THIRD-PARTY ─── -->
+        <div class="attack-card c-tp">
+            <div class="card-header">
+                <div class="card-icon">&#128230;</div>
+                <div class="card-title-wrap">
+                    <div class="card-number">Attack 06 &nbsp;·&nbsp; Week 10</div>
+                    <div class="card-title">Third-Party Dependency Risks
+                        <small>Supply Chain &amp; Vulnerable Libraries</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="card-section-title">What Is It?</div>
+                <p class="what-text">
+                    Almost every modern website is built using code written by other people — pre-built components, tools, and libraries that save development time. If any of this borrowed code contains a security flaw, an attacker can exploit it to break into your website — even if every line of code <em>you</em> wrote is perfectly safe. The problem is that a single library might depend on ten other libraries, which each depend on ten more — creating thousands of components you are responsible for but may never have looked at.
+                </p>
+
+                <div class="card-section-title">Real-World Analogy</div>
+                <div class="analogy-box">
+                    <div class="analogy-icon">&#128214;</div>
+                    <div class="analogy-text">You build a house with great care — solid walls, strong windows, good doors. But you install a lock made by someone else. Unknown to you, that lock has a hidden flaw. No matter how well you built the rest of the house, anyone who knows about the lock's flaw can walk right in.</div>
+                </div>
+
+                <div class="card-section-title">How to Protect</div>
+                <ul class="protect-list">
+                    <li><div class="protect-check">✓</div><span><strong>Regularly scan all borrowed code for known problems.</strong> Security researchers continuously discover flaws in popular libraries. Automated tools can compare your library list against a global database of known vulnerabilities and alert you immediately.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Lock your libraries to specific, verified versions.</strong> When you confirm a version is safe, prevent it from updating automatically. An automatic update could silently introduce a vulnerability — or even malicious code.</span></li>
+                    <li><div class="protect-check">✓</div><span><strong>Isolate high-risk components from the rest of your application.</strong> If a particularly risky tool must be used, run it in a separate, restricted environment. Even if it is compromised, it cannot reach the rest of your data.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ══════════ CLOSING BANNER ══════════ -->
+        <div class="closing">
+            <h3>&#127919; The Golden Rules of Web Application Defense</h3>
+            <ul class="closing-rules">
+                <li>Never trust user input — always treat it as potentially harmful</li>
+                <li>Every important action should require proof that the user intended it</li>
+                <li>Give each part of the system only the access it truly needs</li>
+                <li>Borrowed code carries borrowed risk — scan it regularly</li>
+                <li>Defense is not a one-time setup — it requires continuous monitoring</li>
+                <li>A website that is hard to attack from the outside can still be vulnerable from within</li>
+            </ul>
+        </div>
+
+        <!-- ══════════ DOC FOOTER ══════════ -->
+        <div class="doc-footer">
+            <span>CYB 236 &mdash; Web Application Security &nbsp;|&nbsp; Weeks 9 &amp; 10 Summary</span>
+            <span>Chapters 22 &ndash; 27</span>
+        </div>
+
+    </div><!-- /body -->
+</div><!-- /page -->
+
+</body>
+</html>

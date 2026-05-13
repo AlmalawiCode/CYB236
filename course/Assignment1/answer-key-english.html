@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 1 — Answer Key | CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --accent-d:  #d35400;
+            --green:     #16a34a;
+            --green-bg:  #f0fdf4;
+            --green-bd:  #86efac;
+            --yellow:    #d97706;
+            --yellow-bg: #fffbeb;
+            --yellow-bd: #fde68a;
+            --blue:      #1d4ed8;
+            --blue-bg:   #eff6ff;
+            --blue-bd:   #bfdbfe;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+            --code-bg:   #1e293b;
+            --code-text: #e2e8f0;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #0f2340 0%, #1a3a5c 100%);
+            color: white;
+            padding: 44px 40px 36px;
+            text-align: center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 5px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        .confidential-badge {
+            display: inline-block;
+            background: rgba(220,38,38,0.2);
+            border: 1px solid rgba(220,38,38,0.4);
+            color: #fca5a5;
+            font-size: 0.78em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+        .header h1 { font-size: 1.9em; font-weight: 800; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1em; opacity: 0.85; margin-bottom: 6px; }
+        .header .chapter-ref {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        /* ── Info Bar ── */
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+            color: white;
+        }
+        .info-item {
+            text-align: center;
+            padding: 14px 10px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .info-item:last-child { border-right: none; }
+        .info-item strong { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 3px; }
+        .info-item span { font-size: 1.05em; font-weight: 700; }
+
+        /* ── Notice box ── */
+        .notice {
+            margin: 32px 40px 0;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 5px solid var(--red);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            font-size: 0.93em;
+        }
+        .notice strong { color: var(--red); }
+
+        /* ── Content ── */
+        .content { padding: 36px 40px 40px; }
+
+        /* ── Part header ── */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            margin: 36px 0 20px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+        .part-title { font-size: 1.05em; font-weight: 700; }
+        .part-pts {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ── Answer card ── */
+        .answer-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 22px;
+            overflow: hidden;
+        }
+        .answer-card-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            background: var(--bg);
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .q-num {
+            background: var(--primary);
+            color: white;
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-pts {
+            color: var(--accent);
+            font-size: 0.82em;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .q-text {
+            font-weight: 600;
+            font-size: 0.97em;
+            color: var(--text);
+        }
+        .answer-body { padding: 18px 20px; }
+
+        /* ── Model answer ── */
+        .model-answer {
+            background: var(--green-bg);
+            border: 1px solid var(--green-bd);
+            border-left: 4px solid var(--green);
+            border-radius: 0 10px 10px 0;
+            padding: 14px 18px;
+            margin-bottom: 14px;
+        }
+        .model-answer-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--green);
+            margin-bottom: 8px;
+        }
+        .model-answer p { font-size: 0.95em; margin-bottom: 8px; }
+        .model-answer p:last-child { margin-bottom: 0; }
+        .model-answer ul { padding-left: 20px; margin-top: 6px; }
+        .model-answer li { font-size: 0.94em; margin-bottom: 5px; }
+
+        /* ── Variable answer note ── */
+        .variable-note {
+            background: var(--yellow-bg);
+            border: 1px solid var(--yellow-bd);
+            border-left: 4px solid var(--yellow);
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            font-size: 0.9em;
+        }
+        .variable-note-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--yellow);
+            margin-bottom: 6px;
+        }
+
+        /* ── Grading notes ── */
+        .grading-notes {
+            background: var(--blue-bg);
+            border: 1px solid var(--blue-bd);
+            border-left: 4px solid var(--blue);
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            font-size: 0.9em;
+        }
+        .grading-notes-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue);
+            margin-bottom: 6px;
+        }
+        .grading-notes ul { padding-left: 18px; }
+        .grading-notes li { margin-bottom: 4px; }
+
+        /* ── Code block ── */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.88em;
+            line-height: 1.6;
+            margin: 10px 0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* ── Table ── */
+        .ans-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        .ans-table th {
+            background: var(--primary);
+            color: white;
+            padding: 9px 14px;
+            text-align: left;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        .ans-table th:first-child { border-radius: 8px 0 0 0; }
+        .ans-table th:last-child { border-radius: 0 8px 0 0; }
+        .ans-table td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        .ans-table tr:nth-child(even) td { background: var(--bg); }
+        .ans-table td:first-child { font-weight: 600; color: var(--primary); }
+        .ans-table td code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        /* ── Screenshot criteria ── */
+        .ss-criteria {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+        }
+        .ss-criteria ul { padding-left: 18px; }
+        .ss-criteria li { margin-bottom: 5px; font-size: 0.93em; }
+        .ss-criteria li strong { color: var(--primary); }
+
+        /* ── Keywords tag ── */
+        .keywords { margin-top: 10px; }
+        .keyword {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 0.8em;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin: 3px 4px 3px 0;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 22px 40px;
+            font-size: 0.88em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        code { background: #e2e8f0; padding: 1px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <div class="header-label">Assignment 1</div>
+            <span class="confidential-badge">&#128274; Instructor Only</span>
+        </div>
+        <h1>Answer Key &amp; Grading Guide</h1>
+        <p class="subtitle">Web Security Foundations &nbsp;·&nbsp; Labs 1 · 2 · 3</p>
+        <div class="chapter-ref">CYB 236 &mdash; Web Application Security &mdash; Spring 2026</div>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+        <div class="info-item"><strong>Total</strong><span>100 pts</span></div>
+        <div class="info-item"><strong>Questions</strong><span>12</span></div>
+        <div class="info-item"><strong>Screenshots</strong><span>4</span></div>
+        <div class="info-item"><strong>Parts</strong><span>A · B · C</span></div>
+    </div>
+
+    <!-- Confidentiality notice -->
+    <div class="notice">
+        <strong>&#9888; Confidential:</strong> This document is for instructor use only. Do not distribute to students before or during the assignment period.
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- ═══════════════════════════════════
+             PART A — Environment Verification
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part A</div>
+            <div class="part-title">Environment Verification &mdash; Kali Linux Setup</div>
+            <div class="part-pts">20 pts</div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q1</span>
+                <span class="q-text">Run <code>uname -a</code> in your Kali terminal. What operating system, kernel version, and architecture does it report?</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="variable-note">
+                    <div class="variable-note-label">&#9888; Variable Answer</div>
+                    This answer will differ per student machine. Accept any syntactically correct <code>uname -a</code> output from a Kali Linux system.
+                </div>
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Example Valid Answer</div>
+                    <div class="code-block">Linux kali 6.11.2-amd64 #1 SMP PREEMPT_DYNAMIC Kali 6.11.2-1kali1 (2024-10-15) x86_64 GNU/Linux</div>
+                    <p>Key fields to verify:</p>
+                    <ul>
+                        <li><strong>OS name:</strong> <code>Linux</code></li>
+                        <li><strong>Hostname:</strong> typically <code>kali</code> (may differ)</li>
+                        <li><strong>Kernel version:</strong> any <code>6.x.x</code> or <code>5.x.x</code> kali kernel string</li>
+                        <li><strong>Architecture:</strong> <code>x86_64</code> (or <code>aarch64</code> on ARM VMs)</li>
+                        <li>Ends with <code>GNU/Linux</code></li>
+                    </ul>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>4 pts — Full output copied, identifies kernel + architecture correctly.</li>
+                        <li>2 pts — Output present but missing architecture or OS label.</li>
+                        <li>0 pts — Blank, invented text, or clearly not from a Kali system.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q2</span>
+                <span class="q-text">Run <code>nmap --version</code>. What version of Nmap is installed on your system?</span>
+                <span class="q-pts">3 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="variable-note">
+                    <div class="variable-note-label">&#9888; Variable Answer</div>
+                    Accept any valid Nmap version string. Kali ships with Nmap 7.x or 7.9x. Students should copy the first line of the <code>nmap --version</code> output.
+                </div>
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Example Valid Answer</div>
+                    <div class="code-block">Nmap version 7.95 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu
+Compiled with: liblua-5.4.6 nmap-libpcre-7.6 libpcap-1.10.4 ...</div>
+                    <p>Accept "Nmap version 7.xx" or the complete output block.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>3 pts — Correct version number present (e.g., 7.94, 7.95).</li>
+                        <li>1 pt — States "Nmap is installed" without a version number.</li>
+                        <li>0 pts — Blank or incorrect (nmap not installed answers are invalid).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q3</span>
+                <span class="q-text">Why do security professionals use a virtual machine (VM) instead of their physical host machine when performing penetration testing? (at least two reasons)</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>Security professionals prefer VMs for penetration testing for the following reasons:</p>
+                    <ul>
+                        <li><strong>Isolation:</strong> The VM is sandboxed from the host OS. Any malware, exploits, or misconfigured tools remain contained inside the VM and cannot damage the host or other systems.</li>
+                        <li><strong>Snapshot &amp; rollback:</strong> VMs can be snapshotted before risky operations. If a test breaks the environment, the analyst restores the snapshot instead of rebuilding the machine.</li>
+                        <li><strong>Portability and reproducibility:</strong> A VM image can be shared, exported, and replicated exactly, ensuring all team members test in an identical environment.</li>
+                        <li><strong>Legal separation:</strong> Keeps the tester's personal/work data separate from test activity logs, reducing legal and privacy exposure.</li>
+                        <li><strong>Network control:</strong> VM network adapters can be set to host-only or isolated modes, preventing accidental scanning of live production networks.</li>
+                    </ul>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (8 pts)</div>
+                    <ul>
+                        <li>4 pts per valid reason (max 2 reasons needed for full credit; a 3rd correct reason can compensate for a weak one).</li>
+                        <li>Full credit for a reason: clear identification of the benefit + brief explanation of <em>why</em> it matters in security testing.</li>
+                        <li>Partial (2 pts): Correct idea stated but no explanation of the security implication.</li>
+                        <li>0 pts per reason: Vague statements like "it's safer" with no elaboration.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">isolation</span>
+                    <span class="keyword">snapshot</span>
+                    <span class="keyword">sandboxing</span>
+                    <span class="keyword">rollback</span>
+                    <span class="keyword">network separation</span>
+                    <span class="keyword">host protection</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-1 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-1</span>
+                <span class="q-text">Screenshot — Kali Linux terminal showing both <code>uname -a</code> and <code>nmap --version</code> output</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>Both commands visible:</strong> <code>uname -a</code> and <code>nmap --version</code> output in the same terminal window.</li>
+                        <li><strong>Output must match Q1 and Q2 answers</strong> — same kernel version and same Nmap version as text answers.</li>
+                        <li><strong>Terminal context visible:</strong> shell prompt (e.g., <code>┌──(kali㉿kali)-[~]</code>) is visible.</li>
+                        <li>The screenshot must not be a generic internet image — hostname should match or be consistent.</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts — Both commands visible, output matches text answers.<br>
+                        3 pts — Screenshot present but only one command visible, or slight mismatch with text answers.<br>
+                        0 pts — Missing, clearly downloaded from internet, or shows a different OS.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════
+             PART B — Web Reconnaissance
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part B</div>
+            <div class="part-title">Web Application Reconnaissance &mdash; OWASP Juice Shop</div>
+            <div class="part-pts">35 pts</div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q4</span>
+                <span class="q-text">What web server software is running behind Juice Shop? How did you identify it?</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>The web server running Juice Shop is <strong>Express (Node.js)</strong>.</p>
+                    <p>It is identified by inspecting the HTTP response headers in the browser's DevTools (F12 → Network tab → select any request → Response Headers):</p>
+                    <div class="code-block">X-Powered-By: Express</div>
+                    <p>Some installations may also reveal:</p>
+                    <div class="code-block">Server: (none or custom)
+X-Powered-By: Express</div>
+                    <p>The <code>X-Powered-By: Express</code> header confirms the backend is built on the Express.js framework running on Node.js.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>5 pts — Correctly identifies Express/Node.js AND states it was found in response headers.</li>
+                        <li>3 pts — Correct server identified but method of discovery is vague.</li>
+                        <li>1 pt — States "I checked the headers" but names the wrong server.</li>
+                        <li>0 pts — Blank or entirely incorrect.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">Express</span>
+                    <span class="keyword">Node.js</span>
+                    <span class="keyword">X-Powered-By</span>
+                    <span class="keyword">response headers</span>
+                    <span class="keyword">Network tab</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q5</span>
+                <span class="q-text">What client-side JavaScript framework does Juice Shop use? Name the framework and explain how you identified it.</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>Juice Shop uses <strong>Angular</strong> (specifically Angular 2+) as its client-side JavaScript framework.</p>
+                    <p>Evidence students can use to identify it:</p>
+                    <ul>
+                        <li><strong>HTML attributes:</strong> Custom HTML tags and attributes such as <code>&lt;mat-toolbar&gt;</code>, <code>&lt;app-root&gt;</code>, <code>&lt;router-outlet&gt;</code>, and <code>ng-*</code> directives in the page source (DevTools → Elements tab).</li>
+                        <li><strong>Script names:</strong> JavaScript bundles loaded include names like <code>main.js</code>, <code>runtime.js</code>, <code>polyfills.js</code> — typical Angular CLI build output.</li>
+                        <li><strong>Package metadata:</strong> The <code>/api/application-version</code> or <code>/api/Challenges</code> endpoints (visible in Network tab) may reveal Angular in the response.</li>
+                        <li><strong>Console:</strong> Angular apps sometimes print version info in the browser console in development mode.</li>
+                        <li><strong>Wappalyzer:</strong> Browser extension that fingerprints Angular automatically (if student used it).</li>
+                    </ul>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>5 pts — Correctly identifies Angular AND provides a valid identification method.</li>
+                        <li>3 pts — Correct framework, method vague (e.g., "I looked at the source code").</li>
+                        <li>2 pts — Identifies a frontend framework but names React/Vue instead (visible JavaScript loading pattern differs).</li>
+                        <li>0 pts — Blank or names a server-side technology.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">Angular</span>
+                    <span class="keyword">app-root</span>
+                    <span class="keyword">router-outlet</span>
+                    <span class="keyword">main.js</span>
+                    <span class="keyword">Elements tab</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q6</span>
+                <span class="q-text">What sensitive data did you find exposed in the response body of any REST endpoint? Provide one specific example.</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>Multiple endpoints in Juice Shop expose sensitive data. Common examples students should find:</p>
+
+                    <table class="ans-table">
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Sensitive Data Exposed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/Products</code></td>
+                                <td>Product reviews may include reviewer email addresses</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/Users</code> (if admin)</td>
+                                <td>User email addresses, hashed passwords</td>
+                            </tr>
+                            <tr>
+                                <td><code>/rest/products/search?q=</code></td>
+                                <td>Product data; may include internal IDs and reviewer emails</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/Feedbacks</code></td>
+                                <td>User feedback including email addresses and ratings</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin-top:12px;"><strong>Example full answer:</strong><br>
+                    "When I opened the Network tab and navigated to the home page, I saw a request to <code>/api/Products</code>. In the response JSON, I found product review objects containing the reviewer's email address (e.g., <code>jim@juice-sh.op</code>). This is sensitive because email addresses should not be exposed to unauthenticated users browsing the product list."</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (8 pts)</div>
+                    <ul>
+                        <li>8 pts — Identifies a real endpoint by URL, names the specific sensitive data type (email, password hash, etc.), and explains why it is sensitive.</li>
+                        <li>5 pts — Correct endpoint and data type but no explanation of the risk.</li>
+                        <li>3 pts — Vague ("I found personal information") without specifying the endpoint or data.</li>
+                        <li>0 pts — Blank or describes non-existent data.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">email address</span>
+                    <span class="keyword">/api/Products</span>
+                    <span class="keyword">JSON response</span>
+                    <span class="keyword">Network tab</span>
+                    <span class="keyword">data exposure</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q7</span>
+                <span class="q-text">Inspect the cookies set by Juice Shop. List the cookies found and identify missing <code>HttpOnly</code> / <code>Secure</code> flags and what attack each missing flag enables.</span>
+                <span class="q-pts">12 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>Juice Shop sets a session cookie (often named <code>token</code> or <code>connect.sid</code>).</p>
+
+                    <table class="ans-table">
+                        <thead>
+                            <tr>
+                                <th>Cookie Name</th>
+                                <th>HttpOnly Flag</th>
+                                <th>Secure Flag</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>token</code> (JWT)</td>
+                                <td>Missing (stored in localStorage or cookie without HttpOnly)</td>
+                                <td>Missing (running on HTTP localhost)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin-top:12px;"><strong>Missing HttpOnly flag →</strong> enables <strong>Cross-Site Scripting (XSS) cookie theft</strong>.<br>
+                    Without <code>HttpOnly</code>, JavaScript running in the browser can access the cookie via <code>document.cookie</code>. An attacker who injects a malicious script can steal the session token and impersonate the victim.</p>
+
+                    <p><strong>Missing Secure flag →</strong> enables <strong>Man-in-the-Middle (MitM) interception</strong>.<br>
+                    Without <code>Secure</code>, the cookie is transmitted over plain HTTP connections. An attacker on the same network (e.g., public Wi-Fi) can intercept the cookie in cleartext using a tool like Wireshark.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (12 pts — 4 pts each criterion)</div>
+                    <ul>
+                        <li>4 pts — Cookie name(s) listed from the Application/Storage tab.</li>
+                        <li>4 pts — <code>HttpOnly</code> flag status identified + XSS cookie theft explained.</li>
+                        <li>4 pts — <code>Secure</code> flag status identified + MitM/cleartext risk explained.</li>
+                        <li>Note: Running locally on HTTP means Secure will always be missing — accept this as correct.</li>
+                        <li>Accept <code>token</code>, <code>cookieconsent_status</code>, or any other cookies they observe.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">HttpOnly</span>
+                    <span class="keyword">Secure</span>
+                    <span class="keyword">XSS</span>
+                    <span class="keyword">MitM</span>
+                    <span class="keyword">document.cookie</span>
+                    <span class="keyword">session hijacking</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-2 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-2</span>
+                <span class="q-text">Screenshot — Firefox DevTools Network tab showing REST API requests on the Juice Shop home page</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>Firefox DevTools panel open</strong> (F12) on the Network tab.</li>
+                        <li><strong>Juice Shop URL visible</strong> in the address bar (e.g., <code>http://localhost:3000</code> or <code>http://127.0.0.1:3000</code>).</li>
+                        <li><strong>At least one API request selected</strong> with the response body or headers panel visible.</li>
+                        <li>Should be consistent with their answers to Q4–Q7 (e.g., response headers visible confirming <code>X-Powered-By: Express</code>, or an API endpoint response showing JSON data).</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts — DevTools visible, Juice Shop URL confirmed, API call selected with response visible.<br>
+                        3 pts — DevTools open but no API call selected, or URL not visible.<br>
+                        0 pts — Missing, or screenshot shows a different application.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════
+             PART C — XSS Attacks
+             ═══════════════════════════════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part C</div>
+            <div class="part-title">Cross-Site Scripting (XSS) Attacks &mdash; DVWA</div>
+            <div class="part-pts">45 pts</div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q8</span>
+                <span class="q-text">Write the exact XSS payload you submitted to trigger the alert box in the Reflected XSS exercise.</span>
+                <span class="q-pts">4 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>The standard payload used in Lab 3 is:</p>
+                    <div class="code-block">&lt;script&gt;alert('XSS')&lt;/script&gt;</div>
+                    <p>Any of the following variants are also acceptable:</p>
+                    <div class="code-block">&lt;script&gt;alert(1)&lt;/script&gt;
+&lt;script&gt;alert("XSS")&lt;/script&gt;
+&lt;script&gt;alert(document.cookie)&lt;/script&gt;
+&lt;img src=x onerror="alert('XSS')"&gt;</div>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes</div>
+                    <ul>
+                        <li>4 pts — Valid XSS payload that would execute JavaScript in a browser (triggers alert).</li>
+                        <li>2 pts — Partially correct payload (e.g., missing closing tag, minor syntax error).</li>
+                        <li>0 pts — Blank, describes the payload in plain English without writing it, or submits non-executable text.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">&lt;script&gt;</span>
+                    <span class="keyword">alert()</span>
+                    <span class="keyword">onerror</span>
+                    <span class="keyword">JavaScript injection</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q9</span>
+                <span class="q-text">In Reflected XSS, where does the payload travel after you click Submit? Is it stored anywhere permanently?</span>
+                <span class="q-pts">6 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>In a Reflected XSS attack, the payload travels through this path:</p>
+                    <ul>
+                        <li><strong>Step 1:</strong> The user submits the payload (e.g., <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>) via the input field.</li>
+                        <li><strong>Step 2:</strong> The payload is sent to the server as part of the HTTP request (e.g., in the URL query string: <code>?name=&lt;script&gt;...&lt;/script&gt;</code>).</li>
+                        <li><strong>Step 3:</strong> The server reflects (echoes) the input directly back in the HTTP response HTML without sanitizing it.</li>
+                        <li><strong>Step 4:</strong> The browser receives the HTML and executes the embedded script.</li>
+                    </ul>
+                    <p><strong>It is NOT stored permanently.</strong> The payload only exists in the URL. If the page is refreshed without the malicious query string, the script does not execute. This is why Reflected XSS attacks are usually delivered via crafted malicious links sent to victims.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (6 pts)</div>
+                    <ul>
+                        <li>3 pts — Correctly traces the flow: browser → server → reflected in response → executed by browser.</li>
+                        <li>3 pts — Correctly states it is NOT stored permanently and explains the implication.</li>
+                        <li>Partial (1–2 pts): Correct direction (client→server→client) but missing explanation of "not stored".</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">reflected</span>
+                    <span class="keyword">URL query string</span>
+                    <span class="keyword">HTTP response</span>
+                    <span class="keyword">not stored</span>
+                    <span class="keyword">echo</span>
+                    <span class="keyword">sanitization</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q10</span>
+                <span class="q-text">In the Stored XSS exercise, you reloaded the guestbook page after submitting the script. What happened, and why did the alert fire again without you resubmitting anything?</span>
+                <span class="q-pts">8 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p>When the guestbook page was reloaded, the alert box fired again automatically — even though no new input was submitted.</p>
+                    <p><strong>Why this happens:</strong></p>
+                    <ul>
+                        <li>Unlike Reflected XSS, in Stored (Persistent) XSS the server <strong>saves the payload to the database</strong> when it is first submitted (e.g., as a guestbook entry).</li>
+                        <li>Every time any user loads the guestbook page, the server queries the database and includes all saved entries in the HTML response.</li>
+                        <li>The malicious script is embedded in the returned HTML and the browser executes it <strong>automatically on page load</strong> — without any user interaction required.</li>
+                        <li>This means every visitor to the page (not just the attacker) will have the script executed in their browser.</li>
+                    </ul>
+                    <p>This is what makes Stored XSS significantly more dangerous than Reflected XSS: the attack is "baked into" the page and affects all future visitors persistently.</p>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (8 pts)</div>
+                    <ul>
+                        <li>4 pts — Explains that the payload was saved to the server/database.</li>
+                        <li>4 pts — Explains that every page load retrieves and renders the stored script, causing automatic execution for all visitors.</li>
+                        <li>Full credit requires both points. Partial for each.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">stored in database</span>
+                    <span class="keyword">persistent</span>
+                    <span class="keyword">page load</span>
+                    <span class="keyword">all visitors affected</span>
+                    <span class="keyword">server-side storage</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q11</span>
+                <span class="q-text">Complete the comparison table: Reflected XSS vs Stored XSS</span>
+                <span class="q-pts">10 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <table class="ans-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Reflected XSS</th>
+                                <th>Stored XSS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Where is the payload saved?</td>
+                                <td>Not saved — it exists only in the URL / HTTP request. The server reflects it back in the response immediately and it disappears after the request.</td>
+                                <td>Saved permanently in the server's database (or file storage). Retrieved and served to every visitor.</td>
+                            </tr>
+                            <tr>
+                                <td>Who triggers the attack?</td>
+                                <td>The victim must click a specially crafted malicious link that contains the payload in the URL. The attacker sends this link (e.g., via phishing email).</td>
+                                <td>Any user who simply visits the affected page. No special link required — the payload fires automatically on page load for every visitor.</td>
+                            </tr>
+                            <tr>
+                                <td>Which is more dangerous?</td>
+                                <td colspan="2" style="background:#fef2f2;"><strong>Stored XSS is more dangerous</strong> because: (1) it affects all visitors automatically without any social engineering; (2) the attack is persistent and continues until the payload is removed; (3) a single injection can compromise hundreds or thousands of users.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (10 pts — distributed across 5 cells)</div>
+                    <ul>
+                        <li>2 pts — Reflected "where saved": not saved / URL only.</li>
+                        <li>2 pts — Stored "where saved": database / server-side storage.</li>
+                        <li>2 pts — Reflected "who triggers": victim clicks malicious link.</li>
+                        <li>2 pts — Stored "who triggers": any visitor / automatic on page load.</li>
+                        <li>2 pts — More dangerous: Stored XSS + valid reason (persistence, all visitors, no link needed).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">Q12</span>
+                <span class="q-text">A bank's internal support ticket system: attacker submits a stored XSS payload that steals session cookies. Who is at risk, and what can the attacker do with the stolen session cookie?</span>
+                <span class="q-pts">7 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="model-answer">
+                    <div class="model-answer-label">&#10003; Model Answer</div>
+                    <p><strong>Who is at risk:</strong></p>
+                    <ul>
+                        <li><strong>Bank support agents</strong> — Any agent who opens and views the malicious ticket will have the script execute in their browser.</li>
+                        <li><strong>Potentially supervisors or managers</strong> if they also review the ticket in the same system.</li>
+                        <li>Customer data is at risk indirectly if agents have access to it.</li>
+                    </ul>
+                    <p><strong>What the attacker can do with a stolen session cookie:</strong></p>
+                    <ul>
+                        <li><strong>Session hijacking:</strong> The attacker injects the stolen cookie into their own browser (e.g., using DevTools → Application → Cookies), gaining full access to the agent's account without needing a username or password.</li>
+                        <li><strong>Access privileged data:</strong> With the agent's session, the attacker can view customer account information, transaction histories, or personal data (PII) visible to that agent.</li>
+                        <li><strong>Perform unauthorized actions:</strong> The attacker can take actions as the agent: approving transactions, changing account settings, downloading reports, or accessing other customers' data.</li>
+                    </ul>
+                </div>
+                <div class="grading-notes">
+                    <div class="grading-notes-label">Grading Notes (7 pts)</div>
+                    <ul>
+                        <li>3 pts — Correctly identifies bank support agents (not customers) as the primary victims.</li>
+                        <li>4 pts — Explains session hijacking: using the stolen cookie to impersonate the agent and the resulting unauthorized access / data breach impact.</li>
+                        <li>Note: Students who say "customers" as primary victims without mentioning agents receive at most 1 pt for the victim question.</li>
+                    </ul>
+                </div>
+                <div class="keywords">
+                    <span class="keyword">session hijacking</span>
+                    <span class="keyword">support agents</span>
+                    <span class="keyword">cookie theft</span>
+                    <span class="keyword">account takeover</span>
+                    <span class="keyword">unauthorized access</span>
+                    <span class="keyword">PII</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-3 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-3</span>
+                <span class="q-text">Screenshot — Reflected XSS alert box triggered in DVWA</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>Alert dialog box visible</strong> triggered by a script (e.g., <code>alert('XSS')</code> dialog).</li>
+                        <li><strong>DVWA URL visible</strong> in the address bar (e.g., <code>http://localhost/dvwa/vulnerabilities/xss_r/</code>) with the payload in the query string (e.g., <code>?name=&lt;script&gt;...&lt;/script&gt;</code>).</li>
+                        <li><strong>Payload in URL matches Q8 answer.</strong></li>
+                        <li>Security level should appear as "Low" (visible in the DVWA nav bar or security indicator).</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts — Alert box visible + DVWA URL with payload in query string.<br>
+                        3 pts — Alert box visible but URL not showing payload in address bar.<br>
+                        0 pts — Missing, or alert shown on a non-DVWA page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SS-4 -->
+        <div class="answer-card">
+            <div class="answer-card-header">
+                <span class="q-num">SS-4</span>
+                <span class="q-text">Screenshot — Stored XSS: guestbook page after reload, showing both normal entry and script entry</span>
+                <span class="q-pts">5 pts</span>
+            </div>
+            <div class="answer-body">
+                <div class="ss-criteria">
+                    <p style="font-weight:600; margin-bottom:10px; color:var(--primary);">Screenshot must include:</p>
+                    <ul>
+                        <li><strong>DVWA Stored XSS page</strong> (URL: <code>http://localhost/dvwa/vulnerabilities/xss_s/</code>).</li>
+                        <li><strong>At least two guestbook entries visible:</strong> one normal text entry and one that contains or resulted from the injected script.</li>
+                        <li><strong>Optional but ideal:</strong> An alert dialog from the page reload is captured.</li>
+                        <li>If the script entry only shows the raw <code>&lt;script&gt;</code> text in the guestbook (rather than executed), it still demonstrates stored injection — accept this.</li>
+                    </ul>
+                    <div style="margin-top:12px;">
+                        <div class="grading-notes-label" style="font-size:0.78em; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--blue);">Points</div>
+                        <p style="font-size:0.9em; margin-top:6px;">5 pts — Both entries visible on DVWA Stored XSS page, page reload demonstrated.<br>
+                        3 pts — Only one entry visible, or page URL not confirming DVWA Stored XSS.<br>
+                        0 pts — Missing, or shows Reflected XSS page instead.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end .content -->
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; Web Application Security &mdash; King Abdulaziz University</p>
+        <p>Assignment 1 Answer Key &nbsp;·&nbsp; Instructor Use Only &nbsp;·&nbsp; Spring 2026</p>
+    </div>
+
+</div><!-- end .container -->
+</body>
+</html>

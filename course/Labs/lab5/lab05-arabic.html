@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المختبر 05: Burp Suite &ndash; البروكسي و FoxyProxy واعتراض حركة المرور</title>
+    <style>
+        :root {
+            --primary-color: #2980b9;
+            --secondary-color: #1a365d;
+            --accent-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --info-color: #3182ce;
+            --dark-text: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', 'Segoe UI', 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.9;
+            color: var(--dark-text);
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        /* مصطلح إنجليزي داخل النص العربي */
+        .term-en {
+            color: var(--primary-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            direction: ltr;
+            display: inline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* ── الترويسة ── */
+        .header {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" opacity="0.05">&#128269;</text></svg>') 150px;
+            opacity: 0.3;
+        }
+        .header h1 { font-size: 2.1em; margin-bottom: 10px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header .subtitle { font-size: 1.15em; opacity: 0.9; position: relative; }
+        .header .chapter-ref {
+            display: inline-block; margin-top: 15px;
+            background: rgba(255,255,255,0.1); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.9em; position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* ── شريط معلومات المختبر ── */
+        .lab-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px; padding: 22px 40px;
+            background: linear-gradient(135deg, #2980b9 0%, #1a5276 100%);
+            color: white;
+        }
+        .lab-info-item { text-align: center; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .lab-info-item strong { display: block; font-size: 0.85em; letter-spacing: 0.5px; margin-bottom: 5px; opacity: 0.9; }
+        .lab-info-item span { font-size: 1.05em; font-weight: 600; }
+
+        /* ── المحتوى ── */
+        .content { padding: 40px; }
+
+        /* ── فهرس المحتويات ── */
+        .toc {
+            background: linear-gradient(135deg, #e8f4fd 0%, #bee3f8 100%);
+            border-radius: 15px; padding: 25px 30px; margin-bottom: 40px;
+            border-right: 5px solid #2980b9;
+            border-left: none;
+        }
+        .toc h2 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3em; border: none; padding: 0; }
+        .toc ol { columns: 2; column-gap: 30px; padding-right: 20px; padding-left: 0; }
+        .toc li { margin-bottom: 8px; break-inside: avoid; }
+        .toc a { color: #1a5276; text-decoration: none; }
+        .toc a:hover { color: var(--secondary-color); text-decoration: underline; }
+
+        /* ── الأقسام ── */
+        section { margin-bottom: 40px; }
+        h2 { color: var(--secondary-color); font-size: 1.75em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #2980b9; display: flex; align-items: center; gap: 10px; }
+        h3 { color: var(--primary-color); font-size: 1.35em; margin: 25px 0 15px 0; }
+        h4 { color: var(--dark-text); font-size: 1.1em; margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-right: 25px; margin-left: 0; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        /* ── صناديق التنبيه ── */
+        .alert { padding: 18px 22px; border-radius: 12px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .alert-icon { font-size: 1.4em; flex-shrink: 0; }
+        .alert-info  { background: linear-gradient(135deg,#ebf8ff,#bee3f8); border-right: 5px solid var(--info-color); border-left: none; }
+        .alert-warning { background: linear-gradient(135deg,#fffff0,#fefcbf); border-right: 5px solid var(--warning-color); border-left: none; }
+        .alert-danger  { background: linear-gradient(135deg,#fff5f5,#fed7d7); border-right: 5px solid var(--danger-color); border-left: none; }
+        .alert-success { background: linear-gradient(135deg,#f0fff4,#c6f6d5); border-right: 5px solid var(--accent-color); border-left: none; }
+        .alert h4 { margin: 0 0 6px 0; } .alert p { margin: 0; } .alert ul { margin-top: 6px; margin-bottom: 0; }
+
+        /* ── الجداول ── */
+        table { width: 100%; border-collapse: collapse; margin: 18px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        th { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 14px 18px; text-align: right; font-weight: 600; }
+        td { padding: 11px 18px; border-bottom: 1px solid var(--border-color); }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* ── الكود ── */
+        code { background: #1a202c; color: #68d391; padding: 3px 7px; border-radius: 5px; font-family: 'Consolas','Monaco',monospace; font-size: 0.9em; direction: ltr; display: inline-block; }
+        pre { background: linear-gradient(135deg,#1a202c,#2d3748); color: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; margin: 14px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); direction: ltr; text-align: left; }
+        pre code { background: none; color: #68d391; padding: 0; display: inline; }
+        .command-label { display: block; color: #a0aec0; font-size: 0.85em; margin-bottom: 7px; font-style: italic; }
+        .output-text { color: #fbd38d; }
+
+        /* ── الخطوات المرقّمة ── */
+        .steps { counter-reset: step-counter; list-style: none; padding: 0; }
+        .steps li { counter-increment: step-counter; margin-bottom: 14px; padding-right: 50px; padding-left: 0; position: relative; min-height: 40px; }
+        .steps li::before { content: counter(step-counter); position: absolute; right: 0; top: 0; left: auto; width: 35px; height: 35px; background: linear-gradient(135deg,#2980b9,#1a5276); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 4px 6px rgba(41,128,185,0.3); }
+
+        /* ── قائمة التحقق ── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { padding: 9px 35px 9px 0; position: relative; border-bottom: 1px dashed var(--border-color); }
+        .checklist li::before { content: '☐'; position: absolute; right: 0; left: auto; font-size: 1.2em; color: #2980b9; }
+
+        /* ── بانر المفهوم ── */
+        .concept-banner { background: linear-gradient(135deg,#1c1917,#292524); color: white; border-radius: 12px; padding: 18px 22px; margin: 18px 0; display: flex; gap: 14px; align-items: flex-start; }
+        .concept-banner .ci { font-size: 1.8em; flex-shrink: 0; }
+        .concept-banner h4 { color: #90cdf4; margin: 0 0 6px 0; }
+        .concept-banner p { margin: 0; opacity: 0.9; font-size: 0.94em; }
+
+        /* ── صندوق التسليم ── */
+        .deliverable { background: linear-gradient(135deg,#faf5ff,#e9d8fd); border-right: 5px solid #805ad5; border-left: none; border-radius: 12px 0 0 12px; padding: 18px 22px; margin: 18px 0; }
+        .deliverable h4 { color: #553c9a; margin-top: 0; }
+
+        /* ── حقول الإجابة ── */
+        .fill-in { background: #fafbfc; border: 2px solid var(--border-color); border-radius: 10px; padding: 18px; margin: 14px 0; }
+        .fill-in label { font-weight: 600; display: block; margin-bottom: 5px; color: var(--secondary-color); font-size: 0.95em; }
+        .fill-in input[type="text"], .fill-in textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.93em; font-family: inherit; margin-bottom: 12px; resize: vertical;
+        }
+        .fill-in input[type="text"]:focus, .fill-in textarea:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(41,128,185,0.1); }
+
+        /* ── استكشاف الأخطاء ── */
+        .troubleshoot-item { background: white; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border-color); overflow: hidden; }
+        .troubleshoot-header { background: linear-gradient(135deg,#fff5f5,#fed7d7); padding: 14px 18px; font-weight: 600; color: var(--danger-color); }
+        .troubleshoot-solution { padding: 18px; background: linear-gradient(135deg,#f0fff4,#c6f6d5); }
+
+        /* ── صندوق الملخص ── */
+        .summary-box { background: linear-gradient(135deg,#1c1917,#292524); color: white; border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+        .summary-box h3 { color: #90cdf4; margin-top: 0; border: none; }
+        .summary-box table { box-shadow: none; border-radius: 8px; overflow: hidden; }
+        .summary-box th { background: rgba(255,255,255,0.1); color: #e2e8f0; text-align: right; }
+        .summary-box td { color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; }
+        .summary-box tr:nth-child(even) td { background: rgba(255,255,255,0.05); }
+
+        /* ── مخطط البروكسي ── */
+        .proxy-diagram { margin: 24px 0; }
+
+        .diagram-scenario {
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 18px;
+        }
+        .diagram-scenario.no-proxy {
+            background: linear-gradient(135deg,#fff5f5,#fed7d7);
+            border: 2px solid #e53e3e;
+        }
+        .diagram-scenario.with-proxy {
+            background: linear-gradient(135deg,#f0fff4,#c6f6d5);
+            border: 2px solid #38a169;
+        }
+        .scenario-title {
+            font-weight: 700;
+            font-size: 1em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .no-proxy .scenario-title { color: #c53030; }
+        .with-proxy .scenario-title { color: #276749; }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            direction: ltr;
+        }
+
+        .flow-node {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 100px;
+        }
+        .flow-node .node-icon { font-size: 1.8em; display: block; margin-bottom: 4px; }
+        .flow-node .node-name { font-weight: 700; font-size: 0.88em; color: #1a202c; }
+        .flow-node .node-sub { font-size: 0.75em; color: #718096; margin-top: 3px; font-family: 'Consolas','Monaco',monospace; }
+
+        .flow-node.browser-node { border: 2px solid #2980b9; }
+        .flow-node.burp-node   { border: 2px solid #d69e2e; background: #fffff0; }
+        .flow-node.foxy-node   { border: 2px solid #805ad5; background: #faf5ff; }
+        .flow-node.site-node   { border: 2px solid #38a169; background: #f0fff4; }
+
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 4px;
+            color: #4a5568;
+            flex-shrink: 0;
+        }
+        .flow-arrow .arr { font-size: 1.6em; line-height: 1; color: #4a5568; }
+        .flow-arrow .arr-lbl { font-size: 0.7em; color: #718096; text-align: center; max-width: 72px; margin-top: 3px; line-height: 1.3; }
+
+        .burp-caps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+            justify-content: center;
+        }
+        .burp-cap {
+            background: #276749;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .no-proxy .flow-arrow .arr { color: #c53030; }
+        .no-proxy .flow-arrow .arr-lbl { color: #c53030; }
+
+        /* ── التذييل ── */
+        .footer { background: linear-gradient(135deg,#1c1917,#292524); color: white; padding: 28px 40px; text-align: center; }
+        .footer p { margin: 5px 0; opacity: 0.9; }
+
+        /* ── زر تبديل اللغة ── */
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 28px 18px; }
+            .header h1 { font-size: 1.6em; }
+            .content { padding: 22px; }
+            .toc ol { columns: 1; }
+            .flow-node { min-width: 80px; padding: 10px; }
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .lang-switch { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- زر تبديل اللغة -->
+<div class="lang-switch">
+    <a href="lab05-english.html" class="lang-btn">
+        &#127760; English
+    </a>
+</div>
+
+<div class="container">
+
+    <header class="header">
+        <h1>&#128269; المختبر 05: <span style="font-family:'Consolas',monospace;">Burp Suite</span> &mdash; البروكسي و<span style="font-family:'Consolas',monospace;">FoxyProxy</span> واعتراض حركة المرور</h1>
+        <p class="subtitle">CYB236 &mdash; أمن تطبيقات الويب</p>
+        <div class="chapter-ref">الفصل 4 &mdash; ما هو <span class="term-en">Burp Suite</span> &bull; كيف تعمل البروكسيات &bull; <span class="term-en">FoxyProxy</span> &bull; الاعتراض الأول</div>
+    </header>
+
+    <div class="lab-info">
+        <div class="lab-info-item"><strong>رقم المختبر</strong><span>05</span></div>
+        <div class="lab-info-item"><strong>المستوى</strong><span>مبتدئ</span></div>
+        <div class="lab-info-item"><strong>المدة</strong><span>30&ndash;40 دقيقة</span></div>
+        <div class="lab-info-item"><strong>البيئة</strong><span>Kali Linux</span></div>
+        <div class="lab-info-item"><strong>التالي</strong><span>المختبر 06</span></div>
+    </div>
+
+    <div class="content">
+
+        <nav class="toc">
+            <h2>&#128203; فهرس المحتويات</h2>
+            <ol>
+                <li><a href="#intro">ما هو Burp Suite؟</a></li>
+                <li><a href="#proxy-concept">كيف يعمل البروكسي؟</a></li>
+                <li><a href="#why-foxyproxy">لماذا FoxyProxy؟</a></li>
+                <li><a href="#part1">الجزء 1: تشغيل Burp Suite</a></li>
+                <li><a href="#part2">الجزء 2: التحقق من مستمع البروكسي</a></li>
+                <li><a href="#part3">الجزء 3: تثبيت FoxyProxy</a></li>
+                <li><a href="#part4">الجزء 4: إعداد FoxyProxy</a></li>
+                <li><a href="#part5">الجزء 5: إعداد عنوان IP</a></li>
+                <li><a href="#part6">الجزء 6: اعتراض أول طلب</a></li>
+                <li><a href="#troubleshooting">استكشاف الأخطاء</a></li>
+                <li><a href="#deliverables">التسليمات والملخص</a></li>
+            </ol>
+        </nav>
+
+        <!-- ما هو Burp Suite -->
+        <section id="intro">
+            <h2>&#128161; ما هو <span class="term-en">Burp Suite</span>؟</h2>
+
+            <p><strong><span class="term-en">Burp Suite</span></strong> هو منصة اختبار أمن تطبيقات الويب طوّرتها شركة <strong><span class="term-en">PortSwigger</span></strong>. وهو الأداة المعيارية في الصناعة التي يستخدمها مختبرو الاختراق وصائدو الثغرات والباحثون الأمنيون للكشف عن الثغرات في تطبيقات الويب.</p>
+
+            <p>في جوهره، يعمل <span class="term-en">Burp Suite</span> كـ<strong>بروكسي اعتراضي (<span class="term-en">Intercepting Proxy</span>)</strong>: يجلس بين متصفحك وأي موقع ويب، مانحاً إياك رؤية كاملة وتحكماً تاماً في كل طلب واستجابة <span class="term-en">HTTP</span> تمر عبره.</p>
+
+            <h3>إصدارات <span class="term-en">Burp Suite</span></h3>
+            <table>
+                <tr><th>الإصدار</th><th>التكلفة</th><th>المميزات الرئيسية</th></tr>
+                <tr><td><strong><span class="term-en">Community</span> (المجتمعي)</strong></td><td>مجاني</td><td><span class="term-en">Proxy, HTTP History, Repeater, Intruder</span> (محدود)، <span class="term-en">Site Map</span> &mdash; كافٍ لهذا المقرر</td></tr>
+                <tr><td><strong><span class="term-en">Professional</span> (الاحترافي)</strong></td><td>مدفوع</td><td>جميع مميزات المجتمعي + ماسح آلي، <span class="term-en">Intruder</span> غير محدود، أدوات متقدمة</td></tr>
+                <tr><td><strong><span class="term-en">Enterprise</span> (المؤسسي)</strong></td><td>مدفوع</td><td>تكامل مع <span class="term-en">CI/CD</span>، مسح مجدول، تقارير مؤسسية</td></tr>
+            </table>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>Burp Suite مثبَّت مسبقاً في Kali Linux</h4>
+                    <p>لا تحتاج إلى تثبيت <span class="term-en">Burp Suite</span>. يأتي مدمجاً مع <span class="term-en">Kali Linux</span>. شغّله من الطرفية بالأمر <code>burpsuite</code> أو من قائمة التطبيقات: <strong>Applications &rarr; Web Application Analysis &rarr; burpsuite</strong>.</p>
+                </div>
+            </div>
+
+            <h3>الأدوات الرئيسية داخل <span class="term-en">Burp Suite</span></h3>
+            <table>
+                <tr><th>الأداة</th><th>ما تفعله</th></tr>
+                <tr><td><strong><span class="term-en">Proxy</span></strong></td><td>تعترض وتسجّل كل طلب واستجابة <span class="term-en">HTTP</span> بين المتصفح والخادم</td></tr>
+                <tr><td><strong><span class="term-en">HTTP History</span></strong></td><td>سجل لكل طلب التقطه البروكسي، مع كامل الترويسات والجسم</td></tr>
+                <tr><td><strong><span class="term-en">Intercept</span></strong></td><td>يوقف الطلب في منتصف طريقه لتتمكن من قراءته أو تعديله قبل وصوله للخادم</td></tr>
+                <tr><td><strong><span class="term-en">Repeater</span></strong></td><td>أعد إرسال أي طلب مُلتقط مع تعديلات — اختبر الثغرات يدوياً</td></tr>
+                <tr><td><strong><span class="term-en">Site Map</span></strong></td><td>يبني شجرة بكل الروابط والنقاط النهائية المكتشفة خلال جلستك</td></tr>
+            </table>
+
+            <div class="alert alert-danger">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>للاستخدام المصرّح به فقط</h4>
+                    <p><span class="term-en">Burp Suite</span> أداة أمنية قوية. استخدامها ضد أي نظام لا تملكه أو لا تحمل إذناً كتابياً باختباره هو أمر غير قانوني. في هذا المقرر، يُنفَّذ كل الاختبار ضد أنظمة تشغّلها بنفسك على جهازك الخاص.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- كيف يعمل البروكسي -->
+        <section id="proxy-concept">
+            <h2>&#128257; كيف يعمل البروكسي؟</h2>
+
+            <p>لفهم <span class="term-en">Burp Suite</span>، تحتاج إلى فهم ما هو <strong>البروكسي (<span class="term-en">Proxy</span>)</strong> ولماذا يمنحك قوة على حركة مرور <span class="term-en">HTTP</span>.</p>
+
+            <h3>الاتصال العادي (بدون بروكسي)</h3>
+            <p>حين تكتب رابطاً في <span class="term-en">Firefox</span> وتضغط <span class="term-en">Enter</span>، يرسل متصفحك طلب <span class="term-en">HTTP</span> مباشرةً إلى خادم الويب. يستجيب الخادم وتُحمَّل الصفحة. <strong>أنت لا ترى سوى الصفحة المُقدَّمة — لا الطلب الخام ولا الاستجابة.</strong></p>
+
+            <h3>اتصال البروكسي (مع Burp Suite)</h3>
+            <p>حين تُوجِّه <span class="term-en">Firefox</span> عبر <span class="term-en">Burp Suite</span>، <strong>يمر كل طلب عبر Burp أولاً</strong>. يتلقاه Burp ويسجّله، ويعدّله اختيارياً، ثم يُعيد توجيهه للخادم. تعود استجابة الخادم إلى Burp الذي يسجّلها ويمررها إلى Firefox. أنت ترى كل شيء بالتفصيل الخام.</p>
+
+            <!-- مخطط البروكسي -->
+            <div class="proxy-diagram">
+
+                <div class="diagram-scenario no-proxy">
+                    <div class="scenario-title">&#10060; بدون بروكسي &mdash; لا رؤية</div>
+                    <div class="flow-row">
+                        <div class="flow-node browser-node">
+                            <span class="node-icon">&#127760;</span>
+                            <div class="node-name">Firefox</div>
+                            <div class="node-sub">Browser</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">طلب مباشر<br>(مخفي)</div>
+                        </div>
+                        <div class="flow-node site-node">
+                            <span class="node-icon">&#128187;</span>
+                            <div class="node-name">الموقع</div>
+                            <div class="node-sub">Target Server</div>
+                        </div>
+                    </div>
+                    <p style="text-align:center; margin-top:12px; font-size:0.88em; color:#c53030; font-style:italic;">يتحدث Firefox مباشرةً مع الخادم. لا يمكنك رؤية حركة HTTP الخام أو إيقافها أو تعديلها.</p>
+                </div>
+
+                <div class="diagram-scenario with-proxy">
+                    <div class="scenario-title">&#9989; مع بروكسي Burp Suite &mdash; رؤية كاملة وتحكم تام</div>
+                    <div class="flow-row">
+                        <div class="flow-node browser-node">
+                            <span class="node-icon">&#127760;</span>
+                            <div class="node-name">Firefox</div>
+                            <div class="node-sub">Browser</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">يُوجَّه عبر<br>FoxyProxy</div>
+                        </div>
+                        <div class="flow-node foxy-node">
+                            <span class="node-icon">&#129418;</span>
+                            <div class="node-name">FoxyProxy</div>
+                            <div class="node-sub">Browser Extension</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">يُرسَل إلى<br>127.0.0.1:8080</div>
+                        </div>
+                        <div class="flow-node burp-node">
+                            <span class="node-icon">&#128269;</span>
+                            <div class="node-name">Burp Suite</div>
+                            <div class="node-sub">127.0.0.1:8080</div>
+                        </div>
+                        <div class="flow-arrow">
+                            <div class="arr">&#10230;</div>
+                            <div class="arr-lbl">يُحال إلى<br>الهدف</div>
+                        </div>
+                        <div class="flow-node site-node">
+                            <span class="node-icon">&#128187;</span>
+                            <div class="node-name">الموقع</div>
+                            <div class="node-sub">Target Server</div>
+                        </div>
+                    </div>
+                    <div class="burp-caps">
+                        <span class="burp-cap">&#10003; يسجّل كل حركة المرور</span>
+                        <span class="burp-cap">&#10003; يمكنه إيقاف (اعتراض) الطلبات</span>
+                        <span class="burp-cap">&#10003; يمكنه تعديل الطلبات</span>
+                        <span class="burp-cap">&#10003; يبني خريطة الموقع</span>
+                        <span class="burp-cap">&#10003; إعادة إرسال الطلبات مع Repeater</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <h3>خطوة بخطوة: ما الذي يحدث عند تحميل صفحة عبر Burp؟</h3>
+            <ol class="steps">
+                <li>تكتب رابطاً في Firefox وتضغط Enter</li>
+                <li>يعترض FoxyProxy (إضافة المتصفح) الطلب الصادر ويعيد توجيهه إلى <code>127.0.0.1:8080</code> بدلاً من الموقع مباشرةً</li>
+                <li>Burp Suite يستمع على <code>127.0.0.1:8080</code> — يتلقى طلب HTTP الخام</li>
+                <li>يسجّل Burp الطلب في سجل HTTP History. إن كان الاعتراض مفعّلاً (<span class="term-en">Intercept ON</span>)، يتوقف هنا وينتظر منك قراءته/تعديله/إحالته</li>
+                <li>يُحيل Burp الطلب إلى الخادم الهدف الفعلي</li>
+                <li>يرسل الخادم استجابة HTTP إلى Burp</li>
+                <li>يسجّل Burp الاستجابة ويمررها إلى Firefox</li>
+                <li>يُقدِّم Firefox الصفحة بشكل طبيعي — لكن Burp لديه نسخة كاملة من كل شيء</li>
+            </ol>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>الفكرة الأساسية</h4>
+                    <p>Burp Suite لا يُغيّر ما <em>يعرضه</em> Firefox — بل يُغيّر ما يمكنك <em>رؤيته والتحكم فيه</em>. من منظور Firefox، تُحمَّل الصفحة بشكل طبيعي. لكن Burp لديه سجل كامل بكل طلب واستجابة خامَين، بما فيها الكوكيز والحقول المخفية والمعاملات التي لا تظهر أبداً في واجهة المتصفح.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- لماذا FoxyProxy -->
+        <section id="why-foxyproxy">
+            <h2>&#129418; لماذا <span class="term-en">FoxyProxy</span>؟</h2>
+
+            <p>يمتلك Firefox إعداداً مدمجاً للبروكسي: <strong>Settings &rarr; Network Settings &rarr; Manual proxy configuration</strong>. يمكنك استخدامه. إذن لماذا تثبّت FoxyProxy؟</p>
+
+            <table>
+                <tr><th>الميزة</th><th>بروكسي Firefox المدمج</th><th>إضافة FoxyProxy</th></tr>
+                <tr><td>التفعيل/التعطيل</td><td>يتطلب فتح Settings &rarr; Network Settings في كل مرة</td><td><strong>نقرة واحدة</strong> على أيقونة شريط الأدوات</td></tr>
+                <tr><td>ملفات تعريف متعددة</td><td>بروكسي واحد في وقت واحد، تبديل يدوي</td><td><strong>احفظ ملفات تعريف متعددة</strong>، بدّل فوراً</td></tr>
+                <tr><td>مؤشر مرئي</td><td>لا يتغير الأيقون عند تفعيل البروكسي</td><td><strong>يتغير لون الأيقون</strong> عند تشغيل البروكسي</td></tr>
+                <tr><td>مطابقة النمط</td><td>استثناءات أساسية فقط</td><td>توجيه روابط بعينها فقط عبر البروكسي</td></tr>
+                <tr><td>التنظيف بعد المختبر</td><td>سهل النسيان &rarr; لا إنترنت</td><td>أسهل ملاحظةً وتعطيلاً</td></tr>
+            </table>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>عطّل FoxyProxy دائماً بعد انتهاء المختبر</h4>
+                    <p>حين يكون FoxyProxy مفعّلاً ومتجهاً نحو Burp Suite، <strong>تمر كل حركة مرور Firefox عبر Burp</strong>. إن أغلقت Burp وتركت FoxyProxy مشغّلاً، لن يتمكن Firefox من الوصول للإنترنت. انقر دائماً على أيقونة FoxyProxy واختر <strong>"Disable FoxyProxy"</strong> في نهاية كل جلسة مختبر.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- الجزء 1 -->
+        <section id="part1">
+            <h2>&#9881;&#65039; الجزء 1: تشغيل <span class="term-en">Burp Suite</span></h2>
+
+            <h3>الخطوة 1: افتح Burp Suite</h3>
+            <p>افتح الطرفية في Kali Linux ونفّذ:</p>
+<pre><code>burpsuite</code></pre>
+            <p>أو ابحث عنه في قائمة التطبيقات: <strong>Applications &rarr; Web Application Analysis &rarr; burpsuite</strong></p>
+
+            <h3>الخطوة 2: إنشاء مشروع مؤقت</h3>
+            <ol class="steps">
+                <li>في شاشة الترحيب، اختر <strong>Temporary project</strong></li>
+                <li>انقر <strong>Next</strong></li>
+                <li>اختر <strong>Use Burp defaults</strong></li>
+                <li>انقر <strong>Start Burp</strong></li>
+                <li>انتظر حتى يُحمَّل لوح تحكم Burp بالكامل (قد يستغرق 30&ndash;60 ثانية)</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>المشروع المؤقت مقابل المحفوظ</h4>
+                    <p><strong>المشروع المؤقت (<span class="term-en">Temporary project</span>)</strong> يخزّن كل شيء في الذاكرة ويُمحى عند إغلاق Burp. هذا كافٍ لمختبرات المقرر. يستخدم المختبرون المحترفون المشاريع المحفوظة للاحتفاظ بسجلات الاختبارات عبر الجلسات.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>Burp Suite يبدأ ببطء</h4>
+                    <p>Burp Suite تطبيق Java وقد يستغرق 30&ndash;90 ثانية للتحميل الكامل، خاصةً داخل آلة افتراضية. إن بدا متجمداً، انتظر. إن ظهر خطأ Java: نفّذ <code>sudo apt install -y default-jre</code> في الطرفية ثم أعد المحاولة.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- الجزء 2 -->
+        <section id="part2">
+            <h2>&#128270; الجزء 2: التحقق من مستمع البروكسي</h2>
+
+            <p>قبل إعداد المتصفح، تأكد من أن Burp Suite يستمع فعلاً للحركة الواردة.</p>
+
+            <ol class="steps">
+                <li>في Burp Suite، انقر على تبويب <strong>Proxy</strong> في الأعلى</li>
+                <li>انقر على <strong>Proxy settings</strong> (أو <strong>Options</strong> في الإصدارات القديمة)</li>
+                <li>تحت <strong>Proxy Listeners</strong>، تأكد من وجود إدخال لـ <code>127.0.0.1:8080</code> بحالة <strong>Running</strong></li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>ما يجب أن تراه</h4>
+                    <p>يجب أن يُظهر إدخال المستمع: <strong>Interface:</strong> <code>127.0.0.1:8080</code> &nbsp;&mdash;&nbsp; <strong>Running:</strong> محدّد. هذا يعني أن Burp جاهز لاستقبال حركة البروكسي على هذا العنوان والمنفذ.</p>
+                </div>
+            </div>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>ماذا يعني 127.0.0.1:8080؟</h4>
+                    <p><code>127.0.0.1</code> هو عنوان <strong>الاسترجاع (<span class="term-en">Loopback</span>)</strong> — يعني دائماً "هذا الجهاز". المنفذ <code>8080</code> هو المنفذ الذي يستمع عليه Burp. حين تُخبر FoxyProxy بإرسال حركة المرور إلى <code>127.0.0.1:8080</code>، تُرسلها إلى Burp Suite العامل على جهازك. لا تغادر الحركة الجهاز للوصول إلى Burp — تبقى محلية.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- الجزء 3 -->
+        <section id="part3">
+            <h2>&#129418; الجزء 3: تثبيت <span class="term-en">FoxyProxy</span></h2>
+
+            <ol class="steps">
+                <li>افتح <strong>Firefox</strong></li>
+                <li>في شريط العنوان، اكتب: <code>about:addons</code> واضغط Enter</li>
+                <li>انقر على <strong>أيقونة البحث</strong> (أو انتقل إلى تبويب الإضافات وابحث)</li>
+                <li>ابحث عن: <strong>FoxyProxy Standard</strong></li>
+                <li>انقر على النتيجة من القائمة الرسمية</li>
+                <li>انقر <strong>Add to Firefox</strong></li>
+                <li>في نافذة الإذن، انقر <strong>Add</strong></li>
+                <li>ستظهر أيقونة FoxyProxy في شريط أدوات Firefox (أيقونة الثعلب)</li>
+            </ol>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>FoxyProxy Standard مقابل Basic</h4>
+                    <p>ثبّت <strong>FoxyProxy Standard</strong> (وليس Basic). تدعم نسخة Standard مطابقة نمط الروابط، مما يتيح لك توجيه حركة معينة فقط عبر Burp مع إبقاء بقية حركة المتصفح غير متأثرة.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- الجزء 4 -->
+        <section id="part4">
+            <h2>&#9881;&#65039; الجزء 4: إعداد <span class="term-en">FoxyProxy</span></h2>
+
+            <h3>الخطوة 1: افتح خيارات FoxyProxy</h3>
+            <ol class="steps">
+                <li>انقر على <strong>أيقونة FoxyProxy</strong> في شريط أدوات Firefox</li>
+                <li>انقر على <strong>Options</strong> (يفتح تبويب الإعدادات)</li>
+            </ol>
+
+            <h3>الخطوة 2: أضف ملف تعريف بروكسي Burp</h3>
+            <ol class="steps">
+                <li>انقر <strong>Add</strong> لإنشاء إدخال بروكسي جديد</li>
+                <li>املأ الحقول بالضبط كما يلي:
+                    <table style="margin-top:10px;">
+                        <tr><th>الحقل</th><th>القيمة</th><th>السبب</th></tr>
+                        <tr><td><strong>Title</strong></td><td>Burp Proxy</td><td>اسم سهل الحفظ لهذا الملف</td></tr>
+                        <tr><td><strong>Proxy Type</strong></td><td>HTTP</td><td>Burp يستخدم بروتوكول HTTP proxy</td></tr>
+                        <tr><td><strong>IP Address</strong></td><td><code>127.0.0.1</code></td><td>Burp يعمل على هذا الجهاز (loopback)</td></tr>
+                        <tr><td><strong>Port</strong></td><td><code>8080</code></td><td>منفذ مستمع Burp الافتراضي</td></tr>
+                    </table>
+                </li>
+            </ol>
+
+            <h3>الخطوة 3: تعيين نمط الرابط</h3>
+            <ol class="steps">
+                <li>في إدخال البروكسي، ابحث عن قسم <strong>URL Patterns</strong></li>
+                <li>أضف نمطاً: <code>*</code></li>
+                <li>يُوجِّه هذا الحرف البديل <strong>كل</strong> حركة مرور المتصفح عبر Burp — دون استثناء</li>
+            </ol>
+
+            <h3>الخطوة 4: الحفظ والتفعيل</h3>
+            <ol class="steps">
+                <li>انقر <strong>Save</strong></li>
+                <li>انقر على <strong>أيقونة FoxyProxy</strong> في شريط الأدوات</li>
+                <li>اختر <strong>Burp Proxy</strong> لتفعيله</li>
+                <li>تتغير أيقونة FoxyProxy — هذا يؤكد أن البروكسي مفعَّل الآن</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>ملخص الإعداد</h4>
+                    <p>تمّ إعداد FoxyProxy الآن لإرسال كل حركة مرور Firefox إلى <code>127.0.0.1:8080</code> — حيث يستمع Burp Suite. المتصفح والبروكسي متصلان الآن.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- الجزء 5: عناوين IP -->
+        <section id="part5">
+            <h2>&#127757; الجزء 5: فهم إعداد عنوان IP</h2>
+
+            <p>يوجد عنوانا IP مختلفان في هذا الإعداد، لكلٍّ منهما غرض مختلف تماماً. الخلط بينهما من أكثر الأسباب شيوعاً لعدم عمل Burp.</p>
+
+            <h3>العنوانان</h3>
+            <table>
+                <tr><th>العنوان</th><th>ما هو</th><th>يُستخدَم من أجل</th></tr>
+                <tr>
+                    <td><code>127.0.0.1</code></td>
+                    <td>الاسترجاع (هذا الجهاز)</td>
+                    <td><strong>عنوان بروكسي FoxyProxy</strong> — يُخبر المتصفح بإرسال الحركة إلى Burp العامل محلياً</td>
+                </tr>
+                <tr>
+                    <td>عنوان IP جهازك<br><small>(مثلاً: <code>10.0.2.15</code>)</small></td>
+                    <td>عنوان الشبكة لجهاز Kali الخاص بك</td>
+                    <td><strong>رابط الهدف</strong> — العنوان الذي تكتبه في Firefox للوصول لتطبيق يعمل محلياً كـ DVWA</td>
+                </tr>
+            </table>
+
+            <h3>كيف تحصل على عنوان IP جهازك</h3>
+<pre><code><span class="command-label"># نفّذ هذا في الطرفية للحصول على عنوان IP لجهاز Kali</span>
+hostname -I</code></pre>
+<pre><code><span class="output-text">10.0.2.15</span></code></pre>
+
+            <div class="alert alert-warning">
+                <span class="alert-icon">&#9888;&#65039;</span>
+                <div>
+                    <h4>لماذا لا تستخدم localhost أو 127.0.0.1 كرابط الهدف؟</h4>
+                    <p>حين يرسل متصفحك طلباً إلى <code>http://127.0.0.1</code> أو <code>http://localhost</code>، قد يعامل بعض المتصفحات وأنظمة التشغيل هذا كوجهة <strong>"محلية" ويتجاوز البروكسي كلياً</strong>. يذهب الطلب مباشرةً للتطبيق المحلي دون المرور عبر Burp. لن ترى أي حركة في سجل HTTP History لـ Burp.</p>
+                    <p style="margin-top:8px;">استخدام <code>http://10.0.2.15</code> (عنوان IP الحقيقي) يُجبر الطلب على المرور عبر البروكسي لأنه يبدو كطلب شبكة عادي.</p>
+                </div>
+            </div>
+
+            <div class="concept-banner">
+                <span class="ci">&#128161;</span>
+                <div>
+                    <h4>القاعدة التي يجب تذكّرها</h4>
+                    <p>
+                        <strong>وجهة FoxyProxy</strong> (أين تذهب الحركة للوصول إلى Burp) = <code>127.0.0.1:8080</code><br>
+                        <strong>رابط الهدف في المتصفح</strong> (التطبيق الذي تريد اختباره) = <code>http://&lt;عنوان-IP-جهازك&gt;</code> من <code>hostname -I</code>
+                    </p>
+                </div>
+            </div>
+
+            <h3>ملخص مرئي</h3>
+            <div style="background:#f7fafc; border-radius:12px; padding:20px; margin:14px 0; font-family:'Consolas','Monaco',monospace; font-size:0.9em; line-height:2; direction:ltr; text-align:left;">
+                <p style="margin:0;">Firefox types: &nbsp;<strong style="color:#2980b9;">http://10.0.2.15</strong> &nbsp;&larr; your machine IP (target app)</p>
+                <p style="margin:0;">FoxyProxy routes to: &nbsp;<strong style="color:#d69e2e;">127.0.0.1:8080</strong> &nbsp;&larr; Burp listener</p>
+                <p style="margin:0;">Burp forwards to: &nbsp;<strong style="color:#38a169;">http://10.0.2.15</strong> &nbsp;&larr; the actual target</p>
+                <p style="margin:0; margin-top:8px; font-family:'Tajawal', 'Amiri', 'Segoe UI',sans-serif; font-size:0.95em; color:#4a5568;">Result: Burp sits in the middle and sees everything &#9989;</p>
+            </div>
+        </section>
+
+        <!-- الجزء 6: اعتراض أول طلب -->
+        <section id="part6">
+            <h2>&#127919; الجزء 6: اعتراض أول طلب</h2>
+
+            <p>الآن ستتحقق من الإعداد الكامل باعتراض طلب HTTP حي. هذا يؤكد أن FoxyProxy وBurp Suite وإعداد IP كلها تعمل بشكل صحيح.</p>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>ما تحتاجه لهذا التمرين</h4>
+                    <p>تحتاج إلى أي تطبيق ويب HTTP يعمل محلياً. إن كان DVWA يعمل (<code>sudo docker start dvwa</code>)، استخدمه. وإلا فأي صفحة HTTP تُخدَم محلياً ستفي بالغرض. المهم هو استخدام عنوان IP الجهاز (من <code>hostname -I</code>) وليس <code>localhost</code> في المتصفح.</p>
+                </div>
+            </div>
+
+            <h3>الخطوة 1: تأكد من أن Burp وFoxyProxy كلاهما مفعّلان</h3>
+            <ul>
+                <li>Burp Suite مفتوح ويُظهر مستمع البروكسي <code>127.0.0.1:8080</code> بحالة <strong>Running</strong></li>
+                <li>أيقونة FoxyProxy تُظهر أن ملف تعريف <strong>Burp Proxy</strong> مفعّل</li>
+            </ul>
+
+            <h3>الخطوة 2: احصل على عنوان IP جهازك</h3>
+<pre><code>hostname -I</code></pre>
+            <p>دوّن عنوان IP الظاهر (مثلاً: <code>10.0.2.15</code>).</p>
+
+            <h3>الخطوة 3: شغّل الاعتراض في Burp</h3>
+            <ol class="steps">
+                <li>في Burp Suite، انقر على تبويب <strong>Proxy</strong></li>
+                <li>انقر على التبويب الفرعي <strong>Intercept</strong></li>
+                <li>إن كان الزر يقرأ <strong>"Intercept is off"</strong>، انقر عليه مرة واحدة</li>
+                <li>يجب أن يقرأ الآن <strong>"Intercept is on"</strong> (مُضاء)</li>
+            </ol>
+
+            <h3>الخطوة 4: أطلق طلباً من Firefox</h3>
+            <ol class="steps">
+                <li>في Firefox، اكتب <code>http://&lt;عنوان-ip-جهازك&gt;</code> في شريط العنوان (مثلاً: <code>http://10.0.2.15</code>)</li>
+                <li>اضغط Enter</li>
+                <li>سيتجمد Firefox ولن تُحمَّل الصفحة — هذا متوقع وصحيح</li>
+                <li>Firefox ينتظر لأن Burp اصطاد الطلب في منتصف طريقه</li>
+            </ol>
+
+            <h3>الخطوة 5: افحص الطلب المعترَض في Burp</h3>
+            <ol class="steps">
+                <li>انتقل إلى Burp Suite &rarr; <strong>Proxy</strong> &rarr; <strong>Intercept</strong></li>
+                <li>ستجد طلب HTTP الخام في اللوحة:</li>
+            </ol>
+
+<pre><code><span class="output-text">GET / HTTP/1.1
+Host: 10.0.2.15
+User-Agent: Mozilla/5.0 ...
+Accept: text/html,application/xhtml+xml...
+Connection: keep-alive</span></code></pre>
+
+            <p>هذا هو <strong>طلب HTTP الخام</strong> تماماً كما أرسله متصفحك. يمكنك قراءة كل ترويسة أو تعديل أي قيمة أو حجب الطلب كلياً.</p>
+
+            <h3>الخطوة 6: أحِل الطلب</h3>
+            <ol class="steps">
+                <li>انقر <strong>Forward</strong> في لوحة Intercept الخاصة بـ Burp</li>
+                <li>سيتلقى Firefox الاستجابة وستُحمَّل الصفحة</li>
+                <li>كرر النقر على Forward إن أجرت الصفحة طلبات إضافية (CSS، JS، صور)</li>
+            </ol>
+
+            <h3>الخطوة 7: تحقق من سجل HTTP History</h3>
+            <ol class="steps">
+                <li>في Burp، انقر <strong>Proxy</strong> &rarr; التبويب الفرعي <strong>HTTP history</strong></li>
+                <li>يجب أن ترى صفوفاً من الطلبات المُلتقَطة</li>
+                <li>انقر أي صف لترى الطلب والاستجابة الكاملَين في اللوحات أدناه</li>
+            </ol>
+
+            <h3>الخطوة 8: أوقف الاعتراض</h3>
+            <ol class="steps">
+                <li>انقر زر Intercept حتى يقرأ <strong>"Intercept is off"</strong></li>
+                <li>الآن تتدفق حركة المرور بحرية عبر Burp دون توقف — لا يزال Burp يسجّل كل شيء في HTTP History، لكنه لا يحجب كل طلب</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">&#9989;</span>
+                <div>
+                    <h4>اكتمل الإعداد</h4>
+                    <p>إن رأيت طلب HTTP في لوحة Intercept لـ Burp وظهرت الطلبات في HTTP History، فسلسلة البروكسي كاملة تعمل: <strong>Firefox &rarr; FoxyProxy &rarr; Burp Suite &rarr; الهدف</strong>. أنت جاهز لاستخدام Burp Suite في اختبار الأمان في المختبر 06.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- استكشاف الأخطاء -->
+        <section id="troubleshooting">
+            <h2>&#128295; استكشاف الأخطاء</h2>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Burp Suite لا يبدأ أو يُظهر خطأ Java</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> نفّذ في الطرفية: <code>sudo apt install -y default-jre</code>، ثم أعد تجربة <code>burpsuite</code>. إن تحمَّل Burp لكنه بطيء جداً، أغلق التطبيقات الأخرى لتحرير ذاكرة الوصول العشوائي — يحتاج Burp 1 جيجابايت على الأقل.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Firefox لا يستطيع تحميل أي صفحات بعد تفعيل FoxyProxy</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> FoxyProxy مفعّل لكن Burp لا يعمل (أو لا يستمع). تأكد من أن Burp Suite مفتوح ويُظهر مستمع البروكسي <code>127.0.0.1:8080</code> بحالة <strong>Running</strong>. تأكد أيضاً من أن Intercept <strong>OFF</strong> — إن كان ON، ينتظر المتصفح نقرك على Forward مع كل طلب.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; لا تظهر طلبات في سجل HTTP History لـ Burp</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong></p>
+                    <ul>
+                        <li>تأكد من تفعيل FoxyProxy واختيار ملف تعريف <strong>Burp Proxy</strong> (وليس "Disable FoxyProxy")</li>
+                        <li>تأكد من تصفحك إلى <code>http://&lt;عنوان-ip-جهازك&gt;</code> (من <code>hostname -I</code>) وليس <code>localhost</code> أو <code>127.0.0.1</code></li>
+                        <li>تأكد من أن مستمع بروكسي Burp على <code>127.0.0.1:8080</code> ويُظهر <strong>Running</strong></li>
+                        <li>استخدم <code>http://</code> وليس <code>https://</code> — يتطلب HTTPS تثبيت شهادة CA الخاصة بـ Burp</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; Firefox متجمد ولا شيء يحدث بعد كتابة الرابط</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> Intercept في Burp <strong>ON</strong>. انتقل إلى Burp &rarr; Proxy &rarr; Intercept وانقر <strong>Forward</strong> لتحرير الطلب (أو أوقف Intercept). يتجمد المتصفح في كل مرة يكون Intercept ON ويحتجز Burp طلباً ينتظر منك التصرف.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; بعد المختبر، لا يتمكن Firefox من الوصول للإنترنت</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> لا يزال FoxyProxy يُوجِّه الحركة إلى Burp الذي لم يعد يعمل. انقر <strong>أيقونة FoxyProxy</strong> في شريط أدوات Firefox واختر <strong>"Disable FoxyProxy"</strong>. يجب فعل هذا في نهاية كل جلسة مختبر.</p>
+                </div>
+            </div>
+
+            <div class="troubleshoot-item">
+                <div class="troubleshoot-header">&#10060; الطلب المعترَض يُظهر المضيف الخاطئ أو localhost بدلاً من IP</div>
+                <div class="troubleshoot-solution">
+                    <p><strong>الحل:</strong> تأكد من كتابتك <code>http://&lt;عنوان-ip-جهازك&gt;</code> في شريط عنوان Firefox (وليس <code>localhost</code>). يجب أن تُظهر ترويسة <strong>Host</strong> في الطلب المعترَض عنوان IP (مثلاً: <code>Host: 10.0.2.15</code>) وليس <code>localhost</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- التسليمات -->
+        <section id="deliverables">
+            <h2>&#128196; التسليمات والملخص</h2>
+
+            <div class="deliverable">
+                <h4>&#9997;&#65039; المختبر 05 &mdash; الأسئلة ولقطات الشاشة</h4>
+            </div>
+            <div class="fill-in">
+                <label>1. بكلماتك الخاصة، اشرح ما هو Burp Suite وما الدور الذي يؤديه بين المتصفح والموقع:</label>
+                <textarea class="task-answer" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>2. ما العنوان والمنفذ الافتراضيان اللذان يستمع عليهما Burp Suite؟ ماذا يعني هذا العنوان؟</label>
+                <input type="text" class="task-answer" placeholder="مثلاً: 127.0.0.1:8080 — عنوان الاسترجاع (localhost) يعني 'هذا الجهاز'...">
+
+                <label>3. لماذا نثبّت FoxyProxy بدلاً من استخدام إعدادات البروكسي المدمجة في Firefox؟</label>
+                <textarea class="task-answer" rows="3" placeholder="شرحك..."></textarea>
+
+                <label>4. ما الأمر الذي يُظهر عنوان IP لجهاز Kali؟ لماذا يجب استخدام ذلك العنوان (وليس localhost) كرابط الهدف في Firefox؟</label>
+                <textarea class="task-answer" rows="3" placeholder="الأمر: ... | السبب: ..."></textarea>
+
+                <label>5. لقطة الشاشة &mdash; ارفع لقطة شاشة تُظهر مستمع بروكسي Burp Suite على 127.0.0.1:8080 بحالة Running:</label>
+                <input type="file" id="ss-listener" accept="image/*" onchange="previewImage(this,'prev-listener')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="prev-listener" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة المستمع">
+
+                <label>6. لقطة الشاشة &mdash; ارفع لقطة شاشة تُظهر FoxyProxy مُعدَّاً بملف تعريف Burp Proxy (IP: 127.0.0.1، المنفذ: 8080):</label>
+                <input type="file" id="ss-foxy" accept="image/*" onchange="previewImage(this,'prev-foxy')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="prev-foxy" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة FoxyProxy">
+
+                <label>7. لقطة الشاشة &mdash; ارفع لقطة شاشة تُظهر طلب HTTP معترَضاً في لوحة Intercept لـ Burp:</label>
+                <input type="file" id="ss-intercept" accept="image/*" onchange="previewImage(this,'prev-intercept')" style="display:block; width:100%; padding:10px; border:2px dashed #cbd5e0; border-radius:8px; background:#f7fafc; margin-bottom:8px; cursor:pointer; font-size:0.9em;">
+                <img id="prev-intercept" style="display:none; max-width:100%; border:1px solid var(--border-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-bottom:12px;" alt="معاينة لقطة الاعتراض">
+            </div>
+
+            <div class="summary-box">
+                <h3>&#128203; ملخص المختبر 05</h3>
+                <table>
+                    <tr><th>المكوّن</th><th>الدور</th><th>العنوان / المنفذ</th></tr>
+                    <tr><td>Firefox</td><td>المتصفح (العميل) الذي يُولِّد طلبات HTTP</td><td>&mdash;</td></tr>
+                    <tr><td>FoxyProxy</td><td>إضافة المتصفح التي تُوجِّه كل حركة المرور إلى Burp</td><td>مُعدَّل: <code>127.0.0.1:8080</code></td></tr>
+                    <tr><td>Burp Suite</td><td>بروكسي اعتراضي — يسجّل ويوقف ويعدّل حركة المرور</td><td>يستمع على <code>127.0.0.1:8080</code></td></tr>
+                    <tr><td>التطبيق الهدف (DVWA...)</td><td>تطبيق الويب قيد الاختبار</td><td><code>http://&lt;عنوان-ip-جهازك&gt;</code></td></tr>
+                </table>
+                <p style="margin-top:14px; opacity:0.9; font-size:0.92em;">في <strong>المختبر 06</strong> ستطبّق هذا الإعداد على DVWA لالتقاط طلبات HTTP حقيقية من تطبيق ويب ضعيف وتحليلها وتعديلها.</p>
+            </div>
+
+            <!-- إنشاء التقرير -->
+            <h3>إنشاء تقرير المختبر</h3>
+            <div style="border:2px solid #2980b9; border-radius:15px; padding:28px; margin:18px 0; background:#fafbfc;">
+                <div style="text-align:center; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid #2980b9;">
+                    <h3 style="color:var(--secondary-color); margin:0;">CYB236 &mdash; المختبر 05: تقرير Burp Suite</h3>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">اسم الطالب: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-name" placeholder="الاسم الكامل (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">الرقم الجامعي: <span style="color:#e53e3e;">*</span></label>
+                        <input type="text" id="student-id" placeholder="الرقم الجامعي (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;">
+                    </div>
+                </div>
+                <div style="margin-bottom:22px;">
+                    <label style="font-weight:600; display:block; margin-bottom:5px; color:var(--secondary-color);">البريد الإلكتروني: <span style="color:#e53e3e;">*</span></label>
+                    <input type="email" id="student-email" placeholder="البريد الإلكتروني (مطلوب)" style="width:100%; padding:9px; border:1px solid var(--border-color); border-radius:8px; font-size:1em;" dir="ltr">
+                </div>
+                <p style="font-size:0.85em; color:#e53e3e; margin-bottom:18px; text-align:center;">&#9432; جميع الحقول المحددة بـ <strong>*</strong> إلزامية ولا يمكن إنشاء التقرير دون تعبئتها.</p>
+                <div style="text-align:center;">
+                    <button disabled style="background:#9ca3af; color:white; border:none; padding:14px 38px; font-size:1.05em; font-weight:600; border-radius:10px; cursor:not-allowed; opacity:0.7;">&#128196; إنشاء تقرير PDF &mdash; غير متاح</button>
+                    <p style="color:#e53e3e; font-size:0.87em; margin-top:10px; text-align:center; font-weight:600;">&#9888; إنشاء التقرير غير متاح في النسخة العربية &mdash; يجب تقديم التقارير باللغة الإنجليزية.<br><span style="color:#718096; font-weight:400;">Reports must be submitted in English. Please use the English version of this lab.</span></p>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <span class="alert-icon">&#128161;</span>
+                <div>
+                    <h4>قائمة التسليم</h4>
+                    <ul>
+                        <li>تقرير PDF من النسخة الإنجليزية (الاسم + الرقم الجامعي + جميع الإجابات)</li>
+                        <li>لقطة شاشة: مستمع بروكسي Burp Suite يُظهر 127.0.0.1:8080 بحالة Running</li>
+                        <li>لقطة شاشة: FoxyProxy مُعدَّ بملف تعريف Burp Proxy</li>
+                        <li>لقطة شاشة: طلب HTTP معترَض في لوحة Intercept لـ Burp</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- نهاية المحتوى -->
+
+    <div class="footer">
+        <p><strong>CYB236</strong> &mdash; أمن تطبيقات الويب</p>
+        <p>المختبر 05: Burp Suite &mdash; البروكسي و FoxyProxy واعتراض حركة المرور &bull; تابع مع المختبر 06</p>
+    </div>
+
+</div><!-- نهاية الحاوية -->
+
+<script>
+var screenshotData = {};
+
+function previewImage(input, previewId) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        img.src = e.target.result;
+        img.style.display = 'block';
+        screenshotData[previewId] = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function generateReport() {
+    alert('غير متاح في النسخة العربية.\n\nيجب تقديم التقارير باللغة الإنجليزية.\nاستخدم النسخة الإنجليزية من المختبر.\n\n─────────────────────────────\nNot available in the Arabic version.\nReports must be submitted in English.\nPlease use the English version of this lab.');
+}
+</script>
+</body>
+</html>

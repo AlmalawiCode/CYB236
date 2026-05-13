@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2 — Grading Rubric | CYB236</title>
+    <style>
+        :root {
+            --primary:   #1a3a5c;
+            --primary-d: #0f2340;
+            --accent:    #e67e22;
+            --green:     #16a34a;
+            --yellow:    #d97706;
+            --red:       #dc2626;
+            --border:    #e2e8f0;
+            --bg:        #f8fafc;
+            --text:      #2d3748;
+            --muted:     #718096;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a5c 0%, #0f2340 100%);
+            min-height: 100vh;
+            padding: 24px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f2340, #1a3a5c);
+            color: white;
+            padding: 38px 40px 30px;
+            text-align: center;
+        }
+        .header-label {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 18px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+        .header h1 { font-size: 1.8em; font-weight: 800; margin-bottom: 6px; }
+        .header .subtitle { opacity: 0.85; font-size: 1em; }
+        /* Summary bar */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: var(--accent);
+            color: white;
+        }
+        .sb-item {
+            text-align: center;
+            padding: 16px 10px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .sb-item:last-child { border-right: none; }
+        .sb-item .val { font-size: 1.6em; font-weight: 800; display: block; }
+        .sb-item .lbl { font-size: 0.8em; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        /* Content */
+        .content { padding: 40px; }
+        /* Part header */
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 12px;
+            margin: 32px 0 18px;
+        }
+        .part-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.78em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 3px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .part-title { font-size: 1.05em; font-weight: 700; }
+        .part-pts {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            font-weight: 700;
+        }
+        /* Rubric table */
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 0.92em;
+        }
+        .rubric-table thead tr {
+            background: var(--primary);
+            color: white;
+        }
+        .rubric-table thead th {
+            padding: 11px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        .rubric-table thead th:first-child { border-radius: 8px 0 0 0; }
+        .rubric-table thead th:last-child  { border-radius: 0 8px 0 0; }
+        .rubric-table tbody tr { border-bottom: 1px solid var(--border); }
+        .rubric-table tbody tr:last-child { border-bottom: none; }
+        .rubric-table tbody tr:nth-child(even) { background: var(--bg); }
+        .rubric-table tbody td { padding: 12px 14px; vertical-align: top; }
+        .rubric-table .q-col { font-weight: 700; color: var(--primary); width: 70px; }
+        .rubric-table .pts-col { text-align: center; font-weight: 700; color: var(--accent); width: 60px; }
+        /* Level badges */
+        .level {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .level.full    { background: #d1fae5; color: var(--green); }
+        .level.partial { background: #fef3c7; color: var(--yellow); }
+        .level.min     { background: #fee2e2; color: var(--red); }
+        .level.zero    { background: #f3f4f6; color: #6b7280; }
+        /* Grade bands */
+        .grade-bands {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 24px 0;
+        }
+        .grade-band {
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            border: 2px solid;
+        }
+        .grade-band .grade { font-size: 1.6em; font-weight: 800; display: block; margin-bottom: 2px; }
+        .grade-band .range { font-size: 0.8em; font-weight: 600; opacity: 0.8; }
+        .grade-band.a { border-color: var(--green);  background: #f0fdf4; color: var(--green); }
+        .grade-band.b { border-color: #16a34a99; background: #f0fdf4; color: #15803d; }
+        .grade-band.c { border-color: var(--yellow); background: #fffbeb; color: var(--yellow); }
+        .grade-band.d { border-color: #f97316;  background: #fff7ed; color: #ea580c; }
+        .grade-band.f { border-color: var(--red);   background: #fef2f2; color: var(--red); }
+        /* Notes */
+        .note-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid #3b82f6;
+            border-radius: 0 10px 10px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 0.93em;
+        }
+        .note-box h4 { color: #1d4ed8; margin-bottom: 8px; }
+        .note-box ul { list-style: none; padding: 0; }
+        .note-box li { padding: 3px 0 3px 20px; position: relative; }
+        .note-box li::before { content: '›'; position: absolute; left: 0; color: #3b82f6; font-weight: 700; }
+        /* Score summary table */
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.93em;
+            margin: 20px 0;
+        }
+        .score-table th {
+            background: var(--primary);
+            color: white;
+            padding: 11px 16px;
+            text-align: left;
+        }
+        .score-table th:first-child { border-radius: 8px 0 0 0; }
+        .score-table th:last-child  { border-radius: 0 8px 0 0; border-right: none; }
+        .score-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); }
+        .score-table tr:nth-child(even) td { background: var(--bg); }
+        .score-table tfoot td {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            padding: 12px 16px;
+        }
+        .score-table tfoot td:first-child { border-radius: 0 0 0 8px; }
+        .score-table tfoot td:last-child  { border-radius: 0 0 8px 0; }
+        /* Footer */
+        .footer {
+            background: var(--primary-d);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 20px 40px;
+            font-size: 0.87em;
+            line-height: 1.8;
+        }
+        .footer strong { color: white; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-label">Grading Rubric &mdash; Instructor Copy</div>
+        <h1>Assignment 2: Burp Suite &amp; Web Traffic Analysis</h1>
+        <p class="subtitle">CYB 236 &mdash; Web Application Security &mdash; Spring 2026</p>
+    </div>
+
+    <!-- Summary bar -->
+    <div class="summary-bar">
+        <div class="sb-item"><span class="val">100</span><span class="lbl">Total Points</span></div>
+        <div class="sb-item"><span class="val">3</span><span class="lbl">Parts</span></div>
+        <div class="sb-item"><span class="val">12</span><span class="lbl">Questions</span></div>
+        <div class="sb-item"><span class="val">4</span><span class="lbl">Screenshots</span></div>
+    </div>
+
+    <div class="content">
+
+        <!-- Grade Bands -->
+        <h3 style="color:var(--primary); margin-bottom:14px;">Grade Bands</h3>
+        <div class="grade-bands">
+            <div class="grade-band a"><span class="grade">A</span><span class="range">90 &ndash; 100</span></div>
+            <div class="grade-band b"><span class="grade">B</span><span class="range">80 &ndash; 89</span></div>
+            <div class="grade-band c"><span class="grade">C</span><span class="range">70 &ndash; 79</span></div>
+            <div class="grade-band d"><span class="grade">D</span><span class="range">60 &ndash; 69</span></div>
+            <div class="grade-band f"><span class="grade">F</span><span class="range">Below 60</span></div>
+        </div>
+
+        <!-- Score Summary -->
+        <h3 style="color:var(--primary); margin-bottom:14px;">Score Summary</h3>
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Part</th>
+                    <th>Topic</th>
+                    <th>Questions</th>
+                    <th>Screenshots</th>
+                    <th style="text-align:right;">Max Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Part A</strong></td>
+                    <td>Proxy &amp; Traffic Interception &mdash; Lab 5</td>
+                    <td>Q1, Q2, Q3</td>
+                    <td>SS-1</td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent);">20</td>
+                </tr>
+                <tr>
+                    <td><strong>Part B</strong></td>
+                    <td>HTTP Analysis &amp; Request Manipulation &mdash; Lab 6</td>
+                    <td>Q4, Q5, Q6, Q7</td>
+                    <td>SS-2</td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent);">35</td>
+                </tr>
+                <tr>
+                    <td><strong>Part C</strong></td>
+                    <td>Intruder &amp; Password Attacks &mdash; Lab 7</td>
+                    <td>Q8, Q9, Q10, Q11, Q12</td>
+                    <td>SS-3, SS-4</td>
+                    <td style="text-align:right; font-weight:700; color:var(--accent);">45</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align:right;">Total</td>
+                    <td style="text-align:right;">100</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- ══════════ PART A ══════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part A</div>
+            <div class="part-title">Proxy &amp; Traffic Interception &mdash; Burp Suite Setup (Lab 5)</div>
+            <div class="part-pts">20 pts</div>
+        </div>
+
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th class="q-col">Item</th>
+                    <th>Criterion</th>
+                    <th>Full Credit</th>
+                    <th>Partial</th>
+                    <th>No Credit</th>
+                    <th class="pts-col">Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="q-col">Q1</td>
+                    <td><strong>Burp proxy listener</strong><br>Default address and port; where to verify</td>
+                    <td><span class="level full">4 pts</span><br>Correctly states <code>127.0.0.1:8080</code> AND identifies the location (Proxy &rarr; Proxy settings in Burp Suite)</td>
+                    <td><span class="level partial">2 pts</span><br>Correct address/port but does not specify where to verify it, OR correct location but wrong address</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or entirely incorrect</td>
+                    <td class="pts-col">4</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q2</td>
+                    <td><strong>FoxyProxy extension</strong><br>Name the extension and give a specific advantage</td>
+                    <td><span class="level full">3 pts</span><br>Names FoxyProxy (or equivalent) AND provides a valid advantage (e.g., easy profile switching, routes only selected traffic, avoids changing system-wide proxy settings)</td>
+                    <td><span class="level partial">1 pt</span><br>Correct extension name but no meaningful advantage stated</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or wrong extension</td>
+                    <td class="pts-col">3</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q3</td>
+                    <td><strong>How the intercepting proxy works</strong><br>Full request/response path: Firefox &rarr; FoxyProxy &rarr; Burp &rarr; server &rarr; back</td>
+                    <td><span class="level full">8 pts</span><br>Describes all four steps in order; mentions that Burp can inspect, modify, or drop traffic in both directions; explains that Burp acts as a man-in-the-middle between browser and server</td>
+                    <td><span class="level partial">4 pts</span><br>Covers the general flow but skips one or two steps (e.g., omits FoxyProxy's role or the return path), OR mentions all steps but without explaining what Burp can do</td>
+                    <td><span class="level zero">0 pts</span><br>No meaningful description of the proxy flow</td>
+                    <td class="pts-col">8</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-1</td>
+                    <td><strong>Screenshot &mdash; Burp proxy listener + FoxyProxy</strong><br><code>127.0.0.1:8080</code> showing Running; FoxyProxy active in Firefox</td>
+                    <td><span class="level full">5 pts</span><br>Both the Burp Proxy settings panel (listener status visible) and the FoxyProxy icon in active/green state are visible in the same or two clearly related screenshots</td>
+                    <td><span class="level partial">2 pts</span><br>Only one element visible (Burp without FoxyProxy, or vice versa), or listener status not clearly shown</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided or screenshot does not show Burp/FoxyProxy</td>
+                    <td class="pts-col">5</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ══════════ PART B ══════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part B</div>
+            <div class="part-title">HTTP Analysis &amp; Request Manipulation (Lab 6)</div>
+            <div class="part-pts">35 pts</div>
+        </div>
+
+        <div class="note-box">
+            <h4>&#128161; Expected Answers &mdash; DVWA via Burp Suite (Reference)</h4>
+            <ul>
+                <li><strong>Q4 &mdash; Login method:</strong> POST &mdash; credentials appear in the request body (URL-encoded form data: <code>username=admin&amp;password=password&amp;Login=Login</code>)</li>
+                <li><strong>Q5 &mdash; Session cookie:</strong> <code>PHPSESSID</code> &mdash; stealing it allows session hijacking (log in as that user without a password)</li>
+                <li><strong>Q6 &mdash; Missing headers:</strong> Common examples include <code>Content-Security-Policy</code> (mitigates XSS), <code>X-Frame-Options</code> (prevents clickjacking), <code>X-Content-Type-Options</code> (prevents MIME sniffing), <code>Strict-Transport-Security</code> (prevents protocol downgrade)</li>
+                <li><strong>Q7 &mdash; SQL error in Repeater:</strong> Adding a single quote (<code>id=1'</code>) causes a MySQL syntax error message to appear in the response, revealing the database type and query structure to the attacker</li>
+            </ul>
+        </div>
+
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th class="q-col">Item</th>
+                    <th>Criterion</th>
+                    <th>Full Credit</th>
+                    <th>Partial</th>
+                    <th>No Credit</th>
+                    <th class="pts-col">Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="q-col">Q4</td>
+                    <td><strong>Login HTTP method &amp; credential location</strong><br>Method used; where credentials appear in the request</td>
+                    <td><span class="level full">5 pts</span><br>Correctly identifies POST AND states credentials appear in the request body (form data / POST body)</td>
+                    <td><span class="level partial">2 pts</span><br>Correct method but wrong/missing location, OR correct location but wrong method</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or both parts wrong</td>
+                    <td class="pts-col">5</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q5</td>
+                    <td><strong>Session cookie identification</strong><br>Cookie name and impact of theft</td>
+                    <td><span class="level full">5 pts</span><br>Names <code>PHPSESSID</code> (or the cookie they observed) AND explains that an attacker can use it to impersonate the user / bypass authentication (session hijacking)</td>
+                    <td><span class="level partial">2 pts</span><br>Correct cookie name but vague impact ("attacker can log in" without explaining why), OR correct impact description but wrong cookie name</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or no understanding of session cookies</td>
+                    <td class="pts-col">5</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q6</td>
+                    <td><strong>Missing security headers</strong><br>At least two headers with attack each prevents</td>
+                    <td><span class="level full">8 pts</span><br>Names at least two valid missing headers AND correctly links each to the specific attack it defends against (e.g., CSP &rarr; XSS; X-Frame-Options &rarr; clickjacking)</td>
+                    <td><span class="level partial">4 pts</span><br>Two headers named but attack descriptions are vague or only one header fully explained, OR correct attacks named but wrong header names</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or no valid headers identified</td>
+                    <td class="pts-col">8</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q7</td>
+                    <td><strong>SQL injection via Repeater (<code>id=1'</code>)</strong><br>Server response; why exposing DB errors is dangerous; what attacker learns</td>
+                    <td><span class="level full">12 pts</span><br>Describes server responding with a MySQL/database syntax error; explains that error messages reveal DB type, table names, or query structure; explains attacker can use this information to craft further injection attacks</td>
+                    <td><span class="level partial">6 pts</span><br>Mentions error response but explanation of the security risk is incomplete (e.g., "it shows information" without specifying what or why it matters), OR good explanation of risk but doesn't clearly describe what the server returned</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or no understanding of SQL error leakage</td>
+                    <td class="pts-col">12</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-2</td>
+                    <td><strong>Screenshot &mdash; Burp Repeater with SQL injection</strong><br>Modified request (<code>id=1'</code>) on left; SQL error response on right</td>
+                    <td><span class="level full">5 pts</span><br>Both panels visible in Repeater; request clearly shows <code>id=1'</code>; response panel shows the SQL/MySQL error message</td>
+                    <td><span class="level partial">2 pts</span><br>Only one panel visible, or <code>id=1'</code> not clearly readable, or error in response not identifiable</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided or screenshot is not from Burp Repeater</td>
+                    <td class="pts-col">5</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ══════════ PART C ══════════ -->
+        <div class="part-header">
+            <div class="part-badge">Part C</div>
+            <div class="part-title">Intruder &amp; Password Attacks (Lab 7)</div>
+            <div class="part-pts">45 pts</div>
+        </div>
+
+        <div class="note-box">
+            <h4>&#128161; Expected Answers &mdash; Burp Intruder against DVWA (Reference)</h4>
+            <ul>
+                <li><strong>Q8 &mdash; Attack mode:</strong> Sniper &mdash; correct because only one payload position (the password field) is being tested with a single wordlist</li>
+                <li><strong>Q9 &mdash; Identifying correct password:</strong> The correct entry has a noticeably different (longer) response length compared to all failed attempts; the password is <code>password</code></li>
+                <li><strong>Q10 &mdash; Security levels:</strong> Medium adds a time delay (sleep) between responses, slowing the attack; High adds a CSRF token (<code>user_token</code>) that must be extracted and resubmitted for each request, effectively breaking a standard Intruder attack</li>
+                <li><strong>Q11 &mdash; Comparison:</strong> Dictionary uses a pre-built wordlist (faster, limited coverage); Brute force tries every possible combination (guaranteed coverage, extremely slow). Lab 7 used dictionary because a wordlist was provided and the target password was weak/common</li>
+                <li><strong>Q12 &mdash; Defenses:</strong> Account lockout, rate limiting, and CAPTCHA &mdash; each makes automated credential testing impractical</li>
+            </ul>
+        </div>
+
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th class="q-col">Item</th>
+                    <th>Criterion</th>
+                    <th>Full Credit</th>
+                    <th>Partial</th>
+                    <th>No Credit</th>
+                    <th class="pts-col">Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="q-col">Q8</td>
+                    <td><strong>Intruder attack mode</strong><br>Mode selected and reason it was correct</td>
+                    <td><span class="level full">4 pts</span><br>Names Sniper mode AND correctly explains why (single payload position, one wordlist for the password field)</td>
+                    <td><span class="level partial">2 pts</span><br>Correct mode name but explanation is vague or missing, OR reasonable explanation but wrong mode name</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or incorrect mode with no valid reasoning</td>
+                    <td class="pts-col">4</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q9</td>
+                    <td><strong>Identifying the correct password</strong><br>Method of identification; the password itself</td>
+                    <td><span class="level full">6 pts</span><br>Explains response length difference as the distinguishing indicator AND states the password (<code>password</code>)</td>
+                    <td><span class="level partial">3 pts</span><br>Identifies length difference but does not state the correct password, OR states the correct password but doesn't explain how it was found</td>
+                    <td><span class="level zero">0 pts</span><br>No valid identification method or password not mentioned</td>
+                    <td class="pts-col">6</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q10</td>
+                    <td><strong>Effect of Medium and High security</strong><br>What changed at each level; impact on the attack</td>
+                    <td><span class="level full">8 pts</span><br>Medium: correctly identifies the time delay/sleep that slows the attack; High: correctly identifies the CSRF token (<code>user_token</code>) requirement and explains it breaks the automated attack without token extraction</td>
+                    <td><span class="level partial">4 pts</span><br>One security level correctly described and its impact explained, OR both levels mentioned but descriptions are incomplete or vague</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered or no meaningful description of either level</td>
+                    <td class="pts-col">8</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q11</td>
+                    <td><strong>Comparison table</strong><br>Method, speed, coverage, and which was used in Lab 7</td>
+                    <td><span class="level full">10 pts</span><br>All four rows correct: method (wordlist vs all combinations), speed (faster vs slower), coverage (limited vs complete), and correct identification of dictionary attack used in Lab 7 with a valid reason</td>
+                    <td><span class="level partial">5 pts</span><br>Three out of four rows correct, OR all four partially answered with minor errors</td>
+                    <td><span class="level min">2 pts</span><br>Only one or two rows correct</td>
+                    <td class="pts-col">10</td>
+                </tr>
+                <tr>
+                    <td class="q-col">Q12</td>
+                    <td><strong>Defenses against brute-force attacks</strong><br>Three defenses with explanation of how each reduces risk</td>
+                    <td><span class="level full">7 pts</span><br>Names three valid defenses (e.g., account lockout, rate limiting, CAPTCHA) AND for each explains how it disrupts automated credential stuffing or brute-force attacks</td>
+                    <td><span class="level partial">3 pts</span><br>Only two valid defenses with explanations, OR three defenses named but one or more explanations are vague or incorrect</td>
+                    <td><span class="level zero">0 pts</span><br>Not answered, or defenses listed without any explanation of risk reduction</td>
+                    <td class="pts-col">7</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-3</td>
+                    <td><strong>Screenshot &mdash; Intruder results table</strong><br>All 15 responses; correct password row identifiable by different length</td>
+                    <td><span class="level full">5 pts</span><br>Intruder results table visible with Length column shown; the outlier entry (different length) is clearly distinguishable; all 15 rows visible or sorted to show the outlier prominently</td>
+                    <td><span class="level partial">2 pts</span><br>Results table visible but Length column not shown, or outlier row not identifiable, or fewer than 15 rows visible with no explanation</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided or screenshot is not from Burp Intruder results</td>
+                    <td class="pts-col">5</td>
+                </tr>
+                <tr>
+                    <td class="q-col">SS-4</td>
+                    <td><strong>Screenshot &mdash; DVWA High security request with <code>user_token</code></strong><br>Token parameter visible in Burp Intercept or HTTP History</td>
+                    <td><span class="level full">5 pts</span><br>Full request URL or body clearly shows the <code>user_token</code> parameter; request is from the DVWA Brute Force module at High security (visible in URL or headers)</td>
+                    <td><span class="level partial">2 pts</span><br><code>user_token</code> visible but DVWA URL or security level not clearly identifiable, or screenshot is partially cut off</td>
+                    <td><span class="level zero">0 pts</span><br>Not provided or <code>user_token</code> not visible in the screenshot</td>
+                    <td class="pts-col">5</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- General Deductions -->
+        <h3 style="color:var(--primary); margin: 32px 0 14px;">General Deductions</h3>
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th>Issue</th>
+                    <th>Deduction</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Student name / ID missing from report</td>
+                    <td style="color:var(--red); font-weight:700;">&minus;5 pts</td>
+                    <td>Report must include student name, ID, and email</td>
+                </tr>
+                <tr>
+                    <td>Screenshot submitted separately (not embedded in PDF)</td>
+                    <td style="color:var(--red); font-weight:700;">&minus;3 pts each</td>
+                    <td>Screenshots must be embedded using the upload tool on the assignment page</td>
+                </tr>
+                <tr>
+                    <td>Identical screenshot as another student</td>
+                    <td style="color:var(--red); font-weight:700;">&minus;50% of that part</td>
+                    <td>Flag for academic integrity review</td>
+                </tr>
+                <tr>
+                    <td>Late submission (per day)</td>
+                    <td style="color:var(--red); font-weight:700;">&minus;10 pts/day</td>
+                    <td>As per course policy; max penalty 50 pts</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Grading Notes -->
+        <div class="note-box" style="margin-top:24px;">
+            <h4>&#128221; Grading Notes for Instructors</h4>
+            <ul>
+                <li>For Q1, accept <code>localhost:8080</code> as equivalent to <code>127.0.0.1:8080</code>.</li>
+                <li>For Q2, accept any extension that routes browser traffic to Burp (FoxyProxy Standard, FoxyProxy Basic, or manual Firefox proxy configuration); award the advantage point if a genuine practical benefit is stated.</li>
+                <li>For Q6, the DVWA headers a student finds may vary; accept any standard security header that is legitimately missing. Do not penalize for listing a header that was present if the student's explanation of the attack it prevents is correct.</li>
+                <li>For Q9, the password <code>password</code> is hardcoded in DVWA; award full marks for any student who correctly reports the response-length method, even if they type the password slightly differently (e.g., lowercase vs. mixed case).</li>
+                <li>For Q10, if a student reports that High security prevented the attack entirely without explaining the CSRF token mechanism, award partial credit (4 pts) for correctly observing the outcome.</li>
+                <li>For Q12, accept multi-factor authentication (MFA) as a valid alternative to CAPTCHA; award the explanation point if the student correctly states how MFA defeats credential-only attacks.</li>
+                <li>Screenshots need not be high-resolution; readability is the key criterion.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p><strong>CYB 236</strong> &mdash; Web Application Security &mdash; Instructor Rubric</p>
+        <p>Assignment 2: Burp Suite &amp; Web Traffic Analysis &nbsp;&middot;&nbsp; Labs 5&ndash;7 &nbsp;&middot;&nbsp; Spring 2026</p>
+    </div>
+
+</div>
+</body>
+</html>
