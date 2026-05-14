@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python3 -c \"\n# Check that these are just void-element false positives\nwith open\\('/home/abdul/Desktop/claudeProjects/DataStructures/stack/stack-tutorial-ar.html', 'r'\\) as f:\n    content = f.read\\(\\)\n\n# Count opening and closing tags for key structural elements\nimport re\nfor tag in ['html', 'head', 'body', 'div', 'section', 'script', 'style']:\n    opens = len\\(re.findall\\(f'<{tag}[\\\\\\\\s>]', content, re.IGNORECASE\\)\\)\n    closes = len\\(re.findall\\(f'</{tag}>', content, re.IGNORECASE\\)\\)\n    status = 'OK' if opens == closes else f'MISMATCH: {opens} opens, {closes} closes'\n    print\\(f'{tag}: {status}'\\)\n\")"
-    ]
-  }
-}
