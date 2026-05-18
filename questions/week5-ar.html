@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسبوع 5: مبادئ الأمان والبنية الآمنة - CYB236 بنك الأسئلة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-right: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week5.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">English Version</a>
+            </div>
+            <a href="index-ar.html" class="back-link">&rarr; العودة إلى بنك الأسئلة</a>
+            <div class="quiz-badge">الأسبوع 5</div>
+            <h1>مبادئ الأمان والبنية الآمنة</h1>
+            <p>الركائز الخمس، TLS/SSL، تجزئة كلمات المرور، المصادقة الثنائية، حماية البيانات الشخصية</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">تم الإجابة</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">صحيح</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">النتيجة</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">أجبت <span id="final-correct">0</span> من أصل <span id="final-total">0</span> سؤال بشكل صحيح</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">حاول مرة أخرى</button>
+                <a href="index-ar.html" class="btn btn-secondary">العودة للرئيسية</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - أمن تطبيقات الويب | جامعة الملك عبدالعزيز</p>
+            <p style="margin-top:10px;">إعداد د. المالوي</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: 'ما هي الركائز الخمس للدفاع في دورة حياة الأمان؟',
+                options: [
+                    { text: 'جدار الحماية، مضاد الفيروسات، النسخ الاحتياطي، التشفير، المراقبة', correct: false },
+                    { text: 'البنية المعمارية، مراجعة الكود، اكتشاف الثغرات، إدارة الثغرات، اختبار الانحدار', correct: true },
+                    { text: 'المصادقة، التفويض، التشفير، التسجيل، التنبيه', correct: false },
+                    { text: 'التخطيط، التصميم، الاختبار، النشر، الصيانة', correct: false }
+                ]
+            },
+            {
+                question: 'وفقًا لـ NIST، إصلاح خلل أمني في مرحلة البنية المعمارية يكلف أقل بكم مرة من إصلاحه في مرحلة الإنتاج؟',
+                options: [
+                    { text: 'أقل بـ 2-5 مرات', correct: false },
+                    { text: 'أقل بـ 10-20 مرة', correct: false },
+                    { text: 'أقل بـ 30-60 مرة', correct: true },
+                    { text: 'أقل بـ 100-200 مرة', correct: false }
+                ]
+            },
+            {
+                question: 'ما نسبة الثغرات الأمنية التي تكون انحدارات (أخطاء تم إصلاحها سابقًا ثم عادت للظهور)؟',
+                options: [
+                    { text: 'حوالي 5%', correct: false },
+                    { text: 'حوالي 10%', correct: false },
+                    { text: 'حوالي 25%', correct: true },
+                    { text: 'حوالي 50%', correct: false }
+                ]
+            },
+            {
+                question: 'أي طريقة لاكتشاف الثغرات تحمل أعلى خطر على المنظمة؟',
+                options: [
+                    { text: 'برامج مكافآت الأخطاء', correct: false },
+                    { text: 'اختبار الاختراق', correct: false },
+                    { text: 'إبلاغ العملاء (المستخدمون النهائيون يكتشفون الثغرة)', correct: true },
+                    { text: 'تمارين الفريق الأحمر/الأزرق', correct: false }
+                ]
+            },
+            {
+                question: 'ما الفرق بين "الاختراق والترقيع" و"الدفاع الشامل"؟',
+                options: [
+                    { text: 'هما نهجان متطابقان', correct: false },
+                    { text: 'الاختراق والترقيع يتفاعل فقط بعد اكتشاف الثغرات؛ الدفاع الشامل يدمج الأمان في كل مرحلة', correct: true },
+                    { text: 'الدفاع الشامل أرخص تكلفة', correct: false },
+                    { text: 'الاختراق والترقيع هو النهج الحديث', correct: false }
+                ]
+            },
+            {
+                question: 'ماذا يعني اختصار TLS؟',
+                options: [
+                    { text: 'Total Layer Security', correct: false },
+                    { text: 'Transport Layer Security (أمان طبقة النقل)', correct: true },
+                    { text: 'Transmission Link Standard', correct: false },
+                    { text: 'Terminal Login System', correct: false }
+                ]
+            },
+            {
+                question: 'لماذا تم إيقاف SSL واستبداله بـ TLS؟',
+                options: [
+                    { text: 'SSL كان سريعًا جدًا', correct: false },
+                    { text: 'SSL كان يحتوي على ثغرات معروفة متعددة (POODLE، BEAST)', correct: true },
+                    { text: 'TLS كان مجانيًا بينما SSL كان مدفوعًا', correct: false },
+                    { text: 'SSL لم يكن يدعم متصفحات الويب', correct: false }
+                ]
+            },
+            {
+                question: 'ماذا يشير رمز القفل في شريط عنوان المتصفح؟',
+                options: [
+                    { text: 'الموقع آمن من جميع الهجمات', correct: false },
+                    { text: 'تشفير TLS نشط والشهادة صالحة', correct: true },
+                    { text: 'الموقع لا يحتوي على ثغرات', correct: false },
+                    { text: 'المستخدم مسجل الدخول', correct: false }
+                ]
+            },
+            {
+                question: 'ما هي "إنتروبيا كلمة المرور" (password entropy)؟',
+                options: [
+                    { text: 'عدد الرموز الخاصة في كلمة المرور', correct: false },
+                    { text: 'العشوائية وعدم قابلية التنبؤ بكلمة المرور', correct: true },
+                    { text: 'طول كلمة المرور', correct: false },
+                    { text: 'طريقة التشفير المستخدمة', correct: false }
+                ]
+            },
+            {
+                question: 'لماذا عبارة المرور "correct horse battery staple" أكثر أمانًا من "P@ssw0rd!"؟',
+                options: [
+                    { text: 'تحتوي على رموز خاصة أكثر', correct: false },
+                    { text: 'تمتلك إنتروبيا (عشوائية) أعلى رغم أنها تبدو أبسط', correct: true },
+                    { text: 'لأنها أقصر', correct: false },
+                    { text: 'لأنها تستخدم أحرفًا كبيرة', correct: false }
+                ]
+            },
+            {
+                question: 'لماذا لا يجب تخزين كلمات المرور بنص عادي أبدًا؟',
+                options: [
+                    { text: 'يحتاج مساحة تخزين كبيرة', correct: false },
+                    { text: 'حتى الموظفون ومديرو قواعد البيانات لا يجب أن يتمكنوا من قراءة كلمات مرور المستخدمين؛ الاختراقات ستكشف جميع الحسابات', correct: true },
+                    { text: 'النص العادي أبطأ في المعالجة', correct: false },
+                    { text: 'يخالف معايير JavaScript', correct: false }
+                ]
+            },
+            {
+                question: 'ما هو BCrypt؟',
+                options: [
+                    { text: 'خوارزمية تجزئة سريعة للأداء', correct: false },
+                    { text: 'خوارزمية تجزئة كلمات مرور مصممة عمدًا لتكون بطيئة، مبنية على شيفرة Blowfish', correct: true },
+                    { text: 'بروتوكول تشفير للشبكات', correct: false },
+                    { text: 'لغة استعلام قواعد بيانات', correct: false }
+                ]
+            },
+            {
+                question: 'لماذا يجب أن تكون تجزئة كلمات المرور بطيئة عمدًا؟',
+                options: [
+                    { text: 'لتحسين تجربة المستخدم', correct: false },
+                    { text: 'للحد من عدد التخمينات التي يمكن للمهاجم إجراؤها في الثانية أثناء هجمات القوة الغاشمة', correct: true },
+                    { text: 'لتوفير موارد الخادم', correct: false },
+                    { text: 'للامتثال لـ GDPR', correct: false }
+                ]
+            },
+            {
+                question: 'ماذا تتطلب المصادقة الثنائية (2FA)؟',
+                options: [
+                    { text: 'كلمتي مرور', correct: false },
+                    { text: 'سرّين مستقلين: شيء تعرفه (كلمة المرور) وشيء تملكه (جهاز)', correct: true },
+                    { text: 'عنواني بريد إلكتروني', correct: false },
+                    { text: 'اسمي مستخدم', correct: false }
+                ]
+            },
+            {
+                question: 'أي طريقة 2FA تعتبر الأقوى؟',
+                options: [
+                    { text: 'رسالة SMS/نصية', correct: false },
+                    { text: 'التحقق عبر البريد الإلكتروني', correct: false },
+                    { text: 'رمز مادي (مفتاح USB)', correct: true },
+                    { text: 'سؤال الأمان', correct: false }
+                ]
+            },
+            {
+                question: 'ماذا يعني اختصار PII؟',
+                options: [
+                    { text: 'Private Internet Information', correct: false },
+                    { text: 'Personally Identifiable Information (معلومات التعريف الشخصية)', correct: true },
+                    { text: 'Protected Internal Interface', correct: false },
+                    { text: 'Public Identity Index', correct: false }
+                ]
+            },
+            {
+                question: 'ما هو PCI-DSS؟',
+                options: [
+                    { text: 'لغة برمجة', correct: false },
+                    { text: 'Payment Card Industry Data Security Standard (معيار أمان بيانات صناعة بطاقات الدفع)', correct: true },
+                    { text: 'نوع من جدران الحماية', correct: false },
+                    { text: 'نظام إدارة قواعد بيانات', correct: false }
+                ]
+            },
+            {
+                question: 'ما الغرض من علامة HttpOnly على ملفات تعريف الارتباط (cookies)؟',
+                options: [
+                    { text: 'لجعل ملفات تعريف الارتباط أسرع', correct: false },
+                    { text: 'لمنع JavaScript من الوصول إلى ملف تعريف الارتباط، مما يحمي من سرقة الكوكيز عبر XSS', correct: true },
+                    { text: 'لتشفير ملف تعريف الارتباط', correct: false },
+                    { text: 'لحذف ملف تعريف الارتباط بعد استخدام واحد', correct: false }
+                ]
+            },
+            {
+                question: 'متى يجب على المنظمة التفكير في الاستعانة بمصادر خارجية لتخزين البيانات المالية؟',
+                options: [
+                    { text: 'أبدًا', correct: false },
+                    { text: 'عندما تريد تقليل مسؤولية الامتثال وليس لديها خبرة داخلية في PCI-DSS', correct: true },
+                    { text: 'فقط إذا لم يكن لديها عملاء', correct: false },
+                    { text: 'فقط خلال العطلات', correct: false }
+                ]
+            },
+            {
+                question: 'ما هي المرحلة الأولى والأكثر فعالية من حيث التكلفة لمعالجة الأمان في تطبيق ويب؟',
+                options: [
+                    { text: 'بعد النشر', correct: false },
+                    { text: 'أثناء الاختبار', correct: false },
+                    { text: 'أثناء مرحلة البنية المعمارية والتصميم', correct: true },
+                    { text: 'بعد حدوث اختراق', correct: false }
+                ]
+            }
+        ];
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `
+                    <li class="option-item">
+                        <label class="option-label" data-question="${index}" data-correct="${opt.correct}">
+                            <input type="radio" name="question-${index}" value="${opt.correct}">
+                            <span class="option-marker"></span>
+                            <span class="option-text">${opt.text}</span>
+                        </label>
+                    </li>`).join('')}</ul>`;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">${index + 1}</span>
+                        <span class="question-type">اختيار من متعدد</span>
+                    </div>
+                    <p class="question-text">${q.question}</p>
+                    ${optionsHTML}
+                    <div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+        function handleAnswer(e) {
+            const label = e.currentTarget;
+            const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return;
+            answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) {
+                correctAnswers++;
+                label.classList.remove('selected');
+                label.classList.add('correct');
+                card.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '\u2713 إجابة صحيحة!';
+            } else {
+                label.classList.add('incorrect');
+                card.classList.add('incorrect');
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = '\u2717 إجابة خاطئة - انظر الإجابة الصحيحة المحددة أعلاه';
+            }
+            updateProgress();
+        }
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'ممتاز! أنت مستعد جيدًا!';
+            else if (percent >= 70) message = 'أحسنت! واصل التدريب!';
+            else if (percent >= 50) message = 'لا بأس، لكن راجع المادة.';
+            else message = 'واصل المذاكرة وحاول مرة أخرى!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+        function resetQuiz() {
+            answeredQuestions.clear();
+            correctAnswers = 0;
+            document.getElementById('results-card').classList.remove('show');
+            renderQuestions();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        renderQuestions();
+        updateProgress();
+    </script>
+</body>
+</html>

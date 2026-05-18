@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسبوع 10: الدفاع ضد حجب الخدمة وتأمين المكتبات - CYB236 بنك الأسئلة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-right: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week10.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">English Version</a>
+            </div>
+            <a href="index-ar.html" class="back-link">&rarr; العودة إلى بنك الأسئلة</a>
+            <div class="quiz-badge">الأسبوع 10</div>
+            <h1>الدفاع ضد حجب الخدمة وتأمين المكتبات</h1>
+            <p>تحديد المعدل، التصفح بالصفحات، التخزين المؤقت، قفل الإصدارات، أمن سلسلة التوريد</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">تم الإجابة</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">صحيح</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">النتيجة</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">أجبت <span id="final-correct">0</span> من أصل <span id="final-total">0</span> سؤال بشكل صحيح</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">حاول مرة أخرى</button>
+                <a href="index-ar.html" class="btn btn-secondary">العودة للرئيسية</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - أمن تطبيقات الويب | جامعة الملك عبدالعزيز</p>
+            <p style="margin-top:10px;">إعداد د. المالوي</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "ما هو تحديد المعدل (Rate Limiting) في سياق الدفاع ضد DoS؟",
+                options: [
+                    { text: "تحديد عدد المطورين", correct: false },
+                    { text: "وضع حد أقصى لعدد الطلبات لكل مستخدم في فترة زمنية معينة على نقاط النهاية كثيفة الموارد", correct: true },
+                    { text: "تحديد سرعة الإنترنت", correct: false },
+                    { text: "تقييد حجم قاعدة البيانات", correct: false }
+                ]
+            },
+            {
+                question: "لماذا تعتبر حصص الموارد مهمة لمنع DoS المنطقي؟",
+                options: [
+                    { text: "لأنها تقلل تعقيد الكود", correct: false },
+                    { text: "لأنها تحد من كمية البيانات التي يمكن للمستخدم تجميعها، مما يمنع الاستعلامات المكلفة على مجموعات بيانات كبيرة", correct: true },
+                    { text: "لأنها توفر مساحة القرص", correct: false },
+                    { text: "لأنها تحسّن تجربة المستخدم", correct: false }
+                ]
+            },
+            {
+                question: "ما هو الغرض من مهلة الطلبات (Request Timeouts) في الدفاع ضد DoS؟",
+                options: [
+                    { text: "جعل المستخدمين ينتظرون أطول", correct: false },
+                    { text: "وضع حد زمني صارم على العمليات المكلفة، والفشل السريع بدلاً من الحظر إلى أجل غير مسمى", correct: true },
+                    { text: "زيادة سعة الخادم", correct: false },
+                    { text: "تحسين سجلات الأمان", correct: false }
+                ]
+            },
+            {
+                question: "لماذا يعتبر التصفح بالصفحات (Pagination) مهمًا لمنع DoS؟",
+                options: [
+                    { text: "لأنه يجعل الصفحات تبدو أفضل", correct: false },
+                    { text: "لأنه يمنع إرجاع جميع السجلات في استعلام واحد، مما يحد من حجم الاستجابة", correct: true },
+                    { text: "لأنه يشفر الاستجابات", correct: false },
+                    { text: "لأنه يسرّع JavaScript", correct: false }
+                ]
+            },
+            {
+                question: "كيف يساعد التخزين المؤقت للاستجابات (Response Caching) في الدفاع ضد DoS؟",
+                options: [
+                    { text: "يحظر جميع الطلبات", correct: false },
+                    { text: "يخزّن نتائج الاستعلامات المكلفة بحيث تصل الطلبات المتكررة إلى الذاكرة المؤقتة بدلاً من إعادة الاستعلام من قاعدة البيانات", correct: true },
+                    { text: "يشفر جميع الاستجابات", correct: false },
+                    { text: "يحذف البيانات القديمة", correct: false }
+                ]
+            },
+            {
+                question: "ما هي فائدة استخدام قوائم المهام غير المتزامنة (Async Job Queues) للدفاع ضد DoS؟",
+                options: [
+                    { text: "تجعل التطبيق أبطأ", correct: false },
+                    { text: "تنقل العمليات الثقيلة إلى المعالجة في الخلفية، وتفصلها عن دورة طلب HTTP", correct: true },
+                    { text: "تحظر جميع المهام الخلفية", correct: false },
+                    { text: "تزيد تكاليف الخادم", correct: false }
+                ]
+            },
+            {
+                question: "لماذا لا يمكن منع هجمات DDoS بالكامل؟",
+                options: [
+                    { text: "لأن الخوادم بطيئة جدًا", correct: false },
+                    { text: "لأن البوتات هي أجهزة حقيقية مخترقة تبدو كمستخدمين شرعيين، مما يجعل حركة المرور غير قابلة للتمييز", correct: true },
+                    { text: "لأن التشفير ضعيف جدًا", correct: false },
+                    { text: "لأن جدران الحماية غير موجودة", correct: false }
+                ]
+            },
+            {
+                question: "ما هو خط الأساس لحركة المرور (Traffic Baselining) في التخفيف من DDoS؟",
+                options: [
+                    { text: "حظر جميع حركة المرور", correct: false },
+                    { text: "فهم أنماط حركة المرور الطبيعية حتى تتمكن من تحديد الارتفاعات غير الطبيعية وتطبيق المرشحات المناسبة", correct: true },
+                    { text: "زيادة عرض النطاق الترددي للخادم", correct: false },
+                    { text: "إيقاف الموقع الإلكتروني", correct: false }
+                ]
+            },
+            {
+                question: "ما هي المخاطر التي يشكلها الإفراط في التصفية في التخفيف من DDoS؟",
+                options: [
+                    { text: "يجعل الخادم أسرع", correct: false },
+                    { text: "يمكن أن يحظر المستخدمين الشرعيين مع حركة المرور الخبيثة", correct: true },
+                    { text: "يزيد التكاليف", correct: false },
+                    { text: "لا توجد مخاطر", correct: false }
+                ]
+            },
+            {
+                question: "كم عدد إصدارات التبعيات الفريدة التي يمكن أن تحتويها التطبيقات الكبيرة؟",
+                options: [
+                    { text: "5-10", correct: false },
+                    { text: "50-100", correct: false },
+                    { text: "الآلاف", correct: true },
+                    { text: "واحدة فقط", correct: false }
+                ]
+            },
+            {
+                question: "ماذا يفعل إزالة علامة القبعة (^) من package.json؟",
+                options: [
+                    { text: "يزيل الحزمة", correct: false },
+                    { text: "يثبّت التبعية على إصدار محدد، مما يمنع التحديثات الثانوية/التصحيحية التلقائية", correct: true },
+                    { text: "يرقّي إلى أحدث إصدار", correct: false },
+                    { text: "يجعل الحزمة خاصة", correct: false }
+                ]
+            },
+            {
+                question: "ماذا يفعل أمر npm shrinkwrap؟",
+                options: [
+                    { text: "يضغط الحزم", correct: false },
+                    { text: "يقفل شجرة التبعيات بالكامل بما في ذلك جميع التبعيات الفرعية على إصدارات محددة", correct: true },
+                    { text: "يحذف الحزم غير المستخدمة", correct: false },
+                    { text: "يشفر الحزم", correct: false }
+                ]
+            },
+            {
+                question: "ما هي الطريقة الأكثر أمانًا للإشارة إلى إصدار تبعية؟",
+                options: [
+                    { text: "استخدام \"latest\"", correct: false },
+                    { text: "استخدام نطاق القبعة (^)", correct: false },
+                    { text: "الإشارة إلى Git SHA محدد", correct: true },
+                    { text: "عدم تحديد إصدار", correct: false }
+                ]
+            },
+            {
+                question: "ما هو الغرض من مرآة npm الخاصة؟",
+                options: [
+                    { text: "تسريع التنزيلات", correct: false },
+                    { text: "توفير أعلى مستوى من الأمان من خلال التحكم في الحزم المتاحة بالضبط", correct: true },
+                    { text: "توفير مساحة القرص", correct: false },
+                    { text: "مشاركة الحزم بشكل عام", correct: false }
+                ]
+            },
+            {
+                question: "ما هو نهج \"فصل الاهتمامات\" لتأمين أكواد الطرف الثالث؟",
+                options: [
+                    { text: "كتابة جميع الأكواد بنفسك", correct: false },
+                    { text: "تشغيل أكواد الطرف الثالث المحفوفة بالمخاطر على خوادم معزولة تتواصل عبر HTTP مع JSON", correct: true },
+                    { text: "حذف جميع التبعيات", correct: false },
+                    { text: "استخدام لغة برمجة واحدة فقط", correct: false }
+                ]
+            },
+            {
+                question: "ماذا يجب أن تفعل عند تقييم تبعية جديدة لمشروعك؟",
+                options: [
+                    { text: "تثبيتها فورًا دون فحص", correct: false },
+                    { text: "فحصها مقابل قواعد بيانات CVE وتقييم وضعها الأمني قبل إضافتها", correct: true },
+                    { text: "التحقق من عدد التنزيلات فقط", correct: false },
+                    { text: "قراءة ملف README فقط", correct: false }
+                ]
+            },
+            {
+                question: "لماذا يزداد أمن سلسلة التوريد أهمية بشكل متزايد؟",
+                options: [
+                    { text: "لأنه يؤثر على تكاليف الشحن", correct: false },
+                    { text: "لأن حزمة واحدة مخترقة في مكتبة شائعة يمكن أن تنتشر وتؤثر على ملايين التطبيقات", correct: true },
+                    { text: "لأنه يؤثر على الشركات الكبيرة فقط", correct: false },
+                    { text: "لأن سلاسل التوريد لا علاقة لها بالبرمجيات", correct: false }
+                ]
+            },
+            {
+                question: "ما هو النهج الموصى به لتصنيف مخاطر DoS على نقاط النهاية؟",
+                options: [
+                    { text: "ثنائي: آمن أو غير آمن", correct: false },
+                    { text: "التصنيف كمخاطر عالية أو متوسطة أو منخفضة وتطبيق دفاعات متناسبة مع مستوى المخاطر", correct: true },
+                    { text: "تجاهل المخاطر", correct: false },
+                    { text: "حظر جميع نقاط النهاية", correct: false }
+                ]
+            },
+            {
+                question: "ما هو الأمر الذي يعرض شجرة التبعيات الكاملة في npm؟",
+                options: [
+                    { text: "npm start", correct: false },
+                    { text: "npm ls", correct: true },
+                    { text: "npm build", correct: false },
+                    { text: "npm run dev", correct: false }
+                ]
+            },
+            {
+                question: "ما هو أفضل دفاع عندما تتعرض تبعية طرف ثالث على خادم معزول للاختراق؟",
+                options: [
+                    { text: "لا يوجد دفاع", correct: false },
+                    { text: "يكون نطاق الضرر محدودًا لأن الخادم لديه وصول محدود للشبكة ويتواصل فقط عبر HTTP/JSON المنظم", correct: true },
+                    { text: "إعادة تشغيل التطبيق الرئيسي", correct: false },
+                    { text: "حذف جميع الخوادم", correct: false }
+                ]
+            }
+        ];
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+        function shuffleArray(array) { const shuffled = [...array]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
+        function renderQuestions() {
+            const container = document.getElementById('questions-container'); container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div'); card.className = 'question-card'; card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `<li class="option-item"><label class="option-label" data-question="${index}" data-correct="${opt.correct}"><input type="radio" name="question-${index}" value="${opt.correct}"><span class="option-marker"></span><span class="option-text">${opt.text}</span></label></li>`).join('')}</ul>`;
+                card.innerHTML = `<div class="question-header"><span class="question-number">${index + 1}</span><span class="question-type">اختيار من متعدد</span></div><p class="question-text">${q.question}</p>${optionsHTML}<div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+        function handleAnswer(e) {
+            const label = e.currentTarget; const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return; answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) { correctAnswers++; label.classList.remove('selected'); label.classList.add('correct'); card.classList.add('correct'); feedback.className = 'feedback show correct'; feedback.innerHTML = '\u2713 إجابة صحيحة!'; }
+            else { label.classList.add('incorrect'); card.classList.add('incorrect'); feedback.className = 'feedback show incorrect'; feedback.innerHTML = '\u2717 إجابة خاطئة - انظر الإجابة الصحيحة المحددة أعلاه'; }
+            updateProgress();
+        }
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'ممتاز! أنت مستعد جيدًا!';
+            else if (percent >= 70) message = 'أحسنت! واصل التدريب!';
+            else if (percent >= 50) message = 'لا بأس، لكن راجع المادة.';
+            else message = 'واصل المذاكرة وحاول مرة أخرى!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+        function resetQuiz() { answeredQuestions.clear(); correctAnswers = 0; document.getElementById('results-card').classList.remove('show'); renderQuestions(); updateProgress(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        renderQuestions(); updateProgress();
+    </script>
+</body>
+</html>

@@ -33,6 +33,8 @@
 !week9/**
 !week10/
 !week10/**
+!questions/
+!questions/**
 
 .claude/
 **/.claude/

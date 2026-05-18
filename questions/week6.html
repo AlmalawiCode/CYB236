@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 6: DoS Defense & Third-Party Dependencies - CYB236 Question Bank</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-left: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week6-ar.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">النسخة العربية</a>
+            </div>
+            <a href="index.html" class="back-link">&larr; Back to Question Bank</a>
+            <div class="quiz-badge">Week 6</div>
+            <h1>DoS Defense & Third-Party Dependencies</h1>
+            <p>ReDoS, DDoS mitigation, package manager attacks, CVE databases</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">Answered</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">Correct</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">Score</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">You answered <span id="final-correct">0</span> out of <span id="final-total">0</span> questions correctly</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">Try Again</button>
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - Web Application Security | King Abdulaziz University</p>
+            <p style="margin-top:10px;">Prepared by Dr. Almalawi</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: 'What are the three main categories of Denial of Service attacks?',
+                options: [
+                    { text: 'XSS, CSRF, XXE', correct: false },
+                    { text: 'Regex DoS (ReDoS), Logical DoS, Distributed DoS (DDoS)', correct: true },
+                    { text: 'SQL injection, command injection, code injection', correct: false },
+                    { text: 'Phishing, pharming, pretexting', correct: false }
+                ]
+            },
+            {
+                question: 'What causes ReDoS (Regex Denial of Service)?',
+                options: [
+                    { text: 'Too many regular expressions in the code', correct: false },
+                    { text: 'Crafted input that causes exponential backtracking in vulnerable regex patterns', correct: true },
+                    { text: 'Using regex in JavaScript', correct: false },
+                    { text: 'Not having enough server memory', correct: false }
+                ]
+            },
+            {
+                question: 'What makes ReDoS particularly dangerous compared to other DoS attacks?',
+                options: [
+                    { text: 'It requires expensive hardware', correct: false },
+                    { text: 'A vulnerable pattern can sit dormant for years and be triggered with a single crafted input', correct: true },
+                    { text: 'It can only affect databases', correct: false },
+                    { text: 'It requires network access', correct: false }
+                ]
+            },
+            {
+                question: 'What is a "Logical DoS" attack?',
+                options: [
+                    { text: 'An attack using logic bombs', correct: false },
+                    { text: 'An attack that exploits resource-intensive server operations to drain server resources', correct: true },
+                    { text: 'An attack on the login page', correct: false },
+                    { text: 'An attack that corrupts log files', correct: false }
+                ]
+            },
+            {
+                question: 'Which server operations are high-risk targets for Logical DoS?',
+                options: [
+                    { text: 'Simple page loads', correct: false },
+                    { text: 'Database writes, SQL joins, file backups, and synchronous operations', correct: true },
+                    { text: 'Serving static HTML', correct: false },
+                    { text: 'DNS lookups', correct: false }
+                ]
+            },
+            {
+                question: 'What is a botnet?',
+                options: [
+                    { text: 'A group of security researchers', correct: false },
+                    { text: 'A network of compromised devices controlled by an attacker for coordinated attacks', correct: true },
+                    { text: 'A legitimate server cluster', correct: false },
+                    { text: 'A type of firewall', correct: false }
+                ]
+            },
+            {
+                question: 'Why are IoT devices particularly vulnerable to becoming part of botnets?',
+                options: [
+                    { text: 'They are too expensive to secure', correct: false },
+                    { text: 'They often have weak default security configurations', correct: true },
+                    { text: 'They use strong encryption', correct: false },
+                    { text: 'They are always connected to the internet', correct: false }
+                ]
+            },
+            {
+                question: 'What happened in the left-pad incident of 2016?',
+                options: [
+                    { text: 'A major security breach', correct: false },
+                    { text: 'A single developer removed a package from npm, breaking millions of builds worldwide', correct: true },
+                    { text: 'A new programming language was released', correct: false },
+                    { text: 'npm was shut down', correct: false }
+                ]
+            },
+            {
+                question: 'What was the eslint-scope attack in 2018?',
+                options: [
+                    { text: 'A DDoS attack on npm servers', correct: false },
+                    { text: 'Compromised credentials allowed a hacker to steal local credentials from machines via a popular npm package', correct: true },
+                    { text: 'A SQL injection in ESLint', correct: false },
+                    { text: 'A phishing campaign targeting developers', correct: false }
+                ]
+            },
+            {
+                question: 'What are the two major CVE databases?',
+                options: [
+                    { text: 'Google Security and Apple Security', correct: false },
+                    { text: 'NIST National Vulnerability Database and Mitre CVE', correct: true },
+                    { text: 'OWASP and ISO', correct: false },
+                    { text: 'AWS Security Hub and Azure Security Center', correct: false }
+                ]
+            },
+            {
+                question: 'What is the risk of recursive sub-dependencies in npm?',
+                options: [
+                    { text: 'They make the application run faster', correct: false },
+                    { text: 'A vulnerability deep in a sub-sub-dependency can compromise the entire application', correct: true },
+                    { text: 'They reduce code size', correct: false },
+                    { text: 'They improve security', correct: false }
+                ]
+            },
+            {
+                question: 'What tool can you use to scan npm packages for known vulnerabilities?',
+                options: [
+                    { text: 'npm build', correct: false },
+                    { text: 'npm audit', correct: true },
+                    { text: 'npm start', correct: false },
+                    { text: 'npm init', correct: false }
+                ]
+            },
+            {
+                question: 'How can you defend against ReDoS attacks?',
+                options: [
+                    { text: 'Use faster servers', correct: false },
+                    { text: 'Scan the codebase with linting tools like safe-regex and never allow user-supplied regex', correct: true },
+                    { text: 'Increase server memory', correct: false },
+                    { text: 'Use more complex regex patterns', correct: false }
+                ]
+            },
+            {
+                question: 'What is rate limiting used for in DoS defense?',
+                options: [
+                    { text: 'Limiting the speed of the internet', correct: false },
+                    { text: 'Capping the number of requests per user per minute on resource-intensive endpoints', correct: true },
+                    { text: 'Limiting database size', correct: false },
+                    { text: 'Restricting user registration', correct: false }
+                ]
+            },
+            {
+                question: 'Why is pagination important for DoS defense?',
+                options: [
+                    { text: 'It makes pages look better', correct: false },
+                    { text: 'It prevents returning all records in a single query, bounding response size', correct: true },
+                    { text: 'It encrypts data', correct: false },
+                    { text: 'It speeds up the database', correct: false }
+                ]
+            },
+            {
+                question: 'Can DDoS attacks be fully prevented?',
+                options: [
+                    { text: 'Yes, with enough firewalls', correct: false },
+                    { text: 'No, they can only be mitigated, not fully prevented', correct: true },
+                    { text: 'Yes, by using HTTPS', correct: false },
+                    { text: 'Yes, by blocking all traffic', correct: false }
+                ]
+            },
+            {
+                question: 'What is "blackholing" in DDoS mitigation?',
+                options: [
+                    { text: 'Deleting all server data', correct: false },
+                    { text: 'Routing suspicious traffic to decoy servers', correct: true },
+                    { text: 'Turning off the internet', correct: false },
+                    { text: 'Encrypting all traffic', correct: false }
+                ]
+            },
+            {
+                question: 'What is the safest way to lock dependency versions in npm?',
+                options: [
+                    { text: 'Use the latest version always', correct: false },
+                    { text: 'Remove the caret (^) from package.json and use npm shrinkwrap', correct: true },
+                    { text: 'Delete package-lock.json', correct: false },
+                    { text: 'Install packages globally', correct: false }
+                ]
+            },
+            {
+                question: 'What is the purpose of running third-party code on isolated servers?',
+                options: [
+                    { text: 'To improve performance', correct: false },
+                    { text: 'To contain the blast radius if the package is compromised', correct: true },
+                    { text: 'To save disk space', correct: false },
+                    { text: 'To make debugging easier', correct: false }
+                ]
+            },
+            {
+                question: 'What was the event-stream attack in 2018?',
+                options: [
+                    { text: 'A stream of events crashing servers', correct: false },
+                    { text: 'A malicious sub-dependency was added to a popular package to steal Bitcoin wallets', correct: true },
+                    { text: 'A network flooding attack', correct: false },
+                    { text: 'A social engineering attack on developers', correct: false }
+                ]
+            }
+        ];
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `
+                    <li class="option-item">
+                        <label class="option-label" data-question="${index}" data-correct="${opt.correct}">
+                            <input type="radio" name="question-${index}" value="${opt.correct}">
+                            <span class="option-marker"></span>
+                            <span class="option-text">${opt.text}</span>
+                        </label>
+                    </li>`).join('')}</ul>`;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">${index + 1}</span>
+                        <span class="question-type">Multiple Choice</span>
+                    </div>
+                    <p class="question-text">${q.question}</p>
+                    ${optionsHTML}
+                    <div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+        function handleAnswer(e) {
+            const label = e.currentTarget;
+            const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return;
+            answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) {
+                correctAnswers++;
+                label.classList.remove('selected');
+                label.classList.add('correct');
+                card.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '\u2713 Correct!';
+            } else {
+                label.classList.add('incorrect');
+                card.classList.add('incorrect');
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = '\u2717 Incorrect - See the correct answer highlighted above';
+            }
+            updateProgress();
+        }
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'Excellent! You\'re well prepared!';
+            else if (percent >= 70) message = 'Good job! Keep practicing!';
+            else if (percent >= 50) message = 'Not bad, but review the material.';
+            else message = 'Keep studying and try again!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+        function resetQuiz() {
+            answeredQuestions.clear();
+            correctAnswers = 0;
+            document.getElementById('results-card').classList.remove('show');
+            renderQuestions();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        renderQuestions();
+        updateProgress();
+    </script>
+</body>
+</html>

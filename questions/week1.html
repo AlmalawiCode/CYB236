@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1: Introduction & History of Software Security - CYB236 Question Bank</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-left: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week1-ar.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">النسخة العربية</a>
+            </div>
+            <a href="index.html" class="back-link">&larr; Back to Question Bank</a>
+            <div class="quiz-badge">Week 1</div>
+            <h1>Introduction & History of Software Security</h1>
+            <p>Enigma machine, phreaking, Morris Worm, modern threats, hacker types</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">Answered</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">Correct</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">Score</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">You answered <span id="final-correct">0</span> out of <span id="final-total">0</span> questions correctly</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">Try Again</button>
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - Web Application Security | King Abdulaziz University</p>
+            <p style="margin-top:10px;">Prepared by Dr. Almalawi</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: 'What type of encryption did the Enigma machine use?',
+                options: [
+                    { text: 'Asymmetric key encryption', correct: false },
+                    { text: 'Symmetric key encryption', correct: true },
+                    { text: 'Public key infrastructure', correct: false },
+                    { text: 'Hash-based encryption', correct: false }
+                ]
+            },
+            {
+                question: 'Who led the effort to build the Bombe machine that helped break the Enigma code?',
+                options: [
+                    { text: 'Marian Rejewski', correct: false },
+                    { text: 'Alan Turing', correct: true },
+                    { text: 'John Draper', correct: false },
+                    { text: 'Fred Cohen', correct: false }
+                ]
+            },
+            {
+                question: 'What cryptographic attack technique did the Bombe machine primarily rely on?',
+                options: [
+                    { text: 'Brute force attack', correct: false },
+                    { text: 'Dictionary attack', correct: false },
+                    { text: 'Known Plaintext Attack', correct: true },
+                    { text: 'Man-in-the-middle attack', correct: false }
+                ]
+            },
+            {
+                question: 'What frequency was discovered to manipulate the telephone network during the phreaking era?',
+                options: [
+                    { text: '1200 Hz', correct: false },
+                    { text: '1800 Hz', correct: false },
+                    { text: '2600 Hz', correct: true },
+                    { text: '3200 Hz', correct: false }
+                ]
+            },
+            {
+                question: 'What was the purpose of "Blue Boxes" in the 1950s-1960s?',
+                options: [
+                    { text: 'Encrypting telephone calls', correct: false },
+                    { text: 'Generating specific audio frequencies to exploit phone networks', correct: true },
+                    { text: 'Recording conversations for surveillance', correct: false },
+                    { text: 'Blocking unauthorized callers', correct: false }
+                ]
+            },
+            {
+                question: 'Which famous tech company founders built and sold blue boxes before starting their company?',
+                options: [
+                    { text: 'Bill Gates and Paul Allen', correct: false },
+                    { text: 'Larry Page and Sergey Brin', correct: false },
+                    { text: 'Steve Wozniak and Steve Jobs', correct: true },
+                    { text: 'Mark Zuckerberg and Eduardo Saverin', correct: false }
+                ]
+            },
+            {
+                question: 'What was the telephone company\'s security response to phreaking attacks?',
+                options: [
+                    { text: 'Encryption of all calls', correct: false },
+                    { text: 'DTMF (Dual-Tone Multi-Frequency) technology', correct: true },
+                    { text: 'Call blocking software', correct: false },
+                    { text: 'Mandatory caller ID', correct: false }
+                ]
+            },
+            {
+                question: 'Who created the first computer virus in 1983?',
+                options: [
+                    { text: 'Robert Morris', correct: false },
+                    { text: 'Fred Cohen', correct: true },
+                    { text: 'John Draper', correct: false },
+                    { text: 'Kevin Mitnick', correct: false }
+                ]
+            },
+            {
+                question: 'What was a major consequence of the Morris Worm in 1988?',
+                options: [
+                    { text: 'Creation of the FBI Cyber Division', correct: false },
+                    { text: 'Creation of CERT (Computer Emergency Response Team)', correct: true },
+                    { text: 'Founding of OWASP', correct: false },
+                    { text: 'Passage of GDPR', correct: false }
+                ]
+            },
+            {
+                question: 'What US legislation, passed in 1986, was the first major law addressing computer crimes?',
+                options: [
+                    { text: 'GDPR', correct: false },
+                    { text: 'PCI-DSS', correct: false },
+                    { text: 'Computer Fraud and Abuse Act (CFAA)', correct: true },
+                    { text: 'Sarbanes-Oxley Act', correct: false }
+                ]
+            },
+            {
+                question: 'What major shift defined the Web 2.0 era in the early 2000s?',
+                options: [
+                    { text: 'Websites became slower and more secure', correct: false },
+                    { text: 'The web transformed from static documents to interactive, user-driven applications', correct: true },
+                    { text: 'All websites required encryption', correct: false },
+                    { text: 'Browsers stopped supporting JavaScript', correct: false }
+                ]
+            },
+            {
+                question: 'When was OWASP (Open Web Application Security Project) founded?',
+                options: [
+                    { text: '1995', correct: false },
+                    { text: '2001', correct: true },
+                    { text: '2010', correct: false },
+                    { text: '2015', correct: false }
+                ]
+            },
+            {
+                question: 'A hacker who finds vulnerabilities with permission and follows responsible disclosure is called a:',
+                options: [
+                    { text: 'Grey Hat Hacker', correct: false },
+                    { text: 'Black Hat Hacker', correct: false },
+                    { text: 'White Hat Hacker', correct: true },
+                    { text: 'Script Kiddie', correct: false }
+                ]
+            },
+            {
+                question: 'What type of modern attack involves compromising a software vendor to attack their customers?',
+                options: [
+                    { text: 'Phishing', correct: false },
+                    { text: 'Ransomware', correct: false },
+                    { text: 'Denial of Service', correct: false },
+                    { text: 'Supply Chain Attack', correct: true }
+                ]
+            },
+            {
+                question: 'The 2017 Equifax breach exposed 147 million records due to:',
+                options: [
+                    { text: 'A phishing email', correct: false },
+                    { text: 'An unpatched Apache Struts vulnerability', correct: true },
+                    { text: 'A weak admin password', correct: false },
+                    { text: 'An insider threat', correct: false }
+                ]
+            },
+            {
+                question: 'What type of threat is characterized by long-term, targeted attacks often sponsored by nation-states?',
+                options: [
+                    { text: 'Ransomware', correct: false },
+                    { text: 'Advanced Persistent Threat (APT)', correct: true },
+                    { text: 'Phishing', correct: false },
+                    { text: 'Denial of Service', correct: false }
+                ]
+            },
+            {
+                question: 'What was the estimated cost of an average data breach in 2024?',
+                options: [
+                    { text: '$500,000', correct: false },
+                    { text: '$1.2 million', correct: false },
+                    { text: '$4.45 million', correct: true },
+                    { text: '$10 million', correct: false }
+                ]
+            },
+            {
+                question: 'The SolarWinds attack in 2020 is an example of which type of attack?',
+                options: [
+                    { text: 'SQL Injection', correct: false },
+                    { text: 'Cross-Site Scripting', correct: false },
+                    { text: 'Supply Chain Attack', correct: true },
+                    { text: 'Brute Force', correct: false }
+                ]
+            },
+            {
+                question: 'Which browser security mechanism provides isolation between different website origins?',
+                options: [
+                    { text: 'Content Security Policy (CSP)', correct: false },
+                    { text: 'Same Origin Policy (SOP)', correct: true },
+                    { text: 'HTTPS/TLS', correct: false },
+                    { text: 'Firewall', correct: false }
+                ]
+            },
+            {
+                question: 'In the context of web security, what is the main lesson from the history of hacking?',
+                options: [
+                    { text: 'Only governments need security', correct: false },
+                    { text: 'Technology without considering malicious intent will eventually be exploited', correct: true },
+                    { text: 'Hardware is more secure than software', correct: false },
+                    { text: 'Open-source software is always insecure', correct: false }
+                ]
+            }
+        ];
+
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `
+                    <li class="option-item">
+                        <label class="option-label" data-question="${index}" data-correct="${opt.correct}">
+                            <input type="radio" name="question-${index}" value="${opt.correct}">
+                            <span class="option-marker"></span>
+                            <span class="option-text">${opt.text}</span>
+                        </label>
+                    </li>`).join('')}</ul>`;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">${index + 1}</span>
+                        <span class="question-type">Multiple Choice</span>
+                    </div>
+                    <p class="question-text">${q.question}</p>
+                    ${optionsHTML}
+                    <div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+
+        function handleAnswer(e) {
+            const label = e.currentTarget;
+            const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return;
+            answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) {
+                correctAnswers++;
+                label.classList.remove('selected');
+                label.classList.add('correct');
+                card.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '\u2713 Correct!';
+            } else {
+                label.classList.add('incorrect');
+                card.classList.add('incorrect');
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = '\u2717 Incorrect - See the correct answer highlighted above';
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'Excellent! You\'re well prepared!';
+            else if (percent >= 70) message = 'Good job! Keep practicing!';
+            else if (percent >= 50) message = 'Not bad, but review the material.';
+            else message = 'Keep studying and try again!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+
+        function resetQuiz() {
+            answeredQuestions.clear();
+            correctAnswers = 0;
+            document.getElementById('results-card').classList.remove('show');
+            renderQuestions();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        renderQuestions();
+        updateProgress();
+    </script>
+</body>
+</html>

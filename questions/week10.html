@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10: DoS Defense & Securing Dependencies - CYB236 Question Bank</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-left: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week10-ar.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">النسخة العربية</a>
+            </div>
+            <a href="index.html" class="back-link">&larr; Back to Question Bank</a>
+            <div class="quiz-badge">Week 10</div>
+            <h1>DoS Defense & Securing Dependencies</h1>
+            <p>Rate limiting, pagination, caching, dependency locking, supply chain security</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">Answered</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">Correct</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">Score</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">You answered <span id="final-correct">0</span> out of <span id="final-total">0</span> questions correctly</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">Try Again</button>
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - Web Application Security | King Abdulaziz University</p>
+            <p style="margin-top:10px;">Prepared by Dr. Almalawi</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "What is rate limiting in the context of DoS defense?",
+                options: [
+                    { text: "Limiting the number of developers", correct: false },
+                    { text: "Capping the number of requests per user per time period on resource-intensive endpoints", correct: true },
+                    { text: "Limiting internet speed", correct: false },
+                    { text: "Restricting database size", correct: false }
+                ]
+            },
+            {
+                question: "Why are resource quotas important for preventing Logical DoS?",
+                options: [
+                    { text: "They reduce code complexity", correct: false },
+                    { text: "They limit how much data a user can accumulate, preventing expensive queries on large datasets", correct: true },
+                    { text: "They save disk space", correct: false },
+                    { text: "They improve user experience", correct: false }
+                ]
+            },
+            {
+                question: "What is the purpose of request timeouts in DoS defense?",
+                options: [
+                    { text: "To make users wait longer", correct: false },
+                    { text: "To set a hard time limit on expensive operations, failing fast rather than blocking indefinitely", correct: true },
+                    { text: "To increase server capacity", correct: false },
+                    { text: "To improve security logging", correct: false }
+                ]
+            },
+            {
+                question: "Why is pagination important for DoS prevention?",
+                options: [
+                    { text: "It makes pages look better", correct: false },
+                    { text: "It prevents returning all records in a single query, bounding the response size", correct: true },
+                    { text: "It encrypts responses", correct: false },
+                    { text: "It speeds up JavaScript", correct: false }
+                ]
+            },
+            {
+                question: "How does response caching help defend against DoS?",
+                options: [
+                    { text: "It blocks all requests", correct: false },
+                    { text: "It stores expensive query results so repeated requests hit the cache instead of re-querying the database", correct: true },
+                    { text: "It encrypts all responses", correct: false },
+                    { text: "It deletes old data", correct: false }
+                ]
+            },
+            {
+                question: "What is the benefit of using async job queues for DoS defense?",
+                options: [
+                    { text: "They make the application slower", correct: false },
+                    { text: "They move heavy operations to background processing, decoupling them from the HTTP request cycle", correct: true },
+                    { text: "They block all background tasks", correct: false },
+                    { text: "They increase server costs", correct: false }
+                ]
+            },
+            {
+                question: "Why can DDoS attacks not be fully prevented?",
+                options: [
+                    { text: "Because servers are too slow", correct: false },
+                    { text: "Because bots are real compromised computers that look like legitimate users, making traffic indistinguishable", correct: true },
+                    { text: "Because encryption is too weak", correct: false },
+                    { text: "Because firewalls do not exist", correct: false }
+                ]
+            },
+            {
+                question: "What is traffic baselining in DDoS mitigation?",
+                options: [
+                    { text: "Blocking all traffic", correct: false },
+                    { text: "Understanding normal traffic patterns so you can identify abnormal surges and apply appropriate filters", correct: true },
+                    { text: "Increasing server bandwidth", correct: false },
+                    { text: "Turning off the website", correct: false }
+                ]
+            },
+            {
+                question: "What risk does over-filtering pose in DDoS mitigation?",
+                options: [
+                    { text: "It makes the server faster", correct: false },
+                    { text: "It can block legitimate users along with malicious traffic", correct: true },
+                    { text: "It increases costs", correct: false },
+                    { text: "It has no risks", correct: false }
+                ]
+            },
+            {
+                question: "How many unique dependency versions can large applications have?",
+                options: [
+                    { text: "5-10", correct: false },
+                    { text: "50-100", correct: false },
+                    { text: "Thousands", correct: true },
+                    { text: "Only one", correct: false }
+                ]
+            },
+            {
+                question: "What does removing the caret (^) from package.json do?",
+                options: [
+                    { text: "Removes the package", correct: false },
+                    { text: "Pins the dependency to an exact version, preventing automatic minor/patch updates", correct: true },
+                    { text: "Upgrades to the latest version", correct: false },
+                    { text: "Makes the package private", correct: false }
+                ]
+            },
+            {
+                question: "What does npm shrinkwrap do?",
+                options: [
+                    { text: "Compresses packages", correct: false },
+                    { text: "Locks the entire dependency tree including all sub-dependencies to specific versions", correct: true },
+                    { text: "Deletes unused packages", correct: false },
+                    { text: "Encrypts packages", correct: false }
+                ]
+            },
+            {
+                question: "What is the most secure way to reference a dependency version?",
+                options: [
+                    { text: "Using \"latest\"", correct: false },
+                    { text: "Using a caret (^) range", correct: false },
+                    { text: "Referencing a specific Git SHA", correct: true },
+                    { text: "Not specifying a version", correct: false }
+                ]
+            },
+            {
+                question: "What is the purpose of a private npm mirror?",
+                options: [
+                    { text: "To speed up downloads", correct: false },
+                    { text: "To provide the highest level of security by controlling exactly which packages are available", correct: true },
+                    { text: "To save disk space", correct: false },
+                    { text: "To share packages publicly", correct: false }
+                ]
+            },
+            {
+                question: "What is the \"separation of concerns\" approach to securing third-party code?",
+                options: [
+                    { text: "Writing all code yourself", correct: false },
+                    { text: "Running risky third-party code on isolated servers that communicate via HTTP with JSON", correct: true },
+                    { text: "Deleting all dependencies", correct: false },
+                    { text: "Using only one programming language", correct: false }
+                ]
+            },
+            {
+                question: "What should you do when evaluating a new dependency for your project?",
+                options: [
+                    { text: "Install it immediately without checking", correct: false },
+                    { text: "Scan it against CVE databases and evaluate its security posture before adding it", correct: true },
+                    { text: "Only check its download count", correct: false },
+                    { text: "Read only the README", correct: false }
+                ]
+            },
+            {
+                question: "Why is supply chain security increasingly important?",
+                options: [
+                    { text: "It affects shipping costs", correct: false },
+                    { text: "One compromised package in a popular library can cascade to affect millions of applications", correct: true },
+                    { text: "It only affects large companies", correct: false },
+                    { text: "Supply chains are unrelated to software", correct: false }
+                ]
+            },
+            {
+                question: "What is the recommended approach for classifying DoS risk on endpoints?",
+                options: [
+                    { text: "Binary: safe or unsafe", correct: false },
+                    { text: "Classify as High, Medium, or Low risk and apply defenses proportional to the risk level", correct: true },
+                    { text: "Ignore the risk", correct: false },
+                    { text: "Block all endpoints", correct: false }
+                ]
+            },
+            {
+                question: "What command lists the full dependency tree in npm?",
+                options: [
+                    { text: "npm start", correct: false },
+                    { text: "npm ls", correct: true },
+                    { text: "npm build", correct: false },
+                    { text: "npm run dev", correct: false }
+                ]
+            },
+            {
+                question: "What is the best defense when a third-party dependency on an isolated server is compromised?",
+                options: [
+                    { text: "There is no defense", correct: false },
+                    { text: "The blast radius is contained because the server has limited network access and communicates only via structured HTTP/JSON", correct: true },
+                    { text: "Restart the main application", correct: false },
+                    { text: "Delete all servers", correct: false }
+                ]
+            }
+        ];
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+        function shuffleArray(array) { const shuffled = [...array]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
+        function renderQuestions() {
+            const container = document.getElementById('questions-container'); container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div'); card.className = 'question-card'; card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `<li class="option-item"><label class="option-label" data-question="${index}" data-correct="${opt.correct}"><input type="radio" name="question-${index}" value="${opt.correct}"><span class="option-marker"></span><span class="option-text">${opt.text}</span></label></li>`).join('')}</ul>`;
+                card.innerHTML = `<div class="question-header"><span class="question-number">${index + 1}</span><span class="question-type">Multiple Choice</span></div><p class="question-text">${q.question}</p>${optionsHTML}<div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+        function handleAnswer(e) {
+            const label = e.currentTarget; const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return; answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) { correctAnswers++; label.classList.remove('selected'); label.classList.add('correct'); card.classList.add('correct'); feedback.className = 'feedback show correct'; feedback.innerHTML = '\u2713 Correct!'; }
+            else { label.classList.add('incorrect'); card.classList.add('incorrect'); feedback.className = 'feedback show incorrect'; feedback.innerHTML = '\u2717 Incorrect - See the correct answer highlighted above'; }
+            updateProgress();
+        }
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'Excellent! You\'re well prepared!';
+            else if (percent >= 70) message = 'Good job! Keep practicing!';
+            else if (percent >= 50) message = 'Not bad, but review the material.';
+            else message = 'Keep studying and try again!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+        function resetQuiz() { answeredQuestions.clear(); correctAnswers = 0; document.getElementById('results-card').classList.remove('show'); renderQuestions(); updateProgress(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        renderQuestions(); updateProgress();
+    </script>
+</body>
+</html>

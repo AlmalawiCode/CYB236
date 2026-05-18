@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسبوع 4: اختراق تطبيقات الويب - CYB236 بنك الأسئلة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-right: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week4.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">English Version</a>
+            </div>
+            <a href="index-ar.html" class="back-link">العودة إلى بنك الأسئلة &rarr;</a>
+            <div class="quiz-badge">الأسبوع 4</div>
+            <h1>اختراق تطبيقات الويب</h1>
+            <p>XSS، CSRF، XXE، حقن SQL، حقن الأوامر، هجمات حجب الخدمة</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">تم الإجابة</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">صحيح</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">النتيجة</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">أجبت <span id="final-correct">0</span> من أصل <span id="final-total">0</span> سؤال بشكل صحيح</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">حاول مرة أخرى</button>
+                <a href="index-ar.html" class="btn btn-secondary">العودة للرئيسية</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - أمن تطبيقات الويب | جامعة الملك عبدالعزيز</p>
+            <p style="margin-top:10px;">إعداد د. المالوي</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "ما هو البرمجة عبر المواقع (XSS)؟",
+                options: [
+                    { text: "طريقة لتشفير حركة مرور الموقع", correct: false },
+                    { text: "هجوم يتم فيه حقن نصوص برمجية خبيثة في تطبيق ويب وتنفيذها في متصفحات المستخدمين", correct: true },
+                    { text: "أداة لاختبار سرعة الموقع", correct: false },
+                    { text: "إطار عمل للبرمجة الآمنة", correct: false }
+                ]
+            },
+            {
+                question: "أي نوع من XSS يخزن النص البرمجي الخبيث في قاعدة بيانات الخادم؟",
+                options: [
+                    { text: "Reflected XSS", correct: false },
+                    { text: "DOM-Based XSS", correct: false },
+                    { text: "Stored XSS", correct: true },
+                    { text: "Mutation XSS", correct: false }
+                ]
+            },
+            {
+                question: "أي نوع من XSS يُنفَّذ بالكامل في المتصفح دون أن يصل إلى الخادم أبداً؟",
+                options: [
+                    { text: "Stored XSS", correct: false },
+                    { text: "Reflected XSS", correct: false },
+                    { text: "DOM-Based XSS", correct: true },
+                    { text: "حقن SQL", correct: false }
+                ]
+            },
+            {
+                question: "ما الذي يجعل Mutation XSS (mXSS) خطيراً بشكل خاص؟",
+                options: [
+                    { text: "يؤثر فقط على الأجهزة المحمولة", correct: false },
+                    { text: "الحمولة تمر عبر مرشحات الأمان بسلام لكنها تتحول إلى استغلال عندما يعرضها المتصفح", correct: true },
+                    { text: "يتطلب وصولاً مادياً", correct: false },
+                    { text: "يعمل فقط على المتصفحات القديمة", correct: false }
+                ]
+            },
+            {
+                question: "ما هو الهدف الرئيسي لهجوم CSRF (تزوير الطلبات عبر المواقع)؟",
+                options: [
+                    { text: "سرقة الكود المصدري للخادم", correct: false },
+                    { text: "جعل مستخدم ذي صلاحيات يقوم بإجراءات دون علمه", correct: true },
+                    { text: "تشفير ملفات الضحية", correct: false },
+                    { text: "تعطيل خادم الويب", correct: false }
+                ]
+            },
+            {
+                question: "لماذا يكون هجوم CSRF ممكناً في متصفحات الويب؟",
+                options: [
+                    { text: "لأن المتصفحات ليس لديها أمان", correct: false },
+                    { text: "لأن المتصفحات ترفق تلقائياً ملفات تعريف الارتباط (cookies) للمصادقة مع كل طلب، حتى من مواقع مختلفة", correct: true },
+                    { text: "لأن الخوادم لا تتحقق أبداً من الطلبات", correct: false },
+                    { text: "لأن JavaScript معطل افتراضياً", correct: false }
+                ]
+            },
+            {
+                question: "أي عناصر HTML يمكنها إطلاق طلبات GET تلقائية دون أي نقر من المستخدم؟",
+                options: [
+                    { text: "عنصر الرابط فقط", correct: false },
+                    { text: "عناصر الصورة والفيديو والصوت و iframe و script", correct: true },
+                    { text: "عناصر النموذج فقط", correct: false },
+                    { text: "عناصر الأزرار فقط", correct: false }
+                ]
+            },
+            {
+                question: "ما هو حقن الكيانات الخارجية في XML (XXE)؟",
+                options: [
+                    { text: "طريقة لضغط ملفات XML", correct: false },
+                    { text: "هجوم يستغل محللات XML لقراءة ملفات الخادم عن طريق الإشارة إلى كيانات خارجية", correct: true },
+                    { text: "طريقة لتشفير بيانات XML", correct: false },
+                    { text: "أداة للتحقق من مخططات XML", correct: false }
+                ]
+            },
+            {
+                question: "ما أنواع الملفات المعرضة لخطر هجمات XXE؟",
+                options: [
+                    { text: "الملفات النصية فقط", correct: false },
+                    { text: "ملفات الخادم مثل /etc/passwd ومفاتيح SSH وملفات الإعدادات والكود المصدري", correct: true },
+                    { text: "ملفات الصور فقط", correct: false },
+                    { text: "ملفات قواعد البيانات فقط", correct: false }
+                ]
+            },
+            {
+                question: "كيف يتم عادةً إصلاح ثغرة XXE؟",
+                options: [
+                    { text: "بترقية نظام التشغيل", correct: false },
+                    { text: "بتعطيل الكيانات الخارجية في إعدادات محلل XML", correct: true },
+                    { text: "بتثبيت جدار حماية", correct: false },
+                    { text: "بتشفير جميع ملفات XML", correct: false }
+                ]
+            },
+            {
+                question: "ما هو حقن SQL؟",
+                options: [
+                    { text: "طريقة لتحسين استعلامات قاعدة البيانات", correct: false },
+                    { text: "هجوم يتم فيه تمرير مدخلات المستخدم بدون تنقية إلى استعلامات SQL، مما يسمح بتنفيذ أوامر غير مصرح بها على قاعدة البيانات", correct: true },
+                    { text: "تقنية نسخ احتياطي لقاعدة البيانات", correct: false },
+                    { text: "طريقة لإنشاء فهارس قاعدة البيانات", correct: false }
+                ]
+            },
+            {
+                question: "في حقن SQL، ماذا يحقق الإدخال '1=1' عند حقنه في جملة WHERE؟",
+                options: [
+                    { text: "يحذف الجدول", correct: false },
+                    { text: "يعيد جميع السجلات لأن الشرط يكون دائماً صحيحاً", correct: true },
+                    { text: "يشفر قاعدة البيانات", correct: false },
+                    { text: "ينشئ جدولاً جديداً", correct: false }
+                ]
+            },
+            {
+                question: "ما هو حقن الأوامر؟",
+                options: [
+                    { text: "كتابة الأوامر بسرعة أكبر", correct: false },
+                    { text: "هجوم يتجاوز مفسر سطر الأوامر لتنفيذ أوامر تعسفية على نظام التشغيل", correct: true },
+                    { text: "طريقة لأتمتة إدارة الخادم", correct: false },
+                    { text: "طريقة لتشفير الأوامر", correct: false }
+                ]
+            },
+            {
+                question: "لماذا يُعتبر حقن الأوامر أخطر أنواع الحقن؟",
+                options: [
+                    { text: "لأنه الأسهل في التنفيذ", correct: false },
+                    { text: "لأنه يمنح المهاجم وصولاً كاملاً إلى نظام التشغيل المضيف بصلاحيات عملية الخادم", correct: true },
+                    { text: "لأنه يؤثر فقط على قواعد البيانات", correct: false },
+                    { text: "لأنه لا يمكن منعه", correct: false }
+                ]
+            },
+            {
+                question: "ما هي آلية الدفاع التي تمنع جميع أنواع هجمات الحقن؟",
+                options: [
+                    { text: "التشفير", correct: false },
+                    { text: "المعاملات المحددة (Parameterization / Prepared Statements)", correct: true },
+                    { text: "الضغط", correct: false },
+                    { text: "التخزين المؤقت", correct: false }
+                ]
+            },
+            {
+                question: "ما هو Regex DoS (ReDoS)؟",
+                options: [
+                    { text: "تعبير نمطي يعمل ببطء شديد على مدخلات عادية", correct: false },
+                    { text: "هجوم يستخدم مدخلات مُصاغة خصيصاً تسبب تراجعاً أسياً في أنماط التعبيرات النمطية الضعيفة", correct: true },
+                    { text: "أداة لاختبار التعبيرات النمطية", correct: false },
+                    { text: "طريقة لتحسين أداء التعبيرات النمطية", correct: false }
+                ]
+            },
+            {
+                question: "ما هي شبكة البوتات (Botnet) في سياق هجمات DDoS؟",
+                options: [
+                    { text: "شبكة من الباحثين الأمنيين", correct: false },
+                    { text: "شبكة من الأجهزة المخترقة المنسقة لإغراق الهدف بالطلبات", correct: true },
+                    { text: "مجموعة من خوادم الويب", correct: false },
+                    { text: "نوع من جدران الحماية", correct: false }
+                ]
+            },
+            {
+                question: "ما الذي يميز هجوم DDoS عن هجوم DoS من مصدر واحد؟",
+                options: [
+                    { text: "DDoS يستخدم التشفير", correct: false },
+                    { text: "DDoS يشمل آلاف الأجهزة المنسقة التي تهاجم في وقت واحد", correct: true },
+                    { text: "DoS أكثر خطورة", correct: false },
+                    { text: "DDoS يستهدف قواعد البيانات فقط", correct: false }
+                ]
+            },
+            {
+                question: "ما هي السمة التي تجعل معظم أعمال الاختراق مختلفة عما يُصوَّر في الأفلام؟",
+                options: [
+                    { text: "المخترقون يستخدمون دائماً رسومات مبهرة", correct: false },
+                    { text: "معظم الاختراق يتضمن جمع بيانات وتحليلها بصبر، وليس تلاعباً دراماتيكياً بالكود", correct: true },
+                    { text: "المخترقون يعملون دائماً بمفردهم", correct: false },
+                    { text: "الاختراق يتطلب أجهزة خاصة", correct: false }
+                ]
+            },
+            {
+                question: "ما الذي يمكن أن يفعله هجوم Stored XSS؟",
+                options: [
+                    { text: "عرض مربع تنبيه فقط", correct: false },
+                    { text: "سرقة رموز الجلسة، وتسريب البيانات الشخصية، ورسم واجهة مستخدم مزيفة، والاستمرار عبر الجلسات", correct: true },
+                    { text: "تغيير لون الصفحة فقط", correct: false },
+                    { text: "التأثير فقط على متصفح المهاجم", correct: false }
+                ]
+            }
+        ];
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `
+                    <li class="option-item">
+                        <label class="option-label" data-question="${index}" data-correct="${opt.correct}">
+                            <input type="radio" name="question-${index}" value="${opt.correct}">
+                            <span class="option-marker"></span>
+                            <span class="option-text">${opt.text}</span>
+                        </label>
+                    </li>`).join('')}</ul>`;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">${index + 1}</span>
+                        <span class="question-type">اختيار من متعدد</span>
+                    </div>
+                    <p class="question-text">${q.question}</p>
+                    ${optionsHTML}
+                    <div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+        function handleAnswer(e) {
+            const label = e.currentTarget;
+            const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return;
+            answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) {
+                correctAnswers++;
+                label.classList.remove('selected');
+                label.classList.add('correct');
+                card.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '\u2713 إجابة صحيحة!';
+            } else {
+                label.classList.add('incorrect');
+                card.classList.add('incorrect');
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = '\u2717 إجابة خاطئة - انظر الإجابة الصحيحة المحددة أعلاه';
+            }
+            updateProgress();
+        }
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'ممتاز! أنت مستعد جيدًا!';
+            else if (percent >= 70) message = 'أحسنت! واصل التدريب!';
+            else if (percent >= 50) message = 'لا بأس، لكن راجع المادة.';
+            else message = 'واصل المذاكرة وحاول مرة أخرى!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+        function resetQuiz() {
+            answeredQuestions.clear();
+            correctAnswers = 0;
+            document.getElementById('results-card').classList.remove('show');
+            renderQuestions();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        renderQuestions();
+        updateProgress();
+    </script>
+</body>
+</html>

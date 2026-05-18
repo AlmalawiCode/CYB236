@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسبوع 1: مقدمة وتاريخ أمن البرمجيات - CYB236 بنك الأسئلة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-right: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week1.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">English Version</a>
+            </div>
+            <a href="index-ar.html" class="back-link">العودة إلى بنك الأسئلة &rarr;</a>
+            <div class="quiz-badge">الأسبوع 1</div>
+            <h1>مقدمة وتاريخ أمن البرمجيات</h1>
+            <p>آلة إنجما، القرصنة الهاتفية، دودة موريس، التهديدات الحديثة، أنواع القراصنة</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">تم الإجابة</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">صحيح</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">النتيجة</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">أجبت <span id="final-correct">0</span> من أصل <span id="final-total">0</span> سؤال بشكل صحيح</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">حاول مرة أخرى</button>
+                <a href="index-ar.html" class="btn btn-secondary">العودة للرئيسية</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - أمن تطبيقات الويب | جامعة الملك عبدالعزيز</p>
+            <p style="margin-top:10px;">إعداد د. المالوي</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: 'ما نوع التشفير الذي استخدمته آلة إنجما (Enigma)؟',
+                options: [
+                    { text: 'تشفير المفتاح غير المتماثل', correct: false },
+                    { text: 'تشفير المفتاح المتماثل', correct: true },
+                    { text: 'البنية التحتية للمفتاح العام (PKI)', correct: false },
+                    { text: 'التشفير المبني على التجزئة (Hash)', correct: false }
+                ]
+            },
+            {
+                question: 'من قاد الجهود لبناء آلة Bombe التي ساعدت في كسر شفرة إنجما؟',
+                options: [
+                    { text: 'ماريان ريجيوسكي (Marian Rejewski)', correct: false },
+                    { text: 'آلان تورنج (Alan Turing)', correct: true },
+                    { text: 'جون دريبر (John Draper)', correct: false },
+                    { text: 'فريد كوهين (Fred Cohen)', correct: false }
+                ]
+            },
+            {
+                question: 'ما تقنية الهجوم التشفيري التي اعتمدت عليها آلة Bombe بشكل أساسي؟',
+                options: [
+                    { text: 'هجوم القوة الغاشمة (Brute Force)', correct: false },
+                    { text: 'هجوم القاموس (Dictionary Attack)', correct: false },
+                    { text: 'هجوم النص الصريح المعروف (Known Plaintext Attack)', correct: true },
+                    { text: 'هجوم الرجل في المنتصف (Man-in-the-Middle)', correct: false }
+                ]
+            },
+            {
+                question: 'ما التردد الذي تم اكتشافه للتلاعب بشبكة الهاتف خلال حقبة القرصنة الهاتفية (Phreaking)؟',
+                options: [
+                    { text: '1200 Hz', correct: false },
+                    { text: '1800 Hz', correct: false },
+                    { text: '2600 Hz', correct: true },
+                    { text: '3200 Hz', correct: false }
+                ]
+            },
+            {
+                question: 'ما كان الغرض من "الصناديق الزرقاء" (Blue Boxes) في الخمسينيات والستينيات؟',
+                options: [
+                    { text: 'تشفير المكالمات الهاتفية', correct: false },
+                    { text: 'توليد ترددات صوتية محددة لاستغلال شبكات الهاتف', correct: true },
+                    { text: 'تسجيل المحادثات للمراقبة', correct: false },
+                    { text: 'حظر المتصلين غير المصرح لهم', correct: false }
+                ]
+            },
+            {
+                question: 'أي مؤسسي شركات التقنية الشهيرة قاموا ببناء وبيع الصناديق الزرقاء قبل تأسيس شركتهم؟',
+                options: [
+                    { text: 'بيل غيتس وبول ألين (Bill Gates & Paul Allen)', correct: false },
+                    { text: 'لاري بيج وسيرجي برين (Larry Page & Sergey Brin)', correct: false },
+                    { text: 'ستيف وزنياك وستيف جوبز (Steve Wozniak & Steve Jobs)', correct: true },
+                    { text: 'مارك زوكربيرغ وإدواردو سافرين (Mark Zuckerberg & Eduardo Saverin)', correct: false }
+                ]
+            },
+            {
+                question: 'ما كان رد شركة الهاتف الأمني على هجمات القرصنة الهاتفية؟',
+                options: [
+                    { text: 'تشفير جميع المكالمات', correct: false },
+                    { text: 'تقنية DTMF (التردد المزدوج متعدد النغمات)', correct: true },
+                    { text: 'برنامج حظر المكالمات', correct: false },
+                    { text: 'هوية المتصل الإلزامية', correct: false }
+                ]
+            },
+            {
+                question: 'من أنشأ أول فيروس حاسوبي عام 1983؟',
+                options: [
+                    { text: 'روبرت موريس (Robert Morris)', correct: false },
+                    { text: 'فريد كوهين (Fred Cohen)', correct: true },
+                    { text: 'جون دريبر (John Draper)', correct: false },
+                    { text: 'كيفن ميتنيك (Kevin Mitnick)', correct: false }
+                ]
+            },
+            {
+                question: 'ما كانت النتيجة الرئيسية لدودة موريس (Morris Worm) عام 1988؟',
+                options: [
+                    { text: 'إنشاء قسم الجرائم الإلكترونية في FBI', correct: false },
+                    { text: 'إنشاء CERT (فريق الاستجابة لطوارئ الحاسوب)', correct: true },
+                    { text: 'تأسيس OWASP', correct: false },
+                    { text: 'إصدار قانون GDPR', correct: false }
+                ]
+            },
+            {
+                question: 'ما التشريع الأمريكي الذي صدر عام 1986 وكان أول قانون رئيسي يتناول جرائم الحاسوب؟',
+                options: [
+                    { text: 'GDPR', correct: false },
+                    { text: 'PCI-DSS', correct: false },
+                    { text: 'قانون الاحتيال وإساءة استخدام الحاسوب (CFAA)', correct: true },
+                    { text: 'قانون ساربينز أوكسلي (Sarbanes-Oxley Act)', correct: false }
+                ]
+            },
+            {
+                question: 'ما التحول الرئيسي الذي ميّز حقبة Web 2.0 في أوائل الألفية الثالثة؟',
+                options: [
+                    { text: 'أصبحت المواقع أبطأ وأكثر أمانًا', correct: false },
+                    { text: 'تحول الويب من مستندات ثابتة إلى تطبيقات تفاعلية يقودها المستخدم', correct: true },
+                    { text: 'أصبحت جميع المواقع تتطلب التشفير', correct: false },
+                    { text: 'توقفت المتصفحات عن دعم JavaScript', correct: false }
+                ]
+            },
+            {
+                question: 'متى تأسس مشروع OWASP (مشروع أمان تطبيقات الويب المفتوح)؟',
+                options: [
+                    { text: '1995', correct: false },
+                    { text: '2001', correct: true },
+                    { text: '2010', correct: false },
+                    { text: '2015', correct: false }
+                ]
+            },
+            {
+                question: 'القرصان الذي يكتشف الثغرات بإذن ويتبع الإفصاح المسؤول يُسمى:',
+                options: [
+                    { text: 'قرصان القبعة الرمادية (Grey Hat)', correct: false },
+                    { text: 'قرصان القبعة السوداء (Black Hat)', correct: false },
+                    { text: 'قرصان القبعة البيضاء (White Hat)', correct: true },
+                    { text: 'مبتدئ النصوص (Script Kiddie)', correct: false }
+                ]
+            },
+            {
+                question: 'ما نوع الهجوم الحديث الذي يتضمن اختراق مورد برمجيات لمهاجمة عملائه؟',
+                options: [
+                    { text: 'التصيد الاحتيالي (Phishing)', correct: false },
+                    { text: 'برامج الفدية (Ransomware)', correct: false },
+                    { text: 'حجب الخدمة (Denial of Service)', correct: false },
+                    { text: 'هجوم سلسلة التوريد (Supply Chain Attack)', correct: true }
+                ]
+            },
+            {
+                question: 'كشف اختراق Equifax عام 2017 عن 147 مليون سجل بسبب:',
+                options: [
+                    { text: 'رسالة تصيد احتيالي', correct: false },
+                    { text: 'ثغرة غير مُرقَّعة في Apache Struts', correct: true },
+                    { text: 'كلمة مرور ضعيفة للمسؤول', correct: false },
+                    { text: 'تهديد داخلي', correct: false }
+                ]
+            },
+            {
+                question: 'ما نوع التهديد الذي يتميز بهجمات طويلة الأمد ومستهدفة وغالبًا ما تكون مدعومة من دول؟',
+                options: [
+                    { text: 'برامج الفدية (Ransomware)', correct: false },
+                    { text: 'التهديد المتقدم المستمر (APT)', correct: true },
+                    { text: 'التصيد الاحتيالي (Phishing)', correct: false },
+                    { text: 'حجب الخدمة (Denial of Service)', correct: false }
+                ]
+            },
+            {
+                question: 'ما التكلفة المقدرة لمتوسط اختراق البيانات في عام 2024؟',
+                options: [
+                    { text: '500,000 دولار', correct: false },
+                    { text: '1.2 مليون دولار', correct: false },
+                    { text: '4.45 مليون دولار', correct: true },
+                    { text: '10 مليون دولار', correct: false }
+                ]
+            },
+            {
+                question: 'يُعد هجوم SolarWinds عام 2020 مثالاً على أي نوع من الهجمات؟',
+                options: [
+                    { text: 'حقن SQL (SQL Injection)', correct: false },
+                    { text: 'البرمجة عبر المواقع (XSS)', correct: false },
+                    { text: 'هجوم سلسلة التوريد (Supply Chain Attack)', correct: true },
+                    { text: 'القوة الغاشمة (Brute Force)', correct: false }
+                ]
+            },
+            {
+                question: 'ما آلية أمان المتصفح التي توفر العزل بين أصول المواقع المختلفة؟',
+                options: [
+                    { text: 'سياسة أمان المحتوى (CSP)', correct: false },
+                    { text: 'سياسة المصدر الواحد (SOP)', correct: true },
+                    { text: 'HTTPS/TLS', correct: false },
+                    { text: 'جدار الحماية (Firewall)', correct: false }
+                ]
+            },
+            {
+                question: 'في سياق أمن الويب، ما الدرس الرئيسي من تاريخ القرصنة؟',
+                options: [
+                    { text: 'الحكومات فقط تحتاج إلى الأمن', correct: false },
+                    { text: 'التكنولوجيا بدون مراعاة النوايا الخبيثة ستُستغل في نهاية المطاف', correct: true },
+                    { text: 'الأجهزة أكثر أمانًا من البرمجيات', correct: false },
+                    { text: 'البرمجيات مفتوحة المصدر دائمًا غير آمنة', correct: false }
+                ]
+            }
+        ];
+
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `
+                    <li class="option-item">
+                        <label class="option-label" data-question="${index}" data-correct="${opt.correct}">
+                            <input type="radio" name="question-${index}" value="${opt.correct}">
+                            <span class="option-marker"></span>
+                            <span class="option-text">${opt.text}</span>
+                        </label>
+                    </li>`).join('')}</ul>`;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">${index + 1}</span>
+                        <span class="question-type">اختيار من متعدد</span>
+                    </div>
+                    <p class="question-text">${q.question}</p>
+                    ${optionsHTML}
+                    <div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+
+        function handleAnswer(e) {
+            const label = e.currentTarget;
+            const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return;
+            answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) {
+                correctAnswers++;
+                label.classList.remove('selected');
+                label.classList.add('correct');
+                card.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '\u2713 إجابة صحيحة!';
+            } else {
+                label.classList.add('incorrect');
+                card.classList.add('incorrect');
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = '\u2717 إجابة خاطئة - انظر الإجابة الصحيحة المحددة أعلاه';
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'ممتاز! أنت مستعد جيدًا!';
+            else if (percent >= 70) message = 'أحسنت! واصل التدريب!';
+            else if (percent >= 50) message = 'لا بأس، لكن راجع المادة.';
+            else message = 'واصل المذاكرة وحاول مرة أخرى!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+
+        function resetQuiz() {
+            answeredQuestions.clear();
+            correctAnswers = 0;
+            document.getElementById('results-card').classList.remove('show');
+            renderQuestions();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        renderQuestions();
+        updateProgress();
+    </script>
+</body>
+</html>

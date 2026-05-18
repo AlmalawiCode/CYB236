@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 2: Web Application Technologies - CYB236 Question Bank</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh; color: #fff; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #94a3b8; text-decoration: none; margin-bottom: 20px; transition: color 0.3s;
+        }
+        .back-link:hover { color: #00d4ff; }
+        .quiz-badge {
+            display: inline-block; background: linear-gradient(90deg, #00d4ff, #0099cc);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px;
+        }
+        header h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        header p { color: #94a3b8; }
+        .progress-container {
+            background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .progress-stats { display: flex; gap: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.8rem; color: #94a3b8; }
+        .progress-bar-container { flex: 1; min-width: 200px; }
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border-radius: 4px; transition: width 0.3s ease; width: 0%;
+        }
+        .question-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+        .question-card:hover { border-color: rgba(0,212,255,0.3); }
+        .question-card.correct { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .question-card.incorrect { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .question-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .question-number {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(0,212,255,0.2);
+            color: #00d4ff; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex-shrink: 0;
+        }
+        .question-type {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); color: #94a3b8;
+        }
+        .question-text { font-size: 1.1rem; margin-bottom: 20px; color: #fff; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-label:hover { background: rgba(255,255,255,0.08); border-color: rgba(0,212,255,0.3); }
+        .option-label.selected { background: rgba(0,212,255,0.15); border-color: #00d4ff; }
+        .option-label.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label.incorrect { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+        .option-label.show-correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+        .option-label input { display: none; }
+        .option-marker {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease;
+        }
+        .option-label.selected .option-marker { border-color: #00d4ff; background: #00d4ff; }
+        .option-label.correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-label.incorrect .option-marker { border-color: #ef4444; background: #ef4444; }
+        .option-label.show-correct .option-marker { border-color: #10b981; background: #10b981; }
+        .option-marker::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+        .option-label.selected .option-marker::after,
+        .option-label.correct .option-marker::after,
+        .option-label.show-correct .option-marker::after { background: #fff; }
+        .option-label.incorrect .option-marker::after {
+            content: '\00d7'; background: none; color: #fff; font-size: 16px; font-weight: bold;
+        }
+        .option-text { flex: 1; }
+        .feedback {
+            margin-top: 15px; padding: 12px 15px; border-radius: 8px; display: none; align-items: center; gap: 10px;
+        }
+        .feedback.show { display: flex; }
+        .feedback.correct { background: rgba(16,185,129,0.2); color: #10b981; }
+        .feedback.incorrect { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .results-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,44,191,0.1));
+            border-radius: 20px; padding: 40px; text-align: center; margin-top: 40px;
+            border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .results-card.show { display: block; }
+        .results-score {
+            font-size: 4rem; font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .results-text { font-size: 1.2rem; color: #94a3b8; margin: 15px 0; }
+        .results-message { font-size: 1.5rem; margin: 20px 0; }
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 25px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-size: 1rem;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00d4ff, #7b2cbf); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; margin-left: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        @media (max-width: 600px) {
+            .progress-stats { width: 100%; justify-content: space-around; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="text-align:center;margin-bottom:15px;">
+                <a href="week2-ar.html" style="color:#00d4ff;text-decoration:none;font-size:0.9rem;padding:5px 14px;border:1px solid rgba(0,212,255,0.3);border-radius:20px;">النسخة العربية</a>
+            </div>
+            <a href="index.html" class="back-link">&larr; Back to Question Bank</a>
+            <div class="quiz-badge">Week 2</div>
+            <h1>Web Application Technologies</h1>
+            <p>HTTP protocol, REST APIs, DOM, SPA, JSON, client-server architecture</p>
+        </header>
+        <div class="progress-container">
+            <div class="progress-stats">
+                <div class="stat"><div class="stat-value" id="answered-count">0</div><div class="stat-label">Answered</div></div>
+                <div class="stat"><div class="stat-value" id="correct-count">0</div><div class="stat-label">Correct</div></div>
+                <div class="stat"><div class="stat-value" id="score-percent">0%</div><div class="stat-label">Score</div></div>
+            </div>
+            <div class="progress-bar-container"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div id="questions-container"></div>
+        <div class="results-card" id="results-card">
+            <div class="results-score" id="final-score">0%</div>
+            <div class="results-text">You answered <span id="final-correct">0</span> out of <span id="final-total">0</span> questions correctly</div>
+            <div class="results-message" id="results-message"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">Try Again</button>
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+        <footer style="text-align:center;margin-top:40px;padding:20px;color:#64748b;font-size:0.9rem;">
+            <p>CYB236 - Web Application Security | King Abdulaziz University</p>
+            <p style="margin-top:10px;">Prepared by Dr. Almalawi</p>
+        </footer>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: 'In a client-server architecture, which component is responsible for rendering the user interface?',
+                options: [
+                    { text: 'Database', correct: false },
+                    { text: 'Server', correct: false },
+                    { text: 'Client (browser)', correct: true },
+                    { text: 'Load balancer', correct: false }
+                ]
+            },
+            {
+                question: 'What does DOM stand for in web development?',
+                options: [
+                    { text: 'Data Object Model', correct: false },
+                    { text: 'Document Object Model', correct: true },
+                    { text: 'Dynamic Output Manager', correct: false },
+                    { text: 'Display Order Mechanism', correct: false }
+                ]
+            },
+            {
+                question: 'What is the primary characteristic of a Single Page Application (SPA)?',
+                options: [
+                    { text: 'It can only display one page of content', correct: false },
+                    { text: 'It dynamically updates without full page reloads', correct: true },
+                    { text: 'It requires no JavaScript', correct: false },
+                    { text: 'It works offline only', correct: false }
+                ]
+            },
+            {
+                question: 'HTTP is best described as a:',
+                options: [
+                    { text: 'Stateful, connection-oriented protocol', correct: false },
+                    { text: 'Stateless, request-response protocol', correct: true },
+                    { text: 'Peer-to-peer file sharing protocol', correct: false },
+                    { text: 'Database query language', correct: false }
+                ]
+            },
+            {
+                question: 'Which HTTP method is used to retrieve data from a server without modifying it?',
+                options: [
+                    { text: 'POST', correct: false },
+                    { text: 'PUT', correct: false },
+                    { text: 'GET', correct: true },
+                    { text: 'DELETE', correct: false }
+                ]
+            },
+            {
+                question: 'Which HTTP method is used to create a new resource on the server?',
+                options: [
+                    { text: 'GET', correct: false },
+                    { text: 'POST', correct: true },
+                    { text: 'PATCH', correct: false },
+                    { text: 'OPTIONS', correct: false }
+                ]
+            },
+            {
+                question: 'What is the difference between PUT and PATCH in REST APIs?',
+                options: [
+                    { text: 'PUT is faster than PATCH', correct: false },
+                    { text: 'PUT replaces the entire resource; PATCH modifies part of it', correct: true },
+                    { text: 'PATCH deletes the resource; PUT creates it', correct: false },
+                    { text: 'There is no difference', correct: false }
+                ]
+            },
+            {
+                question: 'REST APIs are based on which principle regarding server state?',
+                options: [
+                    { text: 'The server must remember all previous requests', correct: false },
+                    { text: 'Each request is independent and stateless', correct: true },
+                    { text: 'Sessions are always required', correct: false },
+                    { text: 'The server maintains a permanent connection', correct: false }
+                ]
+            },
+            {
+                question: 'In a REST API, how are resources typically identified?',
+                options: [
+                    { text: 'By action-based URLs like /getUser', correct: false },
+                    { text: 'By resource-based URLs like /users/1234', correct: true },
+                    { text: 'By random hash codes', correct: false },
+                    { text: 'By session IDs', correct: false }
+                ]
+            },
+            {
+                question: 'What is JSON?',
+                options: [
+                    { text: 'A programming language', correct: false },
+                    { text: 'A lightweight data interchange format using key-value pairs', correct: true },
+                    { text: 'A database management system', correct: false },
+                    { text: 'A web server', correct: false }
+                ]
+            },
+            {
+                question: 'Why did JSON largely replace XML in modern web APIs?',
+                options: [
+                    { text: 'JSON is more secure than XML', correct: false },
+                    { text: 'JSON is native to JavaScript and more lightweight', correct: true },
+                    { text: 'XML was deprecated by W3C', correct: false },
+                    { text: 'JSON supports encryption by default', correct: false }
+                ]
+            },
+            {
+                question: 'What is the key difference between authentication and authorization?',
+                options: [
+                    { text: 'Authentication checks permissions; authorization verifies identity', correct: false },
+                    { text: 'Authentication verifies identity; authorization determines permissions', correct: true },
+                    { text: 'They are the same thing', correct: false },
+                    { text: 'Authentication is for servers; authorization is for clients', correct: false }
+                ]
+            },
+            {
+                question: 'Which client-side storage mechanism persists data across browser sessions?',
+                options: [
+                    { text: 'sessionStorage', correct: false },
+                    { text: 'localStorage', correct: true },
+                    { text: 'Cache memory', correct: false },
+                    { text: 'CPU registers', correct: false }
+                ]
+            },
+            {
+                question: 'What happens to data stored in sessionStorage when the browser tab is closed?',
+                options: [
+                    { text: 'It is encrypted', correct: false },
+                    { text: 'It is saved permanently', correct: false },
+                    { text: 'It is cleared', correct: true },
+                    { text: 'It is sent to the server', correct: false }
+                ]
+            },
+            {
+                question: 'Which client-side storage is automatically sent with every HTTP request to the server?',
+                options: [
+                    { text: 'localStorage', correct: false },
+                    { text: 'sessionStorage', correct: false },
+                    { text: 'Cookies', correct: true },
+                    { text: 'IndexedDB', correct: false }
+                ]
+            },
+            {
+                question: 'Which three technologies are the building blocks of web pages?',
+                options: [
+                    { text: 'SQL, Python, Java', correct: false },
+                    { text: 'HTML, CSS, JavaScript', correct: true },
+                    { text: 'HTTP, FTP, SMTP', correct: false },
+                    { text: 'React, Angular, Vue', correct: false }
+                ]
+            },
+            {
+                question: 'The HTTP OPTIONS method is used to:',
+                options: [
+                    { text: 'Delete a resource', correct: false },
+                    { text: 'Query which HTTP methods are supported by an endpoint', correct: true },
+                    { text: 'Create a new resource', correct: false },
+                    { text: 'Update a resource', correct: false }
+                ]
+            },
+            {
+                question: 'What does JavaScript interact with to dynamically change webpage content?',
+                options: [
+                    { text: 'The server database', correct: false },
+                    { text: 'The DOM (Document Object Model)', correct: true },
+                    { text: 'The HTTP protocol', correct: false },
+                    { text: 'The operating system', correct: false }
+                ]
+            },
+            {
+                question: 'Which of the following is an example of a Single Page Application?',
+                options: [
+                    { text: 'A static blog with no interactivity', correct: false },
+                    { text: 'Gmail', correct: true },
+                    { text: 'A PDF document', correct: false },
+                    { text: 'A printed newspaper website', correct: false }
+                ]
+            },
+            {
+                question: 'In a three-tier web architecture, the three tiers are:',
+                options: [
+                    { text: 'HTML, CSS, JavaScript', correct: false },
+                    { text: 'Frontend, Backend, Database', correct: true },
+                    { text: 'Client, Router, Server', correct: false },
+                    { text: 'Browser, Firewall, Storage', correct: false }
+                ]
+            }
+        ];
+
+        let answeredQuestions = new Set();
+        let correctAnswers = 0;
+        const totalQuestions = questions.length;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+                const shuffledOptions = shuffleArray(q.options.map((opt, i) => ({ ...opt, originalIndex: i })));
+                const optionsHTML = `<ul class="options-list">${shuffledOptions.map(opt => `
+                    <li class="option-item">
+                        <label class="option-label" data-question="${index}" data-correct="${opt.correct}">
+                            <input type="radio" name="question-${index}" value="${opt.correct}">
+                            <span class="option-marker"></span>
+                            <span class="option-text">${opt.text}</span>
+                        </label>
+                    </li>`).join('')}</ul>`;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">${index + 1}</span>
+                        <span class="question-type">Multiple Choice</span>
+                    </div>
+                    <p class="question-text">${q.question}</p>
+                    ${optionsHTML}
+                    <div class="feedback" id="feedback-${index}"></div>`;
+                container.appendChild(card);
+            });
+            document.querySelectorAll('.option-label').forEach(label => { label.addEventListener('click', handleAnswer); });
+        }
+
+        function handleAnswer(e) {
+            const label = e.currentTarget;
+            const questionIndex = parseInt(label.dataset.question);
+            const isCorrect = label.dataset.correct === 'true';
+            const card = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            if (answeredQuestions.has(questionIndex)) return;
+            answeredQuestions.add(questionIndex);
+            const allLabels = card.querySelectorAll('.option-label');
+            allLabels.forEach(l => { l.style.pointerEvents = 'none'; if (l.dataset.correct === 'true') l.classList.add('show-correct'); });
+            label.classList.add('selected');
+            if (isCorrect) {
+                correctAnswers++;
+                label.classList.remove('selected');
+                label.classList.add('correct');
+                card.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '\u2713 Correct!';
+            } else {
+                label.classList.add('incorrect');
+                card.classList.add('incorrect');
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = '\u2717 Incorrect - See the correct answer highlighted above';
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const progressPercent = Math.round((answered / totalQuestions) * 100);
+            document.getElementById('answered-count').textContent = answered;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('score-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            if (answered === totalQuestions) showResults();
+        }
+
+        function showResults() {
+            const percent = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctAnswers;
+            document.getElementById('final-total').textContent = totalQuestions;
+            let message = '';
+            if (percent >= 90) message = 'Excellent! You\'re well prepared!';
+            else if (percent >= 70) message = 'Good job! Keep practicing!';
+            else if (percent >= 50) message = 'Not bad, but review the material.';
+            else message = 'Keep studying and try again!';
+            document.getElementById('results-message').textContent = message;
+            document.getElementById('results-card').classList.add('show');
+        }
+
+        function resetQuiz() {
+            answeredQuestions.clear();
+            correctAnswers = 0;
+            document.getElementById('results-card').classList.remove('show');
+            renderQuestions();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        renderQuestions();
+        updateProgress();
+    </script>
+</body>
+</html>
