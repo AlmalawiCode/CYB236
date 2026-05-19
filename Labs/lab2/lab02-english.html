@@ -929,70 +929,43 @@ sudo docker run -d -p 3000:3000 --name juice-shop bkimminich/juice-shop</code></
 <script>
 function generateReport() {
     var name = document.getElementById('student-name').value.trim();
-    var sid = document.getElementById('student-id').value.trim();
-    if (!name || !sid) {
-        alert('Please enter your Student Name and Student ID before generating the report.');
-        return;
-    }
+    var sid  = document.getElementById('student-id').value.trim();
+    if (!name) { alert('Student Name is required.'); return; }
+    if (!sid)  { alert('Student ID is required.'); return; }
 
-    // Collect all task answers
-    var answers = {};
-    var allInputs = document.querySelectorAll('.task-answer');
-    allInputs.forEach(function(input) {
-        var task = input.getAttribute('data-task');
-        if (!answers[task]) answers[task] = [];
-        answers[task].push({
-            label: input.previousElementSibling ? input.previousElementSibling.textContent : '',
-            value: input.value.trim() || '(not answered)'
-        });
+    var answers = [];
+    document.querySelectorAll('.task-answer').forEach(function(f) {
+        var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
+        answers.push({ label: lbl, value: f.value.trim() || '(not answered)' });
     });
 
-    // Build print content
-    var printWindow = window.open('', '_blank');
-    if (!printWindow) { alert('Popup blocked. Please allow popups for this page and try again.'); return; }
-    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab 02 Report - ' + name + '</title>';
-    html += '<style>';
-    html += 'body { font-family: "Segoe UI", Tahoma, sans-serif; padding: 40px; color: #2d3748; line-height: 1.6; }';
-    html += 'h1 { color: #1a365d; font-size: 1.6em; text-align: center; margin-bottom: 5px; }';
-    html += '.subtitle { text-align: center; color: #718096; margin-bottom: 25px; }';
-    html += '.student-info { display: flex; justify-content: space-between; background: #f7fafc; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0; }';
-    html += '.task-section { margin-bottom: 25px; page-break-inside: avoid; }';
-    html += '.task-title { color: #2b5797; font-size: 1.2em; border-bottom: 2px solid #367bf0; padding-bottom: 5px; margin-bottom: 12px; }';
-    html += '.answer-row { margin-bottom: 10px; }';
-    html += '.answer-label { font-weight: 600; color: #4a5568; font-size: 0.9em; }';
-    html += '.answer-value { background: #f7fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 3px; min-height: 20px; }';
-    html += '@media print { body { padding: 20px; } }';
-    html += '</style></head><body>';
-    html += '<h1>CYB236 &mdash; Lab 02: Recon Summary Report</h1>';
-    html += '<p class="subtitle">Web Application Reconnaissance &mdash; OWASP Juice Shop</p>';
-    html += '<div class="student-info"><div><strong>Student Name:</strong> ' + name + '</div><div><strong>Student ID:</strong> ' + sid + '</div></div>';
+    var safeName = name.replace(/[^a-zA-Z0-9؀-ۿ _-]/g,'').replace(/\s+/g,'_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
+    var w = window.open('','_blank');
+    if (!w) { alert('Popup blocked. Please allow popups for this page and try again.'); return; }
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab02_'+safeName+'_'+safeSid+'</title><style>';
+    h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
+    h += 'h1{color:#1a365d;font-size:1.5em;text-align:center;margin-bottom:4px}';
+    h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
+    h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#ebf8ff;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #bee3f8}';
+    h += '.ar{margin-bottom:14px;border-left:4px solid #2980b9;padding-left:12px}';
+    h += '.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
+    h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
+    h += '@media print{body{padding:20px}}</style></head><body>';
+    h += '<h1>CYB236 — Lab 02: Web Application Reconnaissance</h1>';
+    h += '<p class="sub">OWASP Juice Shop</p>';
+    h += '<div class="si"><div><strong>Student Name:</strong> '+name+'</div><div><strong>Student ID:</strong> '+sid+'</div></div>';
 
-    var taskNames = {
-        '1': 'Task 1: Identify the Technology Stack',
-        '2': 'Task 2: Explore REST API Requests',
-        '3': 'Task 3: Read JSON Data',
-        '4': 'Task 4: Inspect Client-Side Storage'
-    };
+    answers.forEach(function(a) {
+        h += '<div class="ar"><div class="al">'+a.label+'</div><div class="av">'+a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div>';
+    });
 
-    for (var t = 1; t <= 4; t++) {
-        html += '<div class="task-section">';
-        html += '<div class="task-title">' + taskNames[t] + '</div>';
-        if (answers[t]) {
-            answers[t].forEach(function(a) {
-                html += '<div class="answer-row">';
-                html += '<div class="answer-label">' + a.label + '</div>';
-                html += '<div class="answer-value">' + a.value + '</div>';
-                html += '</div>';
-            });
-        }
-        html += '</div>';
-    }
-
-    html += '</body></html>';
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(function() { printWindow.print(); }, 500);
+    h += '<div class="fn">CYB236 — Lab 02 — Web Application Security</div></body></html>';
+    w.document.write(h);
+    w.document.close();
+    w.focus();
+    setTimeout(function(){ w.print(); }, 500);
 }
 </script>
 
