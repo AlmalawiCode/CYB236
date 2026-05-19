@@ -677,59 +677,49 @@ function generateReport() {
     var name  = document.getElementById('student-name').value.trim();
     var sid   = document.getElementById('student-id').value.trim();
     var email = document.getElementById('student-email').value.trim();
-    if (!name)  { alert('Student Name is required. Please fill it in before generating the report.'); return; }
-    if (!sid)   { alert('Student ID is required. Please fill it in before generating the report.'); return; }
-    if (!email) { alert('Email is required. Please fill it in before generating the report.'); return; }
+    if (!name)  { alert('Student Name is required.'); return; }
+    if (!sid)   { alert('Student ID is required.'); return; }
+    if (!email) { alert('Email is required.'); return; }
 
-    var answers = {};
+    var answers = [];
     document.querySelectorAll('.task-answer').forEach(function(f) {
-        var t = f.getAttribute('data-task');
-        if (!answers[t]) answers[t] = [];
         var lbl = f.previousElementSibling ? f.previousElementSibling.textContent : '';
-        answers[t].push({ label: lbl, value: f.value.trim() || '(not answered)' });
+        answers.push({ label: lbl, value: f.value.trim() || '(not answered)' });
     });
 
-    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g, '').replace(/\s+/g, '_');
-    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g, '');
-    var w = window.open('', '_blank');
-    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab03_' + safeName + '_' + safeSid + '</title><style>';
+    var safeName = name.replace(/[^a-zA-Z0-9\u0600-\u06FF _-]/g,'').replace(/\s+/g,'_');
+    var safeSid  = sid.replace(/[^a-zA-Z0-9-]/g,'');
+    var w = window.open('','_blank');
+    if (!w) { alert('Popup blocked. Please allow popups for this page and try again.'); return; }
+    var h = '<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab03_'+safeName+'_'+safeSid+'</title><style>';
     h += 'body{font-family:"Segoe UI",Tahoma,sans-serif;padding:40px;color:#2d3748;line-height:1.6}';
     h += 'h1{color:#8e44ad;font-size:1.5em;text-align:center;margin-bottom:4px}';
     h += '.sub{text-align:center;color:#718096;margin-bottom:22px;font-size:.9em}';
     h += '.si{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#f0e6f6;padding:13px 18px;border-radius:8px;margin-bottom:22px;border:1px solid #d7a8e8}';
-    h += '.ts{margin-bottom:24px;page-break-inside:avoid;border-left:4px solid #8e44ad;padding-left:14px}';
-    h += '.tt{color:#6c3483;font-size:1.15em;margin-bottom:10px;font-weight:700}';
-    h += '.ar{margin-bottom:10px}.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
+    h += '.ar{margin-bottom:14px;border-left:4px solid #8e44ad;padding-left:12px}';
+    h += '.al{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:3px}';
     h += '.av{background:#f7fafc;padding:9px 12px;border-radius:6px;border:1px solid #e2e8f0;min-height:22px;white-space:pre-wrap;word-break:break-word}';
-    h += 'hr{border:none;border-top:1px solid #e2e8f0;margin:18px 0}';
-    h += '.ss{margin-top:16px;page-break-inside:avoid}';
-    h += '.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
-    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
+    h += '.ss{margin-top:16px;page-break-inside:avoid}.ss-lbl{font-weight:600;color:#4a5568;font-size:.87em;margin-bottom:8px}';
+    h += '.ss img{max-width:100%;border-radius:8px;border:1px solid #e2e8f0}';
     h += '.fn{text-align:center;color:#a0aec0;font-size:.78em;margin-top:36px}';
     h += '@media print{body{padding:20px}}</style></head><body>';
     h += '<h1>CYB236 \u2014 Lab 03: Cross-Site Scripting (XSS)</h1>';
     h += '<p class="sub">DVWA \u2014 Reflected XSS &amp; Stored XSS \u2014 Chapter 10</p>';
-    h += '<div class="si"><div><strong>Student Name:</strong> ' + name + '</div><div><strong>Student ID:</strong> ' + sid + '</div><div><strong>Email:</strong> ' + email + '</div></div>';
+    h += '<div class="si"><div><strong>Student Name:</strong> '+name+'</div><div><strong>Student ID:</strong> '+sid+'</div><div><strong>Email:</strong> '+email+'</div></div>';
 
-    var tn    = { '1': 'Task 1: Reflected XSS',              '2': 'Task 2: Stored XSS' };
-    var ssId  = { '1': 'preview-task1',                      '2': 'preview-task2' };
-    var ssLbl = { '1': 'Screenshot \u2014 Reflected XSS Alert Box', '2': 'Screenshot \u2014 Stored XSS Guestbook' };
+    answers.forEach(function(a) {
+        h += '<div class="ar"><div class="al">'+a.label+'</div><div class="av">'+a.value.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div>';
+    });
 
-    for (var t = 1; t <= 2; t++) {
-        h += '<div class="ts"><div class="tt">' + tn[t] + '</div>';
-        if (answers[t]) {
-            answers[t].forEach(function(a) {
-                h += '<div class="ar"><div class="al">' + a.label + '</div><div class="av">' + a.value.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div></div>';
-            });
+    var ssKeys = ['preview-task1','preview-task2'];
+    var ssLabels = ['Screenshot \u2014 Reflected XSS Alert Box','Screenshot \u2014 Stored XSS Guestbook'];
+    ssKeys.forEach(function(k,i) {
+        if (screenshotData[k]) {
+            h += '<div class="ss"><div class="ss-lbl">'+ssLabels[i]+'</div><img src="'+screenshotData[k]+'"></div>';
         }
-        if (screenshotData[ssId[t]]) {
-            h += '<div class="ss"><div class="ss-lbl">' + ssLbl[t] + '</div><img src="' + screenshotData[ssId[t]] + '"></div>';
-        }
-        h += '</div>';
-        if (t < 2) h += '<hr>';
-    }
+    });
 
-    h += '<div class="fn">CYB236 \u2014 Lab 04 \u2014 Web Application Security</div></body></html>';
+    h += '<div class="fn">CYB236 \u2014 Lab 03 \u2014 Web Application Security</div></body></html>';
     w.document.write(h);
     w.document.close();
     w.focus();
