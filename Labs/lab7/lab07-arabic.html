@@ -1177,7 +1177,8 @@ function generateReport() {
     h += '</body></html>';
     w.document.write(h);
     w.document.close();
-    w.onload = function() { w.print(); };
+    w.focus();
+    setTimeout(function(){ w.print(); }, 500);
 }
 </script>
 </body>

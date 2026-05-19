@@ -991,9 +991,8 @@ function generateReport() {
     html += '</body></html>';
     printWindow.document.write(html);
     printWindow.document.close();
-    printWindow.onload = function() {
-        printWindow.print();
-    };
+    printWindow.focus();
+    setTimeout(function() { printWindow.print(); }, 500);
 }
 </script>
 

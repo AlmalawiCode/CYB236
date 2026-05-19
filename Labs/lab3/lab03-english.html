@@ -733,7 +733,8 @@ function generateReport() {
     h += '<div class="fn">CYB236 \u2014 Lab 04 \u2014 Web Application Security</div></body></html>';
     w.document.write(h);
     w.document.close();
-    w.onload = function() { w.print(); };
+    w.focus();
+    setTimeout(function(){ w.print(); }, 500);
 }
 </script>
 </body>
