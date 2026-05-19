@@ -949,8 +949,8 @@ function generateReport() {
 
     // Build print content
     var printWindow = window.open('', '_blank');
-    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab 02 Report - ' + name + '</title>';
+    if (!printWindow) { alert('Popup blocked. Please allow popups for this page and try again.'); return; }
+    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"><title>Lab 02 Report - ' + name + '</title>';
     html += '<style>';
     html += 'body { font-family: "Segoe UI", Tahoma, sans-serif; padding: 40px; color: #2d3748; line-height: 1.6; }';
     html += 'h1 { color: #1a365d; font-size: 1.6em; text-align: center; margin-bottom: 5px; }';
